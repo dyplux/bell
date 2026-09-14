@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.dyplux.bell-publisher</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/zsh</string>
+    <string>-lc</string>
+    <string>source "$HOME/.config/dyplux/bell.env" &amp;&amp; cd "$DYPLUX_REPO" &amp;&amp; exec python3 bell/publisher.py --pull-queue --limit 5</string>
+  </array>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>DYPLUX_REPO</key>
+    <string>/Users/CHANGE_ME/Documents/dyplux</string>
+    <key>BELL_STORE_DIR</key>
+    <string>/Users/CHANGE_ME/.local/share/dyplux/bell-runtime</string>
+  </dict>
+  <key>StartInterval</key>
+  <integer>900</integer>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>StandardOutPath</key>
+  <string>/Users/CHANGE_ME/Library/Logs/dyplux-bell-publisher.log</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/CHANGE_ME/Library/Logs/dyplux-bell-publisher.err.log</string>
+</dict>
+</plist>

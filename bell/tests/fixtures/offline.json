@@ -1,0 +1,20 @@
+{
+  "mode": "offline_fixture",
+  "asset": {"name": "Bell test fixture", "slug": "fixture"},
+  "window_start": "2026-01-05T14:30:00Z",
+  "window_end": "2026-01-10T16:00:00Z",
+  "timezone": "America/New_York",
+  "provenance": {"source": "local test fixture", "raw_responses_included": false},
+  "wrappers": [
+    {
+      "symbol": "FIXA",
+      "issuer": "Fixture issuer",
+      "bars": [
+        {"time_open": "2026-01-05T14:30:00Z", "open": 100, "high": 101, "low": 99, "close": 100},
+        {"time_open": "2026-01-05T21:00:00Z", "open": 100, "high": 100.5, "low": 99.5, "close": 100},
+        {"time_open": "2026-01-10T15:00:00Z", "open": 100, "high": 100.2, "low": 99.8, "close": 100}
+      ],
+      "venue": {"cex_volume_24h": 80, "dex_volume_24h": 20}
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+.checks/
+bell/runtime/
+cloudflare/node_modules/
+cloudflare/.wrangler/
+cloudflare/.dev.vars
+*.env
+!.env.example
+.DS_Store
