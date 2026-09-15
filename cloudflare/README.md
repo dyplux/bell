@@ -7,6 +7,8 @@ exposes a small D1-backed API:
 - stale or missing dossiers create a deduplicated refresh job;
 - `GET /internal/jobs` leases refresh jobs to the Mac mini publisher;
 - `POST /internal/publish` accepts a credential-free dossier from the publisher.
+- `GET /api/integrity` returns the latest population-wide integrity receipt and freshness state;
+- `POST /internal/integrity` accepts a credential-free integrity receipt from the Mac mini.
 
 The CMC API key never enters this Worker. Keep it on the Mac mini and set `PUBLISHER_TOKEN` as a
 Cloudflare secret and on the publisher machine.
@@ -62,5 +64,15 @@ npx wrangler deploy
 
 The public product hostname is [`https://bell.dyplux.com/`](https://bell.dyplux.com/). The
 `workers.dev` hostname remains only as a technical fallback.
+
+The integrity monitor is refreshed independently from the per-asset queue:
+
+```bash
+CMC_API_KEY="..." python3 bell/integrity_publisher.py
+```
+
+The example launchd job is [`../bell/launchd/com.dyplux.bell-integrity-publisher.plist.example`](../bell/launchd/com.dyplux.bell-integrity-publisher.plist.example).
+The public page first reads `/api/integrity` and falls back to the dated receipt
+only when no live receipt exists. It labels the source and freshness state.
 
 Do not commit `.dev.vars`, tokens or API keys.

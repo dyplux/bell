@@ -26,6 +26,7 @@ function fakeDb(row = null) {
   return {
     prepare(sql) {
       return {
+        first: async () => sql.includes('integrity_receipts') ? row : null,
         bind() {
           return {
             first: async () => sql.includes('SELECT * FROM dossiers') ? row : null,
@@ -60,4 +61,37 @@ test('published dossier returns freshness metadata', async () => {
   assert.equal(body.audit.conclusion, 'investigate');
   assert.equal(body._publication.status, 'fresh');
   assert.equal(body._publication.receipt_url, 'receipts/nvidia.json');
+});
+
+test('integrity endpoint returns a published receipt with freshness metadata', async () => {
+  const row = {
+    payload_json: JSON.stringify({ schema_version: 'rwa_surface_integrity.v1', universe: { states: {} } }),
+    observed_at: '2026-09-15T12:00:00Z',
+    published_at: new Date().toISOString(),
+    stale_after_seconds: 900,
+  };
+  const db = {
+    prepare(sql) {
+      return {
+        first: async () => sql.includes('integrity_receipts') ? row : null,
+        bind() {
+          return {
+            first: async () => sql.includes('integrity_receipts') ? row : null,
+            run: async () => ({ meta: {} }),
+            all: async () => ({ results: [] }),
+          };
+        },
+      };
+    },
+  };
+  const response = await worker.fetch(new Request('https://example.test/api/integrity'), { ASSETS: assets, DB: db });
+  const body = await response.json();
+  assert.equal(response.status, 200);
+  assert.equal(body.schema_version, 'rwa_surface_integrity.v1');
+  assert.equal(body._publication.status, 'fresh');
+});
+
+test('integrity publication requires the publisher token', async () => {
+  const response = await worker.fetch(new Request('https://example.test/internal/integrity', { method: 'POST', body: JSON.stringify({}) }), { ASSETS: assets, PUBLISHER_TOKEN: 'secret' });
+  assert.equal(response.status, 401);
 });
