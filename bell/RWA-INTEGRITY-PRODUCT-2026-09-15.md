@@ -29,16 +29,16 @@ price while the detailed receipt resolves the individual representations,
 units, issuers and missing market fields. That is the distinction Bell owns:
 not more rows, but a decision boundary around the rows.
 
-The live Startup scan on 15 September 2026 found:
+The live Startup scan captured at `2026-09-15T22:22:00Z` found:
 
 - 7,811 map rows and 7,942 asset-list rows;
 - 131 asset-list rows without a stable `rwa_id`;
 - 790 tokenised references and 1,428 token representations in the quote scan;
 - 790/790 tokenised references resolved again through the metadata endpoint;
 - 25 issuer records cross-checked against all 21 issuer IDs seen in quotes;
-- latest live publisher run: 33 `DO NOT COMPARE`, 662 `INVESTIGATE`, 95 `NO RULE HIT`;
+- captured publisher run: 34 `DO NOT COMPARE`, 662 `INVESTIGATE`, 94 `NO RULE HIT`;
 - 4 price groups with a greater-than-10x spread;
-- 35 groups with positive 24-hour volume and zero market cap;
+- 31 groups with positive 24-hour volume and zero market cap;
 - 114 groups mixing derivative-labelled and non-derivative representations;
 - 60 groups where the same symbol is reused across representations;
 - 647 groups with at least one missing price, market-cap or volume field.
@@ -116,6 +116,9 @@ credential-free result is in
 [`bell/docs/proof/startup-market-pairs-boundary-2026-09-15.json`](docs/proof/startup-market-pairs-boundary-2026-09-15.json).
 Bell therefore stops before making a venue or execution claim; it does not turn
 an unavailable endpoint into a false “no market pairs” result.
+The accompanying [sanitized input manifest](docs/proof/rwa-surface-integrity-input-manifest-2026-09-15.json)
+records endpoint shapes, row counts, stable-ID coverage and SHA-256 fingerprints
+without publishing authenticated CMC response bodies.
 
 ## Why this can beat the current Bell
 

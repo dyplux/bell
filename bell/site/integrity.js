@@ -3,6 +3,7 @@
   const byId = id => document.getElementById(id);
   let receipt;
   let filter = 'all';
+  let query = '';
 
   const signalLabels = {
     PRICE_DENOMINATION_BREAK: '10× price spread',
@@ -51,18 +52,45 @@
     if (receipt.method?.scan_status !== 'ready') byId('receipt-status-label').textContent += ' · INPUT INCOMPLETE';
   }
 
-  function renderAlerts() {
-    const alerts = receipt.alerts.filter(alert => filter === 'all' || alert.state === filter).slice(0, 12);
-    const indexed = receipt.alert_index || receipt.alerts || [];
-    const matching = indexed.filter(alert => filter === 'all' || alert.state === filter).length;
-    byId('alert-count').innerHTML = `Showing <strong>${alerts.length}</strong> detailed cases of <strong>${matching}</strong> matching references · ${indexed.length.toLocaleString()} references scanned. <a href="https://rwa-surface-review.pages.dev/" target="_blank" rel="noopener">Open the complete searchable queue ↗</a>`;
-    byId('alert-list').innerHTML = alerts.map(alert => {
+  function renderCompactEvidence(item) {
+    const evidence = Object.entries(item.signal_evidence || {}).filter(([code]) => code !== 'NO_TRADFI_MARKET').map(([code, value]) => {
+      const parts = [];
+      if (value.max_min_ratio) parts.push(`${formatNumber(value.max_min_ratio)}× spread`);
+      if (value.count) parts.push(`${value.count} missing-field rows`);
+      if (value.tokens) parts.push(`${value.tokens.length} evidence token${value.tokens.length === 1 ? '' : 's'}`);
+      if (value.symbols) parts.push(`symbols: ${value.symbols.join(', ')}`);
+      return `<li><b>${escapeHTML(signalLabels[code] || code)}</b> ${escapeHTML(parts.join(' · ') || 'rule fired')}</li>`;
+    }).join('');
+    return evidence || '<li>No compact numerical evidence was published for this index row.</li>';
+  }
+
+  function renderAlertRow(alert) {
       const labels = alert.signals.filter(signal => signal.severity !== 'info').map(signal => signalLabels[signal.code] || signal.code).slice(0, 3).join(' · ');
       const evidence = alert.signals.filter(signal => signal.severity !== 'info').map(signal => `<div class="evidence-rule"><b>${escapeHTML(signalLabels[signal.code] || signal.code)}</b><p>${escapeHTML(signal.message)}</p><ul>${renderEvidence(signal)}</ul></div>`).join('');
       const stateLabel = alert.state === 'no_flags' ? 'NO RULE HIT' : alert.state.replaceAll('_', ' ').toUpperCase();
       const decision = alert.decision || {};
       return `<article class="alert-row"><div class="alert-name">${escapeHTML(alert.name)}<small>${escapeHTML(alert.symbol)} · ${escapeHTML(alert.asset_type)} · ${alert.issuer_count} issuers</small></div><div class="alert-state ${alert.state === 'investigate' ? 'investigate' : ''}">${escapeHTML(stateLabel)}</div><div class="alert-signals">${escapeHTML(labels)}</div><div class="alert-tokens"><strong>${alert.token_count}</strong><small>representations</small></div><div class="alert-decision"><span>Decision effect</span><b>${escapeHTML(decision.label || 'REVIEW')}</b><p>${escapeHTML(decision.consequence || '')}</p></div><div class="alert-action"><span>Next action</span>${escapeHTML(alert.next_action)}</div><details class="alert-details"><summary>Inspect evidence</summary>${evidence}<h4>Representation rows</h4>${renderTokenTable(alert)}</details></article>`;
-    }).join('') || '<p class="section-note">No alerts in this filter.</p>';
+  }
+
+  function renderIndexRow(item, detail) {
+    if (detail) return renderAlertRow(detail);
+    const stateLabel = item.state === 'no_flags' ? 'NO RULE HIT' : String(item.state || '').replaceAll('_', ' ').toUpperCase();
+    const decision = item.decision || {};
+    return `<article class="alert-row compact-row"><div class="alert-name">${escapeHTML(item.name)}<small>${escapeHTML(item.symbol)} · ${escapeHTML(item.asset_type)} · ${item.issuer_count || 0} issuers · RWA ${escapeHTML(item.rwa_id)}</small></div><div class="alert-state ${item.state === 'investigate' ? 'investigate' : item.state === 'no_flags' ? 'clear' : ''}">${escapeHTML(stateLabel)}</div><div class="alert-signals">${escapeHTML((item.signal_codes || []).filter(code => code !== 'NO_TRADFI_MARKET').slice(0, 3).map(code => signalLabels[code] || code).join(' · ') || 'No published rule hit')}</div><div class="alert-tokens"><strong>${Number(item.token_count || 0).toLocaleString()}</strong><small>representations</small></div><div class="alert-decision"><span>Decision effect</span><b>${escapeHTML(decision.label || 'NO RULE HIT')}</b><p>${escapeHTML(decision.consequence || '')}</p></div><div class="alert-action"><span>Next action</span>${escapeHTML(item.next_action || '')}</div><details class="alert-details"><summary>Inspect compact evidence</summary><ul class="compact-evidence">${renderCompactEvidence(item)}</ul><p class="compact-note">Full token rows are retained for priority cases in the published receipt.</p></details></article>`;
+  }
+
+  function renderAlerts() {
+    const indexed = receipt.alert_index || receipt.alerts || [];
+    const normalizedQuery = query.trim().toLowerCase();
+    const details = new Map((receipt.alerts || []).map(alert => [String(alert.rwa_id), alert]));
+    const matching = indexed.filter(item => {
+      const stateMatches = filter === 'all' || item.state === filter;
+      const haystack = [item.name, item.symbol, item.asset_type, item.rwa_id].join(' ').toLowerCase();
+      return stateMatches && (!normalizedQuery || haystack.includes(normalizedQuery));
+    });
+    const visible = matching.slice(0, 12);
+    byId('alert-count').innerHTML = `Showing <strong>${visible.length}</strong> of <strong>${matching.length}</strong> matching references · ${indexed.length.toLocaleString()} references scanned. <a href="https://rwa-surface-review.pages.dev/" target="_blank" rel="noopener">Open the complete searchable queue ↗</a>`;
+    byId('alert-list').innerHTML = visible.map(item => renderIndexRow(item, details.get(String(item.rwa_id)))).join('') || '<p class="section-note">No references match this filter.</p>';
   }
 
   function renderSignals() {
@@ -148,6 +176,10 @@
     document.querySelectorAll('[data-filter]').forEach(item => item.classList.toggle('selected', item === button));
     renderAlerts();
   }));
+  byId('alert-search').addEventListener('input', event => {
+    query = event.target.value;
+    renderAlerts();
+  });
   boot();
   window.setInterval(() => { if (receipt) renderMetrics(); }, 60000);
 })();

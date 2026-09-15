@@ -1,0 +1,11 @@
+{
+  "schema_version": "bell.cmc_plan_boundary.v1",
+  "verified_at": "2026-09-15T20:56:29Z",
+  "endpoint": "/v5/real-world-assets/market-pairs/list",
+  "request": "rwa_id=<live blocked reference>&start=1&limit=10&convert=USD",
+  "http_status": 403,
+  "error_code": 1006,
+  "error_message": "The Startup subscription does not support this endpoint.",
+  "credit_count": 0,
+  "product_decision": "Do not fabricate venue, spread, depth or execution evidence. Keep market-pairs as an explicit Growth-plan extension."
+}

@@ -1,45 +1,77 @@
 # Bell public product brief
 
-## The user journey
+## Flagship product
 
-1. Search an exposure by name, symbol, slug or category.
-2. Read the automatically generated plain-language or institutional brief.
-3. Open the asset's evidence state: underlying-only, single-token dossier, multi-token comparison,
-   or coverage pending.
-4. Inspect issuer, network, contract, DEX and market-pair coverage.
-5. Export a credential-free receipt with observation and publication timestamps.
+Bell's RWA Surface Integrity Monitor is a pre-comparison decision gate. It
+scans the CoinMarketCap RWA population, joins the map, asset, quote, metadata
+and issuer surfaces by stable identifiers, and records whether a user should
+compare representations under the same reference.
 
-## The useful difference
+It is not a token leaderboard, safety score or investment recommendation.
 
-The CMC RWA catalogue is a strong discovery layer. Bell does not try to replace it with another
-list. Bell answers the question that appears after discovery:
+## The public user journey
 
-> Is this tokenized representation safe to compare with the other entries shown under the same
-> reference asset?
+1. Open the [Integrity Monitor](https://bell.dyplux.com/integrity).
+2. Read the observation time, freshness state and population totals.
+3. Open the current case, normally the highest-priority contradiction.
+4. Search the main queue or the [neutral review queue](https://rwa-surface-review.pages.dev/)
+   for an RWA such as Silver, Gold, Tesla or SPY.
+5. Inspect the decision, next action and compact evidence.
+6. Open the live JSON receipt or the dated replay and verify the timestamps,
+   source hashes and stable-ID join coverage.
 
-The answer is produced by deterministic rules and visible evidence. Bell can say `DO NOT COMPARE`,
-`INVESTIGATE`, `INSUFFICIENT EVIDENCE`, `DOSSIER` or `MONITOR`. It does not turn an empty optional
-surface into zero liquidity and does not rank a single representation against imaginary peers.
+The output is explicit:
 
-## Live versus published
+- `DO NOT SELECT A WRAPPER`: identity, denomination or market fields conflict;
+- `HOLD COMPARISON`: investigation is required before treating rows as equivalent;
+- `NO RULE HIT, NOT APPROVED`: this rule set found no contradiction, which is not an approval.
 
-The public website never calls CMC directly. It reads the latest published dossier from
-`/api/published?slug=<slug>`. A missing asset returns `map_only` and queues a server-side refresh.
-The publisher collects current CMC evidence, runs the audit and posts a normalized dossier back to
-the Cloudflare Worker. Every response exposes `observed_at`, `published_at`, freshness and source.
+## What Bell adds to CMC discovery
 
-## Evidence boundary
+CMC provides RWA references, token representations, issuers and quote fields.
+Bell adds the decision protocol around those surfaces:
 
-CMC data can show mapped references, token rows, quotes, issuer records, market pairs, crypto
-metadata and selected DEX surfaces. Bell reports those observations. It does not independently
-verify reserves, legal rights, redemption, solvency, manipulation, suitability or executable size.
-Those boundaries are part of the product, not a footnote.
+- population-wide rather than hand-picked review;
+- `rwa_id`, `crypto_id` and `issuer_id` joins rather than ticker-only matching;
+- explicit distinction between missing and zero values;
+- numerical contradiction evidence such as price spread and positive volume with
+  zero market cap;
+- a next action and allocation boundary for every published decision;
+- a credential-free, timestamped receipt that can be replayed offline.
 
-## Public demo cases
+## Public evidence contract
 
-- Gold demonstrates a multi-representation case where grouping conflicts make a direct comparison
-  unsafe.
-- Tesla demonstrates ticker and issuer ambiguity plus incomplete DEX coverage.
+The live response is [`GET /api/integrity`](https://bell.dyplux.com/api/integrity).
+The dated replay and sanitized input manifest live in
+[`bell/docs/proof/`](../bell/docs/proof/). The manifest records surface counts,
+stable-ID coverage and SHA-256 fingerprints. It deliberately does not publish
+raw authenticated CMC response bodies.
 
-The public website labels these as dated evidence and keeps the data window visible. A public map
-entry without a published dossier is never presented as a completed research case.
+The browser never receives a CMC key. A Mac mini publisher reads the credential
+from a private process environment, runs the deterministic scan and publishes
+only normalized evidence through an authenticated Cloudflare Worker route.
+
+## Boundaries
+
+Bell does not independently prove backing, redemption, custody, legal
+eligibility, solvency, manipulation or executable liquidity. The Startup plan
+does not expose the CMC market-pairs surface used for venue/depth analysis, so
+the product records that as an explicit Growth-plan boundary instead of
+inventing empty-market evidence.
+
+## Local verification
+
+Replay the dated calculation without credentials:
+
+```bash
+python3 bell/integrity_review.py
+python3 bell/verify_public_integrity.py
+```
+
+Run the public test surface:
+
+```bash
+pytest -q bell/tests
+node --test cloudflare/tests/worker.test.mjs
+node --check bell/site/integrity.js
+```
