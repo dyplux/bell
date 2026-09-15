@@ -1,0 +1,30 @@
+{
+  "url": "https://bell.dyplux.com/api/integrity",
+  "http_status": 200,
+  "schema_version": "rwa_surface_integrity.v1",
+  "publication": {
+    "source": "cloudflare.d1",
+    "observed_at": "2026-09-15T22:06:33Z",
+    "published_at": "2026-09-15T22:07:00.132Z",
+    "credential_free": true,
+    "status": "fresh",
+    "age_seconds": 166,
+    "stale_after_seconds": 900
+  },
+  "states": {
+    "do_not_compare": 33,
+    "investigate": 662,
+    "no_flags": 95
+  },
+  "alert_index": 790,
+  "first_alert": {
+    "name": "Silver",
+    "state": "do_not_compare",
+    "decision": {
+      "state": "blocked",
+      "label": "DO NOT SELECT A WRAPPER",
+      "consequence": "A research desk must not rank or substitute these representations until the contradiction is resolved.",
+      "allocation_effect": "NO WRAPPER SELECTED until identity, denomination and market state are cleared."
+    }
+  }
+}

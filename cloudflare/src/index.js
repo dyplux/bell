@@ -82,6 +82,26 @@ async function published(request, env) {
   return json(payload, 200, { 'cache-control': 'public, max-age=30, stale-while-revalidate=300' });
 }
 
+async function integrity(request, env) {
+  const row = await env.DB.prepare('SELECT * FROM integrity_receipts WHERE id = 1').first();
+  if (!row) return json({ status: 'dated_static', message: 'No live integrity receipt has been published yet.' }, 404, { 'cache-control': 'no-store' });
+  let payload;
+  try {
+    payload = JSON.parse(row.payload_json);
+  } catch (error) {
+    return json({ error: 'stored integrity receipt is invalid JSON' }, 500);
+  }
+  const publication = publicationStatus(row);
+  payload._publication = {
+    source: 'cloudflare.d1',
+    observed_at: row.observed_at,
+    published_at: row.published_at,
+    credential_free: true,
+    ...publication,
+  };
+  return json(payload, 200, { 'cache-control': 'public, max-age=30, stale-while-revalidate=300' });
+}
+
 async function jobs(request, env) {
   if (!authorised(request, env)) return json({ error: 'unauthorized' }, 401);
   const limit = Math.min(20, Math.max(1, Number(new URL(request.url).searchParams.get('limit') || 5)));
@@ -124,6 +144,29 @@ async function publish(request, env) {
   return json({ ok: true, slug, published_at: publishedAt, observed_at: observedAt });
 }
 
+async function publishIntegrity(request, env) {
+  if (!authorised(request, env)) return json({ error: 'unauthorized' }, 401);
+  let body;
+  try {
+    body = await request.json();
+  } catch (error) {
+    return json({ error: 'request body must be JSON' }, 400);
+  }
+  if (!body.receipt || typeof body.receipt !== 'object' || body.receipt.schema_version !== 'rwa_surface_integrity.v1') {
+    return json({ error: 'a valid integrity receipt is required' }, 400);
+  }
+  const publishedAt = body.published_at || now();
+  const observedAt = body.observed_at || body.receipt.observed_at || null;
+  const staleAfter = Math.max(60, Number(body.stale_after_seconds || 900));
+  await env.DB.prepare(
+    `INSERT INTO integrity_receipts (id, payload_json, observed_at, published_at, stale_after_seconds, status)
+     VALUES (1, ?1, ?2, ?3, ?4, 'published')
+     ON CONFLICT(id) DO UPDATE SET payload_json = excluded.payload_json, observed_at = excluded.observed_at,
+       published_at = excluded.published_at, stale_after_seconds = excluded.stale_after_seconds, status = 'published'`,
+  ).bind(JSON.stringify(body.receipt), observedAt, publishedAt, staleAfter).run();
+  return json({ ok: true, published_at: publishedAt, observed_at: observedAt });
+}
+
 export default {
   async fetch(request, env) {
     if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: CORS_HEADERS });
@@ -131,8 +174,10 @@ export default {
     try {
       if (url.pathname === '/api/health') return json({ ok: true, service: 'dyplux-rwa-publication', now: now() });
       if (url.pathname === '/api/published' && request.method === 'GET') return published(request, env);
+      if (url.pathname === '/api/integrity' && request.method === 'GET') return integrity(request, env);
       if (url.pathname === '/internal/jobs' && request.method === 'GET') return jobs(request, env);
       if (url.pathname === '/internal/publish' && request.method === 'POST') return publish(request, env);
+      if (url.pathname === '/internal/integrity' && request.method === 'POST') return publishIntegrity(request, env);
       return env.ASSETS.fetch(request);
     } catch (error) {
       return json({ error: 'publication service error' }, 500);

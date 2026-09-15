@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A deterministic monitor for identity, denomination and market-data breaks across CoinMarketCap's RWA surfaces.">
+  <title>RWA Surface Integrity Monitor | Bell</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="integrity.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="wordmark" href="index.html">bell<span>.</span></a>
+    <div class="topbar-divider"></div>
+    <img src="assets/dyplux-logo-ivory.svg" alt="Dyplux" width="104" height="21">
+    <nav><a class="active" href="integrity.html">Integrity monitor</a><a href="guide.html">Audit pack</a></nav>
+    <span class="receipt-status"><i></i> <b id="receipt-status-label">LOADING RECEIPT</b></span>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <p class="eyebrow"><span></span> RWA / SURFACE INTEGRITY MONITOR</p>
+        <h1>Before the comparison,<br><em>test the surface.</em></h1>
+        <p class="lede">CMC groups real-world assets by reference. Bell checks whether the underlying data can support the comparison before a user trusts the table.</p>
+        <div class="hero-meta"><span>CMC API / MAP + ASSET LIST + QUOTES</span><span id="observed-at">LOADING RECEIPT</span></div>
+      </div>
+      <aside class="hero-proof">
+        <div class="proof-top"><span class="eyebrow">LIVE CASE</span><span class="proof-id">RWA / 001</span></div>
+        <p id="hero-case">Reading the current case</p>
+        <div id="hero-case-fact" class="proof-fact">Loading the latest measured contradiction.</div>
+        <div class="proof-rule"><strong id="hero-proof-output">NO SCORE</strong><span>clear the contradiction first</span></div>
+      </aside>
+    </section>
+
+    <section class="metric-strip" aria-label="Scan totals">
+      <div><small>Tokenised references</small><strong id="metric-references">—</strong><span>population scanned</span></div>
+      <div><small>Representations</small><strong id="metric-tokens">—</strong><span>token rows inspected</span></div>
+      <div class="critical"><small>Blocked comparisons</small><strong id="metric-blocked">—</strong><span>do not compare</span></div>
+      <div class="surface"><small>Unaddressable rows</small><strong id="metric-unaddressable">—</strong><span>no stable RWA ID</span></div>
+    </section>
+
+    <section id="differentiation" class="differentiation" aria-label="Product difference"></section>
+
+    <section id="decision" class="decision-story" aria-label="Live decision path">
+      <div class="decision-story-copy">
+        <p class="eyebrow"><span></span> 00 / LIVE DECISION PATH</p>
+        <h2>One reference.<br><em>One refused comparison.</em></h2>
+        <p>Bell does not ask an analyst to trust a score. It starts with the full catalogue, finds a contradiction, and records the action that follows.</p>
+        <div class="decision-steps">
+          <div><b>01</b><span>Scan the population</span></div>
+          <div><b>02</b><span>Join by stable IDs</span></div>
+          <div><b>03</b><span>Block the wrapper choice</span></div>
+          <div><b>04</b><span>Route to diligence</span></div>
+        </div>
+      </div>
+      <aside id="decision-hero" class="decision-hero">
+        <p class="eyebrow">LOADING LIVE CASE</p>
+        <h3>Reading the current receipt</h3>
+      </aside>
+    </section>
+
+    <section class="monitor-grid">
+      <div class="alerts-panel">
+        <div class="section-head"><div><p class="eyebrow">01 / PUBLISHED ALERT QUEUE</p><h2>Where the surface breaks</h2></div><div class="filters" role="group" aria-label="Filter alerts"><button class="selected" data-filter="all">ALL</button><button data-filter="do_not_compare">BLOCKED</button><button data-filter="investigate">INVESTIGATE</button></div></div>
+        <p id="alert-count" class="section-note">The queue is selected by a fixed rule from the full scan. It is not a performance ranking.</p>
+        <div id="alert-list" class="alert-list"></div>
+      </div>
+      <aside class="method-card">
+        <p class="eyebrow">02 / DECISION RULE</p>
+        <h2>Do not turn a data contradiction into an investment conclusion.</h2>
+        <div class="rule-row"><b>10×</b><span>price spread<br><small>denomination break</small></span></div>
+        <div class="rule-row"><b>$0</b><span>market cap + volume<br><small>market contradiction</small></span></div>
+        <div class="rule-row"><b>ID</b><span>crypto_id + issuer_id<br><small>never ticker alone</small></span></div>
+        <div class="cadence"><span>surface refresh</span><b>30s map · 60s data</b><small>different endpoint cadences can create a temporary join gap</small></div>
+        <p class="method-limit">CMC fields are observations. <b>NO RULE HIT is not a safety approval.</b> This monitor does not prove backing, redemption, legal eligibility or executable liquidity.</p>
+        <a class="source-link" href="https://coinmarketcap.com/real-world-assets/?type=rwa" target="_blank" rel="noopener">Open the CMC RWA surface ↗</a>
+      </aside>
+    </section>
+
+    <section class="evidence-section">
+      <div class="section-head"><div><p class="eyebrow">03 / POPULATION SIGNALS</p><h2>Not one hand-picked screenshot</h2></div><span class="receipt-chip">REPLAYABLE JSON / SHA-256</span></div>
+      <div id="signal-grid" class="signal-grid"></div>
+      <div id="identity-proof" class="identity-proof"></div>
+      <div class="evidence-foot"><p><strong>What this changes:</strong> an analyst can see which RWA groups require identity or market-data diligence before comparing issuers.</p><span class="evidence-links"><a href="https://rwa-surface-review.pages.dev/" target="_blank" rel="noopener">Open full population queue ↗</a><a href="/api/integrity" target="_blank" rel="noopener">Inspect live GET ↗</a><a href="proof/rwa-surface-integrity-2026-09-15.json" target="_blank" rel="noopener">Open replay receipt ↗</a></span></div>
+    </section>
+  </main>
+
+  <footer><span>Bell · RWA integrity evidence</span><span>Built by Dyplux · Lisbon</span><span>Research, not a trading signal</span></footer>
+  <script src="integrity.js" defer></script>
+</body>
+</html>

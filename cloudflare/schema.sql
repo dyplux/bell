@@ -22,3 +22,12 @@ CREATE TABLE IF NOT EXISTS refresh_jobs (
 
 CREATE INDEX IF NOT EXISTS refresh_jobs_queue_idx ON refresh_jobs(status, requested_at);
 CREATE INDEX IF NOT EXISTS refresh_jobs_slug_idx ON refresh_jobs(slug, status, requested_at);
+
+CREATE TABLE IF NOT EXISTS integrity_receipts (
+  id INTEGER PRIMARY KEY CHECK (id = 1),
+  payload_json TEXT NOT NULL,
+  observed_at TEXT,
+  published_at TEXT NOT NULL,
+  stale_after_seconds INTEGER NOT NULL DEFAULT 900,
+  status TEXT NOT NULL DEFAULT 'published'
+);

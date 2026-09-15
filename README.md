@@ -10,6 +10,23 @@ honest workflow for the representation layer:
 
 Live product: **[bell.dyplux.com](https://bell.dyplux.com/)**
 
+## Flagship build: RWA Surface Integrity Monitor
+
+The public integrity monitor is the decision gate for the comparison problem:
+
+- **790** tokenised RWA references scanned;
+- **1,428** token representations inspected;
+- stable joins by `rwa_id`, `crypto_id` and `issuer_id`;
+- explicit `DO NOT SELECT A WRAPPER` and `HOLD COMPARISON` outcomes;
+- credential-free live receipt at [`/api/integrity`](https://bell.dyplux.com/api/integrity);
+- dated replay at [`bell/site/proof/`](bell/site/proof/);
+- searchable blind review at [`rwa-surface-review.pages.dev`](https://rwa-surface-review.pages.dev/);
+- public setup and reviewer route in the [Audit Pack](https://bell.dyplux.com/guide.html).
+
+Start with the [Integrity Monitor](https://bell.dyplux.com/integrity), then use the
+[Audit Pack](https://bell.dyplux.com/guide.html) to understand the receipt contract,
+the normal-user journey, the CMC surfaces and the product boundaries.
+
 ## Why Bell exists
 
 CMC provides discovery, quotes and token/issuer surfaces. Bell adds the decision protocol around
@@ -54,12 +71,22 @@ Public normalized receipts live in [`bell/docs/proof/`](bell/docs/proof/). They 
 credentials or raw authenticated responses. The method and deployment flow are documented in
 [`docs/PRODUCT.md`](docs/PRODUCT.md) and [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
+The integrity publisher runs outside the browser. It reads the CMC credential from a private
+process environment, scans the required RWA surfaces, and publishes only the normalized receipt
+through an authenticated Cloudflare route. A public response exposes its observation time,
+publication time, freshness state, source hashes and rule evidence, never the credential.
+
+The dated receipt is deliberately labelled `DATED`; it is an offline replay, not a claim that a
+cached file is live. `NO RULE HIT` is not an approval and the monitor does not prove backing,
+redemption, custody, legal eligibility, solvency or executable liquidity.
+
 ## Test
 
 ```bash
 pytest -q bell/tests
 node --test cloudflare/tests/worker.test.mjs
 node --check bell/site/app.js
+node --check bell/site/integrity.js
 ```
 
 ## Licence
