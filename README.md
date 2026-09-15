@@ -71,6 +71,9 @@ Public normalized receipts live in [`bell/docs/proof/`](bell/docs/proof/). They 
 credentials or raw authenticated responses. The method and deployment flow are documented in
 [`docs/PRODUCT.md`](docs/PRODUCT.md) and [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
+The integrity release includes a [sanitized input manifest](bell/docs/proof/rwa-surface-integrity-input-manifest-2026-09-15.json)
+with surface counts, stable-ID join coverage and source fingerprints.
+
 The integrity publisher runs outside the browser. It reads the CMC credential from a private
 process environment, scans the required RWA surfaces, and publishes only the normalized receipt
 through an authenticated Cloudflare route. A public response exposes its observation time,

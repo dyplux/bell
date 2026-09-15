@@ -1,6 +1,6 @@
 {
   "schema_version": "rwa_surface_integrity.v1",
-  "observed_at": "2026-09-15T22:06:33Z",
+  "observed_at": "2026-09-15T22:22:00Z",
   "question": "Can CMC's RWA surfaces be joined into a trustworthy comparison without resolving identity, unit and market-data contradictions?",
   "method": {
     "map": "/v5/real-world-assets/map",
@@ -142,15 +142,15 @@
     "tokenised_references_scanned": 790,
     "tokens_scanned": 1428,
     "states": {
-      "do_not_compare": 33,
+      "do_not_compare": 34,
       "investigate": 662,
-      "no_flags": 95
+      "no_flags": 94
     },
     "signals": {
       "PRICE_DENOMINATION_BREAK": 4,
       "DERIVATIVE_MIX": 114,
       "NO_TRADFI_MARKET": 13,
-      "ZERO_MCAP_POSITIVE_VOLUME": 30,
+      "ZERO_MCAP_POSITIVE_VOLUME": 31,
       "SYMBOL_COLLISION": 60,
       "MARKET_FIELDS_MISSING": 647,
       "PRICE_DISPERSION": 5
@@ -181,12 +181,12 @@
       ],
       "signal_evidence": {
         "PRICE_DENOMINATION_BREAK": {
-          "max_min_ratio": 31.120983898818334,
+          "max_min_ratio": 31.07583797433897,
           "prices": [
-            36.833290962350915,
-            63.76376278642463,
-            2.0488993212340483,
-            63.726480160030924
+            36.82249689170233,
+            63.54992932326053,
+            2.050911666301611,
+            63.73379864167042
           ]
         },
         "ZERO_MCAP_POSITIVE_VOLUME": {
@@ -195,9 +195,9 @@
               "crypto_id": 24439,
               "symbol": "KAG",
               "name": "Kinesis Silver",
-              "price": 36.833290962350915,
+              "price": 36.82249689170233,
               "market_cap": 0,
-              "volume_24h": 108196.30455003
+              "volume_24h": 107154.40617963
             }
           ]
         },
@@ -252,16 +252,16 @@
       ],
       "signal_evidence": {
         "PRICE_DISPERSION": {
-          "max_min_ratio": 7.125733948887664,
+          "max_min_ratio": 7.122861428235235,
           "prices": [
-            355.8111371291678,
-            355.83234239400275,
-            356.2429975331015,
-            49.99386731084894,
-            355.8750824114843,
-            355.8416559865589,
-            356.0253440896646,
-            354.4724701492684
+            355.6583981111658,
+            355.70189198164366,
+            355.9470232975032,
+            49.99617014657157,
+            355.71543930508,
+            355.46237826839644,
+            356.1157918965006,
+            355.4998774027056
           ]
         },
         "ZERO_MCAP_POSITIVE_VOLUME": {
@@ -270,9 +270,9 @@
               "crypto_id": 38152,
               "symbol": "TSLA",
               "name": "Tesla (Derivatives)",
-              "price": 356.2429975331015,
+              "price": 355.9470232975032,
               "market_cap": 0,
-              "volume_24h": 90471.19563687
+              "volume_24h": 90460.51493313
             }
           ]
         },
@@ -333,19 +333,19 @@
       ],
       "signal_evidence": {
         "PRICE_DISPERSION": {
-          "max_min_ratio": 4.1368520280205425,
+          "max_min_ratio": 4.129678714548145,
           "prices": [
-            570.2796087035144,
-            142.89136537337586,
-            558.987700155921,
-            142.7673141801517,
-            142.76800951963966,
-            142.58411693769642,
-            142.9400720603402,
-            142.65323482612737,
-            142.90590640902371,
-            137.8535187724347,
-            142.63528175311905
+            569.7644519619982,
+            142.88153123513612,
+            557.7706343054647,
+            142.85417880820344,
+            142.7910719690492,
+            142.7302895656756,
+            143.22384423478357,
+            142.59218995818196,
+            142.32075631384728,
+            137.9682273961934,
+            142.75983280666787
           ]
         },
         "ZERO_MCAP_POSITIVE_VOLUME": {
@@ -354,17 +354,17 @@
               "crypto_id": 37068,
               "symbol": "SPCX",
               "name": "SpaceX Tokenized Stock (Robinhood)",
-              "price": 137.8535187724347,
+              "price": 137.9682273961934,
               "market_cap": 0,
-              "volume_24h": 117652.49453157
+              "volume_24h": 117974.87558127
             },
             {
               "crypto_id": 41610,
               "symbol": "wSPCXx",
               "name": "Wrapped SpaceX Tokenized ETF (xStock)",
-              "price": 142.63528175311905,
+              "price": 142.75983280666787,
               "market_cap": 0,
-              "volume_24h": 1939833.45216579
+              "volume_24h": 1952200.51192459
             }
           ]
         },
@@ -426,17 +426,17 @@
               "crypto_id": 39623,
               "symbol": "QQQ",
               "name": "Invesco QQQ Trust Tokenized ETF (Hyperliquid)",
-              "price": 697.7444085105943,
+              "price": 697.7765482676408,
               "market_cap": 0,
-              "volume_24h": 0.62796997
+              "volume_24h": 0.62799889
             },
             {
               "crypto_id": 41519,
               "symbol": "wQQQx",
               "name": "Wrapped Nasdaq Tokenized ETF (xStock)",
-              "price": 705.6404958498075,
+              "price": 707.2140309257742,
               "market_cap": 0,
-              "volume_24h": 372252.74429089
+              "volume_24h": 376139.24965557
             }
           ]
         },
@@ -502,9 +502,9 @@
               "crypto_id": 39495,
               "symbol": "MSFT",
               "name": "Microsoft Corporation (Derivatives)",
-              "price": 498.2780229924679,
+              "price": 498.41816708645564,
               "market_cap": 0,
-              "volume_24h": 8238.13640766
+              "volume_24h": 8173.56345361
             }
           ]
         },
@@ -570,9 +570,9 @@
               "crypto_id": 41525,
               "symbol": "wSPYx",
               "name": "Wrapped SP500 Tokenized ETF (xStock)",
-              "price": 761.8988729188613,
+              "price": 763.2423150228065,
               "market_cap": 0,
-              "volume_24h": 238435.99119936
+              "volume_24h": 238374.49161716
             }
           ]
         },
@@ -638,9 +638,9 @@
               "crypto_id": 38153,
               "symbol": "NVDA",
               "name": "NVIDIA (Derivatives)",
-              "price": 212.60791863254724,
+              "price": 212.574925891051,
               "market_cap": 0,
-              "volume_24h": 387623.94047166
+              "volume_24h": 377492.90579429
             }
           ]
         },
@@ -705,9 +705,9 @@
               "crypto_id": 39478,
               "symbol": "HOOD",
               "name": "Robinhood Markets (Derivatives)",
-              "price": 109.01967848610417,
+              "price": 108.45216224012253,
               "market_cap": 0,
-              "volume_24h": 381646.1045846
+              "volume_24h": 383869.87816507
             }
           ]
         },
@@ -772,9 +772,9 @@
               "crypto_id": 41115,
               "symbol": "wAMDx",
               "name": "Wrapped AMD Tokenized Stock (xStock)",
-              "price": 503.68612481325096,
+              "price": 503.54913970778125,
               "market_cap": 0,
-              "volume_24h": 170530.95823836
+              "volume_24h": 170532.23672409
             }
           ]
         },
@@ -833,13 +833,13 @@
       ],
       "signal_evidence": {
         "PRICE_DENOMINATION_BREAK": {
-          "max_min_ratio": 10.005466266455388,
+          "max_min_ratio": 10.009856641115924,
           "prices": [
-            78.06347764402229,
-            779.1713574769295,
-            77.96000815641928,
-            78.0745669718414,
-            77.87456743412365
+            78.0593224738117,
+            779.2654152636093,
+            77.89524426337265,
+            78.06270351109757,
+            77.84980776475285
           ]
         },
         "DERIVATIVE_MIX": {
@@ -903,9 +903,9 @@
               "crypto_id": 41994,
               "symbol": "GLD",
               "name": "SPDR Gold Shares Tokenized ETF (Robinhood)",
-              "price": 393.2709469307565,
+              "price": 393.2346627663872,
               "market_cap": 0,
-              "volume_24h": 8080261.58445946
+              "volume_24h": 8150757.81482367
             }
           ]
         },
@@ -968,9 +968,9 @@
               "crypto_id": 39615,
               "symbol": "META",
               "name": "Meta Platforms Tokenized Stock (Hyperliquid)",
-              "price": 600.5663292317661,
+              "price": 600.593992736735,
               "market_cap": 0,
-              "volume_24h": 457.23100601
+              "volume_24h": 457.25206715
             }
           ]
         },
@@ -1019,9 +1019,9 @@
               "crypto_id": 41636,
               "symbol": "wMUx",
               "name": "Wrapped Micron Technology Tokenized Stock (xStock)",
-              "price": 925.8754543699235,
+              "price": 925.6238195468438,
               "market_cap": 0,
-              "volume_24h": 114305.10577386
+              "volume_24h": 114306.27798583
             }
           ]
         },
@@ -1078,17 +1078,17 @@
               "crypto_id": 39507,
               "symbol": "SNDK",
               "name": "SanDisk Corporation (Derivatives)",
-              "price": 1530.118215483128,
+              "price": 1530.7315659819453,
               "market_cap": 0,
-              "volume_24h": 294827.75363713
+              "volume_24h": 294329.35023472
             },
             {
               "crypto_id": 41493,
               "symbol": "wSNDKx",
               "name": "Wrapped Sandisk Corporation Tokenized Stock (xStock)",
-              "price": 1528.4721358349466,
+              "price": 1528.8827419313266,
               "market_cap": 0,
-              "volume_24h": 194620.65264567
+              "volume_24h": 194746.71993999
             }
           ]
         },
@@ -1145,9 +1145,9 @@
               "crypto_id": 41268,
               "symbol": "wCRCLx",
               "name": "Wrapped Circle Tokenized Stock (xStock)",
-              "price": 84.71775635391,
+              "price": 84.53087571816882,
               "market_cap": 0,
-              "volume_24h": 549737.0546281
+              "volume_24h": 550299.7215092
             }
           ]
         },
@@ -1203,9 +1203,9 @@
               "crypto_id": 39472,
               "symbol": "INTC",
               "name": "Intel Corp (Derivatives)",
-              "price": 97.04356764697337,
+              "price": 96.95990316693887,
               "market_cap": 0,
-              "volume_24h": 287564.06086172
+              "volume_24h": 282922.92870257
             }
           ]
         },
@@ -1261,9 +1261,9 @@
               "crypto_id": 39473,
               "symbol": "MSTR",
               "name": "MicroStrategy Inc (Derivatives)",
-              "price": 128.21070490123432,
+              "price": 127.36899909421803,
               "market_cap": 0,
-              "volume_24h": 1826975.77205671
+              "volume_24h": 1829739.17256742
             }
           ]
         },
@@ -1436,9 +1436,9 @@
               "crypto_id": 39486,
               "symbol": "BABA",
               "name": "Alibaba Group Holding Limited (Derivatives)",
-              "price": 109.3858598604554,
+              "price": 109.41041977023508,
               "market_cap": 0,
-              "volume_24h": 26675.10074442
+              "volume_24h": 26658.84257355
             }
           ]
         },
@@ -1500,9 +1500,9 @@
               "crypto_id": 42005,
               "symbol": "MRNA",
               "name": "Moderna Tokenized Stock (Robinhood)",
-              "price": 144.05597066651103,
+              "price": 143.4169097874476,
               "market_cap": 0,
-              "volume_24h": 519860.79259346
+              "volume_24h": 517890.23233881
             }
           ]
         },
@@ -1556,9 +1556,9 @@
               "crypto_id": 39845,
               "symbol": "SLV",
               "name": "iShares Silver Trust (Derivatives)",
-              "price": 57.46310021449774,
+              "price": 57.469252264709965,
               "market_cap": 0,
-              "volume_24h": 14781.81882
+              "volume_24h": 14784.77518376
             }
           ]
         },
@@ -1607,11 +1607,11 @@
       ],
       "signal_evidence": {
         "PRICE_DENOMINATION_BREAK": {
-          "max_min_ratio": 10.058436953351693,
+          "max_min_ratio": 10.048205483557602,
           "prices": [
-            1686.2287088313965,
-            167.64321500961518,
-            168.45944411456284
+            1684.2457669149178,
+            167.61657289661684,
+            168.42405213483556
           ]
         },
         "DERIVATIVE_MIX": {
@@ -1664,9 +1664,9 @@
               "crypto_id": 41999,
               "symbol": "DJT",
               "name": "Trump Media & Technology Group Tokenized Stock (Robinhood)",
-              "price": 8.572649713713917,
+              "price": 8.566534204002659,
               "market_cap": 0,
-              "volume_24h": 2302012.46947691
+              "volume_24h": 2152070.11724697
             }
           ]
         },
@@ -1713,15 +1713,15 @@
       ],
       "signal_evidence": {
         "PRICE_DENOMINATION_BREAK": {
-          "max_min_ratio": 31.712466850366713,
+          "max_min_ratio": 31.693969700589783,
           "prices": [
-            4293.6672043813405,
-            4291.124444743993,
-            4283.405904443099,
-            137.7800910984521,
-            135.50323992861536,
-            4287.190528043686,
-            4297.142004353502
+            4291.767650619623,
+            4289.122047090509,
+            4285.133810276091,
+            137.83151351995738,
+            135.5070332037341,
+            4283.975134131879,
+            4294.755804575962
           ]
         },
         "DERIVATIVE_MIX": {
@@ -1820,9 +1820,9 @@
               "crypto_id": 41995,
               "symbol": "HIMS",
               "name": "Hims & Hers Health Tokenized Stock (Robinhood)",
-              "price": 27.80891995192086,
+              "price": 27.854594889782398,
               "market_cap": 0,
-              "volume_24h": 6783036.15162012
+              "volume_24h": 6607281.93133804
             }
           ]
         },
@@ -1864,9 +1864,9 @@
               "crypto_id": 41124,
               "symbol": "wBMNRx",
               "name": "Wrapped Bitmine Tokenized Stock (xStock)",
-              "price": 23.20536369617352,
+              "price": 23.110380801808223,
               "market_cap": 0,
-              "volume_24h": 281546.60431668
+              "volume_24h": 285041.31468864
             }
           ]
         },
@@ -1912,17 +1912,17 @@
               "crypto_id": 42009,
               "symbol": "AMC",
               "name": "AMC Entertainment Holdings Tokenized Stock (Robinhood)",
-              "price": 2.5200858589950106,
+              "price": 2.5258849532302823,
               "market_cap": 0,
-              "volume_24h": 8250461.91006027
+              "volume_24h": 8242662.13276279
             },
             {
               "crypto_id": 42024,
               "symbol": "AMC",
               "name": "AMC Entertainment Holdings Tokenized Stock (Backpack Securities)",
-              "price": 2.521074609549792,
+              "price": 2.5210520882188034,
               "market_cap": 0,
-              "volume_24h": 353757.28642305
+              "volume_24h": 349284.33073812
             }
           ]
         },
@@ -1963,9 +1963,9 @@
               "crypto_id": 42008,
               "symbol": "FIG",
               "name": "Figma Tokenized Stock (Robinhood)",
-              "price": 23.71400181132081,
+              "price": 23.707140709070647,
               "market_cap": 0,
-              "volume_24h": 329273.56919834
+              "volume_24h": 329421.45005628
             }
           ]
         },
@@ -2007,9 +2007,9 @@
               "crypto_id": 41417,
               "symbol": "wIWMx",
               "name": "Wrapped Russell 2000 Tokenized ETF (xStock)",
-              "price": 286.50033759118634,
+              "price": 286.6301619909916,
               "market_cap": 0,
-              "volume_24h": 10361.01153972
+              "volume_24h": 10361.00853229
             }
           ]
         },
@@ -2020,6 +2020,42 @@
           "other": [
             "IWMon",
             "wIWMx"
+          ]
+        }
+      },
+      "next_action": "Verify the token quote by crypto_id; do not turn volume into an investable market claim.",
+      "decision": {
+        "state": "blocked",
+        "label": "DO NOT SELECT A WRAPPER",
+        "consequence": "A research desk must not rank or substitute these representations until the contradiction is resolved.",
+        "allocation_effect": "NO WRAPPER SELECTED until identity, denomination and market state are cleared."
+      }
+    },
+    {
+      "rwa_id": 254,
+      "name": "Nebius Group N.V.",
+      "symbol": "NBIS",
+      "asset_type": "stock",
+      "state": "do_not_compare",
+      "token_count": 4,
+      "issuer_count": 4,
+      "signal_codes": [
+        "ZERO_MCAP_POSITIVE_VOLUME"
+      ],
+      "signal_severities": [
+        "critical"
+      ],
+      "signal_evidence": {
+        "ZERO_MCAP_POSITIVE_VOLUME": {
+          "tokens": [
+            {
+              "crypto_id": 41481,
+              "symbol": "wNBISx",
+              "name": "Wrapped Nebius Tokenized Stock (xStock)",
+              "price": 208.57716566071525,
+              "market_cap": 0,
+              "volume_24h": 480.29275939
+            }
           ]
         }
       },
@@ -2052,9 +2088,9 @@
               "crypto_id": 41456,
               "symbol": "wICEx",
               "name": "Wrapped Intercontinental Exchange Tokenized Stock (xStock)",
-              "price": 155.93221121141661,
+              "price": 156.70928974101912,
               "market_cap": 0,
-              "volume_24h": 21974.17009615
+              "volume_24h": 22380.56352893
             }
           ]
         }
@@ -2088,9 +2124,9 @@
               "crypto_id": 42003,
               "symbol": "WYFI",
               "name": "WhiteFiber Tokenized Stock (Robinhood)",
-              "price": 16.74379880115116,
+              "price": 16.811484294025107,
               "market_cap": 0,
-              "volume_24h": 121427.04340067
+              "volume_24h": 121793.67522981
             }
           ]
         }
@@ -2125,13 +2161,13 @@
       ],
       "signal_evidence": {
         "PRICE_DISPERSION": {
-          "max_min_ratio": 4.006321428485021,
+          "max_min_ratio": 4.000722010140593,
           "prices": [
-            242.20065833766202,
-            964.0416686174065,
-            240.63013560595815,
+            242.06014107717178,
+            963.2527703664023,
+            240.7697330443991,
             242.09410707473847,
-            241.20822951196317
+            241.2156233581873
           ]
         },
         "DERIVATIVE_MIX": {
@@ -2188,12 +2224,12 @@
       ],
       "signal_evidence": {
         "PRICE_DISPERSION": {
-          "max_min_ratio": 5.013925489282915,
+          "max_min_ratio": 5.004963924640193,
           "prices": [
-            707.8733640843567,
-            141.50649375449822,
-            141.1814686112529,
-            142.65048501841787
+            707.7895234153672,
+            141.5756527191459,
+            141.4175075130537,
+            142.67579545639194
           ]
         },
         "DERIVATIVE_MIX": {
@@ -3210,10 +3246,10 @@
       ],
       "signal_evidence": {
         "PRICE_DISPERSION": {
-          "max_min_ratio": 2.1432332055697314,
+          "max_min_ratio": 2.1672476645668115,
           "prices": [
-            965.9894135550043,
-            2070.3405873599168
+            966.7304621659437,
+            2095.144336394736
           ]
         },
         "DERIVATIVE_MIX": {
@@ -23176,25 +23212,6 @@
       }
     },
     {
-      "rwa_id": 254,
-      "name": "Nebius Group N.V.",
-      "symbol": "NBIS",
-      "asset_type": "stock",
-      "state": "no_flags",
-      "token_count": 4,
-      "issuer_count": 4,
-      "signal_codes": [],
-      "signal_severities": [],
-      "signal_evidence": {},
-      "next_action": "No rule hit in this scan; this is not proof of backing, liquidity or eligibility.",
-      "decision": {
-        "state": "unresolved",
-        "label": "NO RULE HIT, NOT APPROVED",
-        "consequence": "The published rules did not fire; backing, liquidity and legal diligence are still outside this monitor.",
-        "allocation_effect": "No allocation status is produced by this monitor."
-      }
-    },
-    {
       "rwa_id": 297,
       "name": "Rocket Lab Corporation",
       "symbol": "RKLB",
@@ -24963,12 +24980,12 @@
           "severity": "critical",
           "message": "Token prices span at least 10x inside one CMC reference; comparison may be a unit or claim mismatch.",
           "evidence": {
-            "max_min_ratio": 31.120983898818334,
+            "max_min_ratio": 31.07583797433897,
             "prices": [
-              36.833290962350915,
-              63.76376278642463,
-              2.0488993212340483,
-              63.726480160030924
+              36.82249689170233,
+              63.54992932326053,
+              2.050911666301611,
+              63.73379864167042
             ]
           }
         },
@@ -24988,9 +25005,9 @@
                 "is_derivative": null,
                 "issuer_id": "68e25e8dd4cd001228754c7c",
                 "issuer_name": "Kinesis Assets",
-                "price": 36.833290962350915,
+                "price": 36.82249689170233,
                 "market_cap": 0,
-                "volume_24h": 108196.30455003
+                "volume_24h": 107154.40617963
               }
             ]
           }
@@ -25047,9 +25064,9 @@
           "is_derivative": null,
           "issuer_id": "68e25e8dd4cd001228754c7c",
           "issuer_name": "Kinesis Assets",
-          "price": 36.833290962350915,
+          "price": 36.82249689170233,
           "market_cap": 0,
-          "volume_24h": 108196.30455003
+          "volume_24h": 107154.40617963
         },
         {
           "crypto_id": 32149,
@@ -25061,7 +25078,7 @@
           "is_derivative": null,
           "issuer_id": "68e27862d4cd001228754d31",
           "issuer_name": "XAGx",
-          "price": 63.76376278642463,
+          "price": 63.54992932326053,
           "market_cap": 0,
           "volume_24h": 0
         },
@@ -25075,7 +25092,7 @@
           "is_derivative": null,
           "issuer_id": "68e27c8ad4cd001228754d67",
           "issuer_name": "Token",
-          "price": 2.0488993212340483,
+          "price": 2.050911666301611,
           "market_cap": 0,
           "volume_24h": 0
         },
@@ -25103,7 +25120,7 @@
           "is_derivative": null,
           "issuer_id": "695e11f774b54210f3b95dc3",
           "issuer_name": "NA (Derivatives)",
-          "price": 63.726480160030924,
+          "price": 63.73379864167042,
           "market_cap": 0,
           "volume_24h": 0
         }
@@ -25124,16 +25141,16 @@
           "severity": "warning",
           "message": "Token prices span at least 2x inside one CMC reference; resolve units and claim type before ranking.",
           "evidence": {
-            "max_min_ratio": 7.125733948887664,
+            "max_min_ratio": 7.122861428235235,
             "prices": [
-              355.8111371291678,
-              355.83234239400275,
-              356.2429975331015,
-              49.99386731084894,
-              355.8750824114843,
-              355.8416559865589,
-              356.0253440896646,
-              354.4724701492684
+              355.6583981111658,
+              355.70189198164366,
+              355.9470232975032,
+              49.99617014657157,
+              355.71543930508,
+              355.46237826839644,
+              356.1157918965006,
+              355.4998774027056
             ]
           }
         },
@@ -25153,9 +25170,9 @@
                 "is_derivative": null,
                 "issuer_id": "695e11f774b54210f3b95dc3",
                 "issuer_name": "NA (Derivatives)",
-                "price": 356.2429975331015,
+                "price": 355.9470232975032,
                 "market_cap": 0,
-                "volume_24h": 90471.19563687
+                "volume_24h": 90460.51493313
               }
             ]
           }
@@ -25220,9 +25237,9 @@
           "is_derivative": null,
           "issuer_id": "6878977dcbbf471de3366e85",
           "issuer_name": "Backed Assets",
-          "price": 355.8111371291678,
-          "market_cap": 69048987.28,
-          "volume_24h": 16757947.41702187
+          "price": 355.6583981111658,
+          "market_cap": 69019346.63,
+          "volume_24h": 16927850.04796423
         },
         {
           "crypto_id": 28626,
@@ -25248,9 +25265,9 @@
           "is_derivative": null,
           "issuer_id": "688ca4ccabae9b5b9fb3167a",
           "issuer_name": "Ondo Assets",
-          "price": 355.83234239400275,
-          "market_cap": 16095696.67,
-          "volume_24h": 5115167.83168028
+          "price": 355.70189198164366,
+          "market_cap": 16089795.89,
+          "volume_24h": 5109388.40353407
         },
         {
           "crypto_id": 38152,
@@ -25262,9 +25279,9 @@
           "is_derivative": null,
           "issuer_id": "695e11f774b54210f3b95dc3",
           "issuer_name": "NA (Derivatives)",
-          "price": 356.2429975331015,
+          "price": 355.9470232975032,
           "market_cap": 0,
-          "volume_24h": 90471.19563687
+          "volume_24h": 90460.51493313
         },
         {
           "crypto_id": 39618,
@@ -25276,9 +25293,9 @@
           "is_derivative": null,
           "issuer_id": "699ed38db54c9320b15928e3",
           "issuer_name": "Hyperliquid Assets",
-          "price": 49.99386731084894,
-          "market_cap": 1010.4,
-          "volume_24h": 176.22838227
+          "price": 49.99617014657157,
+          "market_cap": 1010.45,
+          "volume_24h": 176.23649977
         },
         {
           "crypto_id": 40214,
@@ -25290,9 +25307,9 @@
           "is_derivative": null,
           "issuer_id": "6a2aed5097c45356b1a5f710",
           "issuer_name": "bStocks",
-          "price": 355.8750824114843,
-          "market_cap": 19039847.62,
-          "volume_24h": 8631667.68602235
+          "price": 355.71543930508,
+          "market_cap": 19031315.1,
+          "volume_24h": 8632424.66954552
         },
         {
           "crypto_id": 40624,
@@ -25304,9 +25321,9 @@
           "is_derivative": null,
           "issuer_id": "6a43600c282e7240b76c8bbb",
           "issuer_name": "Reality",
-          "price": 355.8416559865589,
-          "market_cap": 3936659.24,
-          "volume_24h": 214212.09392383
+          "price": 355.46237826839644,
+          "market_cap": 3932463.31,
+          "volume_24h": 214154.62026844
         },
         {
           "crypto_id": 40691,
@@ -25318,9 +25335,9 @@
           "is_derivative": null,
           "issuer_id": "6a465832fbe3004b1a0ea2dd",
           "issuer_name": "Robinhood",
-          "price": 356.0253440896646,
-          "market_cap": 4987189.49,
-          "volume_24h": 5694457.86069192
+          "price": 356.1157918965006,
+          "market_cap": 4988456.48,
+          "volume_24h": 5686844.76765009
         },
         {
           "crypto_id": 37227,
@@ -25332,9 +25349,9 @@
           "is_derivative": null,
           "issuer_id": "6878977dcbbf471de3366e85",
           "issuer_name": "Backed Assets",
-          "price": 354.4724701492684,
-          "market_cap": 308822.15,
-          "volume_24h": 1196903.43095237
+          "price": 355.4998774027056,
+          "market_cap": 309717.24,
+          "volume_24h": 1208833.67604673
         }
       ],
       "tradfi_market_count": 1
@@ -25353,19 +25370,19 @@
           "severity": "warning",
           "message": "Token prices span at least 2x inside one CMC reference; resolve units and claim type before ranking.",
           "evidence": {
-            "max_min_ratio": 4.1368520280205425,
+            "max_min_ratio": 4.129678714548145,
             "prices": [
-              570.2796087035144,
-              142.89136537337586,
-              558.987700155921,
-              142.7673141801517,
-              142.76800951963966,
-              142.58411693769642,
-              142.9400720603402,
-              142.65323482612737,
-              142.90590640902371,
-              137.8535187724347,
-              142.63528175311905
+              569.7644519619982,
+              142.88153123513612,
+              557.7706343054647,
+              142.85417880820344,
+              142.7910719690492,
+              142.7302895656756,
+              143.22384423478357,
+              142.59218995818196,
+              142.32075631384728,
+              137.9682273961934,
+              142.75983280666787
             ]
           }
         },
@@ -25385,9 +25402,9 @@
                 "is_derivative": null,
                 "issuer_id": "6a465832fbe3004b1a0ea2dd",
                 "issuer_name": "Robinhood",
-                "price": 137.8535187724347,
+                "price": 137.9682273961934,
                 "market_cap": 0,
-                "volume_24h": 117652.49453157
+                "volume_24h": 117974.87558127
               },
               {
                 "crypto_id": 41610,
@@ -25399,9 +25416,9 @@
                 "is_derivative": null,
                 "issuer_id": "6878977dcbbf471de3366e85",
                 "issuer_name": "Backed Assets",
-                "price": 142.63528175311905,
+                "price": 142.75983280666787,
                 "market_cap": 0,
-                "volume_24h": 1939833.45216579
+                "volume_24h": 1952200.51192459
               }
             ]
           }
@@ -25457,9 +25474,9 @@
           "is_derivative": null,
           "issuer_id": "689612983f270c6ff4781b96",
           "issuer_name": "PreStocks Assets",
-          "price": 570.2796087035144,
-          "market_cap": 4985678.52,
-          "volume_24h": 433.43243214
+          "price": 569.7644519619982,
+          "market_cap": 4981174.76,
+          "volume_24h": 2002.21936856
         },
         {
           "crypto_id": 39501,
@@ -25471,7 +25488,7 @@
           "is_derivative": null,
           "issuer_id": "695e11f774b54210f3b95dc3",
           "issuer_name": "NA (Derivatives)",
-          "price": 142.89136537337586,
+          "price": 142.88153123513612,
           "market_cap": 0,
           "volume_24h": 0
         },
@@ -25485,9 +25502,9 @@
           "is_derivative": null,
           "issuer_id": "6a0be4e680ee5978ec4455ce",
           "issuer_name": "Tessera Assets",
-          "price": 558.987700155921,
-          "market_cap": 664636.38,
-          "volume_24h": 424229.75232006
+          "price": 557.7706343054647,
+          "market_cap": 663189.28,
+          "volume_24h": 425373.1999213
         },
         {
           "crypto_id": 40217,
@@ -25499,9 +25516,9 @@
           "is_derivative": null,
           "issuer_id": "6a2aed5097c45356b1a5f710",
           "issuer_name": "bStocks",
-          "price": 142.7673141801517,
-          "market_cap": 68424467.53,
-          "volume_24h": 39822966.52510014
+          "price": 142.85417880820344,
+          "market_cap": 68715222.76,
+          "volume_24h": 40056446.05306101
         },
         {
           "crypto_id": 40218,
@@ -25513,9 +25530,9 @@
           "is_derivative": null,
           "issuer_id": "6878977dcbbf471de3366e85",
           "issuer_name": "Backed Assets",
-          "price": 142.76800951963966,
-          "market_cap": 38857078.02,
-          "volume_24h": 8065856.07418457
+          "price": 142.7910719690492,
+          "market_cap": 38863354.91,
+          "volume_24h": 8143737.2864933
         },
         {
           "crypto_id": 40232,
@@ -25527,9 +25544,9 @@
           "is_derivative": null,
           "issuer_id": "688ca4ccabae9b5b9fb3167a",
           "issuer_name": "Ondo Assets",
-          "price": 142.58411693769642,
-          "market_cap": 9682570.64,
-          "volume_24h": 2540528.7026974
+          "price": 142.7302895656756,
+          "market_cap": 9692496.9,
+          "volume_24h": 2547664.80550606
         },
         {
           "crypto_id": 40238,
@@ -25541,9 +25558,9 @@
           "is_derivative": null,
           "issuer_id": "6a2d54b697c45356b1a634f4",
           "issuer_name": "Backpack",
-          "price": 142.9400720603402,
-          "market_cap": 6181800.02,
-          "volume_24h": 3199287.57925861
+          "price": 143.22384423478357,
+          "market_cap": 6194072.46,
+          "volume_24h": 3186462.22507259
         },
         {
           "crypto_id": 40643,
@@ -25555,9 +25572,9 @@
           "is_derivative": null,
           "issuer_id": "6a436076282e7240b76c8bf9",
           "issuer_name": "Republic",
-          "price": 142.65323482612737,
-          "market_cap": 67724623.23,
-          "volume_24h": 20973.29517235
+          "price": 142.59218995818196,
+          "market_cap": 67695642.18,
+          "volume_24h": 20947.83121966
         },
         {
           "crypto_id": 40668,
@@ -25569,9 +25586,9 @@
           "is_derivative": null,
           "issuer_id": "6a43600c282e7240b76c8bbb",
           "issuer_name": "Reality",
-          "price": 142.90590640902371,
-          "market_cap": 9347440.28,
-          "volume_24h": 1342587.36277369
+          "price": 142.32075631384728,
+          "market_cap": 9309165.76,
+          "volume_24h": 1351955.84037959
         },
         {
           "crypto_id": 37068,
@@ -25583,9 +25600,9 @@
           "is_derivative": null,
           "issuer_id": "6a465832fbe3004b1a0ea2dd",
           "issuer_name": "Robinhood",
-          "price": 137.8535187724347,
+          "price": 137.9682273961934,
           "market_cap": 0,
-          "volume_24h": 117652.49453157
+          "volume_24h": 117974.87558127
         },
         {
           "crypto_id": 41610,
@@ -25597,9 +25614,9 @@
           "is_derivative": null,
           "issuer_id": "6878977dcbbf471de3366e85",
           "issuer_name": "Backed Assets",
-          "price": 142.63528175311905,
+          "price": 142.75983280666787,
           "market_cap": 0,
-          "volume_24h": 1939833.45216579
+          "volume_24h": 1952200.51192459
         }
       ],
       "tradfi_market_count": 1
@@ -25629,9 +25646,9 @@
                 "is_derivative": null,
                 "issuer_id": "699ed38db54c9320b15928e3",
                 "issuer_name": "Hyperliquid Assets",
-                "price": 697.7444085105943,
+                "price": 697.7765482676408,
                 "market_cap": 0,
-                "volume_24h": 0.62796997
+                "volume_24h": 0.62799889
               },
               {
                 "crypto_id": 41519,
@@ -25643,9 +25660,9 @@
                 "is_derivative": null,
                 "issuer_id": "6878977dcbbf471de3366e85",
                 "issuer_name": "Backed Assets",
-                "price": 705.6404958498075,
+                "price": 707.2140309257742,
                 "market_cap": 0,
-                "volume_24h": 372252.74429089
+                "volume_24h": 376139.24965557
               }
             ]
           }
@@ -25710,9 +25727,9 @@
           "is_derivative": null,
           "issuer_id": "6878977dcbbf471de3366e85",
           "issuer_name": "Backed Assets",
-          "price": 706.249293098756,
-          "market_cap": 36090281.05,
-          "volume_24h": 2018301.10085968
+          "price": 706.2251902546681,
+          "market_cap": 36089049.36,
+          "volume_24h": 2016611.80951669
         },
         {
           "crypto_id": 38094,
@@ -25724,9 +25741,9 @@
           "is_derivative": null,
           "issuer_id": "688ca4ccabae9b5b9fb3167a",
           "issuer_name": "Ondo Assets",
-          "price": 707.349486422155,
-          "market_cap": 31209141.17,
-          "volume_24h": 3673361.93766331
+          "price": 707.281369277718,
+          "market_cap": 31206135.76,
+          "volume_24h": 3669325.02584616
         },
         {
           "crypto_id": 39517,
@@ -25738,7 +25755,7 @@
           "is_derivative": null,
           "issuer_id": "695e11f774b54210f3b95dc3",
           "issuer_name": "NA (Derivatives)",
-          "price": 705.5134568958118,
+          "price": 705.3087353177998,
           "market_cap": 0,
           "volume_24h": 0
         },
@@ -25752,9 +25769,9 @@
           "is_derivative": null,
           "issuer_id": "699ed38db54c9320b15928e3",
           "issuer_name": "Hyperliquid Assets",
-          "price": 697.7444085105943,
+          "price": 697.7765482676408,
           "market_cap": 0,
-          "volume_24h": 0.62796997
+          "volume_24h": 0.62799889
         },
         {
           "crypto_id": 39839,
@@ -25780,9 +25797,9 @@
           "is_derivative": null,
           "issuer_id": "6a2aed5097c45356b1a5f710",
           "issuer_name": "bStocks",
-          "price": 704.877504022368,
-          "market_cap": 53876263.34,
-          "volume_24h": 43628209.0797154
+          "price": 704.7054146832403,
+          "market_cap": 53866435.23,
+          "volume_24h": 43693707.4271652
         },
         {
           "crypto_id": 40606,
@@ -25794,9 +25811,9 @@
           "is_derivative": null,
           "issuer_id": "6a43600c282e7240b76c8bbb",
           "issuer_name": "Reality",
-          "price": 704.5682775980321,
-          "market_cap": 2491665.52,
-          "volume_24h": 235876.63135355
+          "price": 704.3395291872237,
+          "market_cap": 2490856.56,
+          "volume_24h": 239374.94016096
         },
         {
           "crypto_id": 40686,
@@ -25808,9 +25825,9 @@
           "is_derivative": null,
           "issuer_id": "6a465832fbe3004b1a0ea2dd",
           "issuer_name": "Robinhood",
-          "price": 704.9199128691783,
-          "market_cap": 5380944.83,
-          "volume_24h": 2650480.7617659
+          "price": 705.1977523685152,
+          "market_cap": 5383065.69,
+          "volume_24h": 2639533.78640939
         },
         {
           "crypto_id": 41519,
@@ -25822,9 +25839,9 @@
           "is_derivative": null,
           "issuer_id": "6878977dcbbf471de3366e85",
           "issuer_name": "Backed Assets",
-          "price": 705.6404958498075,
+          "price": 707.2140309257742,
           "market_cap": 0,
-          "volume_24h": 372252.74429089
+          "volume_24h": 376139.24965557
         }
       ],
       "tradfi_market_count": 1
@@ -25854,9 +25871,9 @@
                 "is_derivative": null,
                 "issuer_id": "695e11f774b54210f3b95dc3",
                 "issuer_name": "NA (Derivatives)",
-                "price": 498.2780229924679,
+                "price": 498.41816708645564,
                 "market_cap": 0,
-                "volume_24h": 8238.13640766
+                "volume_24h": 8173.56345361
               }
             ]
           }
@@ -25921,9 +25938,9 @@
           "is_derivative": null,
           "issuer_id": "6878977dcbbf471de3366e85",
           "issuer_name": "Backed Assets",
-          "price": 499.8110887137416,
-          "market_cap": 7242504.8,
-          "volume_24h": 2522370.19929013
+          "price": 500.4214746540706,
+          "market_cap": 7251349.59,
+          "volume_24h": 2527094.49502279
         },
         {
           "crypto_id": 28618,
@@ -25949,9 +25966,9 @@
           "is_derivative": null,
           "issuer_id": "688ca4ccabae9b5b9fb3167a",
           "issuer_name": "Ondo Assets",
-          "price": 500.6833631894877,
-          "market_cap": 7803267.94,
-          "volume_24h": 3403455.83565222
+          "price": 500.9267428445946,
+          "market_cap": 7807061.07,
+          "volume_24h": 3414460.11789673
         },
         {
           "crypto_id": 39495,
@@ -25963,9 +25980,9 @@
           "is_derivative": null,
           "issuer_id": "695e11f774b54210f3b95dc3",
           "issuer_name": "NA (Derivatives)",
-          "price": 498.2780229924679,
+          "price": 498.41816708645564,
           "market_cap": 0,
-          "volume_24h": 8238.13640766
+          "volume_24h": 8173.56345361
         },
         {
           "crypto_id": 39616,
@@ -25991,9 +26008,9 @@
           "is_derivative": null,
           "issuer_id": "6a2aed5097c45356b1a5f710",
           "issuer_name": "bStocks",
-          "price": 497.7208635575606,
-          "market_cap": 2864856.18,
-          "volume_24h": 1880098.35136441
+          "price": 497.9941643885422,
+          "market_cap": 2866429.29,
+          "volume_24h": 1879695.60081401
         },
         {
           "crypto_id": 40609,
@@ -26005,9 +26022,9 @@
           "is_derivative": null,
           "issuer_id": "6a43600c282e7240b76c8bbb",
           "issuer_name": "Reality",
-          "price": 497.96246902373616,
-          "market_cap": 1395857.35,
-          "volume_24h": 65055.87421748
+          "price": 498.08900946778977,
+          "market_cap": 1396212.06,
+          "volume_24h": 65205.68311275
         },
         {
           "crypto_id": 40695,
@@ -26019,9 +26036,9 @@
           "is_derivative": null,
           "issuer_id": "6a465832fbe3004b1a0ea2dd",
           "issuer_name": "Robinhood",
-          "price": 497.0598302081329,
-          "market_cap": 2907547.38,
-          "volume_24h": 1258798.77763781
+          "price": 497.715473333404,
+          "market_cap": 2911382.56,
+          "volume_24h": 1256808.64033159
         },
         {
           "crypto_id": 37214,
@@ -26033,9 +26050,9 @@
           "is_derivative": null,
           "issuer_id": "6878977dcbbf471de3366e85",
           "issuer_name": "Backed Assets",
-          "price": 500.173957218292,
-          "market_cap": 143086.2,
-          "volume_24h": 31370.74367471
+          "price": 501.06108891639144,
+          "market_cap": 143339.98,
+          "volume_24h": 31472.5484604
         }
       ],
       "tradfi_market_count": 1
@@ -26065,9 +26082,9 @@
                 "is_derivative": null,
                 "issuer_id": "6878977dcbbf471de3366e85",
                 "issuer_name": "Backed Assets",
-                "price": 761.8988729188613,
+                "price": 763.2423150228065,
                 "market_cap": 0,
-                "volume_24h": 238435.99119936
+                "volume_24h": 238374.49161716
               }
             ]
           }
@@ -26132,9 +26149,9 @@
           "is_derivative": null,
           "issuer_id": "6878977dcbbf471de3366e85",
           "issuer_name": "Backed Assets",
-          "price": 761.0573089586571,
-          "market_cap": 60020085.91,
-          "volume_24h": 25880114.55715457
+          "price": 760.8087851187264,
+          "market_cap": 60000486.3,
+          "volume_24h": 26372200.81836385
         },
         {
           "crypto_id": 28628,
@@ -26160,9 +26177,9 @@
           "is_derivative": null,
           "issuer_id": "688ca4ccabae9b5b9fb3167a",
           "issuer_name": "Ondo Assets",
-          "price": 764.0547848644267,
-          "market_cap": 44744072.32,
-          "volume_24h": 3669991.15093242
+          "price": 763.882590114214,
+          "market_cap": 44733988.37,
+          "volume_24h": 3664386.11948174
         },
         {
           "crypto_id": 39621,
@@ -26188,7 +26205,7 @@
           "is_derivative": null,
           "issuer_id": "695e11f774b54210f3b95dc3",
           "issuer_name": "NA (Derivatives)",
-          "price": 758.5158413152957,
+          "price": 758.3628910270002,
           "market_cap": 0,
           "volume_24h": 0
         },
@@ -26202,9 +26219,9 @@
           "is_derivative": null,
           "issuer_id": "6a43600c282e7240b76c8bbb",
           "issuer_name": "Reality",
-          "price": 757.4313841207904,
-          "market_cap": 931534.87,
-          "volume_24h": 242588.11290955
+          "price": 757.3411162314037,
+          "market_cap": 931423.85,
+          "volume_24h": 242581.60532702
         },
         {
           "crypto_id": 40694,
@@ -26216,9 +26233,9 @@
           "is_derivative": null,
           "issuer_id": "6a465832fbe3004b1a0ea2dd",
           "issuer_name": "Robinhood",
-          "price": 757.7645615199326,
-          "market_cap": 24353259.5,
-          "volume_24h": 28461173.49805187
+          "price": 757.7888347846917,
+          "market_cap": 24354039.6,
+          "volume_24h": 28599838.56523818
         },
         {
           "crypto_id": 40790,
@@ -26230,9 +26247,9 @@
           "is_derivative": null,
           "issuer_id": "6a2aed5097c45356b1a5f710",
           "issuer_name": "bStocks",
-          "price": 757.9266804689056,
-          "market_cap": 14295822.91,
-          "volume_24h": 4415189.34526722
+          "price": 757.8417390465922,
+          "market_cap": 14294220.76,
+          "volume_24h": 4407265.39237789
         },
         {
           "crypto_id": 41525,
@@ -26244,9 +26261,9 @@
           "is_derivative": null,
           "issuer_id": "6878977dcbbf471de3366e85",
           "issuer_name": "Backed Assets",
-          "price": 761.8988729188613,
+          "price": 763.2423150228065,
           "market_cap": 0,
-          "volume_24h": 238435.99119936
+          "volume_24h": 238374.49161716
         }
       ],
       "tradfi_market_count": 1
@@ -26276,9 +26293,9 @@
                 "is_derivative": null,
                 "issuer_id": "695e11f774b54210f3b95dc3",
                 "issuer_name": "NA (Derivatives)",
-                "price": 212.60791863254724,
+                "price": 212.574925891051,
                 "market_cap": 0,
-                "volume_24h": 387623.94047166
+                "volume_24h": 377492.90579429
               }
             ]
           }
@@ -26342,9 +26359,9 @@
           "is_derivative": null,
           "issuer_id": "6878977dcbbf471de3366e85",
           "issuer_name": "Backed Assets",
-          "price": 212.63772841324982,
-          "market_cap": 39640664.27,
-          "volume_24h": 14500668.57321042
+          "price": 212.655859146485,
+          "market_cap": 39644044.27,
+          "volume_24h": 14416540.64498078
         },
         {
           "crypto_id": 28616,
@@ -26370,9 +26387,9 @@
           "is_derivative": null,
           "issuer_id": "688ca4ccabae9b5b9fb3167a",
           "issuer_name": "Ondo Assets",
-          "price": 212.67240783238057,
-          "market_cap": 35414066.5,
-          "volume_24h": 2416601.08453536
+          "price": 212.65704760874334,
+          "market_cap": 35411508.73,
+          "volume_24h": 2376489.5214716
         },
         {
           "crypto_id": 38153,
@@ -26384,9 +26401,9 @@
           "is_derivative": null,
           "issuer_id": "695e11f774b54210f3b95dc3",
           "issuer_name": "NA (Derivatives)",
-          "price": 212.60791863254724,
+          "price": 212.574925891051,
           "market_cap": 0,
-          "volume_24h": 387623.94047166
+          "volume_24h": 377492.90579429
         },
         {
           "crypto_id": 40215,
@@ -26398,9 +26415,9 @@
           "is_derivative": null,
           "issuer_id": "6a2aed5097c45356b1a5f710",
           "issuer_name": "bStocks",
-          "price": 212.1113721432744,
-          "market_cap": 26083060.91,
-          "volume_24h": 30401248.23226015
+          "price": 212.17540960403412,
+          "market_cap": 26093907.85,
+          "volume_24h": 30132401.64200284
         },
         {
           "crypto_id": 40605,
@@ -26412,9 +26429,9 @@
           "is_derivative": null,
           "issuer_id": "6a43600c282e7240b76c8bbb",
           "issuer_name": "Reality",
-          "price": 212.2118960524184,
-          "market_cap": 4403367.42,
-          "volume_24h": 666472.34637558
+          "price": 212.14624678505723,
+          "market_cap": 4402005.21,
+          "volume_24h": 668190.00309419
         },
         {
           "crypto_id": 40685,
@@ -26426,9 +26443,9 @@
           "is_derivative": null,
           "issuer_id": "6a465832fbe3004b1a0ea2dd",
           "issuer_name": "Robinhood",
-          "price": 212.38829813597127,
-          "market_cap": 22580386.76,
-          "volume_24h": 44192791.13704672
+          "price": 212.14243328605286,
+          "market_cap": 22554247.26,
+          "volume_24h": 44265511.53875695
         },
         {
           "crypto_id": 37270,
@@ -26440,9 +26457,9 @@
           "is_derivative": null,
           "issuer_id": "6878977dcbbf471de3366e85",
           "issuer_name": "Backed Assets",
-          "price": 212.56522406791083,
-          "market_cap": 546968.11,
-          "volume_24h": 1147278.19761738
+          "price": 212.53508926271775,
+          "market_cap": 546890.57,
+          "volume_24h": 1127840.72829695
         }
       ],
       "tradfi_market_count": 1
@@ -26472,9 +26489,9 @@
                 "is_derivative": null,
                 "issuer_id": "695e11f774b54210f3b95dc3",
                 "issuer_name": "NA (Derivatives)",
-                "price": 109.01967848610417,
+                "price": 108.45216224012253,
                 "market_cap": 0,
-                "volume_24h": 381646.1045846
+                "volume_24h": 383869.87816507
               }
             ]
           }
@@ -26538,9 +26555,9 @@
           "is_derivative": null,
           "issuer_id": "6878977dcbbf471de3366e85",
           "issuer_name": "Backed Assets",
-          "price": 108.90452657265458,
-          "market_cap": 11086447.51,
-          "volume_24h": 5223779.4217513
+          "price": 108.437532633651,
+          "market_cap": 11038907.67,
+          "volume_24h": 5224381.22045949
         },
         {
           "crypto_id": 38004,
@@ -26552,9 +26569,9 @@
           "is_derivative": null,
           "issuer_id": "688ca4ccabae9b5b9fb3167a",
           "issuer_name": "Ondo Assets",
-          "price": 108.84211093494044,
-          "market_cap": 5003667.92,
-          "volume_24h": 4193529.23095196
+          "price": 108.52358692743708,
+          "market_cap": 4989024.8,
+          "volume_24h": 4223421.14989415
         },
         {
           "crypto_id": 39002,
@@ -26580,9 +26597,9 @@
           "is_derivative": null,
           "issuer_id": "695e11f774b54210f3b95dc3",
           "issuer_name": "NA (Derivatives)",
-          "price": 109.01967848610417,
+          "price": 108.45216224012253,
           "market_cap": 0,
-          "volume_24h": 381646.1045846
+          "volume_24h": 383869.87816507
         },
         {
           "crypto_id": 39625,
@@ -26608,9 +26625,9 @@
           "is_derivative": null,
           "issuer_id": "6a43600c282e7240b76c8bbb",
           "issuer_name": "Reality",
-          "price": 108.40702389945176,
-          "market_cap": 1694863.66,
-          "volume_24h": 580374.36246863
+          "price": 108.91363502972213,
+          "market_cap": 1702784.15,
+          "volume_24h": 580780.25481431
         },
         {
           "crypto_id": 40850,
@@ -26622,9 +26639,9 @@
           "is_derivative": null,
           "issuer_id": "6a2aed5097c45356b1a5f710",
           "issuer_name": "bStocks",
-          "price": 108.86002929572125,
-          "market_cap": 4584932.92,
-          "volume_24h": 3991899.74533489
+          "price": 108.38142647478621,
+          "market_cap": 4564775.28,
+          "volume_24h": 3999286.1884074
         },
         {
           "crypto_id": 37200,
@@ -26636,9 +26653,9 @@
           "is_derivative": null,
           "issuer_id": "6878977dcbbf471de3366e85",
           "issuer_name": "Backed Assets",
-          "price": 108.97479819803594,
-          "market_cap": 239340.77,
-          "volume_24h": 289503.44257441
+          "price": 108.5945083292981,
+          "market_cap": 238505.54,
+          "volume_24h": 291082.16301771
         }
       ],
       "tradfi_market_count": 1
@@ -26668,9 +26685,9 @@
                 "is_derivative": null,
                 "issuer_id": "6878977dcbbf471de3366e85",
                 "issuer_name": "Backed Assets",
-                "price": 503.68612481325096,
+                "price": 503.54913970778125,
                 "market_cap": 0,
-                "volume_24h": 170530.95823836
+                "volume_24h": 170532.23672409
               }
             ]
           }
@@ -26747,9 +26764,9 @@
           "is_derivative": null,
           "issuer_id": "688ca4ccabae9b5b9fb3167a",
           "issuer_name": "Ondo Assets",
-          "price": 503.66993427928077,
-          "market_cap": 8217757.55,
-          "volume_24h": 4520390.48032221
+          "price": 503.54498179784315,
+          "market_cap": 8215718.86,
+          "volume_24h": 4530669.87655438
         },
         {
           "crypto_id": 39489,
@@ -26761,7 +26778,7 @@
           "is_derivative": null,
           "issuer_id": "695e11f774b54210f3b95dc3",
           "issuer_name": "NA (Derivatives)",
-          "price": 503.7886865100069,
+          "price": 503.7678798046293,
           "market_cap": 0,
           "volume_24h": 0
         },
@@ -26775,9 +26792,9 @@
           "is_derivative": null,
           "issuer_id": "6a2aed5097c45356b1a5f710",
           "issuer_name": "bStocks",
-          "price": 503.3912181967121,
-          "market_cap": 3325636.16,
-          "volume_24h": 2833121.75346316
+          "price": 503.4194631555802,
+          "market_cap": 3325822.75,
+          "volume_24h": 2826730.11638172
         },
         {
           "crypto_id": 40601,
@@ -26789,9 +26806,9 @@
           "is_derivative": null,
           "issuer_id": "6a43600c282e7240b76c8bbb",
           "issuer_name": "Reality",
-          "price": 503.05891218566563,
-          "market_cap": 2720758.16,
-          "volume_24h": 187269.97316912
+          "price": 503.14534488339217,
+          "market_cap": 2721225.63,
+          "volume_24h": 187264.94953135
         },
         {
           "crypto_id": 40687,
@@ -26803,9 +26820,9 @@
           "is_derivative": null,
           "issuer_id": "6a465832fbe3004b1a0ea2dd",
           "issuer_name": "Robinhood",
-          "price": 502.6294291009483,
-          "market_cap": 2052384.74,
-          "volume_24h": 792465.0440556
+          "price": 502.82462844861396,
+          "market_cap": 2053181.79,
+          "volume_24h": 789867.54935411
         },
         {
           "crypto_id": 41115,
@@ -26817,9 +26834,9 @@
           "is_derivative": null,
           "issuer_id": "6878977dcbbf471de3366e85",
           "issuer_name": "Backed Assets",
-          "price": 503.68612481325096,
+          "price": 503.54913970778125,
           "market_cap": 0,
-          "volume_24h": 170530.95823836
+          "volume_24h": 170532.23672409
         }
       ],
       "tradfi_market_count": 1
@@ -26838,13 +26855,13 @@
           "severity": "critical",
           "message": "Token prices span at least 10x inside one CMC reference; comparison may be a unit or claim mismatch.",
           "evidence": {
-            "max_min_ratio": 10.005466266455388,
+            "max_min_ratio": 10.009856641115924,
             "prices": [
-              78.06347764402229,
-              779.1713574769295,
-              77.96000815641928,
-              78.0745669718414,
-              77.87456743412365
+              78.0593224738117,
+              779.2654152636093,
+              77.89524426337265,
+              78.06270351109757,
+              77.84980776475285
             ]
           }
         },
@@ -26907,9 +26924,9 @@
           "is_derivative": null,
           "issuer_id": "6878977dcbbf471de3366e85",
           "issuer_name": "Backed Assets",
-          "price": 78.06347764402229,
-          "market_cap": 1271077.8,
-          "volume_24h": 70949.84837121
+          "price": 78.0593224738117,
+          "market_cap": 1271010.14,
+          "volume_24h": 70792.77938665
         },
         {
           "crypto_id": 28617,
@@ -26935,9 +26952,9 @@
           "is_derivative": null,
           "issuer_id": "688ca4ccabae9b5b9fb3167a",
           "issuer_name": "Ondo Assets",
-          "price": 779.1713574769295,
-          "market_cap": 881021.44,
-          "volume_24h": 2847877.91723723
+          "price": 779.2654152636093,
+          "market_cap": 881127.8,
+          "volume_24h": 2856104.14283957
         },
         {
           "crypto_id": 39479,
@@ -26949,7 +26966,7 @@
           "is_derivative": null,
           "issuer_id": "695e11f774b54210f3b95dc3",
           "issuer_name": "NA (Derivatives)",
-          "price": 77.96000815641928,
+          "price": 77.89524426337265,
           "market_cap": 0,
           "volume_24h": 0
         },
@@ -26963,9 +26980,9 @@
           "is_derivative": null,
           "issuer_id": "6a465832fbe3004b1a0ea2dd",
           "issuer_name": "Robinhood",
-          "price": 78.0745669718414,
-          "market_cap": 764595.56,
-          "volume_24h": 477351.13972543
+          "price": 78.06270351109757,
+          "market_cap": 764479.37,
+          "volume_24h": 481604.36870017
         },
         {
           "crypto_id": 40973,
@@ -26977,9 +26994,9 @@
           "is_derivative": null,
           "issuer_id": "6a2aed5097c45356b1a5f710",
           "issuer_name": "bStocks",
-          "price": 77.87456743412365,
-          "market_cap": 1110027.12,
-          "volume_24h": 1028889.52647352
+          "price": 77.84980776475285,
+          "market_cap": 1109674.2,
+          "volume_24h": 1029793.00188549
         },
         {
           "crypto_id": 37216,
@@ -27023,9 +27040,9 @@
                 "is_derivative": null,
                 "issuer_id": "6a465832fbe3004b1a0ea2dd",
                 "issuer_name": "Robinhood",
-                "price": 393.2709469307565,
+                "price": 393.2346627663872,
                 "market_cap": 0,
-                "volume_24h": 8080261.58445946
+                "volume_24h": 8150757.81482367
               }
             ]
           }
@@ -27089,9 +27106,9 @@
           "is_derivative": null,
           "issuer_id": "6878977dcbbf471de3366e85",
           "issuer_name": "Backed Assets",
-          "price": 393.6436404832106,
-          "market_cap": 10247168.08,
-          "volume_24h": 5942386.09823665
+          "price": 393.74064234017504,
+          "market_cap": 10249693.19,
+          "volume_24h": 5976228.781419
         },
         {
           "crypto_id": 37081,
@@ -27117,9 +27134,9 @@
           "is_derivative": null,
           "issuer_id": "688ca4ccabae9b5b9fb3167a",
           "issuer_name": "Ondo Assets",
-          "price": 393.53389050558496,
-          "market_cap": 3651069.09,
-          "volume_24h": 1707753.96329175
+          "price": 393.51724352593504,
+          "market_cap": 3650914.64,
+          "volume_24h": 1706807.19962636
         },
         {
           "crypto_id": 39617,
@@ -27159,7 +27176,7 @@
           "is_derivative": null,
           "issuer_id": "699ed38db54c9320b15928e3",
           "issuer_name": "Hyperliquid Assets",
-          "price": 393.59885183010124,
+          "price": 393.5543846353598,
           "market_cap": 0,
           "volume_24h": 0
         },
@@ -27173,9 +27190,9 @@
           "is_derivative": null,
           "issuer_id": "6a465832fbe3004b1a0ea2dd",
           "issuer_name": "Robinhood",
-          "price": 393.2709469307565,
+          "price": 393.2346627663872,
           "market_cap": 0,
-          "volume_24h": 8080261.58445946
+          "volume_24h": 8150757.81482367
         }
       ],
       "tradfi_market_count": 1
@@ -27205,9 +27222,9 @@
                 "is_derivative": null,
                 "issuer_id": "699ed38db54c9320b15928e3",
                 "issuer_name": "Hyperliquid Assets",
-                "price": 600.5663292317661,
+                "price": 600.593992736735,
                 "market_cap": 0,
-                "volume_24h": 457.23100601
+                "volume_24h": 457.25206715
               }
             ]
           }
@@ -27252,9 +27269,9 @@
           "is_derivative": null,
           "issuer_id": "6878977dcbbf471de3366e85",
           "issuer_name": "Backed Assets",
-          "price": 669.7421315673349,
-          "market_cap": 10058980.54,
-          "volume_24h": 4787322.24020433
+          "price": 669.4190170256187,
+          "market_cap": 10054127.62,
+          "volume_24h": 4777250.38913109
         },
         {
           "crypto_id": 28621,
@@ -27280,9 +27297,9 @@
           "is_derivative": null,
           "issuer_id": "688ca4ccabae9b5b9fb3167a",
           "issuer_name": "Ondo Assets",
-          "price": 670.5668538143651,
-          "market_cap": 11281823.19,
-          "volume_24h": 4417018.63548061
+          "price": 669.90832402645,
+          "market_cap": 11270743.88,
+          "volume_24h": 4400262.75512348
         },
         {
           "crypto_id": 39615,
@@ -27294,9 +27311,9 @@
           "is_derivative": null,
           "issuer_id": "699ed38db54c9320b15928e3",
           "issuer_name": "Hyperliquid Assets",
-          "price": 600.5663292317661,
+          "price": 600.593992736735,
           "market_cap": 0,
-          "volume_24h": 457.23100601
+          "volume_24h": 457.25206715
         },
         {
           "crypto_id": 40592,
@@ -27308,9 +27325,9 @@
           "is_derivative": null,
           "issuer_id": "6a2aed5097c45356b1a5f710",
           "issuer_name": "bStocks",
-          "price": 668.6605685584996,
-          "market_cap": 4439346.27,
-          "volume_24h": 3675231.74408321
+          "price": 667.949594116199,
+          "market_cap": 4434625.99,
+          "volume_24h": 3687413.82386684
         },
         {
           "crypto_id": 40602,
@@ -27322,9 +27339,9 @@
           "is_derivative": null,
           "issuer_id": "6a43600c282e7240b76c8bbb",
           "issuer_name": "Reality",
-          "price": 668.2036566837945,
-          "market_cap": 1057499.79,
-          "volume_24h": 347995.92376985
+          "price": 667.9958692928641,
+          "market_cap": 1057170.95,
+          "volume_24h": 348748.17609347
         },
         {
           "crypto_id": 40780,
@@ -27336,9 +27353,9 @@
           "is_derivative": null,
           "issuer_id": "6a465832fbe3004b1a0ea2dd",
           "issuer_name": "Robinhood",
-          "price": 670.5015887889195,
-          "market_cap": 2291988.32,
-          "volume_24h": 2313257.39559463
+          "price": 668.0203637883687,
+          "market_cap": 2283506.7,
+          "volume_24h": 2311883.77261277
         },
         {
           "crypto_id": 37211,
@@ -27350,9 +27367,9 @@
           "is_derivative": null,
           "issuer_id": "6878977dcbbf471de3366e85",
           "issuer_name": "Backed Assets",
-          "price": 670.4971868504425,
-          "market_cap": 128299.67,
-          "volume_24h": 28735.37978871
+          "price": 670.3138683992605,
+          "market_cap": 128264.6,
+          "volume_24h": 28736.75601974
         }
       ],
       "tradfi_market_count": 1
@@ -27382,9 +27399,9 @@
                 "is_derivative": null,
                 "issuer_id": "6878977dcbbf471de3366e85",
                 "issuer_name": "Backed Assets",
-                "price": 925.8754543699235,
+                "price": 925.6238195468438,
                 "market_cap": 0,
-                "volume_24h": 114305.10577386
+                "volume_24h": 114306.27798583
               }
             ]
           }
@@ -27437,9 +27454,9 @@
           "is_derivative": null,
           "issuer_id": "688ca4ccabae9b5b9fb3167a",
           "issuer_name": "Ondo Assets",
-          "price": 926.0994530089129,
-          "market_cap": 37009680.14,
-          "volume_24h": 8676989.48494277
+          "price": 926.0627693652032,
+          "market_cap": 37008214.15,
+          "volume_24h": 8691607.15705037
         },
         {
           "crypto_id": 39469,
@@ -27451,7 +27468,7 @@
           "is_derivative": null,
           "issuer_id": "695e11f774b54210f3b95dc3",
           "issuer_name": "NA (Derivatives)",
-          "price": 926.3040561430075,
+          "price": 925.6180336779518,
           "market_cap": 0,
           "volume_24h": 0
         },
@@ -27465,9 +27482,9 @@
           "is_derivative": null,
           "issuer_id": "6878977dcbbf471de3366e85",
           "issuer_name": "Backed Assets",
-          "price": 925.4434884064723,
-          "market_cap": 16986387.87,
-          "volume_24h": 2257392.67208769
+          "price": 924.9388336354895,
+          "market_cap": 16977125,
+          "volume_24h": 2256115.51733919
         },
         {
           "crypto_id": 40212,
@@ -27479,9 +27496,9 @@
           "is_derivative": null,
           "issuer_id": "6a2aed5097c45356b1a5f710",
           "issuer_name": "bStocks",
-          "price": 925.2792469174746,
-          "market_cap": 39099830.79,
-          "volume_24h": 12520730.73187699
+          "price": 925.083216283079,
+          "market_cap": 39091547.06,
+          "volume_24h": 12479116.34932816
         },
         {
           "crypto_id": 40616,
@@ -27493,9 +27510,9 @@
           "is_derivative": null,
           "issuer_id": "6a43600c282e7240b76c8bbb",
           "issuer_name": "Reality",
-          "price": 924.6446849611142,
-          "market_cap": 8440666.91,
-          "volume_24h": 442777.95772321
+          "price": 924.2701342504514,
+          "market_cap": 8437247.8,
+          "volume_24h": 438521.89169889
         },
         {
           "crypto_id": 40696,
@@ -27507,9 +27524,9 @@
           "is_derivative": null,
           "issuer_id": "6a465832fbe3004b1a0ea2dd",
           "issuer_name": "Robinhood",
-          "price": 926.8488274550178,
-          "market_cap": 5014528.95,
-          "volume_24h": 2957872.64381349
+          "price": 925.8841686556083,
+          "market_cap": 5009309.86,
+          "volume_24h": 2945627.84764021
         },
         {
           "crypto_id": 40817,
@@ -27521,9 +27538,9 @@
           "is_derivative": null,
           "issuer_id": "6a2d54b697c45356b1a634f4",
           "issuer_name": "Backpack",
-          "price": 924.2736308041855,
-          "market_cap": 6454486.36,
-          "volume_24h": 2294607.60320914
+          "price": 924.3565937506114,
+          "market_cap": 6455065.71,
+          "volume_24h": 2294344.67563993
         },
         {
           "crypto_id": 41636,
@@ -27535,9 +27552,9 @@
           "is_derivative": null,
           "issuer_id": "6878977dcbbf471de3366e85",
           "issuer_name": "Backed Assets",
-          "price": 925.8754543699235,
+          "price": 925.6238195468438,
           "market_cap": 0,
-          "volume_24h": 114305.10577386
+          "volume_24h": 114306.27798583
         }
       ],
       "tradfi_market_count": 1
@@ -27567,9 +27584,9 @@
                 "is_derivative": null,
                 "issuer_id": "695e11f774b54210f3b95dc3",
                 "issuer_name": "NA (Derivatives)",
-                "price": 1530.118215483128,
+                "price": 1530.7315659819453,
                 "market_cap": 0,
-                "volume_24h": 294827.75363713
+                "volume_24h": 294329.35023472
               },
               {
                 "crypto_id": 41493,
@@ -27581,9 +27598,9 @@
                 "is_derivative": null,
                 "issuer_id": "6878977dcbbf471de3366e85",
                 "issuer_name": "Backed Assets",
-                "price": 1528.4721358349466,
+                "price": 1528.8827419313266,
                 "market_cap": 0,
-                "volume_24h": 194620.65264567
+                "volume_24h": 194746.71993999
               }
             ]
           }
@@ -27636,9 +27653,9 @@
           "is_derivative": null,
           "issuer_id": "695e11f774b54210f3b95dc3",
           "issuer_name": "NA (Derivatives)",
-          "price": 1530.118215483128,
+          "price": 1530.7315659819453,
           "market_cap": 0,
-          "volume_24h": 294827.75363713
+          "volume_24h": 294329.35023472
         },
         {
           "crypto_id": 39788,
@@ -27650,9 +27667,9 @@
           "is_derivative": null,
           "issuer_id": "688ca4ccabae9b5b9fb3167a",
           "issuer_name": "Ondo Assets",
-          "price": 1527.8268519113144,
-          "market_cap": 6076348.5,
-          "volume_24h": 5937652.57100785
+          "price": 1528.263649048692,
+          "market_cap": 6078085.69,
+          "volume_24h": 5975681.50190061
         },
         {
           "crypto_id": 40037,
@@ -27664,9 +27681,9 @@
           "is_derivative": null,
           "issuer_id": "6878977dcbbf471de3366e85",
           "issuer_name": "Backed Assets",
-          "price": 1529.6733860038848,
-          "market_cap": 14434102.17,
-          "volume_24h": 3757075.21303489
+          "price": 1530.0482262795629,
+          "market_cap": 14437639.19,
+          "volume_24h": 3754419.69503521
         },
         {
           "crypto_id": 40216,
@@ -27678,9 +27695,9 @@
           "is_derivative": null,
           "issuer_id": "6a2aed5097c45356b1a5f710",
           "issuer_name": "bStocks",
-          "price": 1528.976950662123,
-          "market_cap": 34241026.51,
-          "volume_24h": 38470414.52758153
+          "price": 1529.6057877603591,
+          "market_cap": 34257180.88,
+          "volume_24h": 38440621.15939924
         },
         {
           "crypto_id": 40648,
@@ -27692,9 +27709,9 @@
           "is_derivative": null,
           "issuer_id": "6a43600c282e7240b76c8bbb",
           "issuer_name": "Reality",
-          "price": 1527.9336459980589,
-          "market_cap": 4986679.11,
-          "volume_24h": 432042.83306497
+          "price": 1526.8933824190647,
+          "market_cap": 4983284.02,
+          "volume_24h": 430145.29334773
         },
         {
           "crypto_id": 40700,
@@ -27706,9 +27723,9 @@
           "is_derivative": null,
           "issuer_id": "6a465832fbe3004b1a0ea2dd",
           "issuer_name": "Robinhood",
-          "price": 1530.5025132866142,
-          "market_cap": 1598960.36,
-          "volume_24h": 94873.36789974
+          "price": 1530.9048131855209,
+          "market_cap": 1599380.65,
+          "volume_24h": 104642.43662623
         },
         {
           "crypto_id": 40815,
@@ -27720,9 +27737,9 @@
           "is_derivative": null,
           "issuer_id": "6a2d54b697c45356b1a634f4",
           "issuer_name": "Backpack",
-          "price": 1532.0579451761603,
-          "market_cap": 1777776.33,
-          "volume_24h": 387419.0435291
+          "price": 1529.7915825081716,
+          "market_cap": 1775146.47,
+          "volume_24h": 393234.3911668
         },
         {
           "crypto_id": 41493,
@@ -27734,9 +27751,9 @@
           "is_derivative": null,
           "issuer_id": "6878977dcbbf471de3366e85",
           "issuer_name": "Backed Assets",
-          "price": 1528.4721358349466,
+          "price": 1528.8827419313266,
           "market_cap": 0,
-          "volume_24h": 194620.65264567
+          "volume_24h": 194746.71993999
         }
       ],
       "tradfi_market_count": 1
@@ -27766,9 +27783,9 @@
                 "is_derivative": null,
                 "issuer_id": "6878977dcbbf471de3366e85",
                 "issuer_name": "Backed Assets",
-                "price": 84.71775635391,
+                "price": 84.53087571816882,
                 "market_cap": 0,
-                "volume_24h": 549737.0546281
+                "volume_24h": 550299.7215092
               }
             ]
           }
@@ -27820,9 +27837,9 @@
           "is_derivative": null,
           "issuer_id": "6878977dcbbf471de3366e85",
           "issuer_name": "Backed Assets",
-          "price": 85.03827688943196,
-          "market_cap": 71909035.12,
-          "volume_24h": 29205048.04634338
+          "price": 84.45253593533948,
+          "market_cap": 71696711.55,
+          "volume_24h": 29296956.77012991
         },
         {
           "crypto_id": 38056,
@@ -27834,9 +27851,9 @@
           "is_derivative": null,
           "issuer_id": "688ca4ccabae9b5b9fb3167a",
           "issuer_name": "Ondo Assets",
-          "price": 84.80355719467615,
-          "market_cap": 99358328,
-          "volume_24h": 10881109.8243833
+          "price": 84.59281712124324,
+          "market_cap": 99111418.76,
+          "volume_24h": 10880799.81012859
         },
         {
           "crypto_id": 38154,
@@ -27848,7 +27865,7 @@
           "is_derivative": null,
           "issuer_id": "695e11f774b54210f3b95dc3",
           "issuer_name": "NA (Derivatives)",
-          "price": 85.11385245431606,
+          "price": 84.55078359023022,
           "market_cap": 0,
           "volume_24h": 0
         },
@@ -27862,9 +27879,9 @@
           "is_derivative": null,
           "issuer_id": "6a2aed5097c45356b1a5f710",
           "issuer_name": "bStocks",
-          "price": 84.98319086416619,
-          "market_cap": 89005393.48,
-          "volume_24h": 39497378.43683565
+          "price": 84.41098576017315,
+          "market_cap": 88439390.91,
+          "volume_24h": 39785970.19371611
         },
         {
           "crypto_id": 40635,
@@ -27876,9 +27893,9 @@
           "is_derivative": null,
           "issuer_id": "6a43600c282e7240b76c8bbb",
           "issuer_name": "Reality",
-          "price": 84.98069146872133,
-          "market_cap": 14217705.18,
-          "volume_24h": 1632336.43824113
+          "price": 84.5487232241342,
+          "market_cap": 14145434.68,
+          "volume_24h": 1643591.48248347
         },
         {
           "crypto_id": 40708,
@@ -27890,9 +27907,9 @@
           "is_derivative": null,
           "issuer_id": "6a465832fbe3004b1a0ea2dd",
           "issuer_name": "Robinhood",
-          "price": 85.19604942332056,
-          "market_cap": 4341861.6,
-          "volume_24h": 4089616.4106709
+          "price": 84.75166351137722,
+          "market_cap": 4319214.28,
+          "volume_24h": 4081582.24705255
         },
         {
           "crypto_id": 41268,
@@ -27904,9 +27921,9 @@
           "is_derivative": null,
           "issuer_id": "6878977dcbbf471de3366e85",
           "issuer_name": "Backed Assets",
-          "price": 84.71775635391,
+          "price": 84.53087571816882,
           "market_cap": 0,
-          "volume_24h": 549737.0546281
+          "volume_24h": 550299.7215092
         }
       ],
       "tradfi_market_count": 1
@@ -27936,9 +27953,9 @@
                 "is_derivative": null,
                 "issuer_id": "695e11f774b54210f3b95dc3",
                 "issuer_name": "NA (Derivatives)",
-                "price": 97.04356764697337,
+                "price": 96.95990316693887,
                 "market_cap": 0,
-                "volume_24h": 287564.06086172
+                "volume_24h": 282922.92870257
               }
             ]
           }
@@ -27990,9 +28007,9 @@
           "is_derivative": null,
           "issuer_id": "688ca4ccabae9b5b9fb3167a",
           "issuer_name": "Ondo Assets",
-          "price": 96.9094687843406,
-          "market_cap": 16593754.76,
-          "volume_24h": 3446229.55748354
+          "price": 96.9175328032807,
+          "market_cap": 16595135.55,
+          "volume_24h": 3404824.237873
         },
         {
           "crypto_id": 37028,
@@ -28004,9 +28021,9 @@
           "is_derivative": null,
           "issuer_id": "6878977dcbbf471de3366e85",
           "issuer_name": "Backed Assets",
-          "price": 96.92460668985093,
-          "market_cap": 11979549.32,
-          "volume_24h": 2904753.58779717
+          "price": 96.92035452937044,
+          "market_cap": 11979023.77,
+          "volume_24h": 2920974.57037979
         },
         {
           "crypto_id": 39472,
@@ -28018,9 +28035,9 @@
           "is_derivative": null,
           "issuer_id": "695e11f774b54210f3b95dc3",
           "issuer_name": "NA (Derivatives)",
-          "price": 97.04356764697337,
+          "price": 96.95990316693887,
           "market_cap": 0,
-          "volume_24h": 287564.06086172
+          "volume_24h": 282922.92870257
         },
         {
           "crypto_id": 40540,
@@ -28032,9 +28049,9 @@
           "is_derivative": null,
           "issuer_id": "6a2aed5097c45356b1a5f710",
           "issuer_name": "bStocks",
-          "price": 96.95195319816325,
-          "market_cap": 11943580.04,
-          "volume_24h": 4234005.11656231
+          "price": 96.91420498933718,
+          "market_cap": 11941156.91,
+          "volume_24h": 4174305.20922269
         },
         {
           "crypto_id": 40618,
@@ -28046,9 +28063,9 @@
           "is_derivative": null,
           "issuer_id": "6a43600c282e7240b76c8bbb",
           "issuer_name": "Reality",
-          "price": 96.92235730892851,
-          "market_cap": 6244592.3,
-          "volume_24h": 219715.03278964
+          "price": 96.84980800003649,
+          "market_cap": 6239918.03,
+          "volume_24h": 219720.23043246
         },
         {
           "crypto_id": 40697,
@@ -28060,9 +28077,9 @@
           "is_derivative": null,
           "issuer_id": "6a465832fbe3004b1a0ea2dd",
           "issuer_name": "Robinhood",
-          "price": 96.88620237538646,
-          "market_cap": 1667385.09,
-          "volume_24h": 875628.63027902
+          "price": 96.97588367331984,
+          "market_cap": 1668928.48,
+          "volume_24h": 916253.35372861
         },
         {
           "crypto_id": 37202,
@@ -28074,9 +28091,9 @@
           "is_derivative": null,
           "issuer_id": "6878977dcbbf471de3366e85",
           "issuer_name": "Backed Assets",
-          "price": 97.07308006087668,
-          "market_cap": 137509.34,
-          "volume_24h": 121677.20625583
+          "price": 97.09825622627524,
+          "market_cap": 137545,
+          "volume_24h": 121679.19912113
         }
       ],
       "tradfi_market_count": 1
@@ -28106,9 +28123,9 @@
                 "is_derivative": null,
                 "issuer_id": "695e11f774b54210f3b95dc3",
                 "issuer_name": "NA (Derivatives)",
-                "price": 128.21070490123432,
+                "price": 127.36899909421803,
                 "market_cap": 0,
-                "volume_24h": 1826975.77205671
+                "volume_24h": 1829739.17256742
               }
             ]
           }
@@ -28160,9 +28177,9 @@
           "is_derivative": null,
           "issuer_id": "6878977dcbbf471de3366e85",
           "issuer_name": "Backed Assets",
-          "price": 128.06398201423676,
-          "market_cap": 70672856.49,
-          "volume_24h": 9193232.65381616
+          "price": 127.41302449944347,
+          "market_cap": 70313621.79,
+          "volume_24h": 9207613.33384474
         },
         {
           "crypto_id": 38092,
@@ -28174,9 +28191,9 @@
           "is_derivative": null,
           "issuer_id": "688ca4ccabae9b5b9fb3167a",
           "issuer_name": "Ondo Assets",
-          "price": 127.95850245977122,
-          "market_cap": 25081086.2,
-          "volume_24h": 3582237.9567719
+          "price": 127.40932676997885,
+          "market_cap": 24973442.53,
+          "volume_24h": 3602576.9911614
         },
         {
           "crypto_id": 39473,
@@ -28188,9 +28205,9 @@
           "is_derivative": null,
           "issuer_id": "695e11f774b54210f3b95dc3",
           "issuer_name": "NA (Derivatives)",
-          "price": 128.21070490123432,
+          "price": 127.36899909421803,
           "market_cap": 0,
-          "volume_24h": 1826975.77205671
+          "volume_24h": 1829739.17256742
         },
         {
           "crypto_id": 40536,
@@ -28202,9 +28219,9 @@
           "is_derivative": null,
           "issuer_id": "6a2aed5097c45356b1a5f710",
           "issuer_name": "bStocks",
-          "price": 128.0493176556914,
-          "market_cap": 50519517.57,
-          "volume_24h": 18182189.06212662
+          "price": 127.24501768586069,
+          "market_cap": 50202195.72,
+          "volume_24h": 18156191.24904096
         },
         {
           "crypto_id": 40632,
@@ -28216,9 +28233,9 @@
           "is_derivative": null,
           "issuer_id": "6a43600c282e7240b76c8bbb",
           "issuer_name": "Reality",
-          "price": 127.69088377085149,
-          "market_cap": 10034398.36,
-          "volume_24h": 1050058.96059036
+          "price": 127.40766116389446,
+          "market_cap": 10012141.73,
+          "volume_24h": 1055078.90705512
         },
         {
           "crypto_id": 40745,
@@ -28230,9 +28247,9 @@
           "is_derivative": null,
           "issuer_id": "6a465832fbe3004b1a0ea2dd",
           "issuer_name": "Robinhood",
-          "price": 127.8654360497748,
-          "market_cap": 4122306.87,
-          "volume_24h": 4904559.76034306
+          "price": 127.58506248183042,
+          "market_cap": 4113267.79,
+          "volume_24h": 4932921.08950542
         },
         {
           "crypto_id": 37215,
@@ -28244,9 +28261,9 @@
           "is_derivative": null,
           "issuer_id": "6878977dcbbf471de3366e85",
           "issuer_name": "Backed Assets",
-          "price": 127.87955505712961,
-          "market_cap": 271394.64,
-          "volume_24h": 1762718.7194878
+          "price": 127.56944094215677,
+          "market_cap": 270736.5,
+          "volume_24h": 1704923.69526125
         }
       ],
       "tradfi_market_count": 1
@@ -28335,9 +28352,9 @@
           "is_derivative": null,
           "issuer_id": "6878977dcbbf471de3366e85",
           "issuer_name": "Backed Assets",
-          "price": 174.15597031732605,
-          "market_cap": 7290450.52,
-          "volume_24h": 3056649.37952917
+          "price": 174.2829410774799,
+          "market_cap": 7295765.72,
+          "volume_24h": 3057345.93893474
         },
         {
           "crypto_id": 40813,
@@ -28349,9 +28366,9 @@
           "is_derivative": null,
           "issuer_id": "6a2aed5097c45356b1a5f710",
           "issuer_name": "bStocks",
-          "price": 174.3020114756614,
-          "market_cap": 23135657.14,
-          "volume_24h": 7451269.09740102
+          "price": 174.2215471607008,
+          "market_cap": 23124976.85,
+          "volume_24h": 7462333.39949592
         },
         {
           "crypto_id": 40823,
@@ -28363,9 +28380,9 @@
           "is_derivative": null,
           "issuer_id": "688ca4ccabae9b5b9fb3167a",
           "issuer_name": "Ondo Assets",
-          "price": 174.06711279286748,
-          "market_cap": 1328697.6,
-          "volume_24h": 2261285.65836229
+          "price": 174.23690183741377,
+          "market_cap": 1329993.64,
+          "volume_24h": 2265898.33680924
         },
         {
           "crypto_id": 40824,
@@ -28377,7 +28394,7 @@
           "is_derivative": null,
           "issuer_id": "695e11f774b54210f3b95dc3",
           "issuer_name": "NA (Derivatives)",
-          "price": 174.13787056825416,
+          "price": 174.13628835003195,
           "market_cap": 0,
           "volume_24h": 0
         },
@@ -28391,8 +28408,8 @@
           "is_derivative": null,
           "issuer_id": "6a2d54b697c45356b1a634f4",
           "issuer_name": "Backpack",
-          "price": 173.5752393207549,
-          "market_cap": 2187072.72,
+          "price": 173.5752336258743,
+          "market_cap": 2187072.65,
           "volume_24h": 3076326.34647742
         },
         {
@@ -28490,9 +28507,9 @@
           "is_derivative": null,
           "issuer_id": "688ca4ccabae9b5b9fb3167a",
           "issuer_name": "Ondo Assets",
-          "price": 417.8432499498879,
-          "market_cap": 6158464.02,
-          "volume_24h": 3039169.50284571
+          "price": 417.7167949133496,
+          "market_cap": 6156600.23,
+          "volume_24h": 3045854.09956714
         },
         {
           "crypto_id": 39490,
@@ -28504,7 +28521,7 @@
           "is_derivative": null,
           "issuer_id": "695e11f774b54210f3b95dc3",
           "issuer_name": "NA (Derivatives)",
-          "price": 414.2024895288447,
+          "price": 414.0164207084406,
           "market_cap": 0,
           "volume_24h": 0
         },
@@ -28518,9 +28535,9 @@
           "is_derivative": null,
           "issuer_id": "6a43600c282e7240b76c8bbb",
           "issuer_name": "Reality",
-          "price": 413.7812196196312,
-          "market_cap": 2632786.19,
-          "volume_24h": 41822.44026167
+          "price": 413.50031521270216,
+          "market_cap": 2630998.86,
+          "volume_24h": 42393.49674048
         },
         {
           "crypto_id": 40769,
@@ -28532,9 +28549,9 @@
           "is_derivative": null,
           "issuer_id": "6a465832fbe3004b1a0ea2dd",
           "issuer_name": "Robinhood",
-          "price": 414.16356881909303,
-          "market_cap": 1690393.57,
-          "volume_24h": 664290.92363748
+          "price": 414.0334943144083,
+          "market_cap": 1689862.68,
+          "volume_24h": 658804.04022094
         },
         {
           "crypto_id": 40846,
@@ -28546,9 +28563,9 @@
           "is_derivative": null,
           "issuer_id": "6a2aed5097c45356b1a5f710",
           "issuer_name": "bStocks",
-          "price": 413.8067517485382,
-          "market_cap": 3750301.18,
-          "volume_24h": 1119024.4342861
+          "price": 413.8063283985897,
+          "market_cap": 3750297.34,
+          "volume_24h": 1104049.20749372
         },
         {
           "crypto_id": 41688,
@@ -28592,9 +28609,9 @@
                 "is_derivative": null,
                 "issuer_id": "695e11f774b54210f3b95dc3",
                 "issuer_name": "NA (Derivatives)",
-                "price": 109.3858598604554,
+                "price": 109.41041977023508,
                 "market_cap": 0,
-                "volume_24h": 26675.10074442
+                "volume_24h": 26658.84257355
               }
             ]
           }
@@ -28644,9 +28661,9 @@
           "is_derivative": null,
           "issuer_id": "688ca4ccabae9b5b9fb3167a",
           "issuer_name": "Ondo Assets",
-          "price": 110.27610884798152,
-          "market_cap": 2637128.84,
-          "volume_24h": 2757594.51044636
+          "price": 110.3245329876941,
+          "market_cap": 2638286.85,
+          "volume_24h": 2749902.17735388
         },
         {
           "crypto_id": 39486,
@@ -28658,9 +28675,9 @@
           "is_derivative": null,
           "issuer_id": "695e11f774b54210f3b95dc3",
           "issuer_name": "NA (Derivatives)",
-          "price": 109.3858598604554,
+          "price": 109.41041977023508,
           "market_cap": 0,
-          "volume_24h": 26675.10074442
+          "volume_24h": 26658.84257355
         },
         {
           "crypto_id": 40656,
@@ -28672,9 +28689,9 @@
           "is_derivative": null,
           "issuer_id": "6a43600c282e7240b76c8bbb",
           "issuer_name": "Reality",
-          "price": 109.29372325886702,
-          "market_cap": 269005.67,
-          "volume_24h": 4559.93469439
+          "price": 109.23083483784553,
+          "market_cap": 268850.89,
+          "volume_24h": 4559.8123712
         },
         {
           "crypto_id": 40739,
@@ -28686,9 +28703,9 @@
           "is_derivative": null,
           "issuer_id": "6a465832fbe3004b1a0ea2dd",
           "issuer_name": "Robinhood",
-          "price": 109.51094323305851,
-          "market_cap": 671610.46,
-          "volume_24h": 167859.45477117
+          "price": 109.5176547278496,
+          "market_cap": 671651.63,
+          "volume_24h": 335090.21325988
         },
         {
           "crypto_id": 40852,
@@ -28700,9 +28717,9 @@
           "is_derivative": null,
           "issuer_id": "6a2aed5097c45356b1a5f710",
           "issuer_name": "bStocks",
-          "price": 109.53235933815391,
-          "market_cap": 4817033.99,
-          "volume_24h": 2524720.00257155
+          "price": 109.5123775904757,
+          "market_cap": 4816155.23,
+          "volume_24h": 2514525.01190417
         }
       ],
       "tradfi_market_count": 1
@@ -28746,9 +28763,9 @@
                 "is_derivative": null,
                 "issuer_id": "6a465832fbe3004b1a0ea2dd",
                 "issuer_name": "Robinhood",
-                "price": 144.05597066651103,
+                "price": 143.4169097874476,
                 "market_cap": 0,
-                "volume_24h": 519860.79259346
+                "volume_24h": 517890.23233881
               }
             ]
           }
@@ -28798,9 +28815,9 @@
           "is_derivative": null,
           "issuer_id": "688ca4ccabae9b5b9fb3167a",
           "issuer_name": "Ondo Assets",
-          "price": 143.87430909933718,
-          "market_cap": 110796.73,
-          "volume_24h": 577959.69737965
+          "price": 143.9312811775202,
+          "market_cap": 110840.6,
+          "volume_24h": 577206.79288044
         },
         {
           "crypto_id": 41483,
@@ -28826,7 +28843,7 @@
           "is_derivative": null,
           "issuer_id": "695e11f774b54210f3b95dc3",
           "issuer_name": "NA (Derivatives)",
-          "price": 143.98668561682987,
+          "price": 143.9668350788308,
           "market_cap": 0,
           "volume_24h": 0
         },
@@ -28840,9 +28857,9 @@
           "is_derivative": null,
           "issuer_id": "6a2aed5097c45356b1a5f710",
           "issuer_name": "bStocks",
-          "price": 143.81966121529814,
-          "market_cap": 1123036.66,
-          "volume_24h": 919381.28103427
+          "price": 143.7788381306202,
+          "market_cap": 1122717.88,
+          "volume_24h": 921708.06946464
         },
         {
           "crypto_id": 42005,
@@ -28854,9 +28871,9 @@
           "is_derivative": null,
           "issuer_id": "6a465832fbe3004b1a0ea2dd",
           "issuer_name": "Robinhood",
-          "price": 144.05597066651103,
+          "price": 143.4169097874476,
           "market_cap": 0,
-          "volume_24h": 519860.79259346
+          "volume_24h": 517890.23233881
         }
       ],
       "tradfi_market_count": 1
@@ -28886,9 +28903,9 @@
                 "is_derivative": null,
                 "issuer_id": "695e11f774b54210f3b95dc3",
                 "issuer_name": "NA (Derivatives)",
-                "price": 57.46310021449774,
+                "price": 57.469252264709965,
                 "market_cap": 0,
-                "volume_24h": 14781.81882
+                "volume_24h": 14784.77518376
               }
             ]
           }
@@ -28938,9 +28955,9 @@
           "is_derivative": null,
           "issuer_id": "688ca4ccabae9b5b9fb3167a",
           "issuer_name": "Ondo Assets",
-          "price": 57.45969620294641,
-          "market_cap": 25541362.88,
-          "volume_24h": 3146696.83609346
+          "price": 57.48320941327795,
+          "market_cap": 25551814.72,
+          "volume_24h": 3173041.94953131
         },
         {
           "crypto_id": 39620,
@@ -28966,9 +28983,9 @@
           "is_derivative": null,
           "issuer_id": "695e11f774b54210f3b95dc3",
           "issuer_name": "NA (Derivatives)",
-          "price": 57.46310021449774,
+          "price": 57.469252264709965,
           "market_cap": 0,
-          "volume_24h": 14781.81882
+          "volume_24h": 14784.77518376
         },
         {
           "crypto_id": 40707,
@@ -28980,9 +28997,9 @@
           "is_derivative": null,
           "issuer_id": "6a465832fbe3004b1a0ea2dd",
           "issuer_name": "Robinhood",
-          "price": 57.53769051117736,
-          "market_cap": 1183443.1,
-          "volume_24h": 523635.42217631
+          "price": 57.7558969861777,
+          "market_cap": 1187931.2,
+          "volume_24h": 522693.3475621
         },
         {
           "crypto_id": 41644,
@@ -29015,11 +29032,11 @@
           "severity": "critical",
           "message": "Token prices span at least 10x inside one CMC reference; comparison may be a unit or claim mismatch.",
           "evidence": {
-            "max_min_ratio": 10.058436953351693,
+            "max_min_ratio": 10.048205483557602,
             "prices": [
-              1686.2287088313965,
-              167.64321500961518,
-              168.45944411456284
+              1684.2457669149178,
+              167.61657289661684,
+              168.42405213483556
             ]
           }
         },
@@ -29068,9 +29085,9 @@
           "is_derivative": null,
           "issuer_id": "688ca4ccabae9b5b9fb3167a",
           "issuer_name": "Ondo Assets",
-          "price": 1686.2287088313965,
-          "market_cap": 61052.09,
-          "volume_24h": 145394.71700283
+          "price": 1684.2457669149178,
+          "market_cap": 60980.3,
+          "volume_24h": 145379.27882764
         },
         {
           "crypto_id": 40131,
@@ -29082,9 +29099,9 @@
           "is_derivative": null,
           "issuer_id": "6878977dcbbf471de3366e85",
           "issuer_name": "Backed Assets",
-          "price": 167.64321500961518,
-          "market_cap": 333267.17,
-          "volume_24h": 1703.58535441
+          "price": 167.61657289661684,
+          "market_cap": 333214.21,
+          "volume_24h": 1703.31461805
         },
         {
           "crypto_id": 40548,
@@ -29096,7 +29113,7 @@
           "is_derivative": null,
           "issuer_id": "695e11f774b54210f3b95dc3",
           "issuer_name": "NA (Derivatives)",
-          "price": 168.45944411456284,
+          "price": 168.42405213483556,
           "market_cap": 0,
           "volume_24h": 0
         },
@@ -29142,9 +29159,9 @@
                 "is_derivative": null,
                 "issuer_id": "6a465832fbe3004b1a0ea2dd",
                 "issuer_name": "Robinhood",
-                "price": 8.572649713713917,
+                "price": 8.566534204002659,
                 "market_cap": 0,
-                "volume_24h": 2302012.46947691
+                "volume_24h": 2152070.11724697
               }
             ]
           }
@@ -29192,9 +29209,9 @@
           "is_derivative": null,
           "issuer_id": "6a2aed5097c45356b1a5f710",
           "issuer_name": "bStocks",
-          "price": 8.601104897967442,
-          "market_cap": 1645121.25,
-          "volume_24h": 970919.68084746
+          "price": 8.600748323369903,
+          "market_cap": 1645053.05,
+          "volume_24h": 974738.07699556
         },
         {
           "crypto_id": 41918,
@@ -29206,7 +29223,7 @@
           "is_derivative": null,
           "issuer_id": "695e11f774b54210f3b95dc3",
           "issuer_name": "NA (Derivatives)",
-          "price": 8.597321804737183,
+          "price": 8.586194706289588,
           "market_cap": 0,
           "volume_24h": 0
         },
@@ -29220,9 +29237,9 @@
           "is_derivative": null,
           "issuer_id": "6a465832fbe3004b1a0ea2dd",
           "issuer_name": "Robinhood",
-          "price": 8.572649713713917,
+          "price": 8.566534204002659,
           "market_cap": 0,
-          "volume_24h": 2302012.46947691
+          "volume_24h": 2152070.11724697
         }
       ],
       "tradfi_market_count": 1
@@ -29241,15 +29258,15 @@
           "severity": "critical",
           "message": "Token prices span at least 10x inside one CMC reference; comparison may be a unit or claim mismatch.",
           "evidence": {
-            "max_min_ratio": 31.712466850366713,
+            "max_min_ratio": 31.693969700589783,
             "prices": [
-              4293.6672043813405,
-              4291.124444743993,
-              4283.405904443099,
-              137.7800910984521,
-              135.50323992861536,
-              4287.190528043686,
-              4297.142004353502
+              4291.767650619623,
+              4289.122047090509,
+              4285.133810276091,
+              137.83151351995738,
+              135.5070332037341,
+              4283.975134131879,
+              4294.755804575962
             ]
           }
         },
@@ -29296,9 +29313,9 @@
           "is_derivative": null,
           "issuer_id": "68904c24abae9b5b9fb35815",
           "issuer_name": "Paxos",
-          "price": 4293.6672043813405,
-          "market_cap": 1865595684.73,
-          "volume_24h": 179953275.5930098
+          "price": 4291.767650619623,
+          "market_cap": 1864770329.82,
+          "volume_24h": 180297318.78439862
         },
         {
           "crypto_id": 5176,
@@ -29310,9 +29327,9 @@
           "is_derivative": null,
           "issuer_id": "68904e9cabae9b5b9fb358ac",
           "issuer_name": "Tether Holdings",
-          "price": 4291.124444743993,
-          "market_cap": 2672613830.18,
-          "volume_24h": 172117056.5551575
+          "price": 4289.122047090509,
+          "market_cap": 2671366689.55,
+          "volume_24h": 172677435.846891
         },
         {
           "crypto_id": 34212,
@@ -29324,9 +29341,9 @@
           "is_derivative": null,
           "issuer_id": "68905a7babae9b5b9fb35a8d",
           "issuer_name": "Matrixdock",
-          "price": 4283.405904443099,
-          "market_cap": 47008781.45,
-          "volume_24h": 446743.92240017
+          "price": 4285.133810276091,
+          "market_cap": 47027744.58,
+          "volume_24h": 445301.17804357
         },
         {
           "crypto_id": 20245,
@@ -29338,9 +29355,9 @@
           "is_derivative": null,
           "issuer_id": "68904cceabae9b5b9fb35839",
           "issuer_name": "Comtech Gold",
-          "price": 137.7800910984521,
-          "market_cap": 19426992.84,
-          "volume_24h": 863723.01587095
+          "price": 137.83151351995738,
+          "market_cap": 19434243.41,
+          "volume_24h": 863648.03642993
         },
         {
           "crypto_id": 22492,
@@ -29352,9 +29369,9 @@
           "is_derivative": null,
           "issuer_id": "68905b43abae9b5b9fb35a95",
           "issuer_name": "VNX",
-          "price": 135.50323992861536,
-          "market_cap": 5704686.4,
-          "volume_24h": 17005.10530331
+          "price": 135.5070332037341,
+          "market_cap": 5704846.1,
+          "volume_24h": 17050.78763329
         },
         {
           "crypto_id": 37082,
@@ -29366,9 +29383,9 @@
           "is_derivative": null,
           "issuer_id": "68904e9cabae9b5b9fb358ac",
           "issuer_name": "Tether Holdings",
-          "price": 4287.190528043686,
-          "market_cap": 16931570.29,
-          "volume_24h": 891373.0372946
+          "price": 4283.975134131879,
+          "market_cap": 16918871.61,
+          "volume_24h": 890809.53775827
         },
         {
           "crypto_id": 39344,
@@ -29380,7 +29397,7 @@
           "is_derivative": null,
           "issuer_id": "695e11f774b54210f3b95dc3",
           "issuer_name": "NA (Derivatives)",
-          "price": 4297.142004353502,
+          "price": 4294.755804575962,
           "market_cap": 0,
           "volume_24h": 0
         }
@@ -29455,9 +29472,9 @@
           "is_derivative": null,
           "issuer_id": "688ca4ccabae9b5b9fb3167a",
           "issuer_name": "Ondo Assets",
-          "price": 253.94395102871175,
-          "market_cap": 2709343.25,
-          "volume_24h": 2261897.22245895
+          "price": 254.31573842540737,
+          "market_cap": 2713309.88,
+          "volume_24h": 2269445.9101069
         },
         {
           "crypto_id": 37029,
@@ -29469,9 +29486,9 @@
           "is_derivative": null,
           "issuer_id": "6878977dcbbf471de3366e85",
           "issuer_name": "Backed Assets",
-          "price": 248.31859467406497,
-          "market_cap": 1084775.65,
-          "volume_24h": 16873.93693788
+          "price": 248.2844306326131,
+          "market_cap": 1084626.4,
+          "volume_24h": 16871.61539655
         },
         {
           "crypto_id": 39634,
@@ -29483,7 +29500,7 @@
           "is_derivative": null,
           "issuer_id": "695e11f774b54210f3b95dc3",
           "issuer_name": "NA (Derivatives)",
-          "price": 248.24149547134454,
+          "price": 248.2836710141925,
           "market_cap": 0,
           "volume_24h": 0
         },
@@ -29497,9 +29514,9 @@
           "is_derivative": null,
           "issuer_id": "6a43600c282e7240b76c8bbb",
           "issuer_name": "Reality",
-          "price": 248.0968517278862,
-          "market_cap": 160265.79,
-          "volume_24h": 368.54439067
+          "price": 248.81966768478213,
+          "market_cap": 160732.71,
+          "volume_24h": 368.53450423
         },
         {
           "crypto_id": 40847,
@@ -29511,9 +29528,9 @@
           "is_derivative": null,
           "issuer_id": "6a2aed5097c45356b1a5f710",
           "issuer_name": "bStocks",
-          "price": 246.91708871169448,
-          "market_cap": 877157.86,
-          "volume_24h": 973057.77305198
+          "price": 246.9847157410296,
+          "market_cap": 877398.1,
+          "volume_24h": 972346.91680946
         },
         {
           "crypto_id": 41431,
@@ -29557,9 +29574,9 @@
                 "is_derivative": null,
                 "issuer_id": "6a465832fbe3004b1a0ea2dd",
                 "issuer_name": "Robinhood",
-                "price": 27.80891995192086,
+                "price": 27.854594889782398,
                 "market_cap": 0,
-                "volume_24h": 6783036.15162012
+                "volume_24h": 6607281.93133804
               }
             ]
           }
@@ -29594,9 +29611,9 @@
           "is_derivative": null,
           "issuer_id": "688ca4ccabae9b5b9fb3167a",
           "issuer_name": "Ondo Assets",
-          "price": 27.926680011047186,
-          "market_cap": 29459942.8,
-          "volume_24h": 1903143.64719675
+          "price": 27.922740550159247,
+          "market_cap": 29455787.05,
+          "volume_24h": 1901573.14173918
         },
         {
           "crypto_id": 40148,
@@ -29608,9 +29625,9 @@
           "is_derivative": null,
           "issuer_id": "6878977dcbbf471de3366e85",
           "issuer_name": "Backed Assets",
-          "price": 27.83393071430656,
-          "market_cap": 429586.92,
-          "volume_24h": 43295.24589728
+          "price": 27.829507303986997,
+          "market_cap": 429518.65,
+          "volume_24h": 43267.65793362
         },
         {
           "crypto_id": 41430,
@@ -29636,9 +29653,9 @@
           "is_derivative": null,
           "issuer_id": "6a465832fbe3004b1a0ea2dd",
           "issuer_name": "Robinhood",
-          "price": 27.80891995192086,
+          "price": 27.854594889782398,
           "market_cap": 0,
-          "volume_24h": 6783036.15162012
+          "volume_24h": 6607281.93133804
         },
         {
           "crypto_id": 42046,
@@ -29650,9 +29667,9 @@
           "is_derivative": null,
           "issuer_id": "6a2aed5097c45356b1a5f710",
           "issuer_name": "bStocks",
-          "price": 27.80749791967515,
-          "market_cap": 791485.26,
-          "volume_24h": 72471.07789887
+          "price": 27.79819736076204,
+          "market_cap": 791220.54,
+          "volume_24h": 72496.53455737
         }
       ],
       "tradfi_market_count": 1
@@ -29682,9 +29699,9 @@
                 "is_derivative": null,
                 "issuer_id": "6878977dcbbf471de3366e85",
                 "issuer_name": "Backed Assets",
-                "price": 23.20536369617352,
+                "price": 23.110380801808223,
                 "market_cap": 0,
-                "volume_24h": 281546.60431668
+                "volume_24h": 285041.31468864
               }
             ]
           }
@@ -29723,9 +29740,9 @@
           "is_derivative": null,
           "issuer_id": "688ca4ccabae9b5b9fb3167a",
           "issuer_name": "Ondo Assets",
-          "price": 23.25156360985284,
-          "market_cap": 6613469.53,
-          "volume_24h": 2527007.97820338
+          "price": 23.084747807731162,
+          "market_cap": 6566021.92,
+          "volume_24h": 2538067.75345306
         },
         {
           "crypto_id": 39670,
@@ -29737,7 +29754,7 @@
           "is_derivative": null,
           "issuer_id": "695e11f774b54210f3b95dc3",
           "issuer_name": "NA (Derivatives)",
-          "price": 23.309081757331313,
+          "price": 23.10239385073465,
           "market_cap": 0,
           "volume_24h": 0
         },
@@ -29751,9 +29768,9 @@
           "is_derivative": null,
           "issuer_id": "6a2aed5097c45356b1a5f710",
           "issuer_name": "bStocks",
-          "price": 23.271159066153995,
-          "market_cap": 4651985.33,
-          "volume_24h": 3003950.28197917
+          "price": 23.082126977035195,
+          "market_cap": 4616546.11,
+          "volume_24h": 3031577.66481248
         },
         {
           "crypto_id": 41124,
@@ -29765,9 +29782,9 @@
           "is_derivative": null,
           "issuer_id": "6878977dcbbf471de3366e85",
           "issuer_name": "Backed Assets",
-          "price": 23.20536369617352,
+          "price": 23.110380801808223,
           "market_cap": 0,
-          "volume_24h": 281546.60431668
+          "volume_24h": 285041.31468864
         }
       ],
       "tradfi_market_count": 1
@@ -29797,9 +29814,9 @@
                 "is_derivative": null,
                 "issuer_id": "6a465832fbe3004b1a0ea2dd",
                 "issuer_name": "Robinhood",
-                "price": 2.5200858589950106,
+                "price": 2.5258849532302823,
                 "market_cap": 0,
-                "volume_24h": 8250461.91006027
+                "volume_24h": 8242662.13276279
               },
               {
                 "crypto_id": 42024,
@@ -29811,9 +29828,9 @@
                 "is_derivative": null,
                 "issuer_id": "6a2d54b697c45356b1a634f4",
                 "issuer_name": "Backpack",
-                "price": 2.521074609549792,
+                "price": 2.5210520882188034,
                 "market_cap": 0,
-                "volume_24h": 353757.28642305
+                "volume_24h": 349284.33073812
               }
             ]
           }
@@ -29847,9 +29864,9 @@
           "is_derivative": null,
           "issuer_id": "688ca4ccabae9b5b9fb3167a",
           "issuer_name": "Ondo Assets",
-          "price": 2.5413733601557817,
-          "market_cap": 132301.49,
-          "volume_24h": 722.7558815
+          "price": 2.5413145080444113,
+          "market_cap": 132298.43,
+          "volume_24h": 722.73914421
         },
         {
           "crypto_id": 42009,
@@ -29861,9 +29878,9 @@
           "is_derivative": null,
           "issuer_id": "6a465832fbe3004b1a0ea2dd",
           "issuer_name": "Robinhood",
-          "price": 2.5200858589950106,
+          "price": 2.5258849532302823,
           "market_cap": 0,
-          "volume_24h": 8250461.91006027
+          "volume_24h": 8242662.13276279
         },
         {
           "crypto_id": 42024,
@@ -29875,9 +29892,9 @@
           "is_derivative": null,
           "issuer_id": "6a2d54b697c45356b1a634f4",
           "issuer_name": "Backpack",
-          "price": 2.521074609549792,
+          "price": 2.5210520882188034,
           "market_cap": 0,
-          "volume_24h": 353757.28642305
+          "volume_24h": 349284.33073812
         }
       ],
       "tradfi_market_count": 1
@@ -29907,9 +29924,9 @@
                 "is_derivative": null,
                 "issuer_id": "6a465832fbe3004b1a0ea2dd",
                 "issuer_name": "Robinhood",
-                "price": 23.71400181132081,
+                "price": 23.707140709070647,
                 "market_cap": 0,
-                "volume_24h": 329273.56919834
+                "volume_24h": 329421.45005628
               }
             ]
           }
@@ -29944,9 +29961,9 @@
           "is_derivative": null,
           "issuer_id": "688ca4ccabae9b5b9fb3167a",
           "issuer_name": "Ondo Assets",
-          "price": 23.84322687785914,
-          "market_cap": 641362.96,
-          "volume_24h": 564752.18426358
+          "price": 23.84008121957154,
+          "market_cap": 641278.35,
+          "volume_24h": 563977.90263284
         },
         {
           "crypto_id": 41855,
@@ -29972,9 +29989,9 @@
           "is_derivative": null,
           "issuer_id": "6a465832fbe3004b1a0ea2dd",
           "issuer_name": "Robinhood",
-          "price": 23.71400181132081,
+          "price": 23.707140709070647,
           "market_cap": 0,
-          "volume_24h": 329273.56919834
+          "volume_24h": 329421.45005628
         }
       ],
       "tradfi_market_count": 1
@@ -30004,9 +30021,9 @@
                 "is_derivative": null,
                 "issuer_id": "6878977dcbbf471de3366e85",
                 "issuer_name": "Backed Assets",
-                "price": 286.50033759118634,
+                "price": 286.6301619909916,
                 "market_cap": 0,
-                "volume_24h": 10361.01153972
+                "volume_24h": 10361.00853229
               }
             ]
           }
@@ -30044,9 +30061,9 @@
           "is_derivative": null,
           "issuer_id": "688ca4ccabae9b5b9fb3167a",
           "issuer_name": "Ondo Assets",
-          "price": 287.7996301991854,
-          "market_cap": 3350555.51,
-          "volume_24h": 107.24272404
+          "price": 287.8717978128589,
+          "market_cap": 3351395.69,
+          "volume_24h": 107.33574806
         },
         {
           "crypto_id": 39493,
@@ -30058,7 +30075,7 @@
           "is_derivative": null,
           "issuer_id": "695e11f774b54210f3b95dc3",
           "issuer_name": "NA (Derivatives)",
-          "price": 285.39030370650636,
+          "price": 285.34082865907914,
           "market_cap": 0,
           "volume_24h": 0
         },
@@ -30072,9 +30089,109 @@
           "is_derivative": null,
           "issuer_id": "6878977dcbbf471de3366e85",
           "issuer_name": "Backed Assets",
-          "price": 286.50033759118634,
+          "price": 286.6301619909916,
           "market_cap": 0,
-          "volume_24h": 10361.01153972
+          "volume_24h": 10361.00853229
+        }
+      ],
+      "tradfi_market_count": 1
+    },
+    {
+      "rwa_id": 254,
+      "name": "Nebius Group N.V.",
+      "symbol": "NBIS",
+      "asset_type": "stock",
+      "token_count": 4,
+      "issuer_count": 4,
+      "state": "do_not_compare",
+      "signals": [
+        {
+          "code": "ZERO_MCAP_POSITIVE_VOLUME",
+          "severity": "critical",
+          "message": "At least one representation reports positive 24h volume with zero market cap.",
+          "evidence": {
+            "tokens": [
+              {
+                "crypto_id": 41481,
+                "symbol": "wNBISx",
+                "name": "Wrapped Nebius Tokenized Stock (xStock)",
+                "asset_type": null,
+                "token_type": null,
+                "category": null,
+                "is_derivative": null,
+                "issuer_id": "6878977dcbbf471de3366e85",
+                "issuer_name": "Backed Assets",
+                "price": 208.57716566071525,
+                "market_cap": 0,
+                "volume_24h": 480.29275939
+              }
+            ]
+          }
+        }
+      ],
+      "next_action": "Verify the token quote by crypto_id; do not turn volume into an investable market claim.",
+      "decision": {
+        "state": "blocked",
+        "label": "DO NOT SELECT A WRAPPER",
+        "consequence": "A research desk must not rank or substitute these representations until the contradiction is resolved.",
+        "allocation_effect": "NO WRAPPER SELECTED until identity, denomination and market state are cleared."
+      },
+      "tokens": [
+        {
+          "crypto_id": 40650,
+          "symbol": "rNBIS",
+          "name": "Nebius Tokenized Stock (Reality)",
+          "asset_type": null,
+          "token_type": null,
+          "category": null,
+          "is_derivative": null,
+          "issuer_id": "6a43600c282e7240b76c8bbb",
+          "issuer_name": "Reality",
+          "price": 206.45037487420072,
+          "market_cap": 478656.85,
+          "volume_24h": 265648.10445757
+        },
+        {
+          "crypto_id": 40770,
+          "symbol": "NBIS",
+          "name": "Nebius Group Tokenized Stock (Robinhood)",
+          "asset_type": null,
+          "token_type": null,
+          "category": null,
+          "is_derivative": null,
+          "issuer_id": "6a465832fbe3004b1a0ea2dd",
+          "issuer_name": "Robinhood",
+          "price": 206.61800463393237,
+          "market_cap": 277152.85,
+          "volume_24h": 51095.6176733
+        },
+        {
+          "crypto_id": 40797,
+          "symbol": "NBISB",
+          "name": "Nebius Tokenized bStocks",
+          "asset_type": null,
+          "token_type": null,
+          "category": null,
+          "is_derivative": null,
+          "issuer_id": "6a2aed5097c45356b1a5f710",
+          "issuer_name": "bStocks",
+          "price": 206.6050806287476,
+          "market_cap": 6129488.32,
+          "volume_24h": 2303401.01875081
+        },
+        {
+          "crypto_id": 41481,
+          "symbol": "wNBISx",
+          "name": "Wrapped Nebius Tokenized Stock (xStock)",
+          "asset_type": null,
+          "token_type": null,
+          "category": null,
+          "is_derivative": null,
+          "issuer_id": "6878977dcbbf471de3366e85",
+          "issuer_name": "Backed Assets",
+          "price": 208.57716566071525,
+          "market_cap": 0,
+          "volume_24h": 480.29275939
         }
       ],
       "tradfi_market_count": 1
@@ -30104,9 +30221,9 @@
                 "is_derivative": null,
                 "issuer_id": "6878977dcbbf471de3366e85",
                 "issuer_name": "Backed Assets",
-                "price": 155.93221121141661,
+                "price": 156.70928974101912,
                 "market_cap": 0,
-                "volume_24h": 21974.17009615
+                "volume_24h": 22380.56352893
               }
             ]
           }
@@ -30130,9 +30247,9 @@
           "is_derivative": null,
           "issuer_id": "6878977dcbbf471de3366e85",
           "issuer_name": "Backed Assets",
-          "price": 155.93221121141661,
+          "price": 156.70928974101912,
           "market_cap": 0,
-          "volume_24h": 21974.17009615
+          "volume_24h": 22380.56352893
         }
       ],
       "tradfi_market_count": 1
@@ -30162,9 +30279,9 @@
                 "is_derivative": null,
                 "issuer_id": "6a465832fbe3004b1a0ea2dd",
                 "issuer_name": "Robinhood",
-                "price": 16.74379880115116,
+                "price": 16.811484294025107,
                 "market_cap": 0,
-                "volume_24h": 121427.04340067
+                "volume_24h": 121793.67522981
               }
             ]
           }
@@ -30188,9 +30305,9 @@
           "is_derivative": null,
           "issuer_id": "6a465832fbe3004b1a0ea2dd",
           "issuer_name": "Robinhood",
-          "price": 16.74379880115116,
+          "price": 16.811484294025107,
           "market_cap": 0,
-          "volume_24h": 121427.04340067
+          "volume_24h": 121793.67522981
         }
       ],
       "tradfi_market_count": 1
@@ -30209,13 +30326,13 @@
           "severity": "warning",
           "message": "Token prices span at least 2x inside one CMC reference; resolve units and claim type before ranking.",
           "evidence": {
-            "max_min_ratio": 4.006321428485021,
+            "max_min_ratio": 4.000722010140593,
             "prices": [
-              242.20065833766202,
-              964.0416686174065,
-              240.63013560595815,
+              242.06014107717178,
+              963.2527703664023,
+              240.7697330443991,
               242.09410707473847,
-              241.20822951196317
+              241.2156233581873
             ]
           }
         },
@@ -30276,9 +30393,9 @@
           "is_derivative": null,
           "issuer_id": "6878977dcbbf471de3366e85",
           "issuer_name": "Backed Assets",
-          "price": 242.20065833766202,
-          "market_cap": 816333.43,
-          "volume_24h": 308247.74893755
+          "price": 242.06014107717178,
+          "market_cap": 815859.82,
+          "volume_24h": 309545.62839694
         },
         {
           "crypto_id": 39286,
@@ -30290,9 +30407,9 @@
           "is_derivative": null,
           "issuer_id": "688ca4ccabae9b5b9fb3167a",
           "issuer_name": "Ondo Assets",
-          "price": 964.0416686174065,
-          "market_cap": 291697.38,
-          "volume_24h": 33.93791088
+          "price": 963.2527703664023,
+          "market_cap": 291458.67,
+          "volume_24h": 33.92539667
         },
         {
           "crypto_id": 40065,
@@ -30304,7 +30421,7 @@
           "is_derivative": null,
           "issuer_id": "695e11f774b54210f3b95dc3",
           "issuer_name": "NA (Derivatives)",
-          "price": 240.63013560595815,
+          "price": 240.7697330443991,
           "market_cap": 0,
           "volume_24h": 0
         },
@@ -30346,9 +30463,9 @@
           "is_derivative": null,
           "issuer_id": "6a2aed5097c45356b1a5f710",
           "issuer_name": "bStocks",
-          "price": 241.20822951196317,
-          "market_cap": 488425.76,
-          "volume_24h": 796130.56937555
+          "price": 241.2156233581873,
+          "market_cap": 488440.73,
+          "volume_24h": 796121.63449905
         }
       ],
       "tradfi_market_count": 1
@@ -30367,12 +30484,12 @@
           "severity": "warning",
           "message": "Token prices span at least 2x inside one CMC reference; resolve units and claim type before ranking.",
           "evidence": {
-            "max_min_ratio": 5.013925489282915,
+            "max_min_ratio": 5.004963924640193,
             "prices": [
-              707.8733640843567,
-              141.50649375449822,
-              141.1814686112529,
-              142.65048501841787
+              707.7895234153672,
+              141.5756527191459,
+              141.4175075130537,
+              142.67579545639194
             ]
           }
         },
@@ -30432,9 +30549,9 @@
           "is_derivative": null,
           "issuer_id": "688ca4ccabae9b5b9fb3167a",
           "issuer_name": "Ondo Assets",
-          "price": 707.8733640843567,
-          "market_cap": 1839147.5,
-          "volume_24h": 1243002.49997617
+          "price": 707.7895234153672,
+          "market_cap": 1838929.68,
+          "volume_24h": 1241570.20329227
         },
         {
           "crypto_id": 40111,
@@ -30446,7 +30563,7 @@
           "is_derivative": null,
           "issuer_id": "695e11f774b54210f3b95dc3",
           "issuer_name": "NA (Derivatives)",
-          "price": 141.50649375449822,
+          "price": 141.5756527191459,
           "market_cap": 0,
           "volume_24h": 0
         },
@@ -30460,9 +30577,9 @@
           "is_derivative": null,
           "issuer_id": "6a43600c282e7240b76c8bbb",
           "issuer_name": "Reality",
-          "price": 141.1814686112529,
-          "market_cap": 235388.43,
-          "volume_24h": 1611.25329672
+          "price": 141.4175075130537,
+          "market_cap": 235781.98,
+          "volume_24h": 1611.21007381
         },
         {
           "crypto_id": 40740,
@@ -30474,9 +30591,9 @@
           "is_derivative": null,
           "issuer_id": "6a465832fbe3004b1a0ea2dd",
           "issuer_name": "Robinhood",
-          "price": 142.65048501841787,
-          "market_cap": 32646.42,
-          "volume_24h": 8510.34366
+          "price": 142.67579545639194,
+          "market_cap": 32652.21,
+          "volume_24h": 8512.04572873
         },
         {
           "crypto_id": 41548,
@@ -30565,9 +30682,9 @@
           "is_derivative": null,
           "issuer_id": "6878977dcbbf471de3366e85",
           "issuer_name": "Backed Assets",
-          "price": 344.661083661482,
-          "market_cap": 35181481.19,
-          "volume_24h": 8899945.88154732
+          "price": 344.60602915970236,
+          "market_cap": 35175861.47,
+          "volume_24h": 8891750.8129699
         },
         {
           "crypto_id": 28634,
@@ -30593,9 +30710,9 @@
           "is_derivative": null,
           "issuer_id": "688ca4ccabae9b5b9fb3167a",
           "issuer_name": "Ondo Assets",
-          "price": 345.2427359224093,
-          "market_cap": 19933424.11,
-          "volume_24h": 10848856.67905592
+          "price": 345.0807720260944,
+          "market_cap": 19924072.73,
+          "volume_24h": 10793202.24420096
         },
         {
           "crypto_id": 39470,
@@ -30607,7 +30724,7 @@
           "is_derivative": null,
           "issuer_id": "695e11f774b54210f3b95dc3",
           "issuer_name": "NA (Derivatives)",
-          "price": 344.65040368690836,
+          "price": 344.1613011099566,
           "market_cap": 0,
           "volume_24h": 0
         },
@@ -30635,9 +30752,9 @@
           "is_derivative": null,
           "issuer_id": "6a43600c282e7240b76c8bbb",
           "issuer_name": "Reality",
-          "price": 344.28971815285223,
-          "market_cap": 11656795.03,
-          "volume_24h": 189123.03540593
+          "price": 344.1205982353752,
+          "market_cap": 11651069.05,
+          "volume_24h": 189877.32850694
         },
         {
           "crypto_id": 40757,
@@ -30649,9 +30766,9 @@
           "is_derivative": null,
           "issuer_id": "6a465832fbe3004b1a0ea2dd",
           "issuer_name": "Robinhood",
-          "price": 344.6167804850869,
-          "market_cap": 5425285.63,
-          "volume_24h": 12158867.5062951
+          "price": 344.47158709751164,
+          "market_cap": 5422999.86,
+          "volume_24h": 12290939.60514022
         },
         {
           "crypto_id": 40793,
@@ -30663,9 +30780,9 @@
           "is_derivative": null,
           "issuer_id": "6a2aed5097c45356b1a5f710",
           "issuer_name": "bStocks",
-          "price": 344.1922267288483,
-          "market_cap": 29875223.68,
-          "volume_24h": 47443257.88901533
+          "price": 344.0479564361578,
+          "market_cap": 29862701.3,
+          "volume_24h": 47302728.72547407
         },
         {
           "crypto_id": 37121,
@@ -30677,9 +30794,9 @@
           "is_derivative": null,
           "issuer_id": "6878977dcbbf471de3366e85",
           "issuer_name": "Backed Assets",
-          "price": 344.99195554665545,
-          "market_cap": 291718,
-          "volume_24h": 97820.30700634
+          "price": 344.93403700284284,
+          "market_cap": 291669.03,
+          "volume_24h": 97821.50419937
         },
         {
           "crypto_id": 42272,
@@ -30691,9 +30808,9 @@
           "is_derivative": null,
           "issuer_id": "688ca4ccabae9b5b9fb3167a",
           "issuer_name": "Ondo Assets",
-          "price": 340.8938370004151,
-          "market_cap": 234.43,
-          "volume_24h": 19.18658377
+          "price": 340.75970764318566,
+          "market_cap": 234.34,
+          "volume_24h": 19.18778889
         }
       ],
       "tradfi_market_count": 1
@@ -30767,9 +30884,9 @@
           "is_derivative": null,
           "issuer_id": "6878977dcbbf471de3366e85",
           "issuer_name": "Backed Assets",
-          "price": 332.38960484141677,
-          "market_cap": 13734533.77,
-          "volume_24h": 3339334.42672207
+          "price": 332.60958521399033,
+          "market_cap": 13743623.48,
+          "volume_24h": 3349080.24358973
         },
         {
           "crypto_id": 28624,
@@ -30795,9 +30912,9 @@
           "is_derivative": null,
           "issuer_id": "688ca4ccabae9b5b9fb3167a",
           "issuer_name": "Ondo Assets",
-          "price": 332.64131543792274,
-          "market_cap": 8777733.92,
-          "volume_24h": 3425768.2745296
+          "price": 332.73149293874116,
+          "market_cap": 8780113.52,
+          "volume_24h": 3405038.27711025
         },
         {
           "crypto_id": 39491,
@@ -30809,7 +30926,7 @@
           "is_derivative": null,
           "issuer_id": "695e11f774b54210f3b95dc3",
           "issuer_name": "NA (Derivatives)",
-          "price": 331.56337074653146,
+          "price": 331.55693064684215,
           "market_cap": 0,
           "volume_24h": 0
         },
@@ -30837,9 +30954,9 @@
           "is_derivative": null,
           "issuer_id": "6a43600c282e7240b76c8bbb",
           "issuer_name": "Reality",
-          "price": 331.65365057933326,
-          "market_cap": 637343.1,
-          "volume_24h": 13494564.48802056
+          "price": 331.3202528434415,
+          "market_cap": 636702.4,
+          "volume_24h": 13494208.21528915
         },
         {
           "crypto_id": 40703,
@@ -30851,9 +30968,9 @@
           "is_derivative": null,
           "issuer_id": "6a465832fbe3004b1a0ea2dd",
           "issuer_name": "Robinhood",
-          "price": 330.55424230321023,
-          "market_cap": 5296929.08,
-          "volume_24h": 5964842.22272791
+          "price": 331.4292409136416,
+          "market_cap": 5310950.39,
+          "volume_24h": 5845466.71840022
         },
         {
           "crypto_id": 40927,
@@ -30865,9 +30982,9 @@
           "is_derivative": null,
           "issuer_id": "6a2aed5097c45356b1a5f710",
           "issuer_name": "bStocks",
-          "price": 331.376611983638,
-          "market_cap": 6136795.76,
-          "volume_24h": 5443199.00321591
+          "price": 331.5729286067077,
+          "market_cap": 6140436.57,
+          "volume_24h": 5486656.61663597
         },
         {
           "crypto_id": 37269,
@@ -30879,9 +30996,9 @@
           "is_derivative": null,
           "issuer_id": "6878977dcbbf471de3366e85",
           "issuer_name": "Backed Assets",
-          "price": 332.7294543827982,
-          "market_cap": 400027.92,
-          "volume_24h": 601747.35575277
+          "price": 332.67680618418746,
+          "market_cap": 399964.62,
+          "volume_24h": 605658.93504028
         }
       ],
       "tradfi_market_count": 1
@@ -30954,9 +31071,9 @@
           "is_derivative": null,
           "issuer_id": "6878977dcbbf471de3366e85",
           "issuer_name": "Backed Assets",
-          "price": 170.9866175687704,
-          "market_cap": 11429271.47,
-          "volume_24h": 7601425.26773587
+          "price": 170.5460189893919,
+          "market_cap": 11399820.5,
+          "volume_24h": 7629607.86926749
         },
         {
           "crypto_id": 28625,
@@ -30982,9 +31099,9 @@
           "is_derivative": null,
           "issuer_id": "688ca4ccabae9b5b9fb3167a",
           "issuer_name": "Ondo Assets",
-          "price": 170.93262201382865,
-          "market_cap": 8502982.11,
-          "volume_24h": 3933575.65397999
+          "price": 170.6184904907158,
+          "market_cap": 8487355.75,
+          "volume_24h": 3946083.85513368
         },
         {
           "crypto_id": 39483,
@@ -30996,7 +31113,7 @@
           "is_derivative": null,
           "issuer_id": "695e11f774b54210f3b95dc3",
           "issuer_name": "NA (Derivatives)",
-          "price": 171.14110925380325,
+          "price": 170.55482394954902,
           "market_cap": 0,
           "volume_24h": 0
         },
@@ -31010,9 +31127,9 @@
           "is_derivative": null,
           "issuer_id": "6a43600c282e7240b76c8bbb",
           "issuer_name": "Reality",
-          "price": 171.06061577629018,
-          "market_cap": 2663720.05,
-          "volume_24h": 226652.05725068
+          "price": 170.39650495425323,
+          "market_cap": 2653378.66,
+          "volume_24h": 229376.69297699
         },
         {
           "crypto_id": 40722,
@@ -31024,9 +31141,9 @@
           "is_derivative": null,
           "issuer_id": "6a465832fbe3004b1a0ea2dd",
           "issuer_name": "Robinhood",
-          "price": 171.34859026976943,
-          "market_cap": 2161034.03,
-          "volume_24h": 2119772.57202199
+          "price": 170.88184024555832,
+          "market_cap": 2155147.42,
+          "volume_24h": 2107255.60557924
         },
         {
           "crypto_id": 40789,
@@ -31038,9 +31155,9 @@
           "is_derivative": null,
           "issuer_id": "6a2aed5097c45356b1a5f710",
           "issuer_name": "bStocks",
-          "price": 170.99079174621303,
-          "market_cap": 15805668.5,
-          "volume_24h": 3385486.361779
+          "price": 170.47685036162804,
+          "market_cap": 15758161.92,
+          "volume_24h": 3388848.32829475
         },
         {
           "crypto_id": 37193,
@@ -31052,9 +31169,9 @@
           "is_derivative": null,
           "issuer_id": "6878977dcbbf471de3366e85",
           "issuer_name": "Backed Assets",
-          "price": 170.49532073510528,
-          "market_cap": 166482.73,
-          "volume_24h": 3433541.52541691
+          "price": 170.81038493831105,
+          "market_cap": 166790.38,
+          "volume_24h": 3429224.50890073
         }
       ],
       "tradfi_market_count": 1
@@ -31126,9 +31243,9 @@
           "is_derivative": null,
           "issuer_id": "688ca4ccabae9b5b9fb3167a",
           "issuer_name": "Ondo Assets",
-          "price": 422.2309638953965,
-          "market_cap": 552293.59,
-          "volume_24h": 1956970.40776985
+          "price": 422.21764668775074,
+          "market_cap": 552276.17,
+          "volume_24h": 1957115.35008112
         },
         {
           "crypto_id": 40087,
@@ -31140,7 +31257,7 @@
           "is_derivative": null,
           "issuer_id": "695e11f774b54210f3b95dc3",
           "issuer_name": "NA (Derivatives)",
-          "price": 421.5730233452072,
+          "price": 421.6308649976287,
           "market_cap": 0,
           "volume_24h": 0
         },
@@ -31154,9 +31271,9 @@
           "is_derivative": null,
           "issuer_id": "6878977dcbbf471de3366e85",
           "issuer_name": "Backed Assets",
-          "price": 421.66632292853836,
-          "market_cap": 578867.81,
-          "volume_24h": 45785.59226394
+          "price": 422.27835006975687,
+          "market_cap": 579708.01,
+          "volume_24h": 45779.14904076
         },
         {
           "crypto_id": 40639,
@@ -31168,9 +31285,9 @@
           "is_derivative": null,
           "issuer_id": "6a43600c282e7240b76c8bbb",
           "issuer_name": "Reality",
-          "price": 421.2060377947558,
-          "market_cap": 224116.46,
-          "volume_24h": 11810.13970227
+          "price": 421.1947386712276,
+          "market_cap": 224110.45,
+          "volume_24h": 11810.04944571
         },
         {
           "crypto_id": 40752,
@@ -31182,9 +31299,9 @@
           "is_derivative": null,
           "issuer_id": "6a465832fbe3004b1a0ea2dd",
           "issuer_name": "Robinhood",
-          "price": 416.5862590536055,
-          "market_cap": 112042.96,
-          "volume_24h": 3928.22385845
+          "price": 416.6694217399285,
+          "market_cap": 112065.33,
+          "volume_24h": 3921.4771336
         },
         {
           "crypto_id": 40936,
@@ -31196,9 +31313,9 @@
           "is_derivative": null,
           "issuer_id": "6a2aed5097c45356b1a5f710",
           "issuer_name": "bStocks",
-          "price": 421.2039772723842,
-          "market_cap": 2203768.95,
-          "volume_24h": 1150289.87716158
+          "price": 421.15192754986276,
+          "market_cap": 2203496.62,
+          "volume_24h": 1150215.18571497
         },
         {
           "crypto_id": 41094,
@@ -31284,9 +31401,9 @@
           "is_derivative": null,
           "issuer_id": "6878977dcbbf471de3366e85",
           "issuer_name": "Backed Assets",
-          "price": 21.38764802855301,
-          "market_cap": 1286977.57,
-          "volume_24h": 557352.28256688
+          "price": 21.381629518178006,
+          "market_cap": 1286615.41,
+          "volume_24h": 558260.06532132
         },
         {
           "crypto_id": 37117,
@@ -31312,9 +31429,9 @@
           "is_derivative": null,
           "issuer_id": "688ca4ccabae9b5b9fb3167a",
           "issuer_name": "Ondo Assets",
-          "price": 21.7888515656064,
-          "market_cap": 409717.89,
-          "volume_24h": 837044.55531422
+          "price": 21.795527689892463,
+          "market_cap": 409843.43,
+          "volume_24h": 840157.07746144
         },
         {
           "crypto_id": 39928,
@@ -31326,7 +31443,7 @@
           "is_derivative": null,
           "issuer_id": "695e11f774b54210f3b95dc3",
           "issuer_name": "NA (Derivatives)",
-          "price": 21.426304315827018,
+          "price": 21.423051776593574,
           "market_cap": 0,
           "volume_24h": 0
         },
@@ -31340,9 +31457,9 @@
           "is_derivative": null,
           "issuer_id": "6a465832fbe3004b1a0ea2dd",
           "issuer_name": "Robinhood",
-          "price": 21.410772978604545,
-          "market_cap": 3445564.35,
-          "volume_24h": 6162336.66570123
+          "price": 21.36716768614574,
+          "market_cap": 3438547.1,
+          "volume_24h": 6191087.65493278
         },
         {
           "crypto_id": 41077,
@@ -31354,9 +31471,9 @@
           "is_derivative": null,
           "issuer_id": "6a2aed5097c45356b1a5f710",
           "issuer_name": "bStocks",
-          "price": 21.428843257554636,
-          "market_cap": 6236003.26,
-          "volume_24h": 9244125.54271785
+          "price": 21.42507435708935,
+          "market_cap": 6234906.47,
+          "volume_24h": 9218106.61420659
         },
         {
           "crypto_id": 37120,
@@ -31368,9 +31485,9 @@
           "is_derivative": null,
           "issuer_id": "6878977dcbbf471de3366e85",
           "issuer_name": "Backed Assets",
-          "price": 26.824713735465515,
-          "market_cap": 244263.5,
-          "volume_24h": 214676.36289924
+          "price": 21.555289848509197,
+          "market_cap": 196280.58,
+          "volume_24h": 214851.69740327
         }
       ],
       "tradfi_market_count": 1
@@ -31442,9 +31559,9 @@
           "is_derivative": null,
           "issuer_id": "688ca4ccabae9b5b9fb3167a",
           "issuer_name": "Ondo Assets",
-          "price": 190.970109399608,
-          "market_cap": 3718894.09,
-          "volume_24h": 1500036.91664927
+          "price": 191.21717532298396,
+          "market_cap": 3723705.37,
+          "volume_24h": 1501533.5481137
         },
         {
           "crypto_id": 39932,
@@ -31456,7 +31573,7 @@
           "is_derivative": null,
           "issuer_id": "695e11f774b54210f3b95dc3",
           "issuer_name": "NA (Derivatives)",
-          "price": 187.87444620379253,
+          "price": 187.76107188912638,
           "market_cap": 0,
           "volume_24h": 0
         },
@@ -31470,9 +31587,9 @@
           "is_derivative": null,
           "issuer_id": "6a43600c282e7240b76c8bbb",
           "issuer_name": "Reality",
-          "price": 187.56909441061842,
-          "market_cap": 561887.13,
-          "volume_24h": 23455.14561402
+          "price": 186.89454798026026,
+          "market_cap": 559866.44,
+          "volume_24h": 23454.51641462
         },
         {
           "crypto_id": 40749,
@@ -31484,9 +31601,9 @@
           "is_derivative": null,
           "issuer_id": "6a465832fbe3004b1a0ea2dd",
           "issuer_name": "Robinhood",
-          "price": 188.16060614538424,
-          "market_cap": 34937.1,
-          "volume_24h": 9864.057738
+          "price": 188.19630083663245,
+          "market_cap": 34943.72,
+          "volume_24h": 9866.03054955
         },
         {
           "crypto_id": 40792,
@@ -31498,9 +31615,9 @@
           "is_derivative": null,
           "issuer_id": "6a2aed5097c45356b1a5f710",
           "issuer_name": "bStocks",
-          "price": 187.1308122423,
-          "market_cap": 2744471.85,
-          "volume_24h": 1943057.20916827
+          "price": 187.1222893885568,
+          "market_cap": 2744346.86,
+          "volume_24h": 1947036.36024029
         },
         {
           "crypto_id": 41622,
@@ -31526,9 +31643,9 @@
           "is_derivative": null,
           "issuer_id": "6878977dcbbf471de3366e85",
           "issuer_name": "Backed Assets",
-          "price": 187.38508842986437,
-          "market_cap": 557592.31,
-          "volume_24h": 224202.85841671
+          "price": 187.37487773901375,
+          "market_cap": 557561.92,
+          "volume_24h": 223831.44460881
         }
       ],
       "tradfi_market_count": 1
@@ -31600,7 +31717,7 @@
           "is_derivative": null,
           "issuer_id": "695e11f774b54210f3b95dc3",
           "issuer_name": "NA (Derivatives)",
-          "price": 176.88897919835048,
+          "price": 176.82735319416062,
           "market_cap": 0,
           "volume_24h": 0
         },
@@ -31614,9 +31731,9 @@
           "is_derivative": null,
           "issuer_id": "688ca4ccabae9b5b9fb3167a",
           "issuer_name": "Ondo Assets",
-          "price": 176.71648159415093,
-          "market_cap": 888809.43,
-          "volume_24h": 1048760.84403544
+          "price": 176.78960892562625,
+          "market_cap": 889177.23,
+          "volume_24h": 1042228.23095957
         },
         {
           "crypto_id": 40159,
@@ -31628,9 +31745,9 @@
           "is_derivative": null,
           "issuer_id": "6878977dcbbf471de3366e85",
           "issuer_name": "Backed Assets",
-          "price": 176.96919449162948,
-          "market_cap": 2081700.59,
-          "volume_24h": 496196.82684012
+          "price": 176.97802209223576,
+          "market_cap": 2081804.43,
+          "volume_24h": 494864.62582508
         },
         {
           "crypto_id": 40539,
@@ -31642,9 +31759,9 @@
           "is_derivative": null,
           "issuer_id": "6a2aed5097c45356b1a5f710",
           "issuer_name": "bStocks",
-          "price": 176.81761521701839,
-          "market_cap": 8628022.01,
-          "volume_24h": 4128203.26107925
+          "price": 176.77750269364552,
+          "market_cap": 8626064.68,
+          "volume_24h": 4130612.14967399
         },
         {
           "crypto_id": 40645,
@@ -31656,9 +31773,9 @@
           "is_derivative": null,
           "issuer_id": "6a43600c282e7240b76c8bbb",
           "issuer_name": "Reality",
-          "price": 176.5412039186061,
-          "market_cap": 239302.59,
-          "volume_24h": 14307.92641613
+          "price": 176.6619640561953,
+          "market_cap": 239466.29,
+          "volume_24h": 14686.05166864
         },
         {
           "crypto_id": 40763,
@@ -31670,9 +31787,9 @@
           "is_derivative": null,
           "issuer_id": "6a465832fbe3004b1a0ea2dd",
           "issuer_name": "Robinhood",
-          "price": 176.00826234437272,
-          "market_cap": 179355.59,
-          "volume_24h": 18898.08084262
+          "price": 176.06285178555717,
+          "market_cap": 179411.22,
+          "volume_24h": 18337.20410348
         },
         {
           "crypto_id": 41388,
@@ -31757,9 +31874,9 @@
           "is_derivative": null,
           "issuer_id": "688ca4ccabae9b5b9fb3167a",
           "issuer_name": "Ondo Assets",
-          "price": 1141.1845184328606,
-          "market_cap": 4934924.32,
-          "volume_24h": 3834613.32453007
+          "price": 1142.2266637297823,
+          "market_cap": 4939430.96,
+          "volume_24h": 3809796.72392816
         },
         {
           "crypto_id": 37038,
@@ -31771,9 +31888,9 @@
           "is_derivative": null,
           "issuer_id": "6878977dcbbf471de3366e85",
           "issuer_name": "Backed Assets",
-          "price": 1146.3671612066496,
-          "market_cap": 968783.48,
-          "volume_24h": 317512.55343955
+          "price": 1146.5479949676223,
+          "market_cap": 968936.3,
+          "volume_24h": 313491.61220923
         },
         {
           "crypto_id": 39509,
@@ -31785,7 +31902,7 @@
           "is_derivative": null,
           "issuer_id": "695e11f774b54210f3b95dc3",
           "issuer_name": "NA (Derivatives)",
-          "price": 1137.4381044972774,
+          "price": 1137.5255667396752,
           "market_cap": 0,
           "volume_24h": 0
         },
@@ -31799,9 +31916,9 @@
           "is_derivative": null,
           "issuer_id": "6a43600c282e7240b76c8bbb",
           "issuer_name": "Reality",
-          "price": 1135.657417916608,
-          "market_cap": 56152.54,
-          "volume_24h": 8063.35923351
+          "price": 1136.1765548497883,
+          "market_cap": 56178.21,
+          "volume_24h": 8063.1429287
         },
         {
           "crypto_id": 40720,
@@ -31813,9 +31930,9 @@
           "is_derivative": null,
           "issuer_id": "6a465832fbe3004b1a0ea2dd",
           "issuer_name": "Robinhood",
-          "price": 1135.0096293308854,
-          "market_cap": 2135968.7,
-          "volume_24h": 1248682.52831251
+          "price": 1135.7207713095581,
+          "market_cap": 2137306.99,
+          "volume_24h": 1070663.9827476
         },
         {
           "crypto_id": 37207,
@@ -31905,7 +32022,7 @@
           "is_derivative": null,
           "issuer_id": "695e11f774b54210f3b95dc3",
           "issuer_name": "NA (Derivatives)",
-          "price": 183.75427914660466,
+          "price": 183.57591004364372,
           "market_cap": 0,
           "volume_24h": 0
         },
@@ -31919,9 +32036,9 @@
           "is_derivative": null,
           "issuer_id": "6a43600c282e7240b76c8bbb",
           "issuer_name": "Reality",
-          "price": 183.1321909519975,
-          "market_cap": 302227.32,
-          "volume_24h": 31753.51449225
+          "price": 183.3671044986246,
+          "market_cap": 302615.01,
+          "volume_24h": 31753.27182255
         },
         {
           "crypto_id": 40698,
@@ -31947,9 +32064,9 @@
           "is_derivative": null,
           "issuer_id": "6a2aed5097c45356b1a5f710",
           "issuer_name": "bStocks",
-          "price": 183.5339499736512,
-          "market_cap": 2436310.22,
-          "volume_24h": 2317761.00930901
+          "price": 183.56970753175165,
+          "market_cap": 2436784.89,
+          "volume_24h": 2318404.32384996
         },
         {
           "crypto_id": 41273,
@@ -32033,9 +32150,9 @@
           "is_derivative": null,
           "issuer_id": "688ca4ccabae9b5b9fb3167a",
           "issuer_name": "Ondo Assets",
-          "price": 159.1040648699572,
-          "market_cap": 762177.67,
-          "volume_24h": 567011.31608351
+          "price": 159.11108451404542,
+          "market_cap": 762211.3,
+          "volume_24h": 569646.09156532
         },
         {
           "crypto_id": 39633,
@@ -32047,7 +32164,7 @@
           "is_derivative": null,
           "issuer_id": "695e11f774b54210f3b95dc3",
           "issuer_name": "NA (Derivatives)",
-          "price": 159.12616762369873,
+          "price": 158.93915371497692,
           "market_cap": 0,
           "volume_24h": 0
         },
@@ -32061,9 +32178,9 @@
           "is_derivative": null,
           "issuer_id": "6a465832fbe3004b1a0ea2dd",
           "issuer_name": "Robinhood",
-          "price": 158.92594858239988,
-          "market_cap": 1654654.18,
-          "volume_24h": 1496000.17567032
+          "price": 158.3340297665752,
+          "market_cap": 1648491.43,
+          "volume_24h": 1495317.19812106
         },
         {
           "crypto_id": 41583,
@@ -32161,9 +32278,9 @@
           "is_derivative": null,
           "issuer_id": "688ca4ccabae9b5b9fb3167a",
           "issuer_name": "Ondo Assets",
-          "price": 15.539540311415083,
-          "market_cap": 33216.67,
-          "volume_24h": 1497266.5937501
+          "price": 15.56565072498801,
+          "market_cap": 33272.49,
+          "volume_24h": 1504626.20434548
         },
         {
           "crypto_id": 39499,
@@ -32175,7 +32292,7 @@
           "is_derivative": null,
           "issuer_id": "695e11f774b54210f3b95dc3",
           "issuer_name": "NA (Derivatives)",
-          "price": 15.520094748975962,
+          "price": 15.532684787551169,
           "market_cap": 0,
           "volume_24h": 0
         },
@@ -32189,9 +32306,9 @@
           "is_derivative": null,
           "issuer_id": "6a465832fbe3004b1a0ea2dd",
           "issuer_name": "Robinhood",
-          "price": 15.511899405120028,
-          "market_cap": 567600.07,
-          "volume_24h": 72629.70216967
+          "price": 15.497971482803829,
+          "market_cap": 567090.43,
+          "volume_24h": 108832.08261176
         },
         {
           "crypto_id": 41521,
@@ -32217,9 +32334,9 @@
           "is_derivative": null,
           "issuer_id": "6878977dcbbf471de3366e85",
           "issuer_name": "Backed Assets",
-          "price": 15.769488002897232,
-          "market_cap": 16397.59,
-          "volume_24h": 16159.55267039
+          "price": 15.768628716983828,
+          "market_cap": 16396.7,
+          "volume_24h": 16158.6721297
         }
       ],
       "tradfi_market_count": 1
@@ -32289,9 +32406,9 @@
           "is_derivative": null,
           "issuer_id": "688ca4ccabae9b5b9fb3167a",
           "issuer_name": "Ondo Assets",
-          "price": 17.120125695714325,
-          "market_cap": 11881449.41,
-          "volume_24h": 549105.18888876
+          "price": 17.11975554561858,
+          "market_cap": 11881192.52,
+          "volume_24h": 545240.38933479
         },
         {
           "crypto_id": 40662,
@@ -32303,9 +32420,9 @@
           "is_derivative": null,
           "issuer_id": "6a43600c282e7240b76c8bbb",
           "issuer_name": "Reality",
-          "price": 17.08807413117515,
-          "market_cap": 116692.06,
-          "volume_24h": 19551.93089085
+          "price": 17.107601248046066,
+          "market_cap": 116825.41,
+          "volume_24h": 19551.4063977
         },
         {
           "crypto_id": 40725,
@@ -32317,9 +32434,9 @@
           "is_derivative": null,
           "issuer_id": "6a465832fbe3004b1a0ea2dd",
           "issuer_name": "Robinhood",
-          "price": 17.145706713452554,
-          "market_cap": 52619.18,
-          "volume_24h": 7623.5467536
+          "price": 17.148755916616476,
+          "market_cap": 52628.54,
+          "volume_24h": 7494.91350412
         },
         {
           "crypto_id": 40888,
@@ -32331,7 +32448,7 @@
           "is_derivative": null,
           "issuer_id": "695e11f774b54210f3b95dc3",
           "issuer_name": "NA (Derivatives)",
-          "price": 17.097870734255967,
+          "price": 17.129363189026282,
           "market_cap": 0,
           "volume_24h": 0
         },
@@ -32416,7 +32533,7 @@
           "is_derivative": null,
           "issuer_id": "695e11f774b54210f3b95dc3",
           "issuer_name": "NA (Derivatives)",
-          "price": 93.26307570977323,
+          "price": 93.40468975449079,
           "market_cap": 0,
           "volume_24h": 0
         },
@@ -32430,9 +32547,9 @@
           "is_derivative": null,
           "issuer_id": "6a465832fbe3004b1a0ea2dd",
           "issuer_name": "Robinhood",
-          "price": 93.76891027282781,
-          "market_cap": 67510.61,
-          "volume_24h": 12035.52097833
+          "price": 93.78636541008817,
+          "market_cap": 67523.18,
+          "volume_24h": 12037.76247596
         },
         {
           "crypto_id": 41693,
@@ -32458,9 +32575,9 @@
           "is_derivative": null,
           "issuer_id": "6878977dcbbf471de3366e85",
           "issuer_name": "Backed Assets",
-          "price": 94.24558945634143,
-          "market_cap": 159644.71,
-          "volume_24h": 1489.97017027
+          "price": 94.21909642642144,
+          "market_cap": 159599.83,
+          "volume_24h": 1489.79170748
         }
       ],
       "tradfi_market_count": 1
@@ -32528,9 +32645,9 @@
           "is_derivative": null,
           "issuer_id": "6a465832fbe3004b1a0ea2dd",
           "issuer_name": "Robinhood",
-          "price": 23.399048907605227,
-          "market_cap": 24738.34,
-          "volume_24h": 7821.03656313
+          "price": 23.40606060451985,
+          "market_cap": 24745.75,
+          "volume_24h": 7823.38310875
         },
         {
           "crypto_id": 40802,
@@ -32542,7 +32659,7 @@
           "is_derivative": null,
           "issuer_id": "695e11f774b54210f3b95dc3",
           "issuer_name": "NA (Derivatives)",
-          "price": 23.59329275470657,
+          "price": 23.534440229075113,
           "market_cap": 0,
           "volume_24h": 0
         },
@@ -32562,120 +32679,22 @@
         }
       ],
       "tradfi_market_count": 1
-    },
-    {
-      "rwa_id": 278,
-      "name": "Datadog, Inc.",
-      "symbol": "DDOG",
-      "asset_type": "stock",
-      "token_count": 3,
-      "issuer_count": 3,
-      "state": "investigate",
-      "signals": [
-        {
-          "code": "DERIVATIVE_MIX",
-          "severity": "warning",
-          "message": "Derivative-labelled and non-derivative representations are grouped under one reference.",
-          "evidence": {
-            "derivatives": [
-              "DDOG"
-            ],
-            "other": [
-              "DDOG",
-              "wDDOGx"
-            ]
-          }
-        },
-        {
-          "code": "SYMBOL_COLLISION",
-          "severity": "warning",
-          "message": "A ticker is reused by multiple representations; symbol is not a safe identity key.",
-          "evidence": {
-            "symbols": [
-              "DDOG"
-            ]
-          }
-        },
-        {
-          "code": "MARKET_FIELDS_MISSING",
-          "severity": "warning",
-          "message": "One or more token representations are missing price, market cap or volume.",
-          "evidence": {
-            "tokens": [
-              "wDDOGx"
-            ],
-            "count": 1
-          }
-        }
-      ],
-      "next_action": "Split derivative-labelled representations from spot or wrapper representations.",
-      "decision": {
-        "state": "hold",
-        "label": "HOLD COMPARISON",
-        "consequence": "Keep issuer comparison open, but do not treat the current rows as equivalent exposure.",
-        "allocation_effect": "NO EQUIVALENCE CLAIM published while the investigation is open."
-      },
-      "tokens": [
-        {
-          "crypto_id": 40715,
-          "symbol": "DDOG",
-          "name": "Datadog Tokenized Stock (Robinhood)",
-          "asset_type": null,
-          "token_type": null,
-          "category": null,
-          "is_derivative": null,
-          "issuer_id": "6a465832fbe3004b1a0ea2dd",
-          "issuer_name": "Robinhood",
-          "price": 229.042759061724,
-          "market_cap": 116522.53,
-          "volume_24h": 13847.862613
-        },
-        {
-          "crypto_id": 41153,
-          "symbol": "wDDOGx",
-          "name": "Wrapped Datadog Tokenized Stock (xStock)",
-          "asset_type": null,
-          "token_type": null,
-          "category": null,
-          "is_derivative": null,
-          "issuer_id": "6878977dcbbf471de3366e85",
-          "issuer_name": "Backed Assets",
-          "price": null,
-          "market_cap": null,
-          "volume_24h": null
-        },
-        {
-          "crypto_id": 41970,
-          "symbol": "DDOG",
-          "name": "Datadog Inc (Derivatives)",
-          "asset_type": null,
-          "token_type": null,
-          "category": null,
-          "is_derivative": null,
-          "issuer_id": "695e11f774b54210f3b95dc3",
-          "issuer_name": "NA (Derivatives)",
-          "price": 231.03851173043117,
-          "market_cap": 0,
-          "volume_24h": 0
-        }
-      ],
-      "tradfi_market_count": 1
     }
   ],
   "source_hashes": {
-    "map": "975220f8876229eefdae2e670cba903b2e55b4431cac43c115476169a560b043",
-    "asset_list": "8198bee6a5f61c2f49ac577cdef174f526b8a85adae7129d19e8e43518baf8fe",
-    "quotes": "f302262bd661f3a3ef1ab23c32818cefdb883e748df33c9d3ba0d57833d7bf81",
-    "info": "50e4bafee78c1ae4e064fba5fd669aee3bd8070b722d7c5032e4ddeee3656a47",
+    "map": "5f0592eed1278a80beda91024db0553476ba3d55651484136347493df7c275b5",
+    "asset_list": "9eec9e2249589c019260ae6e88aa9570625b8ae84927936c299cb889ca4ddb0b",
+    "quotes": "746806b8e9c100fb2fec7900835bca02ba1b4916c0b7ab8fc826693ab11cc3e7",
+    "info": "ac6cf878fb549f1252e6beec8bedfe602e1ae64499b0ef76409ce93a19223bc5",
     "issuers": "38d1fbcbc2d005351cf66161107f10ce79234040b05ba8648dd6463b9a750b2f"
   },
   "_publication": {
     "source": "cloudflare.d1",
-    "observed_at": "2026-09-15T22:06:33Z",
-    "published_at": "2026-09-15T22:07:00.132Z",
+    "observed_at": "2026-09-15T22:22:00Z",
+    "published_at": "2026-09-15T22:22:26.208Z",
     "credential_free": true,
     "status": "fresh",
-    "age_seconds": 155,
+    "age_seconds": 145,
     "stale_after_seconds": 900
   }
 }

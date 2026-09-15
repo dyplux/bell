@@ -62,7 +62,8 @@
 
     <section class="monitor-grid">
       <div class="alerts-panel">
-        <div class="section-head"><div><p class="eyebrow">01 / PUBLISHED ALERT QUEUE</p><h2>Where the surface breaks</h2></div><div class="filters" role="group" aria-label="Filter alerts"><button class="selected" data-filter="all">ALL</button><button data-filter="do_not_compare">BLOCKED</button><button data-filter="investigate">INVESTIGATE</button></div></div>
+        <div class="section-head"><div><p class="eyebrow">01 / PUBLISHED ALERT QUEUE</p><h2>Where the surface breaks</h2></div><div class="filters" role="group" aria-label="Filter alerts"><button class="selected" data-filter="all">ALL</button><button data-filter="do_not_compare">BLOCKED</button><button data-filter="investigate">INVESTIGATE</button><button data-filter="no_flags">NO RULE HIT</button></div></div>
+        <label class="queue-search"><span>SEARCH THE POPULATION</span><input id="alert-search" type="search" placeholder="Silver, Tesla, Gold, SPY or RWA ID" autocomplete="off"></label>
         <p id="alert-count" class="section-note">The queue is selected by a fixed rule from the full scan. It is not a performance ranking.</p>
         <div id="alert-list" class="alert-list"></div>
       </div>

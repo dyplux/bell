@@ -1,105 +1,72 @@
-# Live publication architecture
+# Bell public architecture
 
-## Product decision
-
-The public website should not remain a frozen demo once Bell is live. The intended product is:
-
-> Bell collects and verifies the latest CMC evidence; the website reads the latest published dossier when a user searches an RWA.
-
-The browser never receives the CMC key and never fans out to CMC endpoints. This keeps the API contract, rate limits and evidence rules on the server side.
-
-## Request flow
+## Runtime shape
 
 ```text
-user searches RWA
+CoinMarketCap RWA surfaces
         |
         v
-public website -> /api/published?slug=gold
-        |                  |
-        |                  +--> latest normalized dossier + observed_at
-        |                  +--> stale/missing status + refresh_queued
+Mac mini integrity publisher
+  map + assets/list + quotes/latest
+  info + issuers/list
+  stable-ID joins + deterministic rules
+        |
         v
-show current published evidence
-
-Mac mini Bell publisher -> CMC API -> audit -> credential-free receipt
-                         -> publish latest dossier -> public store/API
+credential-free normalized receipt
+        |
+        v
+Cloudflare Worker + D1
+  authenticated publish route
+  public GET /api/integrity
+        |
+        v
+Bell Integrity Monitor   Neutral Review Queue
 ```
 
-The first query for an unresearched asset may return `MAP ENTRY / refresh queued`. It must not
-pretend that a map row is a completed audit. Once the Mac mini finishes, the next request shows
-the real result — including `DO NOT COMPARE`, `INVESTIGATE` or `INSUFFICIENT EVIDENCE`.
+The browser never calls CMC directly. It reads a published receipt and can
+fall back to an explicitly dated static replay. The publisher owns the CMC
+credential and the Worker stores only normalized receipt data.
 
-## Implemented locally now
+## Surfaces and joins
 
-- `bell/live_store.py` writes atomic, credential-free JSON records under `bell/runtime/`.
-- `bell/server.py` exposes `/api/published?slug=...` for the latest stored dossier.
-- A live `/api/terminal` run persists its result automatically.
-- `bell/publisher.py` can refresh one or more slugs from the Mac mini:
+The current integrity scan uses:
 
-```bash
-CMC_API_KEY="..." python3 bell/publisher.py gold tesla
-```
+| Surface | Role |
+|---|---|
+| `/v5/real-world-assets/map` | population and stable `rwa_id` discovery |
+| `/v5/real-world-assets/assets/list` | paginated catalogue and surface drift |
+| `/v5/real-world-assets/quotes/latest` | token, quote and market fields |
+| `/v5/real-world-assets/info` | second identity and asset-type join |
+| `/v5/real-world-assets/issuers/list` | issuer catalogue cross-check |
 
-- `cloudflare/` contains the D1 schema, Worker API and Static Assets configuration. It is deployed
-  at `https://bell.dyplux.com/` with D1 and the publisher secret configured.
-- `bell/launchd/com.dyplux.bell-publisher.plist.example` shows the Mac mini queue-poll schedule.
-- The publisher can pull user-triggered jobs with `--pull-queue`; the installed launchd job polls
-  the Worker every 15 minutes and publishes each leased slug back to `/internal/publish`.
+`rwa_id` is the primary reference key. `crypto_id` identifies token rows and
+`issuer_id` identifies issuers. A ticker is evidence to display, not a join key.
 
-- The Bell website prefers the published dossier and falls back to a one-off live request when
-  an asset has never been published.
+The CMC market-pairs endpoint is not available on the Startup plan. Bell records
+the tested 403/error-1006 boundary and does not convert unavailable venue data
+into zero liquidity.
 
-The runtime directory is ignored by Git. Only normalized receipts intended for publication belong
-in the repository.
+## Publication lifecycle
 
-## Mac mini deployment
+1. A scheduled launchd process reads the private CMC credential.
+2. The publisher captures the required surfaces and records observation time.
+3. The deterministic monitor emits decisions, evidence and source hashes.
+4. The publisher posts the normalized receipt to the authenticated Worker.
+5. D1 stores the latest receipt and its publication timestamp.
+6. Public clients receive `_publication` freshness metadata.
+7. The UI recalculates age while open and labels static fallback as `DATED REPLAY`.
 
-The Mac mini is the first production-shaped publisher:
+The public API exposes no CMC key, raw authenticated response or private
+publisher configuration. The sanitized input manifest documents counts,
+endpoint identities, join coverage and fingerprints for the captured run.
 
-1. Run Bell with `CMC_API_KEY` and a persistent `BELL_STORE_DIR`.
-2. Put `CMC_API_KEY`, `BELL_PUBLICATION_URL`, `BELL_JOBS_URL` and `PUBLISHER_TOKEN` in a mode-600
-   `~/.config/dyplux/bell.env` file on the Mac mini. Never put those values in the plist or Git.
-3. Copy `bell/launchd/com.dyplux.bell-publisher.plist.example` into
-   `~/Library/LaunchAgents/`, replace the `CHANGE_ME` paths, and schedule `bell/publisher.py`
-   with `launchd`. The current machine has this job installed at 15-minute intervals.
-4. The public Worker serves the Bell website and `/api/published`; the Mac mini only publishes
-   normalized dossiers and does not need an inbound web server.
-5. Use a small authenticated refresh endpoint or a pull queue; never allow arbitrary public
-   requests to spend the CMC quota repeatedly.
+## Local and public surfaces
 
-Cloudflare Tunnel uses an outbound-only `cloudflared` connection from the origin, so the Mac mini
-does not need a publicly routable IP. See the official [Cloudflare Tunnel documentation](https://developers.cloudflare.com/cloudflare-one/networks/connectors/cloudflare-tunnel/).
+- Product: <https://bell.dyplux.com/integrity>
+- Audit Pack: <https://bell.dyplux.com/guide.html>
+- Public receipt: <https://bell.dyplux.com/api/integrity>
+- Neutral queue: <https://rwa-surface-review.pages.dev/>
+- Source: <https://github.com/dyplux/bell>
 
-## Cloudflare Free shape
-
-Cloudflare can become the public edge without becoming the research worker:
-
-- static frontend assets can be served at the edge;
-- a Worker handles `/api/published`, freshness and deduplication;
-- D1 stores indexed asset metadata, dossier status, publication timestamps and queue rows;
-- R2 or the Mac mini stores larger raw/normalized receipts when needed;
-- the Mac mini owns the CMC key and publishes normalized results through an authenticated Worker
-  route.
-
-The current official limits make this suitable for a hackathon and an early desk: Workers Free
-allows 100,000 requests/day, five Cron Triggers and 50 subrequests per invocation; D1 Free
-includes 5 million rows read/day, 100,000 rows written/day and 5 GB total storage. KV is useful
-for hot cache entries but its Free limit is 1,000 writes/day, so it should not be the primary
-append-only receipt store. See [Workers limits](https://developers.cloudflare.com/workers/platform/limits/),
-[Workers pricing](https://developers.cloudflare.com/workers/platform/pricing/), [D1 pricing](https://developers.cloudflare.com/d1/platform/pricing/),
-and [D1 limits](https://developers.cloudflare.com/d1/platform/limits/).
-
-## Freshness contract
-
-Every published response must expose:
-
-- `observed_at`: when CMC evidence was collected;
-- `published_at`: when Bell made it public;
-- `fresh_until` or `stale_after`: the product's freshness decision;
-- `source`: cached publication, scheduled refresh or live fallback;
-- `receipt`: a credential-free evidence path;
-- `status`: published, stale, queued, map-only or insufficient evidence.
-
-The UI must never label a cached dossier as a live quote. It should say `last observed`, show the
-timestamp and explain when a refresh is queued. That is what makes the system useful to a normal
-user and defensible to an institutional analyst.
+The public release is intentionally separate from Dyplux's private research
+desk, jury ballots and competitor dossiers.

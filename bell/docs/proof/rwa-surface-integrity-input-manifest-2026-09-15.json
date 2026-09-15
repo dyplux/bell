@@ -1,0 +1,56 @@
+{
+  "schema_version": "bell.rwa_surface_integrity.input_manifest.v1",
+  "purpose": "Sanitized manifest for independent receipt review; contains metadata and hashes, not raw authenticated CMC responses.",
+  "observed_at": "2026-09-15T22:22:00Z",
+  "published_at": "2026-09-15T22:22:26.208Z",
+  "credential_free": true,
+  "hash_algorithm": "SHA-256",
+  "surfaces": {
+    "map": {
+      "endpoint": "/v5/real-world-assets/map",
+      "rows": 7811,
+      "unique_rwa_ids": 7811,
+      "sha256": "5f0592eed1278a80beda91024db0553476ba3d55651484136347493df7c275b5"
+    },
+    "asset_list": {
+      "endpoint": "/v5/real-world-assets/assets/list",
+      "rows": 7942,
+      "unique_rwa_ids": 7811,
+      "rows_without_rwa_id": 131,
+      "sha256": "9eec9e2249589c019260ae6e88aa9570625b8ae84927936c299cb889ca4ddb0b"
+    },
+    "quotes": {
+      "endpoint": "/v5/real-world-assets/quotes/latest",
+      "tokenised_references": 790,
+      "token_rows": 1428,
+      "sha256": "746806b8e9c100fb2fec7900835bca02ba1b4916c0b7ab8fc826693ab11cc3e7"
+    },
+    "info": {
+      "endpoint": "/v5/real-world-assets/info",
+      "rows": 790,
+      "unique_rwa_ids": 790,
+      "sha256": "ac6cf878fb549f1252e6beec8bedfe602e1ae64499b0ef76409ce93a19223bc5"
+    },
+    "issuers": {
+      "endpoint": "/v5/real-world-assets/issuers/list",
+      "catalogue_rows": 25,
+      "quote_issuer_ids": 21,
+      "sha256": "38d1fbcbc2d005351cf66161107f10ce79234040b05ba8648dd6463b9a750b2f"
+    }
+  },
+  "joins": {
+    "primary": "rwa_id",
+    "token_identity": "crypto_id",
+    "issuer_identity": "issuer_id",
+    "tokenised_ids_missing_info": [],
+    "quote_issuer_ids_missing_from_catalogue": []
+  },
+  "rules": [
+    "10x price spread is a critical denomination break",
+    "positive volume with zero market cap is a critical market contradiction",
+    "derivative mixing, symbol collision and missing fields require investigation",
+    "never join by ticker when crypto_id or issuer_id exists"
+  ],
+  "market_pairs_boundary": "not called in Startup scan; CMC documents this endpoint for Growth and above",
+  "reproduction_note": "To recompute the scan, obtain the same CMC surfaces under an eligible plan, preserve the observed query parameters and timestamps, then apply bell/rwa_integrity.py. The manifest is not a substitute for raw source payloads."
+}
