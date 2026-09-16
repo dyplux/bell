@@ -45,7 +45,8 @@ stable identifiers, and turns contradictions into a visible next action.
    Bell did not answer. It is a research memo, not a recommendation.
 
    Each row also shows a resolution handoff. For a blocked case, resolve the
-   identity and unit first, then verify issuer and redemption terms and obtain
+   Match the RWA ID to the token ID and issuer ID, resolve the identity and unit
+   first, then verify issuer and redemption terms and obtain
    execution evidence. For an investigate case, classify the representation and
    keep unresolved wrappers separate.
 

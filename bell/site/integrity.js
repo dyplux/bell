@@ -41,7 +41,7 @@
 
   function renderHandoff(item) {
     if (item.state === 'do_not_compare') {
-      return '<div class="alert-handoff"><span>TO CLEAR THIS CASE</span><p>Confirm the exact instrument and unit, verify issuer and redemption terms, then obtain venue and execution evidence before comparing wrappers.</p></div>';
+      return '<div class="alert-handoff"><span>TO CLEAR THIS CASE</span><p>Match the RWA ID to the token ID and issuer ID. Then confirm the exact instrument and unit, verify issuer and redemption terms, and obtain venue and execution evidence before comparing wrappers.</p></div>';
     }
     if (item.state === 'investigate') {
       return '<div class="alert-handoff"><span>TO MOVE FORWARD</span><p>Classify the representation, confirm the issuer and missing fields, then keep unresolved wrappers separate in the research memo.</p></div>';
@@ -130,7 +130,7 @@ ${item.next_action || 'Continue external diligence before comparing or allocatin
 
 ## Resolution checklist
 
-- confirm the exact token, chain, issuer and unit;
+- match the RWA ID to the token ID and issuer ID, then confirm the exact token, chain and unit;
 - verify instrument type, backing, redemption and eligibility from primary documents;
 - obtain venue access, depth, spread and size-specific execution evidence;
 - rerun the comparison only after the unresolved contradiction has an evidence-backed explanation.
