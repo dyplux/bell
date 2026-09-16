@@ -48,10 +48,12 @@ class RwaIntegrityTests(unittest.TestCase):
         base = {"data": {"rwa_assets": [{"rwa_id": 7, "has_tokens": True}]}}
         info = {"data": {"rwa_assets": [{"rwa_id": 7}]}}
         quotes = {"data": {"rwa_assets": [{"rwa_id": 7, "name": "Gold", "tokens": [{"crypto_id": 12, "symbol": "GOLD", "issuer_id": "issuer-a", "price": 1, "market_cap": 1, "volume_24h": 1}], "tradfi_markets": []}]}}
-        issuers = {"data": {"issuers": [{"issuer_id": "issuer-a", "num_tokens": 1}]}}
+        issuers = {"data": {"issuers": [{"issuer_id": "issuer-a", "name": "Issuer A", "website": "https://issuer.example", "num_tokens": 1}]}}
         result = scan(base, base, quotes, info, issuers)
         self.assertEqual(result["identity_integrity"]["info_unique_ids"], 1)
         self.assertEqual(result["identity_integrity"]["quote_issuer_ids_missing_from_catalogue"], [])
+        self.assertEqual(result["alerts"][0]["tokens"][0]["issuer_website"], "https://issuer.example")
+        self.assertEqual(result["issuer_catalogue"][0]["name"], "Issuer A")
 
     def test_decision_output_exposes_the_operational_capital_gate(self):
         payload = {"data": {"rwa_assets": [{"rwa_id": 9, "has_tokens": True}]}}
