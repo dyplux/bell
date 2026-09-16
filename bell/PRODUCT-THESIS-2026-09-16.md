@@ -89,3 +89,19 @@ contains a buy recommendation.
 Market pairs, venue depth, spread and size-specific costs require a plan and
 source that actually provide those fields. Until then the monitor must keep
 calling the gap `execution evidence unavailable`.
+
+## Competitive boundary checked on 16 September
+
+Sources checked:
+
+- [CMC RWA API](https://coinmarketcap.com/api/real-world-assets-api/): catalogue,
+  `rwa_id`, tokens, issuers, quotes and plan boundaries;
+- [Asortino](https://asortino.com/): tokenised-stock and ETF screener with
+  backing and custodian fields;
+- [TokenizedXonChain](https://www.tokenizedxonchain.com/compare): structural
+  side-by-side comparison of tokenised assets.
+
+These products validate that discovery and structural comparison already exist.
+They do not invalidate Bell's narrower pre-comparison gate, but they mean Bell
+must keep proving that its population scan, stop states and receipts change a
+real research decision.
