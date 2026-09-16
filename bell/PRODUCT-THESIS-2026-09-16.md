@@ -1,0 +1,91 @@
+# Bell product thesis
+
+Date: 16 September 2026
+
+## The job to be done
+
+An investor sees several tokens attached to the same real-world reference and
+wants to know whether they can fairly compare them before spending time on a
+shortlist.
+
+Bell answers the first decision only:
+
+> Can this reference support a fair token comparison, and what must be checked
+> before an analyst treats the representations as interchangeable?
+
+The output is deliberately operational:
+
+- `DO NOT COMPARE`: stop the wrapper selection;
+- `INVESTIGATE`: continue research, but keep the representations separate;
+- `NO RULE HIT, NOT APPROVED`: no published contradiction was found, but no
+  investment approval is produced.
+
+## Why this is not another CMC table
+
+CMC's RWA surface already provides the catalogue, stable `rwa_id`, tokenised
+representations, issuers and quote fields. Bell consumes those surfaces and
+checks whether they can be joined into a defensible comparison. It is not a
+replacement catalogue, a safety score or an execution venue.
+
+The current public differentiation is therefore a workflow boundary:
+
+1. find the reference;
+2. test identity, denomination and market-data consistency;
+3. refuse or hold the comparison when the evidence conflicts;
+4. hand the unresolved questions to issuer, eligibility, redemption, custody
+   and execution diligence.
+
+## Demand hypothesis
+
+The first likely repeat user is an analyst or crypto investor who reviews the
+same asset class more than once. A one-off user should still understand the
+result in under a minute, but recurring research is the stronger commercial
+signal.
+
+Proposed pilot test:
+
+- 6 participants with prior crypto or tokenised-asset research experience;
+- one Gold, equity or ETF comparison question per participant;
+- Bell and the participant's normal workflow, with equivalent evidence access;
+- measure time, unsupported conclusions, help requests and a second use within
+  14 days.
+
+Success means at least 5 of 6 can explain the state, cite the receipt, identify
+one missing investment input and avoid calling `NO RULE HIT` an approval.
+Repeat use matters more than a positive demo reaction.
+
+## Product invariants
+
+- no opaque wrapper-quality score;
+- no buy, sell or allocation recommendation from CMC fields alone;
+- missing data remains missing;
+- a ticker is never used as identity when a stable ID exists;
+- every numerical claim has a dated receipt or replay path;
+- a plan limitation is visible rather than replaced by an invented liquidity
+  conclusion.
+
+## Highest-value next improvements
+
+### P0: make the decision obvious
+
+The public monitor starts with an investor question, a direct asset search and
+a three-part explanation of the returned decision: compare, understand the
+failure, verify the next input.
+
+### P1: prove the workflow in a browser
+
+Add browser end-to-end coverage for search, filter, detail evidence, stale/live
+state and receipt links. Publish a redacted input manifest sufficient to replay
+the displayed population without the authenticated response.
+
+### P1: make the handoff reusable
+
+The monitor exports a one-page decision brief containing the state, evidence,
+timestamp, unresolved diligence questions and explicit limits. It never
+contains a buy recommendation.
+
+### P2: add execution evidence only if demand and access justify it
+
+Market pairs, venue depth, spread and size-specific costs require a plan and
+source that actually provide those fields. Until then the monitor must keep
+calling the gap `execution evidence unavailable`.
