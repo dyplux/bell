@@ -25,6 +25,9 @@ stable identifiers, and turns contradictions into a visible next action.
    then save the brief or worksheet.
 3. Start with the asset search in the hero. Search for `Silver`, `Gold`, `Tesla`,
    `SPY` or an RWA ID. The result is mirrored in the population queue below.
+   When a match exists, use `Open first evidence` above the queue to open the
+   first representation disclosure and continue without guessing where to
+   click.
 4. Check the receipt badge. `LIVE RECEIPT · FRESH` means the current publication
    is inside its 15-minute freshness contract. `STALE` means the last observed
    run is visible but should not be read as current. `DATED REPLAY` means the
