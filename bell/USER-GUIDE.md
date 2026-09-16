@@ -72,9 +72,10 @@ stable identifiers, and turns contradictions into a visible next action.
    keep unresolved wrappers separate. If CMC returns one representation, Bell
    shows a `SINGLE REPRESENTATION PATH`: there is no wrapper ranking to perform.
 
-9. Open the [complete searchable population queue](https://rwa-surface-review.pages.dev/)
-   when the first twelve detailed cases are not enough. It provides search,
-   state filters and pagination for the full index.
+9. Use the `Previous` and `Next` controls under the main queue to browse every
+   matching reference in Bell. The [neutral searchable population queue](https://rwa-surface-review.pages.dev/)
+   remains available as an independent mirror with search, state filters and
+   pagination.
 10. Open the credential-free JSON receipt to verify the observed time, published
    time, freshness state, endpoint method, source hashes and exact evidence.
 

@@ -4,6 +4,8 @@
   let receipt;
   let filter = 'all';
   let query = '';
+  let pageNumber = 0;
+  const pageSize = 12;
 
   const signalLabels = {
     PRICE_DENOMINATION_BREAK: '10× price spread',
@@ -357,10 +359,20 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
       const haystack = [item.name, item.symbol, item.asset_type, item.rwa_id].join(' ').toLowerCase();
       return stateMatches && (!normalizedQuery || haystack.includes(normalizedQuery));
     });
-    const visible = matching.slice(0, 12);
+    const totalPages = Math.max(1, Math.ceil(matching.length / pageSize));
+    pageNumber = Math.min(pageNumber, totalPages - 1);
+    const start = pageNumber * pageSize;
+    const visible = matching.slice(start, start + pageSize);
     const focusAction = normalizedQuery && matching.length ? ' <button type="button" class="focus-action" data-open-first-evidence>Open first evidence ↓</button>' : '';
-    byId('alert-count').innerHTML = `Showing <strong>${visible.length}</strong> of <strong>${matching.length}</strong> matching references · ${indexed.length.toLocaleString()} references scanned.${focusAction} <a href="https://rwa-surface-review.pages.dev/" target="_blank" rel="noopener">Open the complete searchable queue ↗</a>`;
+    const range = matching.length ? `${start + 1}–${Math.min(start + pageSize, matching.length)}` : '0';
+    byId('alert-count').innerHTML = `Showing <strong>${range}</strong> of <strong>${matching.length}</strong> matching references · ${indexed.length.toLocaleString()} references scanned.${focusAction} <a href="https://rwa-surface-review.pages.dev/" target="_blank" rel="noopener">Open neutral queue ↗</a>`;
     byId('alert-list').innerHTML = visible.map(item => renderIndexRow(item, details.get(String(item.rwa_id)))).join('') || '<p class="section-note">No references match this filter.</p>';
+    const pagination = byId('alert-pagination');
+    if (pagination) {
+      pagination.innerHTML = matching.length > pageSize
+        ? `<button type="button" data-page="${pageNumber - 1}" ${pageNumber === 0 ? 'disabled' : ''} aria-label="Previous population page">Previous</button><span>Page ${pageNumber + 1} of ${totalPages}</span><button type="button" data-page="${pageNumber + 1}" ${pageNumber === totalPages - 1 ? 'disabled' : ''} aria-label="Next population page">Next</button>`
+        : '';
+    }
   }
 
   function renderSearchResult() {
@@ -395,6 +407,7 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     event.preventDefault();
     const input = byId('hero-search');
     query = input.value.trim();
+    pageNumber = 0;
     byId('alert-search').value = input.value;
     if (query) completeInvestorTaskStep(1);
     if (!receipt) return;
@@ -508,15 +521,24 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
 
   document.querySelectorAll('[data-filter]').forEach(button => button.addEventListener('click', () => {
     filter = button.dataset.filter;
+    pageNumber = 0;
     document.querySelectorAll('[data-filter]').forEach(item => item.classList.toggle('selected', item === button));
     renderAlerts();
   }));
   byId('alert-search').addEventListener('input', event => {
     query = event.target.value;
+    pageNumber = 0;
     byId('hero-search').value = event.target.value;
     renderAlerts();
     renderSearchResult();
     renderDecisionStory();
+  });
+  byId('alert-pagination').addEventListener('click', event => {
+    const button = event.target.closest('[data-page]');
+    if (!button || button.disabled) return;
+    pageNumber = Math.max(0, Number(button.dataset.page) || 0);
+    renderAlerts();
+    byId('monitor').scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
   byId('monitor').addEventListener('click', event => {
     if (!event.target.closest('[data-open-first-evidence]')) return;

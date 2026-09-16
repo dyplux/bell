@@ -110,3 +110,7 @@ The run also confirmed no page or console errors, no horizontal overflow at
 for local research notes. A separate blind AI investor reading is recorded in
 `AI-INVESTOR-ACCEPTANCE-2026-09-16.md`; it is explicitly not human demand
 validation.
+
+The main monitor now paginates the complete 790-reference index in place. The
+neutral queue is retained as an independent replay/review surface rather than
+being required to browse beyond the first page.
