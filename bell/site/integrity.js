@@ -353,7 +353,8 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
       return stateMatches && (!normalizedQuery || haystack.includes(normalizedQuery));
     });
     const visible = matching.slice(0, 12);
-    byId('alert-count').innerHTML = `Showing <strong>${visible.length}</strong> of <strong>${matching.length}</strong> matching references · ${indexed.length.toLocaleString()} references scanned. <a href="https://rwa-surface-review.pages.dev/" target="_blank" rel="noopener">Open the complete searchable queue ↗</a>`;
+    const focusAction = normalizedQuery && matching.length ? ' <button type="button" class="focus-action" data-open-first-evidence>Open first evidence ↓</button>' : '';
+    byId('alert-count').innerHTML = `Showing <strong>${visible.length}</strong> of <strong>${matching.length}</strong> matching references · ${indexed.length.toLocaleString()} references scanned.${focusAction} <a href="https://rwa-surface-review.pages.dev/" target="_blank" rel="noopener">Open the complete searchable queue ↗</a>`;
     byId('alert-list').innerHTML = visible.map(item => renderIndexRow(item, details.get(String(item.rwa_id)))).join('') || '<p class="section-note">No references match this filter.</p>';
   }
 
@@ -511,6 +512,14 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     renderAlerts();
     renderSearchResult();
     renderDecisionStory();
+  });
+  byId('monitor').addEventListener('click', event => {
+    if (!event.target.closest('[data-open-first-evidence]')) return;
+    const details = byId('alert-list').querySelector('details.alert-details');
+    if (!details) return;
+    details.open = true;
+    completeInvestorTaskStep(2);
+    details.scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
   byId('alert-list').addEventListener('click', event => {
     if (event.target.closest('.alert-details summary')) completeInvestorTaskStep(2);
