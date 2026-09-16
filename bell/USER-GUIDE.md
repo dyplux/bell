@@ -147,3 +147,10 @@ continues to hold the internal research desk, jury ballots and competitor
 dossiers. The public source package contains the product, tests, setup guide,
 receipt verifier and public integrity evidence, but no credentials or private
 research artefacts.
+
+## Human validation
+
+The reproducible six-person pilot is documented in
+[`HUMAN-PILOT-2026-09-16.md`](HUMAN-PILOT-2026-09-16.md). It tests state
+comprehension, next-action comprehension, brief export, boundary comprehension
+and repeat-use intent without briefing participants on Bell's thesis.
