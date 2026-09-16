@@ -555,6 +555,10 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     if (status) status.textContent = worksheetStateLabel(worksheet);
   });
   byId('hero-search-form').addEventListener('submit', searchFromHero);
+  document.querySelectorAll('[data-example-search]').forEach(button => button.addEventListener('click', () => {
+    byId('hero-search').value = button.dataset.exampleSearch || '';
+    byId('hero-search-form').requestSubmit();
+  }));
   byId('task-reset').addEventListener('click', () => {
     try { localStorage.removeItem(investorTaskKey); } catch { /* optional local state */ }
     renderInvestorTask();
