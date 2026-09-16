@@ -114,3 +114,12 @@ validation.
 The main monitor now paginates the complete 790-reference index in place. The
 neutral queue is retained as an independent replay/review surface rather than
 being required to browse beyond the first page.
+
+The post-pagination Chrome check confirmed the public behavior directly:
+
+- the first page shows `1–12 of 790` and `Page 1 of 66`;
+- `Next` changes the first visible reference from Silver to SPDR Gold Trust and
+  advances to `Page 2 of 66`;
+- searching `Gold` returns all seven Gold rows in the main monitor;
+- the `INVESTIGATE` filter resets to its own matching set; and
+- the 390px viewport has no horizontal overflow or browser errors.
