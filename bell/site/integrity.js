@@ -31,7 +31,8 @@
   }
 
   function renderTokenTable(alert) {
-    const rows = (alert.tokens || []).map(token => `<tr><td>${escapeHTML(token.symbol || '—')}<small>${escapeHTML(token.crypto_id || 'no id')}</small></td><td>${escapeHTML(token.name || '—')}</td><td>${escapeHTML(token.issuer_name || 'unlinked')}</td><td>${formatNumber(token.price)}</td><td>${formatNumber(token.market_cap)}</td><td>${formatNumber(token.volume_24h)}</td></tr>`).join('');
+    const tokens = alert.tokens || alert.representations || [];
+    const rows = tokens.map(token => `<tr><td>${escapeHTML(token.symbol || '—')}<small>${escapeHTML(token.crypto_id || 'no id')}</small></td><td>${escapeHTML(token.name || '—')}</td><td>${escapeHTML(token.issuer_name || 'unlinked')}</td><td>${formatNumber(token.price)}</td><td>${formatNumber(token.market_cap)}</td><td>${formatNumber(token.volume_24h)}</td></tr>`).join('');
     return `<div class="token-table-wrap"><table class="token-table"><thead><tr><th>Token</th><th>Representation</th><th>Issuer</th><th>Price</th><th>MCap</th><th>24h vol</th></tr></thead><tbody>${rows || '<tr><td colspan="6">No token rows returned.</td></tr>'}</tbody></table></div>`;
   }
 
@@ -90,7 +91,7 @@
     if (detail) return renderAlertRow(detail);
     const stateLabel = item.state === 'no_flags' ? 'NO RULE HIT' : String(item.state || '').replaceAll('_', ' ').toUpperCase();
     const decision = item.decision || {};
-    return `<article class="alert-row compact-row"><div class="alert-name">${escapeHTML(item.name)}<small>${escapeHTML(item.symbol)} · ${escapeHTML(item.asset_type)} · ${item.issuer_count || 0} issuers · RWA ${escapeHTML(item.rwa_id)}</small></div><div class="alert-state ${item.state === 'investigate' ? 'investigate' : item.state === 'no_flags' ? 'clear' : ''}">${escapeHTML(stateLabel)}</div><div class="alert-signals">${escapeHTML((item.signal_codes || []).filter(code => code !== 'NO_TRADFI_MARKET').slice(0, 3).map(code => signalLabels[code] || code).join(' · ') || 'No published rule hit')}</div><div class="alert-tokens"><strong>${Number(item.token_count || 0).toLocaleString()}</strong><small>representations</small></div><div class="alert-decision"><span>Decision effect</span><b>${escapeHTML(decision.label || 'NO RULE HIT')}</b><p>${escapeHTML(decision.consequence || '')}</p></div><div class="alert-action"><span>Next action</span>${escapeHTML(item.next_action || '')}</div>${renderHandoff(item)}<div class="alert-tools">${briefButton(item.rwa_id)}</div><details class="alert-details"><summary>Inspect compact evidence</summary><ul class="compact-evidence">${renderCompactEvidence(item)}</ul><p class="compact-note">Full token rows are retained for priority cases in the published receipt.</p></details></article>`;
+    return `<article class="alert-row compact-row"><div class="alert-name">${escapeHTML(item.name)}<small>${escapeHTML(item.symbol)} · ${escapeHTML(item.asset_type)} · ${item.issuer_count || 0} issuers · RWA ${escapeHTML(item.rwa_id)}</small></div><div class="alert-state ${item.state === 'investigate' ? 'investigate' : item.state === 'no_flags' ? 'clear' : ''}">${escapeHTML(stateLabel)}</div><div class="alert-signals">${escapeHTML((item.signal_codes || []).filter(code => code !== 'NO_TRADFI_MARKET').slice(0, 3).map(code => signalLabels[code] || code).join(' · ') || 'No published rule hit')}</div><div class="alert-tokens"><strong>${Number(item.token_count || 0).toLocaleString()}</strong><small>representations</small></div><div class="alert-decision"><span>Decision effect</span><b>${escapeHTML(decision.label || 'NO RULE HIT')}</b><p>${escapeHTML(decision.consequence || '')}</p></div><div class="alert-action"><span>Next action</span>${escapeHTML(item.next_action || '')}</div>${renderHandoff(item)}<div class="alert-tools">${briefButton(item.rwa_id)}</div><details class="alert-details"><summary>Inspect representations</summary><p class="compact-note">CMC quote rows observed in this receipt. Bell uses them to route research, not to certify backing, eligibility, liquidity or equivalence.</p><ul class="compact-evidence">${renderCompactEvidence(item)}</ul>${renderTokenTable(item)}</details></article>`;
   }
 
   function markdownBrief(item) {
@@ -104,7 +105,7 @@
       if (evidence.symbols) facts.push(`symbols ${evidence.symbols.join(', ')}`);
       return `- ${signalLabels[signal.code] || signal.code}: ${signal.message}${facts.length ? ` (${facts.join('; ')})` : ''}`;
     }).join('\n') : '- No published rule hit in this scan.';
-    const tokenLines = (item.tokens || []).map(token => `| ${token.symbol || '—'} | ${token.name || '—'} | ${token.issuer_name || 'unlinked'} | ${formatNumber(token.price)} | ${formatNumber(token.market_cap)} | ${formatNumber(token.volume_24h)} |`).join('\n');
+    const tokenLines = (item.tokens || item.representations || []).map(token => `| ${token.symbol || '—'} | ${token.name || '—'} | ${token.issuer_name || 'unlinked'} | ${formatNumber(token.price)} | ${formatNumber(token.market_cap)} | ${formatNumber(token.volume_24h)} |`).join('\n');
     return `# Bell decision brief: ${item.name || 'RWA reference'}
 
 Generated from the credential-free Bell receipt. This is research triage, not investment advice.

@@ -41,6 +41,8 @@ class RwaIntegrityTests(unittest.TestCase):
         self.assertEqual(result["alert_index"][0]["rwa_id"], 1)
         self.assertIn("PRICE_DENOMINATION_BREAK", result["alert_index"][0]["signal_codes"])
         self.assertEqual(result["alert_index"][0]["signal_evidence"]["PRICE_DENOMINATION_BREAK"]["max_min_ratio"], 100.0)
+        self.assertEqual([row["crypto_id"] for row in result["alert_index"][0]["representations"]], [10, 11])
+        self.assertEqual(result["alert_index"][0]["representations"][0]["issuer_id"], "issuer-a")
 
     def test_identity_surfaces_are_cross_checked_when_available(self):
         base = {"data": {"rwa_assets": [{"rwa_id": 7, "has_tokens": True}]}}

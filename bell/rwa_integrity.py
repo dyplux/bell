@@ -255,6 +255,10 @@ def scan(map_payload: dict, list_payload: dict, quotes_payload: dict, info_paylo
             "signal_codes": [signal["code"] for signal in asset["signals"]],
             "signal_severities": [signal["severity"] for signal in asset["signals"]],
             "signal_evidence": {signal["code"]: index_evidence(signal.get("evidence") or {}) for signal in asset["signals"]},
+            # Keep the shortlist usable for every reference, not only the 50
+            # expanded alert rows. These are CMC observations, not diligence
+            # or approval, and deliberately exclude issuer/legal documents.
+            "representations": asset["tokens"],
             "next_action": asset["next_action"],
             "decision": asset["decision"],
         }
