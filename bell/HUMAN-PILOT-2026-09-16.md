@@ -32,7 +32,9 @@ Ask the participant to think aloud and complete the path without assistance:
 1. Search the assigned reference.
 2. Explain the state in their own words.
 3. Open the evidence and identify the next action.
-4. If two wrappers exist, select two and inspect the facts-only comparison.
+4. If Bell leaves a factual comparison open, select two wrappers and inspect
+   the facts-only comparison. If Bell withholds comparison or returns a single
+   representation, follow that route and record the next check instead.
 5. Export the decision brief.
 
 Stop the timer when the participant can answer the three questions below and

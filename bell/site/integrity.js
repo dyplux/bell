@@ -340,6 +340,9 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     link.href = URL.createObjectURL(blob);
     link.download = filename;
     link.click();
+    // A blocked or single-representation case completes the route by saving
+    // its handoff; it must not force the user into an invalid pair comparison.
+    completeInvestorTaskStep(3);
     completeInvestorTaskStep(4);
     window.setTimeout(() => URL.revokeObjectURL(link.href), 1000);
   }
@@ -537,6 +540,7 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
         worksheet.checks[input.dataset.worksheetCheck] = input.checked;
       });
       saveWorksheet(worksheetId, worksheet);
+      completeInvestorTaskStep(3);
       completeInvestorTaskStep(4);
       const status = worksheetElement.querySelector(`[data-worksheet-status="${CSS.escape(worksheetId)}"]`);
       if (status) status.textContent = worksheetStateLabel(worksheet);
