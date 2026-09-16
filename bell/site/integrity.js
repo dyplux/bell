@@ -127,7 +127,7 @@
       if (!values.every(value => Number.isFinite(value))) return `<div><span>${label}</span><strong>Not available</strong><small>Field missing in at least one row</small></div>`;
       const low = Math.min(...values);
       const high = Math.max(...values);
-      const gap = low === 0 ? 'zero / non-zero' : `${formatNumber(((high - low) / low) * 100)}% gap`;
+      const gap = low === 0 ? (values[0] === 0 && values[1] === 0 ? 'both zero' : 'zero / non-zero') : `${formatNumber(((high - low) / low) * 100)}% gap`;
       return `<div><span>${label}</span><strong>${gap}</strong><small>${formatNumber(values[0])}${suffix} vs ${formatNumber(values[1])}${suffix} · observed field only</small></div>`;
     };
     const observedDeltas = `<div class="comparison-deltas"><span class="comparison-deltas-label">OBSERVED FIELD DIFFERENCES</span><div class="comparison-delta-grid">${observedField('price', 'Price')}${observedField('market_cap', 'Market cap')}${observedField('volume_24h', '24h volume')}</div><small class="comparison-deltas-note">Differences are descriptive. Bell does not normalize units, backing, eligibility, liquidity or execution.</small></div>`;
