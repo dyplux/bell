@@ -84,6 +84,11 @@ The monitor exports a one-page decision brief containing the state, evidence,
 timestamp, unresolved diligence questions and explicit limits. It never
 contains a buy recommendation.
 
+The public index also exposes observed representation rows, issuer IDs and
+issuer websites when the CMC issuer catalogue provides one. Single-token
+references use a separate handoff so the absence of a wrapper comparison is
+not mistaken for approval.
+
 ### P2: add execution evidence only if demand and access justify it
 
 Market pairs, venue depth, spread and size-specific costs require a plan and
