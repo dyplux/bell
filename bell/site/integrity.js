@@ -140,7 +140,7 @@
 
   function renderHandoff(item) {
     if (item.state === 'do_not_compare') {
-      return '<div class="alert-handoff"><span>TO CLEAR THIS CASE</span><p>Match the RWA ID to the token ID and issuer ID. Then confirm the exact instrument and unit, verify issuer and redemption terms, and obtain venue and execution evidence before comparing wrappers.</p></div>';
+      return '<div class="alert-handoff"><span>TO CLEAR THIS CASE</span><ol><li>Match the RWA ID to the token ID and issuer ID.</li><li>Confirm the exact instrument and unit, then verify issuer and redemption terms.</li><li>Obtain venue and execution evidence before comparing wrappers.</li></ol></div>';
     }
     if (Number(item.token_count || 0) === 1) {
       return '<div class="alert-handoff"><span>SINGLE REPRESENTATION PATH</span><p>CMC returned one representation for this reference, so there is no wrapper ranking to perform. Verify the instrument, issuer, backing, redemption, eligibility, custody and executable liquidity before treating it as investable.</p></div>';
