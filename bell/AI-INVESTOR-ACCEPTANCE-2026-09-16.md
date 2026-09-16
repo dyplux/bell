@@ -34,3 +34,13 @@ This result shows that the visible state language can be understood by a
 small blind model. It does not prove that a human would use Bell repeatedly,
 pay for it or make a better investment decision. Those questions remain in
 the [human pilot protocol](HUMAN-PILOT-2026-09-16.md).
+
+## First-viewport differentiation rerun
+
+After the sentence `CMC shows the candidates. Bell checks whether the grouping
+deserves a fair comparison.` was moved into the hero, the same blind model was
+asked what CMC already does and what Bell adds. It identified CMC as the
+discovery/candidate layer, Bell as the pre-comparison integrity gate, the asset
+search as the first action, and the no-buy boundary. This is a comprehension
+improvement against a specific CMC comparison failure mode, not a claim that
+Bell replaces CMC discovery.
