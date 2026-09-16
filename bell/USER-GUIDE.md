@@ -41,7 +41,7 @@ stable identifiers, and turns contradictions into a visible next action.
 
    | State | Meaning | What the user may do |
    |---|---|---|
-   | `DO NOT COMPARE` | A critical contradiction fired, such as a 10x price spread or positive volume with zero market cap. | Stop selecting or ranking a wrapper until the identity, unit or quote issue is resolved. |
+   | `DO NOT COMPARE` / `COMPARISON WITHHELD` | A critical contradiction fired, such as a 10x price spread or positive volume with zero market cap. | Stop ranking or substituting a wrapper until the identity, unit or quote issue is resolved. |
    | `INVESTIGATE` | A warning fired, such as derivative mixing, symbol collision or missing fields. | Continue research, but do not present the rows as equivalent exposure. |
    | `NO RULE HIT, NOT APPROVED` | None of the published rules fired in this run. | No allocation or safety conclusion is produced. Continue external diligence. |
 
