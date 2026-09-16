@@ -101,6 +101,7 @@ decision routes and a reference outside the priority alert set:
 |---|---:|---|---|---|
 | Marvell | 6 | `FACTUAL COMPARISON OPEN` | state and boundary present | `4/4` |
 | Silver | 5 | `COMPARISON WITHHELD` | state and boundary present | `4/4` |
+| CRWD | 6 | `INVESTIGATE BEFORE SHORTLIST` | state and boundary present | `4/4` |
 | AAL | 1 | `SINGLE REPRESENTATION` | state and boundary present | `4/4` |
 | Gold | 7 | indexed reference, full rows | state and boundary present | `4/4` |
 
