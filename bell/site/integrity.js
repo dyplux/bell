@@ -52,13 +52,30 @@
       const website = externalURL(token.issuer_website);
       const cmcURL = externalURL(token.cmc_url);
       const symbol = escapeHTML(token.symbol || '—');
-      const tokenCell = cmcURL ? `<a href="${escapeHTML(cmcURL)}" target="_blank" rel="noopener">${symbol} ↗</a><small>${escapeHTML(token.crypto_id || 'no id')}</small>` : `${symbol}<small>${escapeHTML(token.crypto_id || 'no id')}</small>`;
+      const selector = token.crypto_id != null ? `<input type="checkbox" data-wrapper-select="${escapeHTML(token.crypto_id)}" aria-label="Select ${symbol} for fact comparison">` : '';
+      const tokenCell = `${cmcURL ? `<a href="${escapeHTML(cmcURL)}" target="_blank" rel="noopener">${symbol} ↗</a>` : symbol}<small>${escapeHTML(token.crypto_id || 'no id')}</small>`;
       const issuer = escapeHTML(token.issuer_name || token.issuer_catalogue_name || 'unlinked');
       const issuerCell = website ? `<a href="${escapeHTML(website)}" target="_blank" rel="noopener">${issuer} ↗</a>` : issuer;
       const platforms = (token.platforms || []).map(platform => `${escapeHTML(platform.name || 'unknown chain')} · ${escapeHTML(platform.contract_address || 'no contract')}`).join('<br>') || 'not resolved';
-      return `<tr><td>${tokenCell}</td><td>${escapeHTML(token.name || '—')}</td><td>${issuerCell}</td><td>${platforms}</td><td>${formatNumber(token.price)}</td><td>${formatNumber(token.market_cap)}</td><td>${formatNumber(token.volume_24h)}</td></tr>`;
+      return `<tr><td>${selector}</td><td>${tokenCell}</td><td>${escapeHTML(token.name || '—')}</td><td>${issuerCell}</td><td>${platforms}</td><td>${formatNumber(token.price)}</td><td>${formatNumber(token.market_cap)}</td><td>${formatNumber(token.volume_24h)}</td></tr>`;
     }).join('');
-    return `<div class="token-table-wrap"><table class="token-table"><thead><tr><th>Token</th><th>Representation</th><th>Issuer</th><th>Chain / contract</th><th>Price</th><th>MCap</th><th>24h vol</th></tr></thead><tbody>${rows || '<tr><td colspan="7">No token rows returned.</td></tr>'}</tbody></table></div>`;
+    return `<div class="token-table-wrap"><table class="token-table"><thead><tr><th>Select</th><th>Token</th><th>Representation</th><th>Issuer</th><th>Chain / contract</th><th>Price</th><th>MCap</th><th>24h vol</th></tr></thead><tbody>${rows || '<tr><td colspan="8">No token rows returned.</td></tr>'}</tbody></table></div><div class="wrapper-compare" data-wrapper-compare="${escapeHTML(alert.rwa_id)}"><p><b>Compare two observed wrappers</b> Select up to two rows for a factual side-by-side. Bell will not rank them or turn this into an allocation decision.</p><div data-comparison-output class="comparison-output">Select two rows to inspect their observed differences.</div></div>`;
+  }
+
+  function renderComparisonOutput(alert, selectedIds) {
+    const tokens = (alert.tokens || alert.representations || []).filter(token => selectedIds.includes(String(token.crypto_id)));
+    if (tokens.length < 2) return 'Select two rows to inspect their observed differences.';
+    if (tokens.length > 2) return 'Select only two rows for the side-by-side view.';
+    const cards = tokens.map(token => {
+      const platforms = (token.platforms || []).map(platform => `${platform.name || 'unknown chain'} · ${platform.contract_address || 'no contract'}`).join(' / ') || 'not resolved';
+      const website = externalURL(token.issuer_website);
+      const issuer = website ? `<a href="${escapeHTML(website)}" target="_blank" rel="noopener">${escapeHTML(token.issuer_name || 'unlinked')} ↗</a>` : escapeHTML(token.issuer_name || 'unlinked');
+      return `<div class="comparison-card"><strong>${escapeHTML(token.symbol || token.name || 'token')}</strong><span>${escapeHTML(token.name || '—')}</span><small>Issuer: ${issuer}</small><small>Chain / contract: ${escapeHTML(platforms)}</small><small>Observed price: ${formatNumber(token.price)} · MCap: ${formatNumber(token.market_cap)} · 24h volume: ${formatNumber(token.volume_24h)}</small></div>`;
+    }).join('');
+    const prefix = alert.state === 'do_not_compare'
+      ? '<b>COMPARISON WITHHELD</b><span>A Bell critical rule fired for this reference. These facts are shown for investigation, not as equivalent exposure.</span>'
+      : '<b>FACTS ONLY · NO WRAPPER RANKING</b><span>Observed quote fields are not normalized for unit, backing, eligibility or execution.</span>';
+    return `<div class="comparison-verdict">${prefix}</div><div class="comparison-cards">${cards}</div>`;
   }
 
   function briefButton(rwaId) {
@@ -385,6 +402,14 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     }
   });
   byId('alert-list').addEventListener('change', event => {
+    const wrapperInput = event.target.closest('[data-wrapper-select]');
+    if (wrapperInput) {
+      const compare = wrapperInput.closest('[data-wrapper-compare]');
+      const selectedIds = [...compare.querySelectorAll('[data-wrapper-select]:checked')].map(input => input.dataset.wrapperSelect);
+      const alertId = compare.dataset.wrapperCompare;
+      const alert = (receipt.alerts || []).find(item => String(item.rwa_id) === String(alertId)) || (receipt.alert_index || []).find(item => String(item.rwa_id) === String(alertId));
+      if (alert) compare.querySelector('[data-comparison-output]').innerHTML = renderComparisonOutput(alert, selectedIds);
+    }
     const input = event.target.closest('[data-worksheet-check]');
     if (!input) return;
     const worksheetId = input.dataset.worksheetId;
