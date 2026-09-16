@@ -89,6 +89,11 @@ issuer websites when the CMC issuer catalogue provides one. Single-token
 references use a separate handoff so the absence of a wrapper comparison is
 not mistaken for approval.
 
+The local research worksheet is the final handoff layer: it records identity,
+issuer documents, backing/redemption, account eligibility/custody and execution
+checks without changing Bell's deterministic state. This makes the next step
+concrete while preserving the evidence boundary.
+
 ### P2: add execution evidence only if demand and access justify it
 
 Market pairs, venue depth, spread and size-specific costs require a plan and

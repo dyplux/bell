@@ -45,6 +45,10 @@ stable identifiers, and turns contradictions into a visible next action.
    the state, evidence, timestamps, next action and the investment questions
    Bell did not answer. It is a research memo, not a recommendation.
 
+   Open `Open research worksheet` to record the five external checks and one
+   research note locally in the browser. The worksheet is a personal handoff,
+   not evidence supplied by Bell; the saved decision brief includes its state.
+
    Each row also shows a resolution handoff. For a blocked case, resolve the
    Match the RWA ID to the token ID and issuer ID, resolve the identity and unit
    first, then verify issuer and redemption terms and obtain
