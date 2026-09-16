@@ -44,3 +44,17 @@ discovery/candidate layer, Bell as the pre-comparison integrity gate, the asset
 search as the first action, and the no-buy boundary. This is a comprehension
 improvement against a specific CMC comparison failure mode, not a claim that
 Bell replaces CMC discovery.
+
+## Post-pagination browser check
+
+After the complete population was made navigable in the main monitor, a fresh
+Chrome check against the public page confirmed:
+
+- page one reports `1–12 of 790` and `Page 1 of 66`;
+- `Next` changes the first visible reference from Silver to SPDR Gold Trust;
+- searching `Gold` renders all seven matching rows;
+- the `INVESTIGATE` filter resets its matching set; and
+- the 390px viewport has no horizontal overflow or browser errors.
+
+The neutral queue remains an independent replay surface, not a required escape
+hatch for browsing the rest of Bell's population.
