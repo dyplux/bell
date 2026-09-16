@@ -208,7 +208,7 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
 
   function renderDifferentiation() {
     const identity = receipt.identity_integrity || {};
-    byId('differentiation').innerHTML = `<div class="diff-column"><span>CMC ALREADY SHOWS</span><strong>RWA references, wrappers, issuers and latest quote fields</strong><p>The monitor does not recreate the catalogue or pretend to verify backing.</p></div><div class="diff-arrow">→</div><div class="diff-column accent"><span>BELL ADDS</span><strong>A population-wide decision gate before comparison</strong><p>${formatNumber(receipt.universe.states.do_not_compare)} blocked groups, ${formatNumber(receipt.universe.signals.PRICE_DENOMINATION_BREAK || 0)} denomination breaks and ${formatNumber((identity.quote_issuer_ids_missing_from_catalogue || []).length)} unresolved issuer joins in this receipt.</p></div>`;
+    byId('differentiation').innerHTML = `<div class="diff-column"><span>CMC GIVES YOU THE CANDIDATES</span><strong>References, wrappers, issuers and latest quote fields</strong><p>That is the discovery layer. It does not decide whether the representations are comparable.</p></div><div class="diff-arrow">→</div><div class="diff-column accent"><span>BELL DECIDES WHETHER THEY ARE COMPARABLE</span><strong>A population-wide gate before a wrapper enters your shortlist</strong><p>${formatNumber(receipt.universe.states.do_not_compare)} blocked groups, ${formatNumber(receipt.universe.signals.PRICE_DENOMINATION_BREAK || 0)} denomination breaks and ${formatNumber((identity.quote_issuer_ids_missing_from_catalogue || []).length)} unresolved issuer joins in this receipt.</p></div>`;
   }
 
   function renderDecisionStory() {
