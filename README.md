@@ -17,7 +17,8 @@ The public integrity monitor is the decision gate for the comparison problem:
 - **790** tokenised RWA references scanned;
 - **1,428** token representations inspected;
 - stable joins by `rwa_id`, `crypto_id` and `issuer_id`;
-- explicit `DO NOT SELECT A WRAPPER` and `HOLD COMPARISON` outcomes;
+- explicit `COMPARISON WITHHELD`, `INVESTIGATE BEFORE SHORTLIST`,
+  `FACTUAL COMPARISON OPEN` and `SINGLE REPRESENTATION` outcomes;
 - credential-free live receipt at [`/api/integrity`](https://bell.dyplux.com/api/integrity);
 - dated replay at [`bell/site/proof/`](bell/site/proof/);
 - searchable blind review at [`rwa-surface-review.pages.dev`](https://rwa-surface-review.pages.dev/);
@@ -87,6 +88,9 @@ The current investor job-to-be-done, demand hypothesis and differentiation bound
 [`bell/PRODUCT-THESIS-2026-09-16.md`](bell/PRODUCT-THESIS-2026-09-16.md). The latest black-box
 investor UX audit is in
 [`bell/jury/INVESTOR-UX-AUDIT-2026-09-16.md`](bell/jury/INVESTOR-UX-AUDIT-2026-09-16.md).
+The blind AI investor acceptance and state-aware browser evidence are in
+[`bell/AI-INVESTOR-ACCEPTANCE-2026-09-16.md`](bell/AI-INVESTOR-ACCEPTANCE-2026-09-16.md)
+and [`bell/QA-RESULTS.md`](bell/QA-RESULTS.md).
 
 ## Test
 
