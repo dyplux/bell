@@ -68,6 +68,9 @@ Every feature must preserve these rules:
 
 ## Competitive boundary checked on 16 September
 
+The detailed evidence ledger is in
+[COMPETITIVE-BOUNDARY-2026-09-16.md](COMPETITIVE-BOUNDARY-2026-09-16.md).
+
 The CMC RWA API documents the catalogue, issuer and quote surfaces. Public
 tokenised-asset comparison products also exist, including structural comparison
 and screener experiences. Bell's defensible space is narrower: a population-wide
