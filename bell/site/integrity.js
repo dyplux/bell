@@ -60,7 +60,9 @@
     });
     const complete = investorTaskSteps.filter(step => task.steps[step]).length;
     const progress = byId('task-progress');
-    if (progress) progress.textContent = `${complete}/4 complete · saved only in this browser`;
+    if (progress) progress.textContent = complete === 4
+      ? '4/4 complete · handoff saved locally · no investment approval'
+      : `${complete}/4 complete · saved only in this browser`;
   }
 
   function completeInvestorTaskStep(step) {
