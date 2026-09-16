@@ -41,6 +41,10 @@ stable identifiers, and turns contradictions into a visible next action.
    CMC token page, issuer site, project site, explorer and technical docs. These
    links are handoff routes for primary-source diligence, not proof that the
    linked material is complete or accurate.
+   Select two rows to receive a facts-only summary of observed price, market-cap
+   and 24h-volume differences. Bell shows the gap without ranking a wrapper;
+   those fields are not normalized for unit, backing, eligibility, liquidity or
+   execution.
 8. Use the filters to distinguish the operational states:
 
    | State | Meaning | What the user may do |
