@@ -58,3 +58,20 @@ Chrome check against the public page confirmed:
 
 The neutral queue remains an independent replay surface, not a required escape
 hatch for browsing the rest of Bell's population.
+
+## Fresh blind investor pass
+
+On 16 September, the same local evaluator was given only the visible hero and
+the Silver case, without the product dossier or the CMC/API research context.
+It correctly identified:
+
+- the problem as deciding whether tokenised representations can be compared;
+- CMC as the candidate/discovery layer;
+- Silver as `COMPARISON WITHHELD`, requiring the comparison to stop;
+- identity, unit and quote resolution as the first action; and
+- issuer, redemption and execution checks as the follow-up.
+
+It also explicitly returned no buy recommendation. A second plain-language
+pass on Marvell read `FACTUAL COMPARISON OPEN` as descriptive facts requiring
+external diligence, not approval. These are usability signals from a small
+local model, not evidence of human demand or investment performance.
