@@ -30,8 +30,9 @@ stable identifiers, and turns contradictions into a visible next action.
 5. Follow the decision path: scan the population, join by stable IDs, stop the
    wrapper choice, then route the contradiction to diligence.
 6. Open the current flagged case, normally Silver or another highest-severity
-   reference. Expand `Inspect evidence` to see token IDs, prices, issuers,
-   market cap, volume and the next action.
+   reference. Expand `Inspect evidence` or `Inspect representations` to see
+   token IDs, prices, issuers, issuer websites when CMC publishes them, market
+   cap, volume and the next action.
 7. Use the filters to distinguish the operational states:
 
    | State | Meaning | What the user may do |
@@ -48,7 +49,8 @@ stable identifiers, and turns contradictions into a visible next action.
    Match the RWA ID to the token ID and issuer ID, resolve the identity and unit
    first, then verify issuer and redemption terms and obtain
    execution evidence. For an investigate case, classify the representation and
-   keep unresolved wrappers separate.
+   keep unresolved wrappers separate. If CMC returns one representation, Bell
+   shows a `SINGLE REPRESENTATION PATH`: there is no wrapper ranking to perform.
 
 8. Open the [complete searchable population queue](https://rwa-surface-review.pages.dev/)
    when the first twelve detailed cases are not enough. It provides search,
