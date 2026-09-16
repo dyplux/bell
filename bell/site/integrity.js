@@ -121,7 +121,12 @@
       if (evidence.symbols) facts.push(`symbols ${evidence.symbols.join(', ')}`);
       return `- ${signalLabels[signal.code] || signal.code}: ${signal.message}${facts.length ? ` (${facts.join('; ')})` : ''}`;
     }).join('\n') : '- No published rule hit in this scan.';
-    const tokenLines = (item.tokens || item.representations || []).map(token => `| ${token.symbol || '—'} | ${token.name || '—'} | ${token.issuer_name || token.issuer_catalogue_name || 'unlinked'} | ${formatNumber(token.price)} | ${formatNumber(token.market_cap)} | ${formatNumber(token.volume_24h)} |`).join('\n');
+    const tokenLines = (item.tokens || item.representations || []).map(token => {
+      const issuerURL = externalURL(token.issuer_website);
+      const issuer = token.issuer_name || token.issuer_catalogue_name || 'unlinked';
+      const issuerCell = issuerURL ? `[${issuer}](${issuerURL})` : issuer;
+      return `| ${token.symbol || '—'} | ${token.name || '—'} | ${issuerCell} | ${formatNumber(token.price)} | ${formatNumber(token.market_cap)} | ${formatNumber(token.volume_24h)} |`;
+    }).join('\n');
     return `# Bell decision brief: ${item.name || 'RWA reference'}
 
 Generated from the credential-free Bell receipt. This is research triage, not investment advice.
