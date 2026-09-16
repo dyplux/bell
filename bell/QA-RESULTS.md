@@ -91,3 +91,21 @@ The live browser acceptance run verified:
 These checks prove the public workflow and receipts, not willingness to pay or
 repeat use. The outstanding validation gate is the six-person human pilot
 defined in `PRODUCT-THESIS-2026-09-16.md`.
+
+## State-aware browser acceptance: 16 September 2026
+
+After the follow-up wording change, a real Chrome E2E run covered all four
+decision routes and a reference outside the priority alert set:
+
+| Case | Evidence rows | Expected state | Brief | Task result |
+|---|---:|---|---|---|
+| Marvell | 6 | `FACTUAL COMPARISON OPEN` | state and boundary present | `4/4` |
+| Silver | 5 | `COMPARISON WITHHELD` | state and boundary present | `4/4` |
+| AAL | 1 | `SINGLE REPRESENTATION` | state and boundary present | `4/4` |
+| Gold | 7 | indexed reference, full rows | state and boundary present | `4/4` |
+
+The run also confirmed no page or console errors, no horizontal overflow at
+390, 768 or 1440px, table captions and scoped headers, and accessible labels
+for local research notes. A separate blind AI investor reading is recorded in
+`AI-INVESTOR-ACCEPTANCE-2026-09-16.md`; it is explicitly not human demand
+validation.
