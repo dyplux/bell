@@ -406,7 +406,8 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     if (wrapperInput) {
       const compare = wrapperInput.closest('.alert-details')?.querySelector('[data-wrapper-compare]') || wrapperInput.closest('.alert-row')?.querySelector('[data-wrapper-compare]');
       if (!compare) return;
-      const selectedIds = [...compare.querySelectorAll('[data-wrapper-select]:checked')].map(input => input.dataset.wrapperSelect);
+      const scope = wrapperInput.closest('.alert-details') || wrapperInput.closest('.alert-row');
+      const selectedIds = [...scope.querySelectorAll('[data-wrapper-select]:checked')].map(input => input.dataset.wrapperSelect);
       const alertId = compare.dataset.wrapperCompare;
       const alert = (receipt.alerts || []).find(item => String(item.rwa_id) === String(alertId)) || (receipt.alert_index || []).find(item => String(item.rwa_id) === String(alertId));
       if (alert) compare.querySelector('[data-comparison-output]').innerHTML = renderComparisonOutput(alert, selectedIds);
