@@ -56,6 +56,8 @@ Repeat use matters more than a positive demo reaction.
 
 ## Product invariants
 
+Every feature must preserve these rules:
+
 - no opaque wrapper-quality score;
 - no buy, sell or allocation recommendation from CMC fields alone;
 - missing data remains missing;
@@ -64,51 +66,19 @@ Repeat use matters more than a positive demo reaction.
 - a plan limitation is visible rather than replaced by an invented liquidity
   conclusion.
 
-## Highest-value next improvements
-
-### P0: make the decision obvious
-
-The public monitor starts with an investor question, a direct asset search and
-a three-part explanation of the returned decision: compare, understand the
-failure, verify the next input.
-
-### P1: prove the workflow in a browser
-
-Add browser end-to-end coverage for search, filter, detail evidence, stale/live
-state and receipt links. Publish a redacted input manifest sufficient to replay
-the displayed population without the authenticated response.
-
-### P1: make the handoff reusable
-
-The monitor exports a one-page decision brief containing the state, evidence,
-timestamp, unresolved diligence questions and explicit limits. It never
-contains a buy recommendation.
-
-The public index also exposes observed representation rows, issuer IDs and
-issuer websites when the CMC issuer catalogue provides one. Single-token
-references use a separate handoff so the absence of a wrapper comparison is
-not mistaken for approval.
-
-The local research worksheet is the final handoff layer: it records identity,
-issuer documents, backing/redemption, account eligibility/custody and execution
-checks without changing Bell's deterministic state. This makes the next step
-concrete while preserving the evidence boundary.
-
-The live scan also joins each observed `crypto_id` to CMC
-`/v2/cryptocurrency/info` when available. The public row can therefore expose
-the CMC token page, chain and contract identity. Unresolved token identity is a
-warning, not a clean result. This is a cross-surface identity check, not proof
-that the contract represents the underlying instrument.
-
-### P2: add execution evidence only if demand and access justify it
-
-Market pairs, venue depth, spread and size-specific costs require a plan and
-source that actually provide those fields. Until then the monitor must keep
-calling the gap `execution evidence unavailable`.
-
 ## Competitive boundary checked on 16 September
 
-Sources checked:
+The CMC RWA API documents the catalogue, issuer and quote surfaces. Public
+tokenised-asset comparison products also exist, including structural comparison
+and screener experiences. Bell's defensible space is narrower: a population-wide
+pre-comparison gate with explicit stop/investigate states and credential-free
+evidence, not a generic screener.
+
+This claim must be rechecked before submission and before any public marketing.
+It is a product hypothesis, not a claim that no adjacent product can ever add a
+similar feature.
+
+Sources checked on 16 September 2026:
 
 - [CMC RWA API](https://coinmarketcap.com/api/real-world-assets-api/): catalogue,
   `rwa_id`, tokens, issuers, quotes and plan boundaries;
@@ -121,3 +91,48 @@ These products validate that discovery and structural comparison already exist.
 They do not invalidate Bell's narrower pre-comparison gate, but they mean Bell
 must keep proving that its population scan, stop states and receipts change a
 real research decision.
+
+## Highest-value next improvements
+
+### P0: make the decision obvious
+
+The public monitor now starts with an investor question, a direct asset search
+and a three-part explanation of the returned decision: compare, understand the
+failure, verify the next input.
+
+### P1: prove the workflow in a browser
+
+Add browser end-to-end coverage for search, filter, detail evidence, stale/live
+state and receipt links. Publish a redacted input manifest sufficient to replay
+the displayed population without the authenticated response.
+
+### P1: make the handoff reusable
+
+Let a user export a one-page decision brief for a reference containing the
+state, evidence, timestamp, unresolved diligence questions and explicit limits.
+The brief must never contain a buy recommendation.
+
+Completed on 16 September: every indexed reference now exposes its observed
+representation rows, issuer IDs and issuer website when the CMC issuer
+catalogue provides one. The browser can open that evidence path and the brief
+retains the wrapper rows. Single-token references use a separate handoff so the
+absence of a wrapper comparison is not mistaken for approval.
+
+The local research worksheet is the final handoff layer: it records identity,
+issuer documents, backing/redemption, account eligibility/custody and execution
+checks without changing Bell's deterministic state. This makes the next step
+concrete while preserving the evidence boundary.
+
+The live scan also joins each observed `crypto_id` to CMC
+`/v2/cryptocurrency/info` when available. The public row can therefore expose
+the CMC token page, issuer and project links, explorer paths, technical
+documentation links when supplied, and chain and contract identity. Unresolved
+token identity is a warning, not a clean result. These are investigation paths,
+not evidence that the linked material is complete or that the contract
+represents the underlying instrument.
+
+### P2: add execution evidence only if demand and access justify it
+
+Market pairs, venue depth, spread and size-specific costs require a plan and
+source that actually provide those fields. Until then the monitor must keep
+calling the gap `execution evidence unavailable`.
