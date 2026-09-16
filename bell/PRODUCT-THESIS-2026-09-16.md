@@ -15,10 +15,13 @@ Bell answers the first decision only:
 
 The output is deliberately operational:
 
-- `DO NOT COMPARE`: stop the wrapper selection;
-- `INVESTIGATE`: continue research, but keep the representations separate;
-- `NO RULE HIT, NOT APPROVED`: no published contradiction was found, but no
-  investment approval is produced.
+- `COMPARISON WITHHELD`: stop the wrapper selection until the contradiction is
+  resolved;
+- `INVESTIGATE BEFORE SHORTLIST`: continue research, but keep the
+  representations separate;
+- `FACTUAL COMPARISON OPEN`: inspect observed rows when no published rule fired,
+  then complete external diligence; this is not approval;
+- `SINGLE REPRESENTATION`: there is no wrapper ranking to perform.
 
 ## Why this is not another CMC table
 

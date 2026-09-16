@@ -66,3 +66,27 @@ The final blind juror audit after publishing `dyplux/bell` scored the public
 build 84/100 and recommended shortlisting it. The remaining deductions were
 reproducibility depth, lack of browser E2E coverage and the fact that the full
 queue remains on a separate neutral route.
+
+## Follow-up public build audit: 16 September 2026
+
+The public build subsequently added the investor task, searched-reference
+focus, human-readable outcome states, facts-only pair deltas and first-viewport
+case shortcuts. The current deterministic test run is `29 passed, 1 skipped`.
+
+The live browser acceptance run verified:
+
+- the three-minute task progresses `0/4 -> 4/4` through search, evidence,
+  two-row selection and brief export;
+- `Silver` produces `COMPARISON WITHHELD` and the three-step resolution handoff;
+- `Marvell` produces `FACTUAL COMPARISON OPEN` and the external-diligence
+  handoff;
+- `SPY` produces `COMPARISON WITHHELD`;
+- unknown search input produces an explicit no-reference state;
+- selected pairs show observed price, market-cap and volume gaps without a
+  ranking;
+- no page or console errors and no horizontal overflow at 390, 768 or 1440
+  pixels.
+
+These checks prove the public workflow and receipts, not willingness to pay or
+repeat use. The outstanding validation gate is the six-person human pilot
+defined in `PRODUCT-THESIS-2026-09-16.md`.
