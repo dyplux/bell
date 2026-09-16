@@ -404,7 +404,8 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
   byId('alert-list').addEventListener('change', event => {
     const wrapperInput = event.target.closest('[data-wrapper-select]');
     if (wrapperInput) {
-      const compare = wrapperInput.closest('[data-wrapper-compare]');
+      const compare = wrapperInput.closest('.alert-details')?.querySelector('[data-wrapper-compare]') || wrapperInput.closest('.alert-row')?.querySelector('[data-wrapper-compare]');
+      if (!compare) return;
       const selectedIds = [...compare.querySelectorAll('[data-wrapper-select]:checked')].map(input => input.dataset.wrapperSelect);
       const alertId = compare.dataset.wrapperCompare;
       const alert = (receipt.alerts || []).find(item => String(item.rwa_id) === String(alertId)) || (receipt.alert_index || []).find(item => String(item.rwa_id) === String(alertId));
