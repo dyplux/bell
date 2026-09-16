@@ -44,6 +44,11 @@ stable identifiers, and turns contradictions into a visible next action.
    the state, evidence, timestamps, next action and the investment questions
    Bell did not answer. It is a research memo, not a recommendation.
 
+   Each row also shows a resolution handoff. For a blocked case, resolve the
+   identity and unit first, then verify issuer and redemption terms and obtain
+   execution evidence. For an investigate case, classify the representation and
+   keep unresolved wrappers separate.
+
 8. Open the [complete searchable population queue](https://rwa-surface-review.pages.dev/)
    when the first twelve detailed cases are not enough. It provides search,
    state filters and pagination for the full index.
