@@ -29,3 +29,22 @@ The competitive boundary was checked against the [CMC RWA surface](https://coinm
 [TokenizedXonChain comparisons](https://www.tokenizedxonchain.com/compare/).
 Those checks are dated research, not a permanent claim that no adjacent tool
 can add a similar workflow.
+
+## Current CMC boundary check
+
+On 16 September 2026, the current CMC RWA surface still exposed the discovery
+layer as `Grouped by RWA`, `All Tokens` and `RWA Protocols`, with RWA/average
+token price, market cap, volume, token market cap, token volume and a seven-day
+chart. The current RWA API reference describes seven endpoints, stable
+`rwa_id`/`crypto_id` joins, and `Quotes Latest` returning aggregate values,
+individual token rows and TradFi markets.
+
+That confirms what Bell must not claim as novel. Bell's delta is the
+deterministic pre-comparison decision, preserved contradiction evidence and
+investor handoff around those existing fields. In the same current CMC page,
+the Silver row displayed separate RWA-average and token-price values; Bell
+turns that kind of surface discrepancy into a stop/investigate route rather
+than leaving it as a number for a user to interpret alone.
+
+Sources: [CMC RWA surface](https://coinmarketcap.com/real-world-assets/?type=rwa)
+and [CMC RWA API reference](https://coinmarketcap.com/api/real-world-assets-api/).
