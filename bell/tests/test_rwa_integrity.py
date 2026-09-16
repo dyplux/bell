@@ -49,10 +49,14 @@ class RwaIntegrityTests(unittest.TestCase):
         info = {"data": {"rwa_assets": [{"rwa_id": 7}]}}
         quotes = {"data": {"rwa_assets": [{"rwa_id": 7, "name": "Gold", "tokens": [{"crypto_id": 12, "symbol": "GOLD", "issuer_id": "issuer-a", "price": 1, "market_cap": 1, "volume_24h": 1}], "tradfi_markets": []}]}}
         issuers = {"data": {"issuers": [{"issuer_id": "issuer-a", "name": "Issuer A", "website": "https://issuer.example", "num_tokens": 1}]}}
-        result = scan(base, base, quotes, info, issuers)
+        crypto_info = {"data": {"12": {"id": 12, "slug": "gold-wrapper", "urls": {"website": ["https://token.example"]}, "contract_address": [{"contract_address": "0xabc", "platform": {"name": "Ethereum", "coin": {"slug": "ethereum"}}}]}}}
+        result = scan(base, base, quotes, info, issuers, crypto_info_payload=crypto_info)
         self.assertEqual(result["identity_integrity"]["info_unique_ids"], 1)
         self.assertEqual(result["identity_integrity"]["quote_issuer_ids_missing_from_catalogue"], [])
+        self.assertEqual(result["identity_integrity"]["quote_crypto_ids_missing_from_info"], [])
         self.assertEqual(result["alerts"][0]["tokens"][0]["issuer_website"], "https://issuer.example")
+        self.assertEqual(result["alerts"][0]["tokens"][0]["cmc_url"], "https://coinmarketcap.com/currencies/gold-wrapper/")
+        self.assertEqual(result["alerts"][0]["tokens"][0]["platforms"][0]["contract_address"], "0xabc")
         self.assertEqual(result["issuer_catalogue"][0]["name"], "Issuer A")
 
     def test_decision_output_exposes_the_operational_capital_gate(self):

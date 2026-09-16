@@ -94,6 +94,12 @@ issuer documents, backing/redemption, account eligibility/custody and execution
 checks without changing Bell's deterministic state. This makes the next step
 concrete while preserving the evidence boundary.
 
+The live scan also joins each observed `crypto_id` to CMC
+`/v2/cryptocurrency/info` when available. The public row can therefore expose
+the CMC token page, chain and contract identity. Unresolved token identity is a
+warning, not a clean result. This is a cross-surface identity check, not proof
+that the contract represents the underlying instrument.
+
 ### P2: add execution evidence only if demand and access justify it
 
 Market pairs, venue depth, spread and size-specific costs require a plan and

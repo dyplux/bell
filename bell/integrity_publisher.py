@@ -79,8 +79,8 @@ def main() -> int:
     if not key:
         parser.error("CMC_API_KEY must be set in the publisher process")
     observed_at = now()
-    map_payload, list_payload, quotes_payload, info_payload, issuers_payload = collect_live(key)
-    receipt = scan(map_payload, list_payload, quotes_payload, info_payload, issuers_payload, observed_at=observed_at)
+    map_payload, list_payload, quotes_payload, info_payload, issuers_payload, crypto_info_payload = collect_live(key)
+    receipt = scan(map_payload, list_payload, quotes_payload, info_payload, issuers_payload, observed_at=observed_at, crypto_info_payload=crypto_info_payload)
     output = args.output or Path(os.environ.get("BELL_STORE_DIR", str(Path(__file__).resolve().parent / "runtime"))) / "integrity/latest.json"
     write_local(receipt, output)
     publication = {"remote_published": False, "remote": "disabled"} if args.no_remote else publish_remote(receipt)

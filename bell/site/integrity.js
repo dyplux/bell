@@ -12,6 +12,7 @@
     DERIVATIVE_MIX: 'derivative mix',
     SYMBOL_COLLISION: 'symbol collision',
     MARKET_FIELDS_MISSING: 'missing market fields',
+    TOKEN_INFO_MISSING: 'missing token identity',
     NO_TRADFI_MARKET: 'no TradFi market',
   };
 
@@ -49,11 +50,15 @@
     const tokens = alert.tokens || alert.representations || [];
     const rows = tokens.map(token => {
       const website = externalURL(token.issuer_website);
+      const cmcURL = externalURL(token.cmc_url);
+      const symbol = escapeHTML(token.symbol || '—');
+      const tokenCell = cmcURL ? `<a href="${escapeHTML(cmcURL)}" target="_blank" rel="noopener">${symbol} ↗</a><small>${escapeHTML(token.crypto_id || 'no id')}</small>` : `${symbol}<small>${escapeHTML(token.crypto_id || 'no id')}</small>`;
       const issuer = escapeHTML(token.issuer_name || token.issuer_catalogue_name || 'unlinked');
       const issuerCell = website ? `<a href="${escapeHTML(website)}" target="_blank" rel="noopener">${issuer} ↗</a>` : issuer;
-      return `<tr><td>${escapeHTML(token.symbol || '—')}<small>${escapeHTML(token.crypto_id || 'no id')}</small></td><td>${escapeHTML(token.name || '—')}</td><td>${issuerCell}</td><td>${formatNumber(token.price)}</td><td>${formatNumber(token.market_cap)}</td><td>${formatNumber(token.volume_24h)}</td></tr>`;
+      const platforms = (token.platforms || []).map(platform => `${escapeHTML(platform.name || 'unknown chain')} · ${escapeHTML(platform.contract_address || 'no contract')}`).join('<br>') || 'not resolved';
+      return `<tr><td>${tokenCell}</td><td>${escapeHTML(token.name || '—')}</td><td>${issuerCell}</td><td>${platforms}</td><td>${formatNumber(token.price)}</td><td>${formatNumber(token.market_cap)}</td><td>${formatNumber(token.volume_24h)}</td></tr>`;
     }).join('');
-    return `<div class="token-table-wrap"><table class="token-table"><thead><tr><th>Token</th><th>Representation</th><th>Issuer</th><th>Price</th><th>MCap</th><th>24h vol</th></tr></thead><tbody>${rows || '<tr><td colspan="6">No token rows returned.</td></tr>'}</tbody></table></div>`;
+    return `<div class="token-table-wrap"><table class="token-table"><thead><tr><th>Token</th><th>Representation</th><th>Issuer</th><th>Chain / contract</th><th>Price</th><th>MCap</th><th>24h vol</th></tr></thead><tbody>${rows || '<tr><td colspan="7">No token rows returned.</td></tr>'}</tbody></table></div>`;
   }
 
   function briefButton(rwaId) {
@@ -170,7 +175,10 @@
       const issuerURL = externalURL(token.issuer_website);
       const issuer = token.issuer_name || token.issuer_catalogue_name || 'unlinked';
       const issuerCell = issuerURL ? `[${issuer}](${issuerURL})` : issuer;
-      return `| ${token.symbol || '—'} | ${token.name || '—'} | ${issuerCell} | ${formatNumber(token.price)} | ${formatNumber(token.market_cap)} | ${formatNumber(token.volume_24h)} |`;
+      const cmcURL = externalURL(token.cmc_url);
+      const tokenCell = cmcURL ? `[${token.symbol || '—'}](${cmcURL})` : (token.symbol || '—');
+      const platforms = (token.platforms || []).map(platform => `${platform.name || 'unknown chain'}: ${platform.contract_address || 'no contract'}`).join('<br>') || 'not resolved';
+      return `| ${tokenCell} (${token.crypto_id || 'no id'}) | ${token.name || '—'} | ${issuerCell} | ${platforms} | ${formatNumber(token.price)} | ${formatNumber(token.market_cap)} | ${formatNumber(token.volume_24h)} |`;
     }).join('\n');
     const worksheet = readWorksheet(item.rwa_id);
     const worksheetLines = worksheetChecks.map(([key, label]) => `- [${worksheet.checks[key] ? 'x' : ' '}] ${label}`).join('\n');
@@ -206,8 +214,8 @@ ${item.next_action || 'Continue external diligence before comparing or allocatin
 
 ## Representation rows
 
-| Token | Representation | Issuer | Price | Market cap | 24h volume |
-|---|---|---|---:|---:|---:|
+| Token | Representation | Issuer | Chain / contract | Price | Market cap | 24h volume |
+|---|---|---|---|---:|---:|---:|
 ${tokenLines || '| Detailed token rows are not retained for this queue item. | | | | | |'}
 
 ## Local research worksheet
@@ -274,13 +282,14 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
       ['ZERO_MCAP_POSITIVE_VOLUME', 'volume with zero market cap', 'The quote surface needs investigation before it becomes a market claim.'],
       ['DERIVATIVE_MIX', 'groups mix derivatives', 'A derivative-labelled representation is not silently treated as spot.'],
       ['MARKET_FIELDS_MISSING', 'groups with missing fields', 'Absence stays visible. It is never converted into zero.'],
+      ['TOKEN_INFO_MISSING', 'groups with missing token identity', 'A crypto ID without resolved chain or contract identity stays out of a clean shortlist.'],
     ];
     byId('signal-grid').innerHTML = cards.map(([code, title, copy]) => `<article class="signal-card"><strong>${signals[code] || 0}</strong><h3>${title}</h3><p>${copy}</p></article>`).join('');
   }
 
   function renderIdentity() {
     const identity = receipt.identity_integrity || {};
-    byId('identity-proof').innerHTML = `<span>IDENTITY JOIN CHECK</span><strong>${formatNumber(identity.info_unique_ids || 0)} / ${formatNumber(identity.tokenised_map_ids || 0)} tokenised references resolved through info</strong><small>${formatNumber(identity.issuer_catalogue_rows || 0)} issuer records · ${formatNumber(identity.quote_issuer_ids || 0)} issuer IDs seen in quotes · ${formatNumber((identity.quote_issuer_ids_missing_from_catalogue || []).length)} unresolved</small>`;
+    byId('identity-proof').innerHTML = `<span>IDENTITY JOIN CHECK</span><strong>${formatNumber(identity.info_unique_ids || 0)} / ${formatNumber(identity.tokenised_map_ids || 0)} tokenised references resolved through info</strong><small>${formatNumber(identity.issuer_catalogue_rows || 0)} issuer records · ${formatNumber(identity.quote_issuer_ids || 0)} issuer IDs seen in quotes · ${formatNumber((identity.quote_issuer_ids_missing_from_catalogue || []).length)} unresolved issuer joins · ${formatNumber(identity.crypto_info_rows || 0)} token identity rows · ${formatNumber((identity.quote_crypto_ids_missing_from_info || []).length)} unresolved token joins</small>`;
   }
 
   function renderDifferentiation() {
