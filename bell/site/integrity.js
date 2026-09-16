@@ -121,6 +121,16 @@
     const tokens = (alert.tokens || alert.representations || []).filter(token => selectedIds.includes(String(token.crypto_id)));
     if (tokens.length < 2) return 'Select two rows to inspect their observed differences.';
     if (tokens.length > 2) return 'Select only two rows for the side-by-side view.';
+    const [left, right] = tokens;
+    const observedField = (key, label, suffix = '') => {
+      const values = [left[key], right[key]].map(value => Number(value));
+      if (!values.every(value => Number.isFinite(value))) return `<div><span>${label}</span><strong>Not available</strong><small>Field missing in at least one row</small></div>`;
+      const low = Math.min(...values);
+      const high = Math.max(...values);
+      const gap = low === 0 ? 'zero / non-zero' : `${formatNumber(((high - low) / low) * 100)}% gap`;
+      return `<div><span>${label}</span><strong>${gap}</strong><small>${formatNumber(values[0])}${suffix} vs ${formatNumber(values[1])}${suffix} · observed field only</small></div>`;
+    };
+    const observedDeltas = `<div class="comparison-deltas"><span class="comparison-deltas-label">OBSERVED FIELD DIFFERENCES</span><div class="comparison-delta-grid">${observedField('price', 'Price')}${observedField('market_cap', 'Market cap')}${observedField('volume_24h', '24h volume')}</div><small class="comparison-deltas-note">Differences are descriptive. Bell does not normalize units, backing, eligibility, liquidity or execution.</small></div>`;
     const cards = tokens.map(token => {
       const platforms = (token.platforms || []).map(platform => `${platform.name || 'unknown chain'} · ${platform.contract_address || 'no contract'}`).join(' / ') || 'not resolved';
       const website = externalURL(token.issuer_website);
@@ -130,7 +140,7 @@
     const prefix = alert.state === 'do_not_compare'
       ? '<b>COMPARISON WITHHELD</b><span>A Bell critical rule fired for this reference. These facts are shown for investigation, not as equivalent exposure.</span>'
       : '<b>FACTS ONLY · NO WRAPPER RANKING</b><span>Observed quote fields are not normalized for unit, backing, eligibility or execution.</span>';
-    return `<div class="comparison-verdict">${prefix}</div><div class="comparison-cards">${cards}</div>`;
+    return `<div class="comparison-verdict">${prefix}</div>${observedDeltas}<div class="comparison-cards">${cards}</div>`;
   }
 
   function briefButton(rwaId) {
