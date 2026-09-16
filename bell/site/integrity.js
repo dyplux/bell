@@ -285,8 +285,8 @@ Generated from the credential-free Bell receipt. This is research triage, not in
 - Reference: ${item.name || '—'} (${item.symbol || '—'})
 - RWA ID: ${item.rwa_id || '—'}
 - Asset type: ${item.asset_type || '—'}
-- State: ${item.state === 'no_flags' ? 'NO RULE HIT' : String(item.state || '').replaceAll('_', ' ').toUpperCase()}
-  - Decision effect: ${displayDecisionLabel(item)}
+- State: ${displayDecisionLabel(item)}
+- Published rule state: ${item.state === 'no_flags' ? 'NO RULE HIT' : String(item.state || '').replaceAll('_', ' ').toUpperCase()}
 - Consequence: ${decision.consequence || 'No allocation status is produced by this monitor.'}
 - Observed: ${receipt.observed_at || '—'}
 - Published: ${receipt._publication?.published_at || '—'}
