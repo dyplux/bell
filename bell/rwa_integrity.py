@@ -103,8 +103,9 @@ def collect_live(key: str) -> tuple[dict, dict, dict, dict, dict, dict]:
         except HTTPError as exc:
             if exc.code != 400:
                 raise
-            # CMC rejects an all-invalid batch even with skip_invalid. Split
-            # only that batch and retain unresolved IDs in the receipt.
+            # CMC rejects a batch made entirely of unknown/retired IDs even
+            # with skip_invalid. Split only that failing batch and retain the
+            # unresolved IDs in the receipt instead of hiding the gap.
             for crypto_id in batch:
                 try:
                     crypto_info_pages.append(api_get("/v2/cryptocurrency/info", {"id": crypto_id, "skip_invalid": "true"}, key))
@@ -140,7 +141,10 @@ def token_summary(token: dict, issuer_lookup: dict | None = None, crypto_lookup:
     summary["issuer_catalogue_name"] = issuer.get("name")
     summary["crypto_slug"] = crypto.get("slug")
     summary["cmc_url"] = f"https://coinmarketcap.com/currencies/{crypto['slug']}/" if crypto.get("slug") else None
-    summary["project_url"] = ((crypto.get("urls") or {}).get("website") or [None])[0] if isinstance((crypto.get("urls") or {}).get("website"), list) else None
+    urls = crypto.get("urls") or {}
+    summary["project_url"] = (urls.get("website") or [None])[0] if isinstance(urls.get("website"), list) else None
+    summary["explorer_urls"] = [url for url in (urls.get("explorer") or []) if isinstance(url, str) and url]
+    summary["technical_doc_urls"] = [url for url in (urls.get("technical_doc") or []) if isinstance(url, str) and url]
     summary["platforms"] = [
         {
             "name": (entry.get("platform") or {}).get("name"),

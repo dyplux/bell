@@ -33,6 +33,24 @@
     }
   };
 
+  function sourceLinks(token, compact = false) {
+    const links = [];
+    const add = (label, value) => {
+      const url = externalURL(value);
+      if (url) links.push(`<a href="${escapeHTML(url)}" target="_blank" rel="noopener">${label} ↗</a>`);
+    };
+    add('CMC token', token.cmc_url);
+    add('issuer', token.issuer_website);
+    add('project', token.project_url);
+    (token.explorer_urls || []).slice(0, compact ? 1 : 3).forEach(url => add('explorer', url));
+    (token.technical_doc_urls || []).slice(0, compact ? 1 : 3).forEach(url => add('docs', url));
+    return links.length ? `<span class="source-paths">${links.join(' · ')}</span>` : '<span class="source-paths muted">No linked source path</span>';
+  }
+
+  function identityLine(token, rwaId) {
+    return `<small class="identity-line">Identity: RWA ${escapeHTML(rwaId || '—')} · token ${escapeHTML(token.crypto_id || 'unresolved')} · issuer ${escapeHTML(token.issuer_id || 'unresolved')}</small>`;
+  }
+
   function renderEvidence(signal) {
     const evidence = signal.evidence || {};
     const items = [];
@@ -53,11 +71,11 @@
       const cmcURL = externalURL(token.cmc_url);
       const symbol = escapeHTML(token.symbol || '—');
       const selector = token.crypto_id != null ? `<input type="checkbox" data-wrapper-select="${escapeHTML(token.crypto_id)}" aria-label="Select ${symbol} for fact comparison">` : '';
-      const tokenCell = `${cmcURL ? `<a href="${escapeHTML(cmcURL)}" target="_blank" rel="noopener">${symbol} ↗</a>` : symbol}<small>${escapeHTML(token.crypto_id || 'no id')}</small>`;
+      const tokenCell = `${cmcURL ? `<a href="${escapeHTML(cmcURL)}" target="_blank" rel="noopener">${symbol} ↗</a>` : symbol}<small>${escapeHTML(token.crypto_id || 'no id')}</small>${sourceLinks(token, true)}`;
       const issuer = escapeHTML(token.issuer_name || token.issuer_catalogue_name || 'unlinked');
       const issuerCell = website ? `<a href="${escapeHTML(website)}" target="_blank" rel="noopener">${issuer} ↗</a>` : issuer;
       const platforms = (token.platforms || []).map(platform => `${escapeHTML(platform.name || 'unknown chain')} · ${escapeHTML(platform.contract_address || 'no contract')}`).join('<br>') || 'not resolved';
-      return `<tr><td>${selector}</td><td>${tokenCell}</td><td>${escapeHTML(token.name || '—')}</td><td>${issuerCell}</td><td>${platforms}</td><td>${formatNumber(token.price)}</td><td>${formatNumber(token.market_cap)}</td><td>${formatNumber(token.volume_24h)}</td></tr>`;
+      return `<tr><td>${selector}</td><td>${tokenCell}${identityLine(token, alert.rwa_id)}</td><td>${escapeHTML(token.name || '—')}</td><td>${issuerCell}</td><td>${platforms}</td><td>${formatNumber(token.price)}</td><td>${formatNumber(token.market_cap)}</td><td>${formatNumber(token.volume_24h)}</td></tr>`;
     }).join('');
     return `<div class="token-table-wrap"><table class="token-table"><thead><tr><th>Select</th><th>Token</th><th>Representation</th><th>Issuer</th><th>Chain / contract</th><th>Price</th><th>MCap</th><th>24h vol</th></tr></thead><tbody>${rows || '<tr><td colspan="8">No token rows returned.</td></tr>'}</tbody></table></div><div class="wrapper-compare" data-wrapper-compare="${escapeHTML(alert.rwa_id)}"><p><b>Compare two observed wrappers</b> Select up to two rows for a factual side-by-side. Bell will not rank them or turn this into an allocation decision.</p><div data-comparison-output class="comparison-output">Select two rows to inspect their observed differences.</div></div>`;
   }
@@ -70,7 +88,7 @@
       const platforms = (token.platforms || []).map(platform => `${platform.name || 'unknown chain'} · ${platform.contract_address || 'no contract'}`).join(' / ') || 'not resolved';
       const website = externalURL(token.issuer_website);
       const issuer = website ? `<a href="${escapeHTML(website)}" target="_blank" rel="noopener">${escapeHTML(token.issuer_name || 'unlinked')} ↗</a>` : escapeHTML(token.issuer_name || 'unlinked');
-      return `<div class="comparison-card"><strong>${escapeHTML(token.symbol || token.name || 'token')}</strong><span>${escapeHTML(token.name || '—')}</span><small>Issuer: ${issuer}</small><small>Chain / contract: ${escapeHTML(platforms)}</small><small>Observed price: ${formatNumber(token.price)} · MCap: ${formatNumber(token.market_cap)} · 24h volume: ${formatNumber(token.volume_24h)}</small></div>`;
+      return `<div class="comparison-card"><strong>${escapeHTML(token.symbol || token.name || 'token')}</strong><span>${escapeHTML(token.name || '—')}</span>${identityLine(token, alert.rwa_id)}<small>Issuer: ${issuer}</small><small>Chain / contract: ${escapeHTML(platforms)}</small><small>Observed price: ${formatNumber(token.price)} · MCap: ${formatNumber(token.market_cap)} · 24h volume: ${formatNumber(token.volume_24h)}</small>${sourceLinks(token)}</div>`;
     }).join('');
     const prefix = alert.state === 'do_not_compare'
       ? '<b>COMPARISON WITHHELD</b><span>A Bell critical rule fired for this reference. These facts are shown for investigation, not as equivalent exposure.</span>'
@@ -195,7 +213,9 @@
       const cmcURL = externalURL(token.cmc_url);
       const tokenCell = cmcURL ? `[${token.symbol || '—'}](${cmcURL})` : (token.symbol || '—');
       const platforms = (token.platforms || []).map(platform => `${platform.name || 'unknown chain'}: ${platform.contract_address || 'no contract'}`).join('<br>') || 'not resolved';
-      return `| ${tokenCell} (${token.crypto_id || 'no id'}) | ${token.name || '—'} | ${issuerCell} | ${platforms} | ${formatNumber(token.price)} | ${formatNumber(token.market_cap)} | ${formatNumber(token.volume_24h)} |`;
+      const sourceURLs = [token.cmc_url, token.issuer_website, token.project_url, ...(token.explorer_urls || []), ...(token.technical_doc_urls || [])].filter(Boolean);
+      const sourceCells = sourceURLs.length ? sourceURLs.map(url => `[link](${url})`).join(' ') : 'none';
+      return `| ${tokenCell} (${token.crypto_id || 'no id'}) | ${token.name || '—'} | ${issuerCell} (${token.issuer_id || 'no id'}) | ${platforms} | ${formatNumber(token.price)} | ${formatNumber(token.market_cap)} | ${formatNumber(token.volume_24h)} | ${sourceCells} |`;
     }).join('\n');
     const worksheet = readWorksheet(item.rwa_id);
     const worksheetLines = worksheetChecks.map(([key, label]) => `- [${worksheet.checks[key] ? 'x' : ' '}] ${label}`).join('\n');
@@ -231,8 +251,8 @@ ${item.next_action || 'Continue external diligence before comparing or allocatin
 
 ## Representation rows
 
-| Token | Representation | Issuer | Chain / contract | Price | Market cap | 24h volume |
-|---|---|---|---|---:|---:|---:|
+| Token | Representation | Issuer | Chain / contract | Price | Market cap | 24h volume | Source paths |
+|---|---|---|---|---:|---:|---:|---|
 ${tokenLines || '| Detailed token rows are not retained for this queue item. | | | | | |'}
 
 ## Local research worksheet
@@ -267,6 +287,7 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
   }
 
   function renderAlerts() {
+    if (!receipt) return;
     const indexed = receipt.alert_index || receipt.alerts || [];
     const normalizedQuery = query.trim().toLowerCase();
     const details = new Map((receipt.alerts || []).map(alert => [String(alert.rwa_id), alert]));
@@ -285,6 +306,7 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     const input = byId('hero-search');
     query = input.value.trim();
     byId('alert-search').value = input.value;
+    if (!receipt) return;
     filter = 'all';
     document.querySelectorAll('[data-filter]').forEach(item => item.classList.toggle('selected', item.dataset.filter === 'all'));
     renderAlerts();
@@ -381,7 +403,6 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     byId('hero-search').value = event.target.value;
     renderAlerts();
   });
-  byId('hero-search-form').addEventListener('submit', searchFromHero);
   byId('alert-list').addEventListener('click', event => {
     const button = event.target.closest('[data-brief-id]');
     if (button) downloadBrief(button.dataset.briefId);
@@ -421,6 +442,7 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     const status = input.closest('.research-worksheet')?.querySelector(`[data-worksheet-status="${CSS.escape(worksheetId)}"]`);
     if (status) status.textContent = worksheetStateLabel(worksheet);
   });
+  byId('hero-search-form').addEventListener('submit', searchFromHero);
   boot();
   window.setInterval(() => { if (receipt) renderMetrics(); }, 60000);
 })();

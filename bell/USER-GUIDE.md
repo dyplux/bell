@@ -31,8 +31,12 @@ stable identifiers, and turns contradictions into a visible next action.
    wrapper choice, then route the contradiction to diligence.
 6. Open the current flagged case, normally Silver or another highest-severity
    reference. Expand `Inspect evidence` or `Inspect representations` to see
-   token IDs, CMC token links, chain/contract identity, prices, issuers, issuer
+   the RWA ID to `crypto_id` and `issuer_id` identity path, CMC token links, chain/contract identity, prices, issuers, issuer
    websites when CMC publishes them, market cap, volume and the next action.
+   Each representation also exposes a compact source path when available:
+   CMC token page, issuer site, project site, explorer and technical docs. These
+   links are handoff routes for primary-source diligence, not proof that the
+   linked material is complete or accurate.
 7. Use the filters to distinguish the operational states:
 
    | State | Meaning | What the user may do |
