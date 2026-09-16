@@ -19,17 +19,21 @@ stable identifiers, and turns contradictions into a visible next action.
 ## A normal user's journey
 
 1. Open the [integrity monitor](https://bell.dyplux.com/integrity).
-2. Start with the asset search in the hero. Search for `Silver`, `Gold`, `Tesla`,
+2. Follow the small `3-MINUTE INVESTOR TASK` in the hero. It is a local browser
+   checklist, not an account or a telemetry feature: search the asset, inspect
+   the evidence, select two wrappers only when a factual comparison is useful,
+   then save the brief or worksheet.
+3. Start with the asset search in the hero. Search for `Silver`, `Gold`, `Tesla`,
    `SPY` or an RWA ID. The result is mirrored in the population queue below.
-3. Check the receipt badge. `LIVE RECEIPT · FRESH` means the current publication
+4. Check the receipt badge. `LIVE RECEIPT · FRESH` means the current publication
    is inside its 15-minute freshness contract. `STALE` means the last observed
    run is visible but should not be read as current. `DATED REPLAY` means the
    page is using the bundled evidence snapshot.
-4. Read the four population numbers: tokenised references, representations,
+5. Read the four population numbers: tokenised references, representations,
    blocked comparisons and rows without a stable RWA ID.
-5. Follow the decision path: scan the population, join by stable IDs, stop the
+6. Follow the decision path: scan the population, join by stable IDs, stop the
    wrapper choice, then route the contradiction to diligence.
-6. Open the current flagged case, normally Silver or another highest-severity
+7. Open the current flagged case, normally Silver or another highest-severity
    reference. Expand `Inspect evidence` or `Inspect representations` to see
    the RWA ID to `crypto_id` and `issuer_id` identity path, CMC token links, chain/contract identity, prices, issuers, issuer
    websites when CMC publishes them, market cap, volume and the next action.
@@ -37,7 +41,7 @@ stable identifiers, and turns contradictions into a visible next action.
    CMC token page, issuer site, project site, explorer and technical docs. These
    links are handoff routes for primary-source diligence, not proof that the
    linked material is complete or accurate.
-7. Use the filters to distinguish the operational states:
+8. Use the filters to distinguish the operational states:
 
    | State | Meaning | What the user may do |
    |---|---|---|
@@ -60,10 +64,10 @@ stable identifiers, and turns contradictions into a visible next action.
    keep unresolved wrappers separate. If CMC returns one representation, Bell
    shows a `SINGLE REPRESENTATION PATH`: there is no wrapper ranking to perform.
 
-8. Open the [complete searchable population queue](https://rwa-surface-review.pages.dev/)
+9. Open the [complete searchable population queue](https://rwa-surface-review.pages.dev/)
    when the first twelve detailed cases are not enough. It provides search,
    state filters and pagination for the full index.
-9. Open the credential-free JSON receipt to verify the observed time, published
+10. Open the credential-free JSON receipt to verify the observed time, published
    time, freshness state, endpoint method, source hashes and exact evidence.
 
 ## What the product does not claim

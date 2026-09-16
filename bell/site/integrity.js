@@ -24,6 +24,8 @@
     ['eligibility_custody', 'I verified eligibility and custody for my account'],
     ['execution', 'I obtained venue, depth, spread and size-specific execution evidence'],
   ];
+  const investorTaskKey = 'bell-investor-task-v1';
+  const investorTaskSteps = [1, 2, 3, 4];
   const externalURL = value => {
     try {
       const url = new URL(String(value || ''));
@@ -32,6 +34,41 @@
       return '';
     }
   };
+
+  function readInvestorTask() {
+    try {
+      const value = JSON.parse(localStorage.getItem(investorTaskKey) || '{}');
+      return { steps: value.steps || {} };
+    } catch {
+      return { steps: {} };
+    }
+  }
+
+  function saveInvestorTask(task) {
+    try {
+      localStorage.setItem(investorTaskKey, JSON.stringify({ steps: task.steps || {}, saved_at: new Date().toISOString() }));
+    } catch {
+      // The task is optional and never affects the receipt.
+    }
+  }
+
+  function renderInvestorTask() {
+    const task = readInvestorTask();
+    investorTaskSteps.forEach(step => {
+      const item = document.querySelector(`[data-task-step="${step}"]`);
+      if (item) item.classList.toggle('complete', Boolean(task.steps[step]));
+    });
+    const complete = investorTaskSteps.filter(step => task.steps[step]).length;
+    const progress = byId('task-progress');
+    if (progress) progress.textContent = `${complete}/4 complete · saved only in this browser`;
+  }
+
+  function completeInvestorTaskStep(step) {
+    const task = readInvestorTask();
+    task.steps[step] = true;
+    saveInvestorTask(task);
+    renderInvestorTask();
+  }
 
   function sourceLinks(token, compact = false) {
     const links = [];
@@ -288,6 +325,7 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     link.href = URL.createObjectURL(blob);
     link.download = filename;
     link.click();
+    completeInvestorTaskStep(4);
     window.setTimeout(() => URL.revokeObjectURL(link.href), 1000);
   }
 
@@ -311,6 +349,7 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     const input = byId('hero-search');
     query = input.value.trim();
     byId('alert-search').value = input.value;
+    if (query) completeInvestorTaskStep(1);
     if (!receipt) return;
     filter = 'all';
     document.querySelectorAll('[data-filter]').forEach(item => item.classList.toggle('selected', item.dataset.filter === 'all'));
@@ -393,6 +432,7 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
       }
       if (!receipt) throw lastError || new Error('no receipt source');
       renderMetrics();
+      renderInvestorTask();
       renderAlerts();
       renderSignals();
       renderIdentity();
@@ -414,6 +454,7 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     renderAlerts();
   });
   byId('alert-list').addEventListener('click', event => {
+    if (event.target.closest('.alert-details summary')) completeInvestorTaskStep(2);
     const button = event.target.closest('[data-brief-id]');
     if (button) downloadBrief(button.dataset.briefId);
     const saveButton = event.target.closest('[data-save-worksheet]');
@@ -426,6 +467,7 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
         worksheet.checks[input.dataset.worksheetCheck] = input.checked;
       });
       saveWorksheet(worksheetId, worksheet);
+      completeInvestorTaskStep(4);
       const status = worksheetElement.querySelector(`[data-worksheet-status="${CSS.escape(worksheetId)}"]`);
       if (status) status.textContent = worksheetStateLabel(worksheet);
       saveButton.textContent = 'Saved locally';
@@ -439,6 +481,7 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
       if (!compare) return;
       const scope = wrapperInput.closest('.alert-details') || wrapperInput.closest('.alert-row');
       const selectedIds = [...scope.querySelectorAll('[data-wrapper-select]:checked')].map(input => input.dataset.wrapperSelect);
+      if (selectedIds.length >= 2) completeInvestorTaskStep(3);
       const alertId = compare.dataset.wrapperCompare;
       const alert = (receipt.alerts || []).find(item => String(item.rwa_id) === String(alertId)) || (receipt.alert_index || []).find(item => String(item.rwa_id) === String(alertId));
       if (alert) compare.querySelector('[data-comparison-output]').innerHTML = renderComparisonOutput(alert, selectedIds);
@@ -453,6 +496,10 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     if (status) status.textContent = worksheetStateLabel(worksheet);
   });
   byId('hero-search-form').addEventListener('submit', searchFromHero);
+  byId('task-reset').addEventListener('click', () => {
+    try { localStorage.removeItem(investorTaskKey); } catch { /* optional local state */ }
+    renderInvestorTask();
+  });
   boot();
   window.setInterval(() => { if (receipt) renderMetrics(); }, 60000);
 })();
