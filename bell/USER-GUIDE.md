@@ -21,8 +21,8 @@ stable identifiers, and turns contradictions into a visible next action.
 1. Open the [integrity monitor](https://bell.dyplux.com/integrity).
 2. Follow the small `3-MINUTE INVESTOR TASK` in the hero. It is a local browser
    checklist, not an account or a telemetry feature: search the asset, inspect
-   the evidence, select two wrappers only when a factual comparison is useful,
-   then save the brief or worksheet.
+   the evidence, compare two wrappers only when Bell leaves that route open, or
+   keep them separate and record the next check, then save the brief or worksheet.
 3. Start with the asset search in the hero. Search for `Silver`, `Gold`, `Tesla`,
    `SPY` or an RWA ID. The result is mirrored in the population queue below.
    When a match exists, use `Open first evidence` above the queue to open the

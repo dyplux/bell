@@ -76,7 +76,8 @@ case shortcuts. The current deterministic test run is `29 passed, 1 skipped`.
 The live browser acceptance run verified:
 
 - the three-minute task progresses `0/4 -> 4/4` through search, evidence,
-  two-row selection and brief export;
+  either two-row selection or an explicit withheld/single-representation
+  handoff, and brief or worksheet export;
 - `Silver` produces `COMPARISON WITHHELD` and the three-step resolution handoff;
 - `Marvell` produces `FACTUAL COMPARISON OPEN` and the external-diligence
   handoff;
