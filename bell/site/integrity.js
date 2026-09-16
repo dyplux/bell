@@ -16,6 +16,13 @@
   };
 
   const formatNumber = value => typeof value === 'number' ? value.toLocaleString(undefined, { maximumFractionDigits: 2 }) : '—';
+  const worksheetChecks = [
+    ['identity_unit', 'I confirmed the exact token, chain and unit'],
+    ['issuer_docs', 'I checked the issuer primary documents'],
+    ['backing_redemption', 'I verified the backing and redemption terms'],
+    ['eligibility_custody', 'I verified eligibility and custody for my account'],
+    ['execution', 'I obtained venue, depth, spread and size-specific execution evidence'],
+  ];
   const externalURL = value => {
     try {
       const url = new URL(String(value || ''));
@@ -51,6 +58,44 @@
 
   function briefButton(rwaId) {
     return `<button class="brief-button" type="button" data-brief-id="${escapeHTML(rwaId)}">Save decision brief</button>`;
+  }
+
+  function worksheetKey(rwaId) {
+    return `bell-research-worksheet-${rwaId}`;
+  }
+
+  function readWorksheet(rwaId) {
+    try {
+      const value = JSON.parse(localStorage.getItem(worksheetKey(rwaId)) || '{}');
+      return { checks: value.checks || {}, note: value.note || '' };
+    } catch {
+      return { checks: {}, note: '' };
+    }
+  }
+
+  function saveWorksheet(rwaId, worksheet) {
+    try {
+      localStorage.setItem(worksheetKey(rwaId), JSON.stringify({
+        checks: worksheet.checks || {},
+        note: worksheet.note || '',
+        saved_at: new Date().toISOString(),
+      }));
+    } catch {
+      // The worksheet is optional; the receipt and brief still work.
+    }
+  }
+
+  function worksheetStateLabel(worksheet) {
+    const completed = worksheetChecks.filter(([key]) => worksheet.checks[key]).length;
+    return completed === worksheetChecks.length
+      ? 'DESK REVIEW PACK COMPLETE · BELL RESULT UNCHANGED'
+      : `${completed}/${worksheetChecks.length} EXTERNAL CHECKS RECORDED`;
+  }
+
+  function renderWorksheet(item) {
+    const worksheet = readWorksheet(item.rwa_id);
+    const checks = worksheetChecks.map(([key, label]) => `<label><input type="checkbox" data-worksheet-check="${key}" data-worksheet-id="${escapeHTML(item.rwa_id)}" ${worksheet.checks[key] ? 'checked' : ''}>${escapeHTML(label)}</label>`).join('');
+    return `<details class="research-worksheet"><summary>Open research worksheet</summary><p class="worksheet-note">Local handoff for your research process. These checks are your record, not Bell verification or investment approval.</p><div class="worksheet-checks">${checks}</div><textarea data-worksheet-note="${escapeHTML(item.rwa_id)}" placeholder="Add the one unresolved question or source you want to carry into the memo">${escapeHTML(worksheet.note)}</textarea><div class="worksheet-footer"><span data-worksheet-status="${escapeHTML(item.rwa_id)}">${escapeHTML(worksheetStateLabel(worksheet))}</span><button type="button" class="brief-button" data-save-worksheet="${escapeHTML(item.rwa_id)}">Save local worksheet</button></div></details>`;
   }
 
   function renderHandoff(item) {
@@ -100,14 +145,14 @@
       const evidence = alert.signals.filter(signal => signal.severity !== 'info').map(signal => `<div class="evidence-rule"><b>${escapeHTML(signalLabels[signal.code] || signal.code)}</b><p>${escapeHTML(signal.message)}</p><ul>${renderEvidence(signal)}</ul></div>`).join('');
       const stateLabel = alert.state === 'no_flags' ? 'NO RULE HIT' : alert.state.replaceAll('_', ' ').toUpperCase();
       const decision = alert.decision || {};
-      return `<article class="alert-row"><div class="alert-name">${escapeHTML(alert.name)}<small>${escapeHTML(alert.symbol)} · ${escapeHTML(alert.asset_type)} · ${alert.issuer_count} issuers</small></div><div class="alert-state ${alert.state === 'investigate' ? 'investigate' : ''}">${escapeHTML(stateLabel)}</div><div class="alert-signals">${escapeHTML(labels)}</div><div class="alert-tokens"><strong>${alert.token_count}</strong><small>representations</small></div><div class="alert-decision"><span>Decision effect</span><b>${escapeHTML(decision.label || 'REVIEW')}</b><p>${escapeHTML(decision.consequence || '')}</p></div><div class="alert-action"><span>Next action</span>${escapeHTML(alert.next_action)}</div>${renderHandoff(alert)}<div class="alert-tools">${briefButton(alert.rwa_id)}</div><details class="alert-details"><summary>Inspect evidence</summary>${evidence}<h4>Representation rows</h4>${renderTokenTable(alert)}</details></article>`;
+      return `<article class="alert-row"><div class="alert-name">${escapeHTML(alert.name)}<small>${escapeHTML(alert.symbol)} · ${escapeHTML(alert.asset_type)} · ${alert.issuer_count} issuers</small></div><div class="alert-state ${alert.state === 'investigate' ? 'investigate' : ''}">${escapeHTML(stateLabel)}</div><div class="alert-signals">${escapeHTML(labels)}</div><div class="alert-tokens"><strong>${alert.token_count}</strong><small>representations</small></div><div class="alert-decision"><span>Decision effect</span><b>${escapeHTML(decision.label || 'REVIEW')}</b><p>${escapeHTML(decision.consequence || '')}</p></div><div class="alert-action"><span>Next action</span>${escapeHTML(alert.next_action)}</div>${renderHandoff(alert)}<div class="alert-tools">${briefButton(alert.rwa_id)}</div><details class="alert-details"><summary>Inspect evidence</summary>${evidence}<h4>Representation rows</h4>${renderTokenTable(alert)}</details>${renderWorksheet(alert)}</article>`;
   }
 
   function renderIndexRow(item, detail) {
     if (detail) return renderAlertRow(detail);
     const stateLabel = item.state === 'no_flags' ? 'NO RULE HIT' : String(item.state || '').replaceAll('_', ' ').toUpperCase();
     const decision = item.decision || {};
-    return `<article class="alert-row compact-row"><div class="alert-name">${escapeHTML(item.name)}<small>${escapeHTML(item.symbol)} · ${escapeHTML(item.asset_type)} · ${item.issuer_count || 0} issuers · RWA ${escapeHTML(item.rwa_id)}</small></div><div class="alert-state ${item.state === 'investigate' ? 'investigate' : item.state === 'no_flags' ? 'clear' : ''}">${escapeHTML(stateLabel)}</div><div class="alert-signals">${escapeHTML((item.signal_codes || []).filter(code => code !== 'NO_TRADFI_MARKET').slice(0, 3).map(code => signalLabels[code] || code).join(' · ') || 'No published rule hit')}</div><div class="alert-tokens"><strong>${Number(item.token_count || 0).toLocaleString()}</strong><small>representations</small></div><div class="alert-decision"><span>Decision effect</span><b>${escapeHTML(decision.label || 'NO RULE HIT')}</b><p>${escapeHTML(decision.consequence || '')}</p></div><div class="alert-action"><span>Next action</span>${escapeHTML(item.next_action || '')}</div>${renderHandoff(item)}<div class="alert-tools">${briefButton(item.rwa_id)}</div><details class="alert-details"><summary>Inspect representations</summary><p class="compact-note">CMC quote rows observed in this receipt. Bell uses them to route research, not to certify backing, eligibility, liquidity or equivalence.</p><ul class="compact-evidence">${renderCompactEvidence(item)}</ul>${renderTokenTable(item)}</details></article>`;
+    return `<article class="alert-row compact-row"><div class="alert-name">${escapeHTML(item.name)}<small>${escapeHTML(item.symbol)} · ${escapeHTML(item.asset_type)} · ${item.issuer_count || 0} issuers · RWA ${escapeHTML(item.rwa_id)}</small></div><div class="alert-state ${item.state === 'investigate' ? 'investigate' : item.state === 'no_flags' ? 'clear' : ''}">${escapeHTML(stateLabel)}</div><div class="alert-signals">${escapeHTML((item.signal_codes || []).filter(code => code !== 'NO_TRADFI_MARKET').slice(0, 3).map(code => signalLabels[code] || code).join(' · ') || 'No published rule hit')}</div><div class="alert-tokens"><strong>${Number(item.token_count || 0).toLocaleString()}</strong><small>representations</small></div><div class="alert-decision"><span>Decision effect</span><b>${escapeHTML(decision.label || 'NO RULE HIT')}</b><p>${escapeHTML(decision.consequence || '')}</p></div><div class="alert-action"><span>Next action</span>${escapeHTML(item.next_action || '')}</div>${renderHandoff(item)}<div class="alert-tools">${briefButton(item.rwa_id)}</div><details class="alert-details"><summary>Inspect representations</summary><p class="compact-note">CMC quote rows observed in this receipt. Bell uses them to route research, not to certify backing, eligibility, liquidity or equivalence.</p><ul class="compact-evidence">${renderCompactEvidence(item)}</ul>${renderTokenTable(item)}</details>${renderWorksheet(item)}</article>`;
   }
 
   function markdownBrief(item) {
@@ -127,6 +172,8 @@
       const issuerCell = issuerURL ? `[${issuer}](${issuerURL})` : issuer;
       return `| ${token.symbol || '—'} | ${token.name || '—'} | ${issuerCell} | ${formatNumber(token.price)} | ${formatNumber(token.market_cap)} | ${formatNumber(token.volume_24h)} |`;
     }).join('\n');
+    const worksheet = readWorksheet(item.rwa_id);
+    const worksheetLines = worksheetChecks.map(([key, label]) => `- [${worksheet.checks[key] ? 'x' : ' '}] ${label}`).join('\n');
     return `# Bell decision brief: ${item.name || 'RWA reference'}
 
 Generated from the credential-free Bell receipt. This is research triage, not investment advice.
@@ -162,6 +209,14 @@ ${item.next_action || 'Continue external diligence before comparing or allocatin
 | Token | Representation | Issuer | Price | Market cap | 24h volume |
 |---|---|---|---:|---:|---:|
 ${tokenLines || '| Detailed token rows are not retained for this queue item. | | | | | |'}
+
+## Local research worksheet
+
+This is a local user record, not Bell verification or investment approval.
+
+${worksheetLines}
+
+Research note: ${worksheet.note || 'No local note recorded.'}
 
 ## Still not answered by Bell
 
@@ -304,6 +359,31 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
   byId('alert-list').addEventListener('click', event => {
     const button = event.target.closest('[data-brief-id]');
     if (button) downloadBrief(button.dataset.briefId);
+    const saveButton = event.target.closest('[data-save-worksheet]');
+    if (saveButton) {
+      const worksheetId = saveButton.dataset.saveWorksheet;
+      const worksheetElement = saveButton.closest('.research-worksheet');
+      const worksheet = readWorksheet(worksheetId);
+      worksheet.note = worksheetElement.querySelector('[data-worksheet-note]')?.value || '';
+      worksheetElement.querySelectorAll('[data-worksheet-check]').forEach(input => {
+        worksheet.checks[input.dataset.worksheetCheck] = input.checked;
+      });
+      saveWorksheet(worksheetId, worksheet);
+      const status = worksheetElement.querySelector(`[data-worksheet-status="${CSS.escape(worksheetId)}"]`);
+      if (status) status.textContent = worksheetStateLabel(worksheet);
+      saveButton.textContent = 'Saved locally';
+      window.setTimeout(() => { saveButton.textContent = 'Save local worksheet'; }, 1400);
+    }
+  });
+  byId('alert-list').addEventListener('change', event => {
+    const input = event.target.closest('[data-worksheet-check]');
+    if (!input) return;
+    const worksheetId = input.dataset.worksheetId;
+    const worksheet = readWorksheet(worksheetId);
+    worksheet.checks[input.dataset.worksheetCheck] = input.checked;
+    saveWorksheet(worksheetId, worksheet);
+    const status = input.closest('.research-worksheet')?.querySelector(`[data-worksheet-status="${CSS.escape(worksheetId)}"]`);
+    if (status) status.textContent = worksheetStateLabel(worksheet);
   });
   boot();
   window.setInterval(() => { if (receipt) renderMetrics(); }, 60000);
