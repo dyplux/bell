@@ -72,7 +72,7 @@ def api_get(path: str, params: dict[str, object], key: str) -> dict:
     raise RuntimeError(f"CMC request failed after retries: {path}") from last_error
 
 
-def collect_live(key: str) -> tuple[dict, dict, dict, dict, dict]:
+def collect_live(key: str) -> tuple[dict, dict, dict, dict, dict, dict]:
     map_pages = []
     list_pages = []
     for start in range(1, 10001, 250):
@@ -90,9 +90,28 @@ def collect_live(key: str) -> tuple[dict, dict, dict, dict, dict]:
     token_ids = [str(row["rwa_id"]) for row in map_rows if row.get("has_tokens") is True and row.get("rwa_id") is not None]
     info_pages = []
     quote_pages = []
+    crypto_info_pages = []
     for index in range(0, len(token_ids), 250):
         info_pages.append(api_get("/v5/real-world-assets/info", {"rwa_id": ",".join(token_ids[index:index + 250])}, key))
         quote_pages.append(api_get("/v5/real-world-assets/quotes/latest", {"rwa_id": ",".join(token_ids[index:index + 250]), "convert": "USD", "skip_invalid": "true"}, key))
+    crypto_ids = sorted({str(token.get("crypto_id")) for page in quote_pages for asset in records(page) for token in asset.get("tokens", []) if isinstance(token, dict) and token.get("crypto_id") is not None})
+    crypto_info_invalid_ids = []
+    for index in range(0, len(crypto_ids), 100):
+        batch = crypto_ids[index:index + 100]
+        try:
+            crypto_info_pages.append(api_get("/v2/cryptocurrency/info", {"id": ",".join(batch), "skip_invalid": "true"}, key))
+        except HTTPError as exc:
+            if exc.code != 400:
+                raise
+            # CMC rejects an all-invalid batch even with skip_invalid. Split
+            # only that batch and retain unresolved IDs in the receipt.
+            for crypto_id in batch:
+                try:
+                    crypto_info_pages.append(api_get("/v2/cryptocurrency/info", {"id": crypto_id, "skip_invalid": "true"}, key))
+                except HTTPError as item_error:
+                    if item_error.code != 400:
+                        raise
+                    crypto_info_invalid_ids.append(crypto_id)
     issuer_pages = []
     for start in range(1, 10001, 250):
         page = api_get("/v5/real-world-assets/issuers/list", {"start": start, "limit": 250}, key)
@@ -102,20 +121,36 @@ def collect_live(key: str) -> tuple[dict, dict, dict, dict, dict]:
     info_rows = records({"data": {"rwa_assets": sum((records(page) for page in info_pages), [])}})
     quote_rows = records({"data": {"rwa_assets": sum((records(page) for page in quote_pages), [])}})
     issuer_rows = [issuer for page in issuer_pages for issuer in (page.get("data", {}).get("issuers", []) if isinstance(page.get("data", {}).get("issuers", []), list) else [])]
+    crypto_info_rows = {str(crypto_id): item for page in crypto_info_pages for crypto_id, item in (page.get("data", {}) if isinstance(page.get("data", {}), dict) else {}).items() if isinstance(item, dict)}
     return (
         {"data": {"rwa_assets": map_rows}},
         {"data": {"rwa_assets": list_rows}},
         {"data": {"rwa_assets": quote_rows}},
         {"data": {"rwa_assets": info_rows}},
         {"data": {"issuers": issuer_rows}},
+        {"data": crypto_info_rows, "unresolved_ids": sorted(set(crypto_info_invalid_ids))},
     )
 
 
-def token_summary(token: dict, issuer_lookup: dict | None = None) -> dict:
+def token_summary(token: dict, issuer_lookup: dict | None = None, crypto_lookup: dict | None = None) -> dict:
     summary = {key: token.get(key) for key in ("crypto_id", "symbol", "name", "asset_type", "token_type", "category", "is_derivative", "issuer_id", "issuer_name", "price", "market_cap", "volume_24h")}
     issuer = (issuer_lookup or {}).get(str(token.get("issuer_id")), {})
+    crypto = (crypto_lookup or {}).get(str(token.get("crypto_id")), {})
     summary["issuer_website"] = issuer.get("website")
     summary["issuer_catalogue_name"] = issuer.get("name")
+    summary["crypto_slug"] = crypto.get("slug")
+    summary["cmc_url"] = f"https://coinmarketcap.com/currencies/{crypto['slug']}/" if crypto.get("slug") else None
+    summary["project_url"] = ((crypto.get("urls") or {}).get("website") or [None])[0] if isinstance((crypto.get("urls") or {}).get("website"), list) else None
+    summary["platforms"] = [
+        {
+            "name": (entry.get("platform") or {}).get("name"),
+            "slug": (entry.get("platform") or {}).get("coin", {}).get("slug"),
+            "contract_address": entry.get("contract_address"),
+        }
+        for entry in (crypto.get("contract_address") or [])
+        if isinstance(entry, dict) and isinstance(entry.get("platform"), dict)
+    ]
+    summary["crypto_info_resolved"] = bool(crypto)
     return summary
 
 
@@ -134,8 +169,8 @@ def index_evidence(evidence: dict) -> dict:
     return compact
 
 
-def asset_scan(asset: dict, issuer_lookup: dict | None = None) -> dict:
-    tokens = [token_summary(token, issuer_lookup) for token in asset.get("tokens", []) if isinstance(token, dict)]
+def asset_scan(asset: dict, issuer_lookup: dict | None = None, crypto_lookup: dict | None = None, crypto_info_checked: bool = False) -> dict:
+    tokens = [token_summary(token, issuer_lookup, crypto_lookup) for token in asset.get("tokens", []) if isinstance(token, dict)]
     prices = [number(token.get("price")) for token in tokens]
     prices = [price for price in prices if price is not None and price > 0]
     ratio = max(prices) / min(prices) if prices else None
@@ -144,6 +179,7 @@ def asset_scan(asset: dict, issuer_lookup: dict | None = None) -> dict:
     repeated_symbols = sorted(symbol for symbol, count in symbol_counts.items() if count > 1)
     zero_mcap_volume = [token for token in tokens if number(token.get("market_cap")) == 0 and (number(token.get("volume_24h")) or 0) > 0]
     missing_fields = [token.get("symbol") or token.get("crypto_id") for token in tokens if any(token.get(key) is None for key in ("price", "market_cap", "volume_24h"))]
+    missing_crypto_info = [token.get("crypto_id") for token in tokens if crypto_info_checked and token.get("crypto_id") is not None and token.get("crypto_info_resolved") is not True]
     derivative_tokens = [token for token in tokens if token.get("is_derivative") is True or any("derivative" in str(token.get(key) or "").lower() for key in ("name", "asset_type", "token_type", "category"))]
     non_derivative_tokens = [token for token in tokens if token not in derivative_tokens]
     signals = []
@@ -163,6 +199,8 @@ def asset_scan(asset: dict, issuer_lookup: dict | None = None) -> dict:
         add("SYMBOL_COLLISION", "warning", "A ticker is reused by multiple representations; symbol is not a safe identity key.", {"symbols": repeated_symbols})
     if missing_fields:
         add("MARKET_FIELDS_MISSING", "warning", "One or more token representations are missing price, market cap or volume.", {"tokens": missing_fields, "count": len(missing_fields)})
+    if missing_crypto_info:
+        add("TOKEN_INFO_MISSING", "warning", "One or more crypto IDs could not be resolved through CMC cryptocurrency/info; chain and contract identity remains incomplete.", {"tokens": missing_crypto_info, "count": len(missing_crypto_info)})
     if not asset.get("tradfi_markets"):
         add("NO_TRADFI_MARKET", "info", "No tracked TradFi market was returned for this reference.", {})
     state = "do_not_compare" if any(signal["severity"] == "critical" for signal in signals) else "investigate" if any(signal["severity"] == "warning" for signal in signals) else "no_flags"
@@ -174,6 +212,8 @@ def asset_scan(asset: dict, issuer_lookup: dict | None = None) -> dict:
         next_action = "Split derivative-labelled representations from spot or wrapper representations."
     elif any(signal["code"] == "MARKET_FIELDS_MISSING" for signal in signals):
         next_action = "Keep nulls visible and re-check the missing token fields before ranking."
+    elif any(signal["code"] == "TOKEN_INFO_MISSING" for signal in signals):
+        next_action = "Resolve the crypto_id through CMC cryptocurrency/info before relying on chain or contract identity."
     elif any(signal["code"] == "SYMBOL_COLLISION" for signal in signals):
         next_action = "Join on crypto_id and issuer_id, never on the ticker alone."
     else:
@@ -215,7 +255,7 @@ def asset_scan(asset: dict, issuer_lookup: dict | None = None) -> dict:
     }
 
 
-def scan(map_payload: dict, list_payload: dict, quotes_payload: dict, info_payload: dict | None = None, issuers_payload: dict | None = None, observed_at: str | None = None) -> dict:
+def scan(map_payload: dict, list_payload: dict, quotes_payload: dict, info_payload: dict | None = None, issuers_payload: dict | None = None, observed_at: str | None = None, crypto_info_payload: dict | None = None) -> dict:
     required_surfaces = {"map": map_payload, "asset_list": list_payload, "quotes": quotes_payload}
     input_issues = [name for name, payload in required_surfaces.items() if not surface_has_records(payload)]
     scan_status = "incomplete" if input_issues else "ready"
@@ -225,6 +265,9 @@ def scan(map_payload: dict, list_payload: dict, quotes_payload: dict, info_paylo
     info_rows = records(info_payload or {})
     issuer_data = (issuers_payload or {}).get("data", {})
     issuer_rows = issuer_data.get("issuers", []) if isinstance(issuer_data.get("issuers", []), list) else []
+    crypto_data = (crypto_info_payload or {}).get("data", {})
+    crypto_rows = [item for item in crypto_data.values() if isinstance(item, dict)] if isinstance(crypto_data, dict) else []
+    crypto_invalid_ids = [str(value) for value in (crypto_info_payload or {}).get("unresolved_ids", [])]
     map_ids = {row.get("rwa_id") for row in map_rows if row.get("rwa_id") is not None}
     list_ids = [row.get("rwa_id") for row in list_rows if row.get("rwa_id") is not None]
     id_counts = Counter(list_ids)
@@ -239,11 +282,13 @@ def scan(map_payload: dict, list_payload: dict, quotes_payload: dict, info_paylo
         if issuer.get("issuer_id") is not None
     ]
     issuer_lookup = {str(issuer["issuer_id"]): issuer for issuer in issuer_catalogue}
-    assets = [asset_scan(asset, issuer_lookup) for asset in quote_rows]
+    crypto_lookup = {str(item.get("id")): item for item in crypto_rows if item.get("id") is not None}
+    assets = [asset_scan(asset, issuer_lookup, crypto_lookup, crypto_info_checked=crypto_info_payload is not None) for asset in quote_rows]
     tokenized_map_ids = {row.get("rwa_id") for row in map_rows if row.get("has_tokens") is True and row.get("rwa_id") is not None}
     info_ids = {row.get("rwa_id") for row in info_rows if row.get("rwa_id") is not None}
     issuer_ids = {row.get("issuer_id") for row in issuer_rows if row.get("issuer_id") is not None}
     quote_issuer_ids = {token.get("issuer_id") for asset in assets for token in asset["tokens"] if token.get("issuer_id")}
+    quote_crypto_ids = {str(token.get("crypto_id")) for asset in assets for token in asset["tokens"] if token.get("crypto_id") is not None}
     signal_counts = Counter(signal["code"] for asset in assets for signal in asset["signals"])
     critical = [asset for asset in assets if asset["state"] == "do_not_compare"]
     warnings = [asset for asset in assets if asset["state"] == "investigate"]
@@ -287,15 +332,17 @@ def scan(map_payload: dict, list_payload: dict, quotes_payload: dict, info_paylo
             "quotes": "/v5/real-world-assets/quotes/latest",
             "info": "/v5/real-world-assets/info",
             "issuers": "/v5/real-world-assets/issuers/list",
+            "crypto_info": "/v2/cryptocurrency/info",
             "market_pairs": "not called in Startup scan; CMC documents this endpoint for Growth and above",
             "join_key": "rwa_id",
+            "token_join_key": "crypto_id",
             "refresh_profiles": {
                 "map": "30 seconds",
                 "asset_list": "60 seconds",
                 "quotes": "60 seconds",
             },
             "surface_drift_note": "The endpoints have separate update and caching cadences. A row without rwa_id is unjoinable in this run; it is not, by itself, proof of a CMC defect.",
-            "rules": ["10x price spread is a critical denomination break", "positive volume with zero market cap is a critical market contradiction", "derivative mixing, symbol collision and missing fields require investigation", "never join by ticker when crypto_id or issuer_id exists"],
+            "rules": ["10x price spread is a critical denomination break", "positive volume with zero market cap is a critical market contradiction", "derivative mixing, symbol collision, missing fields and missing token identity require investigation", "never join by ticker when crypto_id or issuer_id exists"],
             "scan_status": scan_status,
             "input_integrity": {
                 "required_surfaces": list(required_surfaces),
@@ -322,6 +369,10 @@ def scan(map_payload: dict, list_payload: dict, quotes_payload: dict, info_paylo
             "issuer_catalogue_rows": len(issuer_rows),
             "quote_issuer_ids": len(quote_issuer_ids),
             "quote_issuer_ids_missing_from_catalogue": sorted(quote_issuer_ids - issuer_ids),
+            "crypto_info_rows": len(crypto_rows),
+            "quote_crypto_ids": len(quote_crypto_ids),
+            "quote_crypto_ids_missing_from_info": sorted(quote_crypto_ids - set(crypto_lookup)),
+            "crypto_info_invalid_ids": crypto_invalid_ids,
         },
         "universe": {
             "tokenised_references_scanned": len(quote_rows),
@@ -332,7 +383,7 @@ def scan(map_payload: dict, list_payload: dict, quotes_payload: dict, info_paylo
         "alert_index": alert_index,
         "alerts": alerts[:50],
         "issuer_catalogue": issuer_catalogue,
-        "source_hashes": {"map": digest(map_payload), "asset_list": digest(list_payload), "quotes": digest(quotes_payload), "info": digest(info_payload or {}), "issuers": digest(issuers_payload or {})},
+        "source_hashes": {"map": digest(map_payload), "asset_list": digest(list_payload), "quotes": digest(quotes_payload), "info": digest(info_payload or {}), "issuers": digest(issuers_payload or {}), "crypto_info": digest(crypto_info_payload or {})},
     }
 
 
@@ -343,6 +394,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--quotes", dest="quotes_path", type=Path, help="credential-free quotes response JSON")
     parser.add_argument("--info", dest="info_path", type=Path, help="credential-free info response JSON")
     parser.add_argument("--issuers", dest="issuers_path", type=Path, help="credential-free issuers/list response JSON")
+    parser.add_argument("--crypto-info", dest="crypto_info_path", type=Path, help="credential-free cryptocurrency/info response JSON")
     parser.add_argument("--live", action="store_true", help="fetch the map, asset list and all tokenised quotes with CMC_API_KEY")
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args(argv)
@@ -350,16 +402,17 @@ def main(argv: list[str] | None = None) -> int:
         key = os.environ.get("CMC_API_KEY")
         if not key:
             parser.error("--live requires CMC_API_KEY in the process environment")
-        map_payload, list_payload, quotes_payload, info_payload, issuers_payload = collect_live(key)
+        map_payload, list_payload, quotes_payload, info_payload, issuers_payload, crypto_info_payload = collect_live(key)
     elif args.map_path and args.list_path and args.quotes_path:
         map_payload = json.loads(args.map_path.read_text(encoding="utf-8"))
         list_payload = json.loads(args.list_path.read_text(encoding="utf-8"))
         quotes_payload = json.loads(args.quotes_path.read_text(encoding="utf-8"))
         info_payload = json.loads(args.info_path.read_text(encoding="utf-8")) if args.info_path else {}
         issuers_payload = json.loads(args.issuers_path.read_text(encoding="utf-8")) if args.issuers_path else {}
+        crypto_info_payload = json.loads(args.crypto_info_path.read_text(encoding="utf-8")) if args.crypto_info_path else {}
     else:
         parser.error("provide --live or all three replay payloads")
-    result = scan(map_payload, list_payload, quotes_payload, info_payload, issuers_payload)
+    result = scan(map_payload, list_payload, quotes_payload, info_payload, issuers_payload, crypto_info_payload=crypto_info_payload)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(json.dumps({"output": str(args.output), "universe": result["universe"], "catalogue_integrity": result["catalogue_integrity"]}, ensure_ascii=False, indent=2))

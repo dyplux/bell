@@ -45,6 +45,7 @@ def render(result: dict) -> str:
         "Identity cross-check:",
         f"info: {identity.get('info_rows', 0):,} rows / {identity.get('info_unique_ids', 0):,} stable IDs",
         f"issuers: {identity.get('issuer_catalogue_rows', 0):,} listed · {identity.get('quote_issuer_ids', 0):,} seen in quotes · {len(identity.get('quote_issuer_ids_missing_from_catalogue', [])):,} missing",
+        f"token identity: {identity.get('crypto_info_rows', 0):,} rows · {identity.get('quote_crypto_ids', 0):,} seen · {len(identity.get('quote_crypto_ids_missing_from_info', [])):,} missing",
         "",
         "Integrity breaks:",
         f"{signals.get('PRICE_DENOMINATION_BREAK', 0)} price groups over 10x",
@@ -80,8 +81,8 @@ def main() -> int:
         key = os.environ.get("CMC_API_KEY")
         if not key:
             parser.error("--live requires CMC_API_KEY")
-        map_payload, list_payload, quotes_payload, info_payload, issuers_payload = collect_live(key)
-        result = scan(map_payload, list_payload, quotes_payload, info_payload, issuers_payload)
+        map_payload, list_payload, quotes_payload, info_payload, issuers_payload, crypto_info_payload = collect_live(key)
+        result = scan(map_payload, list_payload, quotes_payload, info_payload, issuers_payload, crypto_info_payload=crypto_info_payload)
     else:
         result = json.loads(args.receipt.read_text(encoding="utf-8"))
     result.setdefault("read_at", datetime.now(timezone.utc).isoformat())

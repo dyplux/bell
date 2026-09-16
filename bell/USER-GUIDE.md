@@ -31,8 +31,8 @@ stable identifiers, and turns contradictions into a visible next action.
    wrapper choice, then route the contradiction to diligence.
 6. Open the current flagged case, normally Silver or another highest-severity
    reference. Expand `Inspect evidence` or `Inspect representations` to see
-   token IDs, prices, issuers, issuer websites when CMC publishes them, market
-   cap, volume and the next action.
+   token IDs, CMC token links, chain/contract identity, prices, issuers, issuer
+   websites when CMC publishes them, market cap, volume and the next action.
 7. Use the filters to distinguish the operational states:
 
    | State | Meaning | What the user may do |
@@ -64,7 +64,7 @@ stable identifiers, and turns contradictions into a visible next action.
 
 ## What the product does not claim
 
-CMC RWA fields do not establish backing, redemption, custody, legal eligibility,
+CMC RWA and `cryptocurrency/info` fields do not establish backing, redemption, custody, legal eligibility,
 settlement or size-specific execution. The Startup plan also does not expose
 the market-pairs surface used for venue, depth or spread evidence. Those are
 explicit next checks, never silently converted into a clean result.
