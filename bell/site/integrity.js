@@ -16,6 +16,14 @@
   };
 
   const formatNumber = value => typeof value === 'number' ? value.toLocaleString(undefined, { maximumFractionDigits: 2 }) : '—';
+  const externalURL = value => {
+    try {
+      const url = new URL(String(value || ''));
+      return ['http:', 'https:'].includes(url.protocol) ? url.href : '';
+    } catch {
+      return '';
+    }
+  };
 
   function renderEvidence(signal) {
     const evidence = signal.evidence || {};
@@ -32,7 +40,12 @@
 
   function renderTokenTable(alert) {
     const tokens = alert.tokens || alert.representations || [];
-    const rows = tokens.map(token => `<tr><td>${escapeHTML(token.symbol || '—')}<small>${escapeHTML(token.crypto_id || 'no id')}</small></td><td>${escapeHTML(token.name || '—')}</td><td>${escapeHTML(token.issuer_name || 'unlinked')}</td><td>${formatNumber(token.price)}</td><td>${formatNumber(token.market_cap)}</td><td>${formatNumber(token.volume_24h)}</td></tr>`).join('');
+    const rows = tokens.map(token => {
+      const website = externalURL(token.issuer_website);
+      const issuer = escapeHTML(token.issuer_name || token.issuer_catalogue_name || 'unlinked');
+      const issuerCell = website ? `<a href="${escapeHTML(website)}" target="_blank" rel="noopener">${issuer} ↗</a>` : issuer;
+      return `<tr><td>${escapeHTML(token.symbol || '—')}<small>${escapeHTML(token.crypto_id || 'no id')}</small></td><td>${escapeHTML(token.name || '—')}</td><td>${issuerCell}</td><td>${formatNumber(token.price)}</td><td>${formatNumber(token.market_cap)}</td><td>${formatNumber(token.volume_24h)}</td></tr>`;
+    }).join('');
     return `<div class="token-table-wrap"><table class="token-table"><thead><tr><th>Token</th><th>Representation</th><th>Issuer</th><th>Price</th><th>MCap</th><th>24h vol</th></tr></thead><tbody>${rows || '<tr><td colspan="6">No token rows returned.</td></tr>'}</tbody></table></div>`;
   }
 
@@ -105,7 +118,7 @@
       if (evidence.symbols) facts.push(`symbols ${evidence.symbols.join(', ')}`);
       return `- ${signalLabels[signal.code] || signal.code}: ${signal.message}${facts.length ? ` (${facts.join('; ')})` : ''}`;
     }).join('\n') : '- No published rule hit in this scan.';
-    const tokenLines = (item.tokens || item.representations || []).map(token => `| ${token.symbol || '—'} | ${token.name || '—'} | ${token.issuer_name || 'unlinked'} | ${formatNumber(token.price)} | ${formatNumber(token.market_cap)} | ${formatNumber(token.volume_24h)} |`).join('\n');
+    const tokenLines = (item.tokens || item.representations || []).map(token => `| ${token.symbol || '—'} | ${token.name || '—'} | ${token.issuer_name || token.issuer_catalogue_name || 'unlinked'} | ${formatNumber(token.price)} | ${formatNumber(token.market_cap)} | ${formatNumber(token.volume_24h)} |`).join('\n');
     return `# Bell decision brief: ${item.name || 'RWA reference'}
 
 Generated from the credential-free Bell receipt. This is research triage, not investment advice.

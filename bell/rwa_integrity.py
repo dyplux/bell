@@ -111,8 +111,12 @@ def collect_live(key: str) -> tuple[dict, dict, dict, dict, dict]:
     )
 
 
-def token_summary(token: dict) -> dict:
-    return {key: token.get(key) for key in ("crypto_id", "symbol", "name", "asset_type", "token_type", "category", "is_derivative", "issuer_id", "issuer_name", "price", "market_cap", "volume_24h")}
+def token_summary(token: dict, issuer_lookup: dict | None = None) -> dict:
+    summary = {key: token.get(key) for key in ("crypto_id", "symbol", "name", "asset_type", "token_type", "category", "is_derivative", "issuer_id", "issuer_name", "price", "market_cap", "volume_24h")}
+    issuer = (issuer_lookup or {}).get(str(token.get("issuer_id")), {})
+    summary["issuer_website"] = issuer.get("website")
+    summary["issuer_catalogue_name"] = issuer.get("name")
+    return summary
 
 
 def index_evidence(evidence: dict) -> dict:
@@ -130,8 +134,8 @@ def index_evidence(evidence: dict) -> dict:
     return compact
 
 
-def asset_scan(asset: dict) -> dict:
-    tokens = [token_summary(token) for token in asset.get("tokens", []) if isinstance(token, dict)]
+def asset_scan(asset: dict, issuer_lookup: dict | None = None) -> dict:
+    tokens = [token_summary(token, issuer_lookup) for token in asset.get("tokens", []) if isinstance(token, dict)]
     prices = [number(token.get("price")) for token in tokens]
     prices = [price for price in prices if price is not None and price > 0]
     ratio = max(prices) / min(prices) if prices else None
@@ -226,7 +230,16 @@ def scan(map_payload: dict, list_payload: dict, quotes_payload: dict, info_paylo
     id_counts = Counter(list_ids)
     missing_id_rows = [row for row in list_rows if row.get("rwa_id") is None]
     duplicate_ids = {str(rwa_id): count for rwa_id, count in id_counts.items() if count > 1}
-    assets = [asset_scan(asset) for asset in quote_rows]
+    issuer_catalogue = [
+        {
+            key: issuer.get(key)
+            for key in ("issuer_id", "name", "website", "num_tokens", "total_size")
+        }
+        for issuer in issuer_rows
+        if issuer.get("issuer_id") is not None
+    ]
+    issuer_lookup = {str(issuer["issuer_id"]): issuer for issuer in issuer_catalogue}
+    assets = [asset_scan(asset, issuer_lookup) for asset in quote_rows]
     tokenized_map_ids = {row.get("rwa_id") for row in map_rows if row.get("has_tokens") is True and row.get("rwa_id") is not None}
     info_ids = {row.get("rwa_id") for row in info_rows if row.get("rwa_id") is not None}
     issuer_ids = {row.get("issuer_id") for row in issuer_rows if row.get("issuer_id") is not None}
@@ -318,6 +331,7 @@ def scan(map_payload: dict, list_payload: dict, quotes_payload: dict, info_paylo
         },
         "alert_index": alert_index,
         "alerts": alerts[:50],
+        "issuer_catalogue": issuer_catalogue,
         "source_hashes": {"map": digest(map_payload), "asset_list": digest(list_payload), "quotes": digest(quotes_payload), "info": digest(info_payload or {}), "issuers": digest(issuers_payload or {})},
     }
 
