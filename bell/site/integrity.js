@@ -57,6 +57,9 @@
     if (item.state === 'do_not_compare') {
       return '<div class="alert-handoff"><span>TO CLEAR THIS CASE</span><p>Match the RWA ID to the token ID and issuer ID. Then confirm the exact instrument and unit, verify issuer and redemption terms, and obtain venue and execution evidence before comparing wrappers.</p></div>';
     }
+    if (Number(item.token_count || 0) === 1) {
+      return '<div class="alert-handoff"><span>SINGLE REPRESENTATION PATH</span><p>CMC returned one representation for this reference, so there is no wrapper ranking to perform. Verify the instrument, issuer, backing, redemption, eligibility, custody and executable liquidity before treating it as investable.</p></div>';
+    }
     if (item.state === 'investigate') {
       return '<div class="alert-handoff"><span>TO MOVE FORWARD</span><p>Classify the representation, confirm the issuer and missing fields, then keep unresolved wrappers separate in the research memo.</p></div>';
     }
