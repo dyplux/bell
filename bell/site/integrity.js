@@ -383,6 +383,7 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     document.querySelectorAll('[data-filter]').forEach(item => item.classList.toggle('selected', item.dataset.filter === 'all'));
     renderAlerts();
     renderSearchResult();
+    renderDecisionStory();
     byId('monitor').scrollIntoView({ behavior: 'smooth', block: 'start' });
     window.setTimeout(() => byId('alert-search').focus(), 450);
   }
@@ -410,15 +411,23 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
   }
 
   function renderDecisionStory() {
-    const alert = receipt.alerts.find(item => item.state === 'do_not_compare') || receipt.alerts.find(item => item.state === 'investigate');
+    const normalizedQuery = query.trim().toLowerCase();
+    const focused = normalizedQuery
+      ? (receipt.alert_index || []).find(item => [item.name, item.symbol, item.asset_type, item.rwa_id].join(' ').toLowerCase().includes(normalizedQuery))
+      : null;
+    const focusedDetail = focused && (receipt.alerts || []).find(item => String(item.rwa_id) === String(focused.rwa_id));
+    const alert = focusedDetail || focused || receipt.alerts.find(item => item.state === 'do_not_compare') || receipt.alerts.find(item => item.state === 'investigate');
     const publication = receipt._publication || {};
     if (!alert) {
       byId('decision-hero').innerHTML = '<p class="eyebrow">CURRENT RECEIPT</p><h3>No published case</h3><p>The receipt contains no alert to route.</p>';
       return;
     }
     const decision = alert.decision || {};
-    const signals = alert.signals.filter(signal => signal.severity !== 'info').slice(0, 2).map(signal => signalLabels[signal.code] || signal.code).join(' · ');
-    const primaryEvidence = alert.signals.find(signal => signal.severity !== 'info')?.evidence || {};
+    const significantSignals = alert.signals
+      ? alert.signals.filter(signal => signal.severity !== 'info')
+      : (alert.signal_codes || []).filter(code => code !== 'NO_TRADFI_MARKET').map(code => ({ code, evidence: alert.signal_evidence?.[code] || {} }));
+    const signals = significantSignals.slice(0, 2).map(signal => signalLabels[signal.code] || signal.code).join(' · ');
+    const primaryEvidence = significantSignals[0]?.evidence || {};
     const caseFacts = [];
     if (alert.token_count) caseFacts.push(`${formatNumber(alert.token_count)} representations`);
     if (alert.issuer_count) caseFacts.push(`${formatNumber(alert.issuer_count)} issuers`);
@@ -482,6 +491,7 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     byId('hero-search').value = event.target.value;
     renderAlerts();
     renderSearchResult();
+    renderDecisionStory();
   });
   byId('alert-list').addEventListener('click', event => {
     if (event.target.closest('.alert-details summary')) completeInvestorTaskStep(2);
