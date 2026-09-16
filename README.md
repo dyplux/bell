@@ -83,6 +83,11 @@ The dated receipt is deliberately labelled `DATED`; it is an offline replay, not
 cached file is live. `NO RULE HIT` is not an approval and the monitor does not prove backing,
 redemption, custody, legal eligibility, solvency or executable liquidity.
 
+The current investor job-to-be-done, demand hypothesis and differentiation boundary are in
+[`bell/PRODUCT-THESIS-2026-09-16.md`](bell/PRODUCT-THESIS-2026-09-16.md). The latest black-box
+investor UX audit is in
+[`bell/jury/INVESTOR-UX-AUDIT-2026-09-16.md`](bell/jury/INVESTOR-UX-AUDIT-2026-09-16.md).
+
 ## Test
 
 ```bash

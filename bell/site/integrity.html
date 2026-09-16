@@ -20,9 +20,14 @@
   <main>
     <section class="hero">
       <div>
-        <p class="eyebrow"><span></span> RWA / SURFACE INTEGRITY MONITOR</p>
-        <h1>Before the comparison,<br><em>test the surface.</em></h1>
-        <p class="lede">CMC groups real-world assets by reference. Bell checks whether the underlying data can support the comparison before a user trusts the table.</p>
+        <p class="eyebrow"><span></span> FOR INVESTORS / ANALYSTS / RWA TEAMS</p>
+        <h1>Before you compare<br><em>check the wrapper.</em></h1>
+        <p class="lede">Have a tokenised stock, gold or ETF in mind? Bell checks whether its representations can be compared before they enter your shortlist. It does not tell you what to buy. It tells you what to stop, investigate and verify next.</p>
+        <form id="hero-search-form" class="hero-search" role="search">
+          <label for="hero-search">START WITH AN ASSET</label>
+          <div><input id="hero-search" type="search" placeholder="Try Silver, Gold, Tesla or SPY" autocomplete="off"><button type="submit">Check reference ↗</button></div>
+          <small>One question first: <b>can this reference support a fair token comparison?</b></small>
+        </form>
         <div class="hero-meta"><span>CMC API / MAP + ASSET LIST + QUOTES</span><span id="observed-at">LOADING RECEIPT</span></div>
       </div>
       <aside class="hero-proof">
@@ -31,6 +36,19 @@
         <div id="hero-case-fact" class="proof-fact">Loading the latest measured contradiction.</div>
         <div class="proof-rule"><strong id="hero-proof-output">NO SCORE</strong><span>clear the contradiction first</span></div>
       </aside>
+    </section>
+
+    <section class="investor-output" aria-label="What Bell returns">
+      <div class="investor-output-intro">
+        <p class="eyebrow"><span></span> YOUR DECISION PATH</p>
+        <h2>From a market question<br>to a defensible next step.</h2>
+        <p>Bell is useful when the CMC catalogue gives you several representations and you need to know whether they belong in the same comparison.</p>
+      </div>
+      <div class="output-grid">
+        <article><span>01</span><strong>Can I compare it?</strong><p>Identity, unit and quote contradictions are surfaced before a wrapper is ranked.</p></article>
+        <article><span>02</span><strong>What failed?</strong><p>The evidence shows the signal, the affected rows and the timestamp behind it.</p></article>
+        <article><span>03</span><strong>What do I verify next?</strong><p>The output routes you to issuer, eligibility, redemption and execution diligence.</p></article>
+      </div>
     </section>
 
     <section class="metric-strip" aria-label="Scan totals">
@@ -60,7 +78,7 @@
       </aside>
     </section>
 
-    <section class="monitor-grid">
+    <section id="monitor" class="monitor-grid">
       <div class="alerts-panel">
         <div class="section-head"><div><p class="eyebrow">01 / PUBLISHED ALERT QUEUE</p><h2>Where the surface breaks</h2></div><div class="filters" role="group" aria-label="Filter alerts"><button class="selected" data-filter="all">ALL</button><button data-filter="do_not_compare">BLOCKED</button><button data-filter="investigate">INVESTIGATE</button><button data-filter="no_flags">NO RULE HIT</button></div></div>
         <label class="queue-search"><span>SEARCH THE POPULATION</span><input id="alert-search" type="search" placeholder="Silver, Tesla, Gold, SPY or RWA ID" autocomplete="off"></label>

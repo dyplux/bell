@@ -35,6 +35,10 @@
     return `<div class="token-table-wrap"><table class="token-table"><thead><tr><th>Token</th><th>Representation</th><th>Issuer</th><th>Price</th><th>MCap</th><th>24h vol</th></tr></thead><tbody>${rows || '<tr><td colspan="6">No token rows returned.</td></tr>'}</tbody></table></div>`;
   }
 
+  function briefButton(rwaId) {
+    return `<button class="brief-button" type="button" data-brief-id="${escapeHTML(rwaId)}">Save decision brief</button>`;
+  }
+
   function renderMetrics() {
     const universe = receipt.universe;
     byId('observed-at').textContent = `OBSERVED ${receipt.observed_at}`;
@@ -69,14 +73,78 @@
       const evidence = alert.signals.filter(signal => signal.severity !== 'info').map(signal => `<div class="evidence-rule"><b>${escapeHTML(signalLabels[signal.code] || signal.code)}</b><p>${escapeHTML(signal.message)}</p><ul>${renderEvidence(signal)}</ul></div>`).join('');
       const stateLabel = alert.state === 'no_flags' ? 'NO RULE HIT' : alert.state.replaceAll('_', ' ').toUpperCase();
       const decision = alert.decision || {};
-      return `<article class="alert-row"><div class="alert-name">${escapeHTML(alert.name)}<small>${escapeHTML(alert.symbol)} · ${escapeHTML(alert.asset_type)} · ${alert.issuer_count} issuers</small></div><div class="alert-state ${alert.state === 'investigate' ? 'investigate' : ''}">${escapeHTML(stateLabel)}</div><div class="alert-signals">${escapeHTML(labels)}</div><div class="alert-tokens"><strong>${alert.token_count}</strong><small>representations</small></div><div class="alert-decision"><span>Decision effect</span><b>${escapeHTML(decision.label || 'REVIEW')}</b><p>${escapeHTML(decision.consequence || '')}</p></div><div class="alert-action"><span>Next action</span>${escapeHTML(alert.next_action)}</div><details class="alert-details"><summary>Inspect evidence</summary>${evidence}<h4>Representation rows</h4>${renderTokenTable(alert)}</details></article>`;
+      return `<article class="alert-row"><div class="alert-name">${escapeHTML(alert.name)}<small>${escapeHTML(alert.symbol)} · ${escapeHTML(alert.asset_type)} · ${alert.issuer_count} issuers</small></div><div class="alert-state ${alert.state === 'investigate' ? 'investigate' : ''}">${escapeHTML(stateLabel)}</div><div class="alert-signals">${escapeHTML(labels)}</div><div class="alert-tokens"><strong>${alert.token_count}</strong><small>representations</small></div><div class="alert-decision"><span>Decision effect</span><b>${escapeHTML(decision.label || 'REVIEW')}</b><p>${escapeHTML(decision.consequence || '')}</p></div><div class="alert-action"><span>Next action</span>${escapeHTML(alert.next_action)}</div><div class="alert-tools">${briefButton(alert.rwa_id)}</div><details class="alert-details"><summary>Inspect evidence</summary>${evidence}<h4>Representation rows</h4>${renderTokenTable(alert)}</details></article>`;
   }
 
   function renderIndexRow(item, detail) {
     if (detail) return renderAlertRow(detail);
     const stateLabel = item.state === 'no_flags' ? 'NO RULE HIT' : String(item.state || '').replaceAll('_', ' ').toUpperCase();
     const decision = item.decision || {};
-    return `<article class="alert-row compact-row"><div class="alert-name">${escapeHTML(item.name)}<small>${escapeHTML(item.symbol)} · ${escapeHTML(item.asset_type)} · ${item.issuer_count || 0} issuers · RWA ${escapeHTML(item.rwa_id)}</small></div><div class="alert-state ${item.state === 'investigate' ? 'investigate' : item.state === 'no_flags' ? 'clear' : ''}">${escapeHTML(stateLabel)}</div><div class="alert-signals">${escapeHTML((item.signal_codes || []).filter(code => code !== 'NO_TRADFI_MARKET').slice(0, 3).map(code => signalLabels[code] || code).join(' · ') || 'No published rule hit')}</div><div class="alert-tokens"><strong>${Number(item.token_count || 0).toLocaleString()}</strong><small>representations</small></div><div class="alert-decision"><span>Decision effect</span><b>${escapeHTML(decision.label || 'NO RULE HIT')}</b><p>${escapeHTML(decision.consequence || '')}</p></div><div class="alert-action"><span>Next action</span>${escapeHTML(item.next_action || '')}</div><details class="alert-details"><summary>Inspect compact evidence</summary><ul class="compact-evidence">${renderCompactEvidence(item)}</ul><p class="compact-note">Full token rows are retained for priority cases in the published receipt.</p></details></article>`;
+    return `<article class="alert-row compact-row"><div class="alert-name">${escapeHTML(item.name)}<small>${escapeHTML(item.symbol)} · ${escapeHTML(item.asset_type)} · ${item.issuer_count || 0} issuers · RWA ${escapeHTML(item.rwa_id)}</small></div><div class="alert-state ${item.state === 'investigate' ? 'investigate' : item.state === 'no_flags' ? 'clear' : ''}">${escapeHTML(stateLabel)}</div><div class="alert-signals">${escapeHTML((item.signal_codes || []).filter(code => code !== 'NO_TRADFI_MARKET').slice(0, 3).map(code => signalLabels[code] || code).join(' · ') || 'No published rule hit')}</div><div class="alert-tokens"><strong>${Number(item.token_count || 0).toLocaleString()}</strong><small>representations</small></div><div class="alert-decision"><span>Decision effect</span><b>${escapeHTML(decision.label || 'NO RULE HIT')}</b><p>${escapeHTML(decision.consequence || '')}</p></div><div class="alert-action"><span>Next action</span>${escapeHTML(item.next_action || '')}</div><div class="alert-tools">${briefButton(item.rwa_id)}</div><details class="alert-details"><summary>Inspect compact evidence</summary><ul class="compact-evidence">${renderCompactEvidence(item)}</ul><p class="compact-note">Full token rows are retained for priority cases in the published receipt.</p></details></article>`;
+  }
+
+  function markdownBrief(item) {
+    const decision = item.decision || {};
+    const signals = (item.signals || []).filter(signal => signal.severity !== 'info');
+    const signalLines = signals.length ? signals.map(signal => {
+      const evidence = signal.evidence || {};
+      const facts = [];
+      if (evidence.max_min_ratio) facts.push(`${formatNumber(evidence.max_min_ratio)}× observed price spread`);
+      if (evidence.count) facts.push(`${evidence.count} rows with missing fields`);
+      if (evidence.symbols) facts.push(`symbols ${evidence.symbols.join(', ')}`);
+      return `- ${signalLabels[signal.code] || signal.code}: ${signal.message}${facts.length ? ` (${facts.join('; ')})` : ''}`;
+    }).join('\n') : '- No published rule hit in this scan.';
+    const tokenLines = (item.tokens || []).map(token => `| ${token.symbol || '—'} | ${token.name || '—'} | ${token.issuer_name || 'unlinked'} | ${formatNumber(token.price)} | ${formatNumber(token.market_cap)} | ${formatNumber(token.volume_24h)} |`).join('\n');
+    return `# Bell decision brief: ${item.name || 'RWA reference'}
+
+Generated from the credential-free Bell receipt. This is research triage, not investment advice.
+
+## Decision
+
+- Reference: ${item.name || '—'} (${item.symbol || '—'})
+- RWA ID: ${item.rwa_id || '—'}
+- Asset type: ${item.asset_type || '—'}
+- State: ${item.state === 'no_flags' ? 'NO RULE HIT' : String(item.state || '').replaceAll('_', ' ').toUpperCase()}
+- Decision effect: ${decision.label || 'REVIEW'}
+- Consequence: ${decision.consequence || 'No allocation status is produced by this monitor.'}
+- Observed: ${receipt.observed_at || '—'}
+- Published: ${receipt._publication?.published_at || '—'}
+
+## Evidence
+
+${signalLines}
+
+## Next action
+
+${item.next_action || 'Continue external diligence before comparing or allocating.'}
+
+## Representation rows
+
+| Token | Representation | Issuer | Price | Market cap | 24h volume |
+|---|---|---|---:|---:|---:|
+${tokenLines || '| Detailed token rows are not retained for this queue item. | | | | | |'}
+
+## Still not answered by Bell
+
+- backing, custody, redemption and legal eligibility;
+- venue access, depth, spread and size-specific execution;
+- whether this asset is suitable for a particular portfolio or mandate.
+
+Source: ${(window.location.protocol === 'http:' || window.location.protocol === 'https:') ? new URL('/api/integrity', window.location.href).href : '/api/integrity'}
+`;
+  }
+
+  function downloadBrief(rwaId) {
+    const item = (receipt.alerts || []).find(alert => String(alert.rwa_id) === String(rwaId))
+      || (receipt.alert_index || []).find(alert => String(alert.rwa_id) === String(rwaId));
+    if (!item) return;
+    const filename = `bell-${String(item.symbol || item.name || 'rwa').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}-decision-brief.md`;
+    const blob = new Blob([markdownBrief(item)], { type: 'text/markdown;charset=utf-8' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = filename;
+    link.click();
+    window.setTimeout(() => URL.revokeObjectURL(link.href), 1000);
   }
 
   function renderAlerts() {
@@ -91,6 +159,18 @@
     const visible = matching.slice(0, 12);
     byId('alert-count').innerHTML = `Showing <strong>${visible.length}</strong> of <strong>${matching.length}</strong> matching references · ${indexed.length.toLocaleString()} references scanned. <a href="https://rwa-surface-review.pages.dev/" target="_blank" rel="noopener">Open the complete searchable queue ↗</a>`;
     byId('alert-list').innerHTML = visible.map(item => renderIndexRow(item, details.get(String(item.rwa_id)))).join('') || '<p class="section-note">No references match this filter.</p>';
+  }
+
+  function searchFromHero(event) {
+    event.preventDefault();
+    const input = byId('hero-search');
+    query = input.value.trim();
+    byId('alert-search').value = input.value;
+    filter = 'all';
+    document.querySelectorAll('[data-filter]').forEach(item => item.classList.toggle('selected', item.dataset.filter === 'all'));
+    renderAlerts();
+    byId('monitor').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    window.setTimeout(() => byId('alert-search').focus(), 450);
   }
 
   function renderSignals() {
@@ -178,7 +258,13 @@
   }));
   byId('alert-search').addEventListener('input', event => {
     query = event.target.value;
+    byId('hero-search').value = event.target.value;
     renderAlerts();
+  });
+  byId('hero-search-form').addEventListener('submit', searchFromHero);
+  byId('alert-list').addEventListener('click', event => {
+    const button = event.target.closest('[data-brief-id]');
+    if (button) downloadBrief(button.dataset.briefId);
   });
   boot();
   window.setInterval(() => { if (receipt) renderMetrics(); }, 60000);

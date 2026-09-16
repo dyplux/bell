@@ -8,24 +8,31 @@ answers a narrower question:
 
 > Can these representations be compared as if they were the same exposure?
 
+For an investor, the practical job is simpler: search the reference you are
+considering and learn whether it can enter a comparison shortlist yet. Bell
+returns a comparison state, the evidence behind it and the next diligence
+question. It never turns a clean scan into a buy approval.
+
 The monitor scans the CMC RWA population, joins the available surfaces through
 stable identifiers, and turns contradictions into a visible next action.
 
 ## A normal user's journey
 
 1. Open the [integrity monitor](https://bell.dyplux.com/integrity).
-2. Check the receipt badge. `LIVE RECEIPT · FRESH` means the current publication
+2. Start with the asset search in the hero. Search for `Silver`, `Gold`, `Tesla`,
+   `SPY` or an RWA ID. The result is mirrored in the population queue below.
+3. Check the receipt badge. `LIVE RECEIPT · FRESH` means the current publication
    is inside its 15-minute freshness contract. `STALE` means the last observed
    run is visible but should not be read as current. `DATED REPLAY` means the
    page is using the bundled evidence snapshot.
-3. Read the four population numbers: tokenised references, representations,
+4. Read the four population numbers: tokenised references, representations,
    blocked comparisons and rows without a stable RWA ID.
-4. Follow the decision path: scan the population, join by stable IDs, stop the
+5. Follow the decision path: scan the population, join by stable IDs, stop the
    wrapper choice, then route the contradiction to diligence.
-5. Open the current flagged case, normally Silver or another highest-severity
+6. Open the current flagged case, normally Silver or another highest-severity
    reference. Expand `Inspect evidence` to see token IDs, prices, issuers,
    market cap, volume and the next action.
-6. Use the filters to distinguish the operational states:
+7. Use the filters to distinguish the operational states:
 
    | State | Meaning | What the user may do |
    |---|---|---|
@@ -33,10 +40,14 @@ stable identifiers, and turns contradictions into a visible next action.
    | `INVESTIGATE` | A warning fired, such as derivative mixing, symbol collision or missing fields. | Continue research, but do not present the rows as equivalent exposure. |
    | `NO RULE HIT, NOT APPROVED` | None of the published rules fired in this run. | No allocation or safety conclusion is produced. Continue external diligence. |
 
-7. Open the [complete searchable population queue](https://rwa-surface-review.pages.dev/)
+   Use `Save decision brief` on a queue row to export a Markdown handoff with
+   the state, evidence, timestamps, next action and the investment questions
+   Bell did not answer. It is a research memo, not a recommendation.
+
+8. Open the [complete searchable population queue](https://rwa-surface-review.pages.dev/)
    when the first twelve detailed cases are not enough. It provides search,
    state filters and pagination for the full index.
-8. Open the credential-free JSON receipt to verify the observed time, published
+9. Open the credential-free JSON receipt to verify the observed time, published
    time, freshness state, endpoint method, source hashes and exact evidence.
 
 ## What the product does not claim
