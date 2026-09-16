@@ -180,19 +180,24 @@
     return evidence || '<li>No compact numerical evidence was published for this index row.</li>';
   }
 
+  function displayDecisionLabel(item, fallback = 'REVIEW') {
+    if (item?.state === 'do_not_compare' || item?.decision?.state === 'blocked') return 'COMPARISON WITHHELD';
+    return item?.decision?.label || fallback;
+  }
+
   function renderAlertRow(alert) {
       const labels = alert.signals.filter(signal => signal.severity !== 'info').map(signal => signalLabels[signal.code] || signal.code).slice(0, 3).join(' · ');
       const evidence = alert.signals.filter(signal => signal.severity !== 'info').map(signal => `<div class="evidence-rule"><b>${escapeHTML(signalLabels[signal.code] || signal.code)}</b><p>${escapeHTML(signal.message)}</p><ul>${renderEvidence(signal)}</ul></div>`).join('');
       const stateLabel = alert.state === 'no_flags' ? 'NO RULE HIT' : alert.state.replaceAll('_', ' ').toUpperCase();
       const decision = alert.decision || {};
-      return `<article class="alert-row"><div class="alert-name">${escapeHTML(alert.name)}<small>${escapeHTML(alert.symbol)} · ${escapeHTML(alert.asset_type)} · ${alert.issuer_count} issuers</small></div><div class="alert-state ${alert.state === 'investigate' ? 'investigate' : ''}">${escapeHTML(stateLabel)}</div><div class="alert-signals">${escapeHTML(labels)}</div><div class="alert-tokens"><strong>${alert.token_count}</strong><small>representations</small></div><div class="alert-decision"><span>Decision effect</span><b>${escapeHTML(decision.label || 'REVIEW')}</b><p>${escapeHTML(decision.consequence || '')}</p></div><div class="alert-action"><span>Next action</span>${escapeHTML(alert.next_action)}</div>${renderHandoff(alert)}<div class="alert-tools">${briefButton(alert.rwa_id)}</div><details class="alert-details"><summary>Inspect evidence</summary>${evidence}<h4>Representation rows</h4>${renderTokenTable(alert)}</details>${renderWorksheet(alert)}</article>`;
+      return `<article class="alert-row"><div class="alert-name">${escapeHTML(alert.name)}<small>${escapeHTML(alert.symbol)} · ${escapeHTML(alert.asset_type)} · ${alert.issuer_count} issuers</small></div><div class="alert-state ${alert.state === 'investigate' ? 'investigate' : ''}">${escapeHTML(stateLabel)}</div><div class="alert-signals">${escapeHTML(labels)}</div><div class="alert-tokens"><strong>${alert.token_count}</strong><small>representations</small></div><div class="alert-decision"><span>Decision effect</span><b>${escapeHTML(displayDecisionLabel(alert))}</b><p>${escapeHTML(decision.consequence || '')}</p></div><div class="alert-action"><span>Next action</span>${escapeHTML(alert.next_action)}</div>${renderHandoff(alert)}<div class="alert-tools">${briefButton(alert.rwa_id)}</div><details class="alert-details"><summary>Inspect evidence</summary>${evidence}<h4>Representation rows</h4>${renderTokenTable(alert)}</details>${renderWorksheet(alert)}</article>`;
   }
 
   function renderIndexRow(item, detail) {
     if (detail) return renderAlertRow(detail);
     const stateLabel = item.state === 'no_flags' ? 'NO RULE HIT' : String(item.state || '').replaceAll('_', ' ').toUpperCase();
     const decision = item.decision || {};
-    return `<article class="alert-row compact-row"><div class="alert-name">${escapeHTML(item.name)}<small>${escapeHTML(item.symbol)} · ${escapeHTML(item.asset_type)} · ${item.issuer_count || 0} issuers · RWA ${escapeHTML(item.rwa_id)}</small></div><div class="alert-state ${item.state === 'investigate' ? 'investigate' : item.state === 'no_flags' ? 'clear' : ''}">${escapeHTML(stateLabel)}</div><div class="alert-signals">${escapeHTML((item.signal_codes || []).filter(code => code !== 'NO_TRADFI_MARKET').slice(0, 3).map(code => signalLabels[code] || code).join(' · ') || 'No published rule hit')}</div><div class="alert-tokens"><strong>${Number(item.token_count || 0).toLocaleString()}</strong><small>representations</small></div><div class="alert-decision"><span>Decision effect</span><b>${escapeHTML(decision.label || 'NO RULE HIT')}</b><p>${escapeHTML(decision.consequence || '')}</p></div><div class="alert-action"><span>Next action</span>${escapeHTML(item.next_action || '')}</div>${renderHandoff(item)}<div class="alert-tools">${briefButton(item.rwa_id)}</div><details class="alert-details"><summary>Inspect representations</summary><p class="compact-note">CMC quote rows observed in this receipt. Bell uses them to route research, not to certify backing, eligibility, liquidity or equivalence.</p><ul class="compact-evidence">${renderCompactEvidence(item)}</ul>${renderTokenTable(item)}</details>${renderWorksheet(item)}</article>`;
+    return `<article class="alert-row compact-row"><div class="alert-name">${escapeHTML(item.name)}<small>${escapeHTML(item.symbol)} · ${escapeHTML(item.asset_type)} · ${item.issuer_count || 0} issuers · RWA ${escapeHTML(item.rwa_id)}</small></div><div class="alert-state ${item.state === 'investigate' ? 'investigate' : item.state === 'no_flags' ? 'clear' : ''}">${escapeHTML(stateLabel)}</div><div class="alert-signals">${escapeHTML((item.signal_codes || []).filter(code => code !== 'NO_TRADFI_MARKET').slice(0, 3).map(code => signalLabels[code] || code).join(' · ') || 'No published rule hit')}</div><div class="alert-tokens"><strong>${Number(item.token_count || 0).toLocaleString()}</strong><small>representations</small></div><div class="alert-decision"><span>Decision effect</span><b>${escapeHTML(displayDecisionLabel(item, 'NO RULE HIT'))}</b><p>${escapeHTML(decision.consequence || '')}</p></div><div class="alert-action"><span>Next action</span>${escapeHTML(item.next_action || '')}</div>${renderHandoff(item)}<div class="alert-tools">${briefButton(item.rwa_id)}</div><details class="alert-details"><summary>Inspect representations</summary><p class="compact-note">CMC quote rows observed in this receipt. Bell uses them to route research, not to certify backing, eligibility, liquidity or equivalence.</p><ul class="compact-evidence">${renderCompactEvidence(item)}</ul>${renderTokenTable(item)}</details>${renderWorksheet(item)}</article>`;
   }
 
   function markdownBrief(item) {
@@ -229,7 +234,7 @@ Generated from the credential-free Bell receipt. This is research triage, not in
 - RWA ID: ${item.rwa_id || '—'}
 - Asset type: ${item.asset_type || '—'}
 - State: ${item.state === 'no_flags' ? 'NO RULE HIT' : String(item.state || '').replaceAll('_', ' ').toUpperCase()}
-- Decision effect: ${decision.label || 'REVIEW'}
+  - Decision effect: ${displayDecisionLabel(item)}
 - Consequence: ${decision.consequence || 'No allocation status is produced by this monitor.'}
 - Observed: ${receipt.observed_at || '—'}
 - Published: ${receipt._publication?.published_at || '—'}
@@ -346,10 +351,15 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     const decision = alert.decision || {};
     const signals = alert.signals.filter(signal => signal.severity !== 'info').slice(0, 2).map(signal => signalLabels[signal.code] || signal.code).join(' · ');
     const primaryEvidence = alert.signals.find(signal => signal.severity !== 'info')?.evidence || {};
+    const caseFacts = [];
+    if (alert.token_count) caseFacts.push(`${formatNumber(alert.token_count)} representations`);
+    if (alert.issuer_count) caseFacts.push(`${formatNumber(alert.issuer_count)} issuers`);
+    if (primaryEvidence.max_min_ratio) caseFacts.push(`${formatNumber(primaryEvidence.max_min_ratio)}× observed price spread`);
     byId('hero-case').textContent = alert.name || 'Current flagged case';
-    byId('hero-case-fact').textContent = primaryEvidence.max_min_ratio ? `${formatNumber(primaryEvidence.max_min_ratio)}× observed price spread across representations` : signals || 'Published rule hit';
-    byId('hero-proof-output').textContent = decision.label || 'HOLD COMPARISON';
-    byId('decision-hero').innerHTML = `<div class="decision-hero-top"><span class="eyebrow">FLAGGED REFERENCE</span><span class="decision-case">${escapeHTML(alert.symbol || 'RWA')}</span></div><h3>${escapeHTML(alert.name)}</h3><p class="decision-signal">${escapeHTML(signals || 'published rule hit')}</p><div class="decision-outcome"><span>OUTPUT</span><strong>${escapeHTML(decision.label || 'HOLD COMPARISON')}</strong><p>${escapeHTML(decision.consequence || alert.next_action || '')}</p><b class="allocation-gate">${escapeHTML(decision.allocation_effect || 'No allocation status is produced by this monitor.')}</b></div><div class="decision-receipt"><span>${escapeHTML(publication.status ? String(publication.status).toUpperCase() : 'DATED')} · ${escapeHTML(publication.observed_at || receipt.observed_at || '—')}</span><a href="/api/integrity" target="_blank" rel="noopener">Open credential-free receipt ↗</a></div>`;
+    byId('hero-case-fact').textContent = caseFacts.join(' · ') || signals || 'Published rule hit';
+    byId('hero-example').textContent = `Live example: search ${alert.name || 'the reference'} → inspect ${caseFacts.join(' · ') || 'the evidence'} → ${displayDecisionLabel(alert, 'HOLD COMPARISON')} → verify the next action before ranking a wrapper.`;
+    byId('hero-proof-output').textContent = displayDecisionLabel(alert, 'HOLD COMPARISON');
+    byId('decision-hero').innerHTML = `<div class="decision-hero-top"><span class="eyebrow">FLAGGED REFERENCE</span><span class="decision-case">${escapeHTML(alert.symbol || 'RWA')}</span></div><h3>${escapeHTML(alert.name)}</h3><p class="decision-signal">${escapeHTML(signals || 'published rule hit')}</p><div class="decision-outcome"><span>OUTPUT</span><strong>${escapeHTML(displayDecisionLabel(alert, 'HOLD COMPARISON'))}</strong><p>${escapeHTML(decision.consequence || alert.next_action || '')}</p><b class="allocation-gate">${escapeHTML(decision.allocation_effect || 'No allocation status is produced by this monitor.')}</b></div><div class="decision-receipt"><span>${escapeHTML(publication.status ? String(publication.status).toUpperCase() : 'DATED')} · ${escapeHTML(publication.observed_at || receipt.observed_at || '—')}</span><a href="/api/integrity" target="_blank" rel="noopener">Open credential-free receipt ↗</a></div>`;
   }
 
   async function boot() {
