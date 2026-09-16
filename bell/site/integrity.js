@@ -195,7 +195,7 @@
     if (item.state === 'investigate') {
       return '<div class="alert-handoff"><span>TO MOVE FORWARD</span><p>Classify the representation, confirm the issuer and missing fields, then keep unresolved wrappers separate in the research memo.</p></div>';
     }
-    return '<div class="alert-handoff"><span>BEFORE ALLOCATION</span><p>Run external checks for backing, eligibility, redemption, custody and executable liquidity. A clean Bell scan is not approval.</p></div>';
+    return '<div class="alert-handoff"><span>FACTUAL COMPARISON PATH</span><p>No published Bell rule fired for this reference. You may inspect the observed rows, but run external checks for backing, eligibility, redemption, custody and executable liquidity before treating any wrapper as investable.</p></div>';
   }
 
   function renderMetrics() {
@@ -229,6 +229,9 @@
 
   function displayDecisionLabel(item, fallback = 'REVIEW') {
     if (item?.state === 'do_not_compare' || item?.decision?.state === 'blocked') return 'COMPARISON WITHHELD';
+    if (item?.state === 'investigate') return 'INVESTIGATE BEFORE SHORTLIST';
+    if (item?.state === 'no_flags' && Number(item?.token_count || 0) === 1) return 'SINGLE REPRESENTATION';
+    if (item?.state === 'no_flags') return 'FACTUAL COMPARISON OPEN';
     return item?.decision?.label || fallback;
   }
 
@@ -370,7 +373,7 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
       result.innerHTML = `<span>SEARCH RESULT</span><strong>No reference found for “${escapeHTML(query)}”</strong><p>Try the asset name, ticker or RWA ID. The full population remains available in the queue.</p><a href="#monitor">Open the searchable queue ↓</a>`;
       return;
     }
-    const state = item.state === 'do_not_compare' ? 'COMPARISON WITHHELD' : item.state === 'investigate' ? 'INVESTIGATE BEFORE SHORTLIST' : Number(item.token_count || 0) === 1 ? 'SINGLE REPRESENTATION' : 'FACTS ONLY · NO RULE HIT';
+    const state = displayDecisionLabel(item);
     const next = item.state === 'do_not_compare'
       ? 'Resolve the identity, unit and quote contradiction before comparing wrappers.'
       : item.state === 'investigate'
