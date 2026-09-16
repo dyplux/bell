@@ -344,6 +344,34 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     byId('alert-list').innerHTML = visible.map(item => renderIndexRow(item, details.get(String(item.rwa_id)))).join('') || '<p class="section-note">No references match this filter.</p>';
   }
 
+  function renderSearchResult() {
+    const result = byId('search-result');
+    if (!result) return;
+    const normalizedQuery = query.trim().toLowerCase();
+    if (!receipt || !normalizedQuery) {
+      result.hidden = true;
+      result.innerHTML = '';
+      return;
+    }
+    const matches = (receipt.alert_index || []).filter(item => [item.name, item.symbol, item.asset_type, item.rwa_id].join(' ').toLowerCase().includes(normalizedQuery));
+    const item = matches[0];
+    if (!item) {
+      result.hidden = false;
+      result.innerHTML = `<span>SEARCH RESULT</span><strong>No reference found for “${escapeHTML(query)}”</strong><p>Try the asset name, ticker or RWA ID. The full population remains available in the queue.</p><a href="#monitor">Open the searchable queue ↓</a>`;
+      return;
+    }
+    const state = item.state === 'do_not_compare' ? 'COMPARISON WITHHELD' : item.state === 'investigate' ? 'INVESTIGATE BEFORE SHORTLIST' : Number(item.token_count || 0) === 1 ? 'SINGLE REPRESENTATION' : 'FACTS ONLY · NO RULE HIT';
+    const next = item.state === 'do_not_compare'
+      ? 'Resolve the identity, unit and quote contradiction before comparing wrappers.'
+      : item.state === 'investigate'
+        ? 'Classify the representation and keep unresolved wrappers separate.'
+        : Number(item.token_count || 0) === 1
+          ? 'There is no wrapper ranking to perform; verify the instrument and issuer externally.'
+          : 'Open the rows for a factual side-by-side, then complete external diligence.';
+    result.hidden = false;
+    result.innerHTML = `<span>SEARCHED REFERENCE · ${matches.length > 1 ? `${matches.length} MATCHES · SHOWING FIRST` : '1 MATCH'}</span><strong>${escapeHTML(item.name || item.symbol || 'Reference')} · ${escapeHTML(item.symbol || 'RWA')}</strong><p>${formatNumber(item.token_count || 0)} representations · ${formatNumber(item.issuer_count || 0)} issuers · <b>${state}</b></p><p>${escapeHTML(next)}</p><a href="#monitor">Inspect this evidence ↓</a>`;
+  }
+
   function searchFromHero(event) {
     event.preventDefault();
     const input = byId('hero-search');
@@ -354,6 +382,7 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     filter = 'all';
     document.querySelectorAll('[data-filter]').forEach(item => item.classList.toggle('selected', item.dataset.filter === 'all'));
     renderAlerts();
+    renderSearchResult();
     byId('monitor').scrollIntoView({ behavior: 'smooth', block: 'start' });
     window.setTimeout(() => byId('alert-search').focus(), 450);
   }
@@ -452,6 +481,7 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     query = event.target.value;
     byId('hero-search').value = event.target.value;
     renderAlerts();
+    renderSearchResult();
   });
   byId('alert-list').addEventListener('click', event => {
     if (event.target.closest('.alert-details summary')) completeInvestorTaskStep(2);
