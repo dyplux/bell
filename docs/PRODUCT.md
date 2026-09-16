@@ -16,15 +16,24 @@ It is not a token leaderboard, safety score or investment recommendation.
 3. Open the current case, normally the highest-priority contradiction.
 4. Search the main queue or the [neutral review queue](https://rwa-surface-review.pages.dev/)
    for an RWA such as Silver, Gold, Tesla or SPY.
-5. Inspect the decision, next action and compact evidence.
+5. Inspect the decision, next action and representation rows. Compare two rows
+   only when Bell leaves the factual route open; otherwise keep them separate
+   and save the handoff.
 6. Open the live JSON receipt or the dated replay and verify the timestamps,
    source hashes and stable-ID join coverage.
 
 The output is explicit:
 
-- `DO NOT SELECT A WRAPPER`: identity, denomination or market fields conflict;
-- `HOLD COMPARISON`: investigation is required before treating rows as equivalent;
-- `NO RULE HIT, NOT APPROVED`: this rule set found no contradiction, which is not an approval.
+- `COMPARISON WITHHELD`: a critical identity, denomination or market contradiction
+  fired; stop ranking the wrapper;
+- `INVESTIGATE BEFORE SHORTLIST`: a warning requires classification before
+  treating rows as equivalent;
+- `FACTUAL COMPARISON OPEN`: no published Bell rule fired, so observed fields
+  may be inspected without creating a winner;
+- `SINGLE REPRESENTATION`: one wrapper exists, so there is no wrapper ranking.
+
+Every state remains outside investment approval. The lower-level rule labels
+are retained in the JSON receipt for audit traceability.
 
 ## What Bell adds to CMC discovery
 
