@@ -28,9 +28,22 @@
     };
   }
 
+  function capitalMetrics(range, amount) {
+    if (!range) return null;
+    const value = budget(amount);
+    return {
+      ratio: range.ratio,
+      gapPercent: range.gapPercent,
+      unitsAtLowQuote: value / range.low,
+      unitsAtHighQuote: value / range.high,
+      nominalUnitGap: value / range.low - value / range.high,
+    };
+  }
+
   function assess(alert, amount = 10000) {
     const value = budget(amount);
     const range = quoteRange(alert && (alert.tokens || alert.representations));
+    const metrics = capitalMetrics(range, value);
     const tokenCount = Number(alert && alert.token_count) || 0;
     const state = alert && alert.state;
 
@@ -38,6 +51,7 @@
       return {
         mode: 'hold',
         budget: value,
+        metrics,
         headline: `Keep ${value.toLocaleString(undefined, { maximumFractionDigits: 0 })} uncommitted`,
         copy: range
           ? `Bell observed a ${range.ratio.toFixed(2)}× quote range across ${range.count} rows. That is a capital-preservation gate, not a discount or a proven saving.`
@@ -50,6 +64,7 @@
       return {
         mode: 'review',
         budget: value,
+        metrics,
         headline: `Protect ${value.toLocaleString(undefined, { maximumFractionDigits: 0 })} while you verify`,
         copy: 'The grouping is not ready for a clean shortlist. Keep the amount provisional while missing identity or market fields are checked.',
         note: 'This is a review queue, not a buy, sell or allocation instruction.',
@@ -60,6 +75,7 @@
       return {
         mode: 'single',
         budget: value,
+        metrics,
         headline: `One wrapper for ${value.toLocaleString(undefined, { maximumFractionDigits: 0 })} to diligence`,
         copy: 'There is no cross-wrapper price comparison. The financial question moves to backing, redemption, eligibility, custody and execution.',
         note: 'A single representation is not an approval.',
@@ -69,6 +85,7 @@
     return {
       mode: 'facts',
       budget: value,
+      metrics,
       headline: `Review the quote before committing ${value.toLocaleString(undefined, { maximumFractionDigits: 0 })}`,
       copy: range
         ? `Observed quotes span ${range.gapPercent.toFixed(2)}%. Bell exposes the difference so you can verify units, venues and execution before treating it as an economic premium.`
@@ -77,5 +94,5 @@
     };
   }
 
-  return { budget, quoteRange, assess };
+  return { budget, quoteRange, capitalMetrics, assess };
 });

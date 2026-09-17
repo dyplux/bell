@@ -25,6 +25,11 @@ Bell displays its size as an integrity warning. It explicitly does not call that
 range a discount, premium or saving because the rows may not represent the same
 unit or claim.
 
+When prices are available, the interface also shows the nominal unit counts that
+the same budget would imply at the low and high observed quotes. This makes the
+capital consequence visible while preserving the warning that those units are
+not comparable until identity and denomination are cleared.
+
 ### Investigate before shortlist
 
 Bell keeps the amount provisional while the unresolved representation or market
