@@ -68,5 +68,5 @@ endpoint identities, join coverage and fingerprints for the captured run.
 - Neutral queue: <https://rwa-surface-review.pages.dev/>
 - Source: <https://github.com/dyplux/bell>
 
-The public release is intentionally separate from Dyplux's private research
-desk, jury ballots and competitor dossiers.
+The public release contains only the product runtime, reproducible checks and
+sanitized evidence needed to inspect the public contract.

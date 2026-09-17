@@ -48,5 +48,5 @@ wrappers deserve to be compared at all.
 Use large typography and real interface crops. Keep the first frame to one
 sentence and one visual question. Use a split-screen only for the CMC-versus-
 Bell distinction; the evidence and next action should occupy the whole frame.
-The final cut should let a judge understand the product without sound by
+The final cut should let a viewer understand the product without sound by
 keeping the state labels and next action visible for at least two seconds.
