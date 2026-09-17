@@ -1,6 +1,6 @@
 const assert = require('node:assert/strict');
 const test = require('node:test');
-const { budget, quoteRange, assess } = require('../site/capital-impact.js');
+const { budget, quoteRange, capitalMetrics, assess } = require('../site/capital-impact.js');
 
 test('quote range ignores missing, zero and negative prices', () => {
   const result = quoteRange([{ price: 0 }, { price: -2 }, { price: null }, { price: 10 }, { price: 20 }]);
@@ -9,6 +9,13 @@ test('quote range ignores missing, zero and negative prices', () => {
 
 test('quote range stays unavailable with fewer than two valid observations', () => {
   assert.equal(quoteRange([{ price: 10 }, { price: null }, { price: 0 }]), null);
+});
+
+test('capital metrics make the same budget consequence visible without claiming savings', () => {
+  const result = capitalMetrics({ low: 2, high: 10, ratio: 5, gapPercent: 400, count: 2 }, 10000);
+  assert.equal(result.unitsAtLowQuote, 5000);
+  assert.equal(result.unitsAtHighQuote, 1000);
+  assert.equal(result.nominalUnitGap, 4000);
 });
 
 test('blocked case turns the proposed amount into a capital hold', () => {

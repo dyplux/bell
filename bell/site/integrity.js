@@ -262,11 +262,15 @@
 
   function capitalPanel(alert) {
     const assessment = window.BellCapitalImpact.assess(alert, readCapitalBudget(alert.rwa_id));
+    const metrics = assessment.metrics
+      ? `<div class="capital-metrics"><div><span>OBSERVED RANGE</span><strong>${formatNumber(assessment.metrics.ratio)}×</strong></div><div><span>UNITS AT LOW QUOTE</span><strong>${formatNumber(assessment.metrics.unitsAtLowQuote)}</strong></div><div><span>UNITS AT HIGH QUOTE</span><strong>${formatNumber(assessment.metrics.unitsAtHighQuote)}</strong></div></div><small class="capital-metrics-note">Nominal unit counts only. Rows remain non-comparable until Bell's identity and unit checks are cleared.</small>`
+      : '<div class="capital-metrics capital-metrics-empty"><span>No comparable quote range in this receipt.</span></div>';
     return `<section class="capital-panel capital-${assessment.mode}" data-capital-panel="${escapeHTML(alert.rwa_id || '')}">
       <div class="capital-panel-head"><span>CAPITAL CHECK</span><b>Make the financial consequence visible</b></div>
       <label class="capital-budget">Amount under consideration <span>$</span><input type="number" min="1" max="1000000000" step="100" value="${assessment.budget}" inputmode="decimal" data-capital-budget aria-label="Amount under consideration"></label>
       <strong data-capital-headline>${escapeHTML(assessment.headline)}</strong>
       <p data-capital-copy>${escapeHTML(assessment.copy)}</p>
+      <div data-capital-metrics>${metrics}</div>
       <small data-capital-note>${escapeHTML(assessment.note)}</small>
     </section>`;
   }
@@ -283,6 +287,10 @@
     panel.className = `capital-panel capital-${assessment.mode}`;
     panel.querySelector('[data-capital-headline]').textContent = assessment.headline;
     panel.querySelector('[data-capital-copy]').textContent = assessment.copy;
+    const metrics = assessment.metrics;
+    panel.querySelector('[data-capital-metrics]').innerHTML = metrics
+      ? `<div class="capital-metrics"><div><span>OBSERVED RANGE</span><strong>${formatNumber(metrics.ratio)}×</strong></div><div><span>UNITS AT LOW QUOTE</span><strong>${formatNumber(metrics.unitsAtLowQuote)}</strong></div><div><span>UNITS AT HIGH QUOTE</span><strong>${formatNumber(metrics.unitsAtHighQuote)}</strong></div></div><small class="capital-metrics-note">Nominal unit counts only. Rows remain non-comparable until Bell's identity and unit checks are cleared.</small>`
+      : '<div class="capital-metrics capital-metrics-empty"><span>No comparable quote range in this receipt.</span></div>';
     panel.querySelector('[data-capital-note]').textContent = assessment.note;
   }
 
@@ -354,6 +362,7 @@ ${item.next_action || 'Continue external diligence before comparing or allocatin
 - Amount under consideration: ${capital.budget.toLocaleString(undefined, { maximumFractionDigits: 0 })}
 - Bell route: ${capital.headline}
 - Financial interpretation: ${capital.copy}
+- Observed range: ${capital.metrics ? `${formatNumber(capital.metrics.ratio)}× · ${formatNumber(capital.metrics.unitsAtLowQuote)} nominal units at the low quote vs ${formatNumber(capital.metrics.unitsAtHighQuote)} at the high quote` : 'Unavailable'}
 - Boundary: ${capital.note}
 
 ## Resolution checklist
