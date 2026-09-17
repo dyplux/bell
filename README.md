@@ -28,6 +28,14 @@ Start with the [Integrity Monitor](https://bell.dyplux.com/integrity), then use 
 [Audit Pack](https://bell.dyplux.com/guide.html) to understand the receipt contract,
 the normal-user journey, the CMC surfaces and the product boundaries.
 
+The monitor also includes a deterministic capital check. Enter the amount under
+consideration and Bell makes the decision consequence visible: blocked or
+investigate cases keep that amount outside a wrapper decision, while facts-open
+cases expose the observed quote gap without calling it an executable saving.
+This is capital-preservation triage, not a buy, sell or allocation signal.
+The rationale, boundary and test evidence are documented in
+[`bell/FINANCIAL-DECISION-GATE-2026-09-17.md`](bell/FINANCIAL-DECISION-GATE-2026-09-17.md).
+
 ## Why Bell exists
 
 CMC provides discovery, quotes and token/issuer surfaces. Bell adds the decision protocol around

@@ -155,6 +155,27 @@
     return `bell-research-worksheet-${rwaId}`;
   }
 
+  function capitalBudgetKey(rwaId) {
+    return `bell-capital-budget-${rwaId}`;
+  }
+
+  function readCapitalBudget(rwaId) {
+    try {
+      const value = Number(localStorage.getItem(capitalBudgetKey(rwaId)) || 10000);
+      return Number.isFinite(value) && value > 0 ? value : 10000;
+    } catch {
+      return 10000;
+    }
+  }
+
+  function saveCapitalBudget(rwaId, value) {
+    try {
+      localStorage.setItem(capitalBudgetKey(rwaId), String(value));
+    } catch {
+      // The capital check remains useful when browser storage is unavailable.
+    }
+  }
+
   function readWorksheet(rwaId) {
     try {
       const value = JSON.parse(localStorage.getItem(worksheetKey(rwaId)) || '{}');
@@ -239,6 +260,32 @@
     return item?.decision?.label || fallback;
   }
 
+  function capitalPanel(alert) {
+    const assessment = window.BellCapitalImpact.assess(alert, readCapitalBudget(alert.rwa_id));
+    return `<section class="capital-panel capital-${assessment.mode}" data-capital-panel="${escapeHTML(alert.rwa_id || '')}">
+      <div class="capital-panel-head"><span>CAPITAL CHECK</span><b>Make the financial consequence visible</b></div>
+      <label class="capital-budget">Amount under consideration <span>$</span><input type="number" min="1" max="1000000000" step="100" value="${assessment.budget}" inputmode="decimal" data-capital-budget aria-label="Amount under consideration"></label>
+      <strong data-capital-headline>${escapeHTML(assessment.headline)}</strong>
+      <p data-capital-copy>${escapeHTML(assessment.copy)}</p>
+      <small data-capital-note>${escapeHTML(assessment.note)}</small>
+    </section>`;
+  }
+
+  function refreshCapitalPanel(panel) {
+    if (!panel || !receipt) return;
+    const rwaId = panel.dataset.capitalPanel;
+    const alert = (receipt.alerts || []).find(item => String(item.rwa_id) === String(rwaId))
+      || (receipt.alert_index || []).find(item => String(item.rwa_id) === String(rwaId));
+    if (!alert) return;
+    const value = panel.querySelector('[data-capital-budget]')?.value;
+    saveCapitalBudget(rwaId, value);
+    const assessment = window.BellCapitalImpact.assess(alert, value);
+    panel.className = `capital-panel capital-${assessment.mode}`;
+    panel.querySelector('[data-capital-headline]').textContent = assessment.headline;
+    panel.querySelector('[data-capital-copy]').textContent = assessment.copy;
+    panel.querySelector('[data-capital-note]').textContent = assessment.note;
+  }
+
   function renderAlertRow(alert) {
       const labels = alert.signals.filter(signal => signal.severity !== 'info').map(signal => signalLabels[signal.code] || signal.code).slice(0, 3).join(' · ');
       const evidence = alert.signals.filter(signal => signal.severity !== 'info').map(signal => `<div class="evidence-rule"><b>${escapeHTML(signalLabels[signal.code] || signal.code)}</b><p>${escapeHTML(signal.message)}</p><ul>${renderEvidence(signal)}</ul></div>`).join('');
@@ -256,6 +303,7 @@
 
   function markdownBrief(item) {
     const decision = item.decision || {};
+    const capital = window.BellCapitalImpact.assess(item, readCapitalBudget(item.rwa_id));
     const signals = (item.signals || []).filter(signal => signal.severity !== 'info');
     const signalLines = signals.length ? signals.map(signal => {
       const evidence = signal.evidence || {};
@@ -300,6 +348,13 @@ ${signalLines}
 ## Next action
 
 ${item.next_action || 'Continue external diligence before comparing or allocating.'}
+
+## Capital check
+
+- Amount under consideration: ${capital.budget.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+- Bell route: ${capital.headline}
+- Financial interpretation: ${capital.copy}
+- Boundary: ${capital.note}
 
 ## Resolution checklist
 
@@ -400,7 +455,7 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
           ? 'There is no wrapper ranking to perform; verify the instrument and issuer externally.'
           : 'Open the rows for a factual side-by-side, then complete external diligence.';
     result.hidden = false;
-    result.innerHTML = `<span>SEARCHED REFERENCE · ${matches.length > 1 ? `${matches.length} MATCHES · SHOWING FIRST` : '1 MATCH'}</span><strong>${escapeHTML(item.name || item.symbol || 'Reference')} · ${escapeHTML(item.symbol || 'RWA')}</strong><p>${formatNumber(item.token_count || 0)} representations · ${formatNumber(item.issuer_count || 0)} issuers · <b>${state}</b></p><p>${escapeHTML(next)}</p><a href="#monitor">Inspect this evidence ↓</a>`;
+    result.innerHTML = `<span>SEARCHED REFERENCE · ${matches.length > 1 ? `${matches.length} MATCHES · SHOWING FIRST` : '1 MATCH'}</span><strong>${escapeHTML(item.name || item.symbol || 'Reference')} · ${escapeHTML(item.symbol || 'RWA')}</strong><p>${formatNumber(item.token_count || 0)} representations · ${formatNumber(item.issuer_count || 0)} issuers · <b>${state}</b></p><p>${escapeHTML(next)}</p>${capitalPanel(item)}<a href="#monitor">Inspect this evidence ↓</a>`;
   }
 
   function searchFromHero(event) {
@@ -474,12 +529,15 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     if (proofHint) proofHint.textContent = hint;
     const decisionHeading = query.trim() ? 'SEARCHED REFERENCE' : (isClean ? 'CURRENT REFERENCE' : 'FLAGGED REFERENCE');
     const signalLabel = signals || (isClean ? 'no published rule hit' : 'published rule hit');
-    byId('decision-hero').innerHTML = `<div class="decision-hero-top"><span class="eyebrow">${decisionHeading}</span><span class="decision-case">${escapeHTML(alert.symbol || 'RWA')}</span></div><h3>${escapeHTML(alert.name)}</h3><p class="decision-signal">${escapeHTML(signalLabel)}</p><div class="decision-outcome"><span>OUTPUT</span><strong>${escapeHTML(displayDecisionLabel(alert, 'HOLD COMPARISON'))}</strong><p>${escapeHTML(decision.consequence || alert.next_action || '')}</p><b class="allocation-gate">${escapeHTML(decision.allocation_effect || 'No allocation status is produced by this monitor.')}</b></div><div class="decision-receipt"><span>${escapeHTML(publication.status ? String(publication.status).toUpperCase() : 'DATED')} · ${escapeHTML(publication.observed_at || receipt.observed_at || '—')}</span><a href="/api/integrity" target="_blank" rel="noopener">Open credential-free receipt ↗</a></div>`;
+    byId('decision-hero').innerHTML = `<div class="decision-hero-top"><span class="eyebrow">${decisionHeading}</span><span class="decision-case">${escapeHTML(alert.symbol || 'RWA')}</span></div><h3>${escapeHTML(alert.name)}</h3><p class="decision-signal">${escapeHTML(signalLabel)}</p><div class="decision-outcome"><span>OUTPUT</span><strong>${escapeHTML(displayDecisionLabel(alert, 'HOLD COMPARISON'))}</strong><p>${escapeHTML(decision.consequence || alert.next_action || '')}</p><b class="allocation-gate">${escapeHTML(decision.allocation_effect || 'No allocation status is produced by this monitor.')}</b></div>${capitalPanel(alert)}<div class="decision-receipt"><span>${escapeHTML(publication.status ? String(publication.status).toUpperCase() : 'DATED')} · ${escapeHTML(publication.observed_at || receipt.observed_at || '—')}</span><a href="/api/integrity" target="_blank" rel="noopener">Open credential-free receipt ↗</a></div>`;
   }
 
   async function boot() {
     try {
-      const sources = ['/api/integrity', 'proof/rwa-surface-integrity-2026-09-15.json'];
+      const localHost = ['localhost', '127.0.0.1', '::1'].includes(window.location.hostname);
+      const sources = localHost
+        ? ['proof/rwa-surface-integrity-2026-09-15.json']
+        : ['/api/integrity', 'proof/rwa-surface-integrity-2026-09-15.json'];
       let lastError;
       for (const source of sources) {
         try {
@@ -532,6 +590,11 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     renderAlerts();
     renderSearchResult();
     renderDecisionStory();
+  });
+  document.addEventListener('input', event => {
+    const budgetInput = event.target.closest('[data-capital-budget]');
+    if (!budgetInput) return;
+    refreshCapitalPanel(budgetInput.closest('[data-capital-panel]'));
   });
   byId('alert-pagination').addEventListener('click', event => {
     const button = event.target.closest('[data-page]');
