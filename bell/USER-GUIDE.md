@@ -143,18 +143,7 @@ Do not put keys in this repository, in the browser or in a receipt.
 
 ## Submission readiness
 
-The product path and receipts are live and the repository contains the source,
-tests, CMC documentation snapshot, jury evidence and dated receipts. Before
-sharing the repository with an external juror, use the sanitized public Bell
-repository at `https://github.com/dyplux/bell`. The private `desk` repository
-continues to hold the internal research desk, jury ballots and competitor
-dossiers. The public source package contains the product, tests, setup guide,
-receipt verifier and public integrity evidence, but no credentials or private
-research artefacts.
-
-## Human validation
-
-The reproducible six-person pilot is documented in
-[`HUMAN-PILOT-2026-09-16.md`](HUMAN-PILOT-2026-09-16.md). It tests state
-comprehension, next-action comprehension, brief export, boundary comprehension
-and repeat-use intent without briefing participants on Bell's thesis.
+The product path and receipts are live and this repository contains the source,
+tests, setup guide, receipt verifier and public integrity evidence. It does not
+contain credentials, private operational configuration or internal evaluation
+material.

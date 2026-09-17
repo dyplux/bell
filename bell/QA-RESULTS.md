@@ -1,125 +1,63 @@
-# Bell QA results
+# Bell public release verification
 
-Release audit: 2026-09-15. The flagship path is the RWA Surface Integrity
-Monitor. The older catalogue and dossier modules remain available, but are not
-the primary hackathon claim.
+This file records reproducible software checks for the public Bell release.
 
 ## Automated checks
 
-| Check | Result | Evidence |
-|---|---|---|
-| Integrity rule suite | PASS | `36 passed, 1 skipped` in `bell/tests` |
-| Public sanitized Bell suite | PASS | `30 passed` in the release repository |
-| Cloudflare Worker | PASS | `7 passed` in `cloudflare/tests/worker.test.mjs` |
-| JavaScript syntax | PASS | `node --check bell/site/integrity.js` and `node --check rwa-review/app.js` |
-| Public receipt verifier | PASS | HTTP 200, schema `rwa_surface_integrity.v1`, complete required surfaces |
-| Secret scan | PASS | no live CMC, XAI or private-key material in the public release |
-| Git whitespace | PASS | `git diff --check` |
+Run from the repository root:
 
-## Public runtime check
+```bash
+pytest -q bell/tests
+node --test cloudflare/tests/worker.test.mjs
+node --check bell/site/app.js
+node --check bell/site/integrity.js
+python3 bell/verify_public_integrity.py
+git diff --check
+```
 
-The credential-free API was verified at `2026-09-15T22:22:00Z`:
+The checks cover the deterministic integrity rules, the public receipt
+verifier, the Cloudflare publication adapter and JavaScript syntax. The exact
+counts can change as the test suite evolves; the commands above are the
+release contract.
 
-- 790 tokenised references;
-- 1,428 representations;
-- 34 `DO NOT COMPARE`;
-- 662 `INVESTIGATE`;
-- 94 `NO RULE HIT`;
-- 31 positive-volume/zero-market-cap groups;
-- 790 population index records;
-- Silver as the first blocked case, with a 31.12x observed spread.
+## Public runtime contract
 
-The API, monitor, audit pack, dated replay and neutral queue all returned HTTP
-200. The two Mac mini launch agents completed with exit code 0. A one-shot
-launchd publisher normally appears as `not running` between scheduled runs;
-that is expected and is not a failed persistent server.
+The public monitor is designed to work without an API key:
 
-## Product checks
+- the browser reads a normalized receipt from `GET /api/integrity`;
+- a dated replay is available under `bell/docs/proof/`;
+- the receipt exposes observation and publication timestamps, freshness state,
+  source hashes, stable-ID join coverage and rule evidence;
+- raw authenticated CMC responses and credentials are not part of the public
+  response;
+- a stale or dated response is labelled as such rather than presented as a
+  current quote.
 
-- The main monitor exposes population search, `ALL`, `BLOCKED`, `INVESTIGATE`
-  and `NO RULE HIT` filters.
-- A search result can be a full priority record or a compact population-index
-  record. The UI labels that distinction instead of implying full token
-  evidence for every row.
-- Live freshness is recalculated in the browser. Static receipts are labelled
-  `DATED REPLAY` and cannot present themselves as live.
-- The neutral review route provides 25-row pagination, search, state filters,
-  decision records and compact numerical evidence.
-- The public Audit Pack documents setup, the user path, the receipt contract,
-  CMC surfaces and product boundaries.
+The current release checks the full published population index and detailed
+evidence for priority cases. Search, state filters, pagination, evidence
+disclosures and decision-brief export are browser features covered by the
+public site and its deterministic fixtures.
 
-## Deliberate boundaries
+## Product boundaries checked in release review
 
-The monitor does not prove backing, redemption, custody, legal eligibility,
-solvency or executable liquidity. The Startup plan does not expose the CMC
-market-pairs endpoint, so Bell records that limitation rather than inventing
-venue or depth evidence. `NO RULE HIT` is not an approval.
+Bell does not establish backing, redemption, custody, legal eligibility,
+solvency or executable liquidity. `FACTUAL COMPARISON OPEN` means only that
+the published contradiction rules did not fire for that receipt. It is not an
+approval, ranking or trading signal.
 
-The public release contains normalized receipts and an input manifest, not raw
-authenticated CMC responses. Source hashes prove the identity of the captured
-surfaces; independent recomputation still requires access to the relevant CMC
-plan and a fresh observation.
+The Startup plan does not expose every venue-level market surface. Bell keeps
+that limitation visible and routes the unresolved question to external due
+diligence instead of converting unavailable data into a conclusion.
 
-## External review
+## Evidence layout
 
-The final blind juror audit after publishing `dyplux/bell` scored the public
-build 84/100 and recommended shortlisting it. The remaining deductions were
-reproducibility depth, lack of browser E2E coverage and the fact that the full
-queue remains on a separate neutral route.
+Public evidence is intentionally split into small, inspectable artifacts:
 
-## Follow-up public build audit: 16 September 2026
+- `bell/docs/proof/` contains normalized receipts, replay data and the
+  sanitized input manifest;
+- `bell/integrity_review.py` contains the deterministic calculation path;
+- `bell/verify_public_integrity.py` checks the public response contract;
+- `bell/tests/` contains unit and integration tests using fixtures;
+- `cloudflare/tests/` covers the publication edge.
 
-The public build subsequently added the investor task, searched-reference
-focus, human-readable outcome states, facts-only pair deltas and first-viewport
-case shortcuts. The current deterministic test run is `29 passed, 1 skipped`.
-
-The live browser acceptance run verified:
-
-- the three-minute task progresses `0/4 -> 4/4` through search, evidence,
-  either two-row selection or an explicit withheld/single-representation
-  handoff, and brief or worksheet export;
-- `Silver` produces `COMPARISON WITHHELD` and the three-step resolution handoff;
-- `Marvell` produces `FACTUAL COMPARISON OPEN` and the external-diligence
-  handoff;
-- `SPY` produces `COMPARISON WITHHELD`;
-- unknown search input produces an explicit no-reference state;
-- selected pairs show observed price, market-cap and volume gaps without a
-  ranking;
-- no page or console errors and no horizontal overflow at 390, 768 or 1440
-  pixels.
-
-These checks prove the public workflow and receipts, not willingness to pay or
-repeat use. The outstanding validation gate is the six-person human pilot
-defined in `PRODUCT-THESIS-2026-09-16.md`.
-
-## State-aware browser acceptance: 16 September 2026
-
-After the follow-up wording change, a real Chrome E2E run covered all four
-decision routes and a reference outside the priority alert set:
-
-| Case | Evidence rows | Expected state | Brief | Task result |
-|---|---:|---|---|---|
-| Marvell | 6 | `FACTUAL COMPARISON OPEN` | state and boundary present | `4/4` |
-| Silver | 5 | `COMPARISON WITHHELD` | state and boundary present | `4/4` |
-| CRWD | 6 | `INVESTIGATE BEFORE SHORTLIST` | state and boundary present | `4/4` |
-| AAL | 1 | `SINGLE REPRESENTATION` | state and boundary present | `4/4` |
-| Gold | 7 | indexed reference, full rows | state and boundary present | `4/4` |
-
-The run also confirmed no page or console errors, no horizontal overflow at
-390, 768 or 1440px, table captions and scoped headers, and accessible labels
-for local research notes. A separate blind AI investor reading is recorded in
-`AI-INVESTOR-ACCEPTANCE-2026-09-16.md`; it is explicitly not human demand
-validation.
-
-The main monitor now paginates the complete 790-reference index in place. The
-neutral queue is retained as an independent replay/review surface rather than
-being required to browse beyond the first page.
-
-The post-pagination Chrome check confirmed the public behavior directly:
-
-- the first page shows `1–12 of 790` and `Page 1 of 66`;
-- `Next` changes the first visible reference from Silver to SPDR Gold Trust and
-  advances to `Page 2 of 66`;
-- searching `Gold` returns all seven Gold rows in the main monitor;
-- the `INVESTIGATE` filter resets to its own matching set; and
-- the 390px viewport has no horizontal overflow or browser errors.
+The commands above are sufficient to reproduce the software checks locally.

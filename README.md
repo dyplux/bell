@@ -21,8 +21,8 @@ The public integrity monitor is the decision gate for the comparison problem:
   `FACTUAL COMPARISON OPEN` and `SINGLE REPRESENTATION` outcomes;
 - credential-free live receipt at [`/api/integrity`](https://bell.dyplux.com/api/integrity);
 - dated replay at [`bell/site/proof/`](bell/site/proof/);
-- searchable blind review at [`rwa-surface-review.pages.dev`](https://rwa-surface-review.pages.dev/);
-- public setup and reviewer route in the [Audit Pack](https://bell.dyplux.com/guide.html).
+- searchable population queue at [`rwa-surface-review.pages.dev`](https://rwa-surface-review.pages.dev/);
+- public setup and review route in the [Audit Pack](https://bell.dyplux.com/guide.html).
 
 Start with the [Integrity Monitor](https://bell.dyplux.com/integrity), then use the
 [Audit Pack](https://bell.dyplux.com/guide.html) to understand the receipt contract,
@@ -47,9 +47,8 @@ solvency, suitability or executable liquidity.
 ## What is public here
 
 This repository contains the product, its reproducible calculation layer, public receipts, the
-credential-free website and the Cloudflare publication adapter. Dyplux's internal research desk,
-strategy, competitor maps, operational notes and credentials are kept in a separate private
-repository.
+credential-free website and the Cloudflare publication adapter. Operational credentials and
+non-product research are not included.
 
 ## Run the website locally
 
@@ -92,16 +91,12 @@ The dated receipt is deliberately labelled `DATED`; it is an offline replay, not
 cached file is live. `NO RULE HIT` is not an approval and the monitor does not prove backing,
 redemption, custody, legal eligibility, solvency or executable liquidity.
 
-The current investor job-to-be-done, demand hypothesis and differentiation boundary are in
-[`bell/PRODUCT-THESIS-2026-09-16.md`](bell/PRODUCT-THESIS-2026-09-16.md). The latest black-box
-investor UX audit is in
-[`bell/jury/INVESTOR-UX-AUDIT-2026-09-16.md`](bell/jury/INVESTOR-UX-AUDIT-2026-09-16.md).
-The blind AI investor acceptance and state-aware browser evidence are in
-[`bell/AI-INVESTOR-ACCEPTANCE-2026-09-16.md`](bell/AI-INVESTOR-ACCEPTANCE-2026-09-16.md)
-and [`bell/QA-RESULTS.md`](bell/QA-RESULTS.md).
+The public release verification contract is in
+[`bell/QA-RESULTS.md`](bell/QA-RESULTS.md). It covers deterministic software
+checks, the public receipt and the product's explicit evidence boundaries.
 
-The judge-facing [video demo script](bell/VIDEO-DEMO-SCRIPT.md) defines the
-wireframes, live evidence frames and product boundaries for the showcase.
+The [video demo script](bell/VIDEO-DEMO-SCRIPT.md) defines the wireframes,
+live evidence frames and product boundaries for a product walkthrough.
 
 ## Test
 
