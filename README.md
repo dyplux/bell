@@ -92,6 +92,9 @@ The blind AI investor acceptance and state-aware browser evidence are in
 [`bell/AI-INVESTOR-ACCEPTANCE-2026-09-16.md`](bell/AI-INVESTOR-ACCEPTANCE-2026-09-16.md)
 and [`bell/QA-RESULTS.md`](bell/QA-RESULTS.md).
 
+The judge-facing [video demo script](bell/VIDEO-DEMO-SCRIPT.md) defines the
+wireframes, live evidence frames and product boundaries for the showcase.
+
 ## Test
 
 ```bash
