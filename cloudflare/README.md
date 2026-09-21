@@ -6,6 +6,7 @@ exposes a small D1-backed API:
 - `GET /api/published?slug=gold` returns the latest normalized dossier;
 - stale or missing dossiers create a deduplicated refresh job;
 - `GET /internal/jobs` leases refresh jobs to the Mac mini publisher;
+- `POST /internal/fail` records a failed leased job so an upstream rejection is visible and retryable;
 - `POST /internal/publish` accepts a credential-free dossier from the publisher.
 - `GET /api/integrity` returns the latest population-wide integrity receipt and freshness state;
 - `POST /internal/integrity` accepts a credential-free integrity receipt from the Mac mini.
@@ -50,6 +51,10 @@ CMC_API_KEY="..." python3 bell/publisher.py --pull-queue --limit 5
 
 The Worker leases queued slugs and the Mac mini publishes each completed dossier back to
 `/internal/publish`.
+
+If CMC rejects one slug, the publisher records the failure at `/internal/fail` and continues the
+queue. The public site keeps the last valid dossier and exposes freshness instead of treating an
+upstream rejection as a successful refresh.
 
 The local store is still written first, so a failed network publish does not destroy the latest
 local receipt. The publisher reports remote publication failure rather than claiming success.

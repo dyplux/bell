@@ -79,7 +79,7 @@ async function published(request, env) {
     refresh_queued: queue.queued,
     ...publicationStatus(row),
   };
-  return json(payload, 200, { 'cache-control': 'public, max-age=30, stale-while-revalidate=300' });
+  return json(payload, 200, { 'cache-control': 'no-store' });
 }
 
 async function integrity(request, env) {
@@ -99,7 +99,7 @@ async function integrity(request, env) {
     credential_free: true,
     ...publication,
   };
-  return json(payload, 200, { 'cache-control': 'public, max-age=30, stale-while-revalidate=300' });
+  return json(payload, 200, { 'cache-control': 'no-store' });
 }
 
 async function jobs(request, env) {
@@ -114,6 +114,26 @@ async function jobs(request, env) {
       .bind(leasedAt, job.id).run();
   }
   return json({ schema_version: 'dyplux.refresh-jobs.v1', leased_at: leasedAt, jobs: result.results || [] });
+}
+
+async function failJob(request, env) {
+  if (!authorised(request, env)) return json({ error: 'unauthorized' }, 401);
+  let body;
+  try {
+    body = await request.json();
+  } catch (error) {
+    return json({ error: 'request body must be JSON' }, 400);
+  }
+  const id = Number(body.id);
+  const slug = String(body.slug || '').trim().toLowerCase();
+  const message = String(body.error || 'publisher failed without a reason').slice(0, 500);
+  if (!Number.isInteger(id) || id < 1 || !validSlug(slug)) {
+    return json({ error: 'job id and slug are required' }, 400);
+  }
+  const result = await env.DB.prepare(
+    "UPDATE refresh_jobs SET status = 'failed', finished_at = ?1, error = ?2 WHERE id = ?3 AND slug = ?4 AND status = 'leased'",
+  ).bind(now(), message, id, slug).run();
+  return json({ ok: true, id, slug, updated: Number(result.meta?.changes || 0) > 0 });
 }
 
 async function publish(request, env) {
@@ -176,8 +196,12 @@ export default {
       if (url.pathname === '/api/published' && request.method === 'GET') return published(request, env);
       if (url.pathname === '/api/integrity' && request.method === 'GET') return integrity(request, env);
       if (url.pathname === '/internal/jobs' && request.method === 'GET') return jobs(request, env);
+      if (url.pathname === '/internal/fail' && request.method === 'POST') return failJob(request, env);
       if (url.pathname === '/internal/publish' && request.method === 'POST') return publish(request, env);
       if (url.pathname === '/internal/integrity' && request.method === 'POST') return publishIntegrity(request, env);
+      if (['/integrity', '/integrity.html', '/guide.html'].includes(url.pathname) && request.method === 'GET') {
+        return Response.redirect(new URL('/', request.url), 301);
+      }
       return env.ASSETS.fetch(request);
     } catch (error) {
       return json({ error: 'publication service error' }, 500);

@@ -1,0 +1,5867 @@
+{
+  "schema_version": "bell.rwa.audit.v1",
+  "asset": {
+    "rwa_id": 14,
+    "name": "Tesla, Inc.",
+    "symbol": "TSLA",
+    "slug": "tesla",
+    "asset_type": "stock",
+    "rwa_rank": 12,
+    "has_tokens": true,
+    "average_tokenized_price": 358.16511152765656,
+    "tokenized_market_cap": 113480197.74632439,
+    "tokenized_volume_24h": 21326434.17710294,
+    "last_updated": "2026-09-14T09:55:40.299Z"
+  },
+  "conclusion": "investigate",
+  "findings": [
+    {
+      "code": "symbol_collision",
+      "severity": "warning",
+      "message": "The same ticker is used by multiple token issuers.",
+      "evidence": {
+        "symbols": {
+          "TSLA": [
+            "NA (Derivatives)",
+            "Hyperliquid Assets",
+            "Robinhood"
+          ]
+        }
+      }
+    },
+    {
+      "code": "volume_without_mcap",
+      "severity": "warning",
+      "message": "A token reports positive 24h volume while market cap is missing or zero.",
+      "evidence": {
+        "symbols": [
+          "TSLA"
+        ]
+      }
+    },
+    {
+      "code": "market_pairs_unavailable",
+      "severity": "warning",
+      "message": "The CMC market-pair surface is unavailable for this API plan; this is not evidence that the RWA has no market.",
+      "evidence": {
+        "error": "CMC request failed for /v5/real-world-assets/market-pairs/list: HTTP 403"
+      }
+    },
+    {
+      "code": "dex_coverage_partial",
+      "severity": "warning",
+      "message": "DEX evidence was resolved for only part of the token wrappers with a contract address.",
+      "evidence": {
+        "covered_token_count": 4,
+        "contract_token_count": 8,
+        "unavailable_token_count": 4,
+        "no_contract_token_count": 1
+      }
+    },
+    {
+      "code": "representation_signals",
+      "severity": "warning",
+      "message": "Token names contain representation signals that require separate comparability treatment.",
+      "evidence": {
+        "tokens": [
+          {
+            "symbol": "TSLA",
+            "signals": [
+              "derivative"
+            ]
+          },
+          {
+            "symbol": "WTSLAX",
+            "signals": [
+              "wrapped"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "evidence": {
+    "schema_version": "bell.rwa.audit.evidence.v1",
+    "mode": "live_cmc",
+    "observed_at": "2026-09-14T09:56:21.215745+00:00",
+    "asset": {
+      "rwa_id": 14,
+      "name": "Tesla, Inc.",
+      "symbol": "TSLA",
+      "slug": "tesla",
+      "asset_type": "stock",
+      "rwa_rank": 12,
+      "has_tokens": true,
+      "average_tokenized_price": 358.16511152765656,
+      "tokenized_market_cap": 113480197.74632439,
+      "tokenized_volume_24h": 21326434.17710294,
+      "last_updated": "2026-09-14T09:55:40.299Z"
+    },
+    "metadata": {
+      "rwa_id": 14,
+      "name": "Tesla, Inc.",
+      "symbol": "TSLA",
+      "slug": "tesla",
+      "asset_type": "stock",
+      "website": "https://www.tesla.com",
+      "employees": 125665,
+      "founded": "2003-06-30",
+      "industry": "Motor Vehicles & Passenger Car Bodies",
+      "cik": "0001318605",
+      "primary_exchange": "Nasdaq",
+      "about": {
+        "description": "### What is Tesla, who founded it, who is the current CEO and when was it founded?\n\nRetail investors often assume Elon Musk started Tesla-but the story is more complex.\n\nTesla was founded in July 2003 by engineers Martin Eberhard and Marc Tarpenning. Elon Musk joined later as lead investor and became CEO in 2008. Under Musk, Tesla evolved from a niche EV startup into a dominant player in electric vehicles, energy storage, and autonomous driving.\n\n\n### What are analysts forecasting for Tesla’s growth by 2030?\n\nTesla’s valuation depends heavily on what the next decade looks like-not just current sales.\n\nBy 2030, some analysts forecast Tesla delivering 10–20 million vehicles annually, up from ~1.8 million in 2023. Growth is expected from energy storage, robotaxis, and full self-driving software. Bullish models project a market cap exceeding $2 trillion if margins hold and new business lines scale .\n\n\n### Is Tesla stock available as a tokenized asset on the blockchain?\n\nYes - Tesla is one of the most actively traded tokenized equities.\n\nTokenized TSLA is offered on select crypto platforms and mirrors the price of the real stock. These assets are typically backed 1:1 with TSLA shares held by a custodian or operate synthetically via decentralized protocols.\n\n\n### How can investors trade Tesla tokenized stock through crypto exchanges?\n\nYou don’t need a brokerage to get exposure to [TSLA] (https://coinmarketcap.com/currencies/tesla-tokenized-stock-xstock/).\n\nPlatforms like Uphold, Synthetix, and formerly FTX have offered Tesla tokens. Investors can trade them against stablecoins, often with 24/7 access. Some exchanges require KYC, while others allow limited access via DeFi apps or wrapped tokens.\n\n\n### Has Tesla invested in cryptocurrencies like Bitcoin or others?\n\nTesla made headlines when it put Bitcoin on its balance sheet.\n\nIn 2021, Tesla bought $1.5 billion worth of [Bitcoin] (https://coinmarketcap.com/currencies/bitcoin/) and briefly accepted BTC for car purchases. The company later sold a portion of its holdings but still holds Bitcoin as part of its treasury strategy.\n\n\n### How do Tesla’s Bitcoin holdings affect its stock performance?\n\nEven a modest Bitcoin allocation can move the stock.\n\nBecause Tesla publicly holds Bitcoin, its stock price sometimes reacts to BTC volatility. This effect is more pronounced during sharp crypto market moves or when Tesla discloses buys or sells in its earnings reports.\n\n\n### Is Tesla considering blockchain technology for supply chain or energy solutions?\n\nWhile Tesla hasn’t announced large blockchain integrations, it's exploring the tech.\n\nThere are ongoing experiments in using blockchain for renewable energy credits, supply chain verification, and charging infrastructure data. Tesla’s energy division could benefit from decentralized tracking of solar production and battery sharing networks.\n\n\n### Can Tesla’s tokenized stock be staked or used in DeFi protocols?\n\nYes, but with caveats. Some tokenized versions of TSLA are compatible with DeFi platforms. \n\nThey can be staked, borrowed against, or added to liquidity pools. However, this depends on the platform (e.g., Mirror, Synthetix) and whether the token is synthetic or backed by real equity.\n\n\n### How does Tesla’s involvement in crypto impact its valuation?\n\nCrypto exposure adds volatility-and optionality. Tesla’s crypto activity has attracted digital-native investors and made the stock part of macro Bitcoin narratives. While not core to its valuation, BTC exposure creates asymmetric headlines and speculative upside that traditional automakers lack.\n\n\n### How has Tesla stock performed over the last 5 years?\n\nTesla has delivered massive long-term gains-despite frequent volatility.\n\nFrom mid-2020 to mid-2025, TSLA has seen a roughly 600–800% return, depending on split-adjusted timing. These gains reflect expansion into China, new Gigafactories, Model Y dominance, and increasing investor confidence in AI and energy storage segments.\n\n\n### What is the Tesla stock price prediction for 2025 and beyond?\n\nForecasts range widely depending on growth assumptions.\n\nBy 2025, bulls expect TSLA to exceed $350–$400 per share, driven by software margins and autonomy breakthroughs. Bearish models price it around $180–$220, citing EV competition, margin pressure, and delays in robotaxi timelines.\n\n\n### How can I buy Tesla stock or tokenized TSLA?\n\nYou can go traditional or crypto-native.\n\nBuy TSLA directly through brokerages like Robinhood, Fidelity, or Interactive Brokers. For crypto users, tokenized TSLA is available on platforms like Uphold, Synthetix, or other DeFi protocols-just verify if the token is synthetic or custodian-backed.",
+        "logo": null,
+        "website": "https://www.tesla.com",
+        "date_added": "2025-07-17T06:29:24.000Z"
+      }
+    },
+    "tokens": [
+      {
+        "crypto_id": 37004,
+        "name": "Tesla tokenized stock (xStock)",
+        "symbol": "TSLAX",
+        "issuer_id": "6878977dcbbf471de3366e85",
+        "issuer_name": "Backed Assets",
+        "price": 357.9735615596277,
+        "market_cap": 69799294.29,
+        "volume_24h": 8113019.33506611
+      },
+      {
+        "crypto_id": 28626,
+        "name": "TSLA tokenized stock (Dinari)",
+        "symbol": "TSLA.D",
+        "issuer_id": "688c6172abae9b5b9fb30359",
+        "issuer_name": "Dinari Assets",
+        "price": null,
+        "market_cap": null,
+        "volume_24h": null
+      },
+      {
+        "crypto_id": 38029,
+        "name": "Tesla Tokenized Stock (Ondo)",
+        "symbol": "TSLAon",
+        "issuer_id": "688ca4ccabae9b5b9fb3167a",
+        "issuer_name": "Ondo Assets",
+        "price": 358.0625553163472,
+        "market_cap": 16081545.1,
+        "volume_24h": 3346383.30772776
+      },
+      {
+        "crypto_id": 38152,
+        "name": "Tesla (Derivatives)",
+        "symbol": "TSLA",
+        "issuer_id": "695e11f774b54210f3b95dc3",
+        "issuer_name": "NA (Derivatives)",
+        "price": 358.3067490231754,
+        "market_cap": 0,
+        "volume_24h": 378928.28552179
+      },
+      {
+        "crypto_id": 39618,
+        "name": "Tesla Tokenized Stock (Hyperliquid)",
+        "symbol": "TSLA",
+        "issuer_id": "699ed38db54c9320b15928e3",
+        "issuer_name": "Hyperliquid Assets",
+        "price": 234.96740688966065,
+        "market_cap": 4748.81,
+        "volume_24h": 0
+      },
+      {
+        "crypto_id": 40214,
+        "name": "Tesla Tokenized bStocks",
+        "symbol": "TSLAB",
+        "issuer_id": "6a2aed5097c45356b1a5f710",
+        "issuer_name": "bStocks",
+        "price": 358.0375241016352,
+        "market_cap": 18849636.53,
+        "volume_24h": 4506801.41431921
+      },
+      {
+        "crypto_id": 40624,
+        "name": "Tesla Tokenized Stock (Reality)",
+        "symbol": "rTSLA",
+        "issuer_id": "6a43600c282e7240b76c8bbb",
+        "issuer_name": "Reality",
+        "price": 357.6989727388439,
+        "market_cap": 3948982.61,
+        "volume_24h": 160608.86000633
+      },
+      {
+        "crypto_id": 40691,
+        "name": "Tesla Tokenized Stock (Robinhood)",
+        "symbol": "TSLA",
+        "issuer_id": "6a465832fbe3004b1a0ea2dd",
+        "issuer_name": "Robinhood",
+        "price": 358.83470255669266,
+        "market_cap": 4501799.52,
+        "volume_24h": 3080661.16423863
+      },
+      {
+        "crypto_id": 37227,
+        "name": "Wrapped Tesla Tokenized stock (xStock)",
+        "symbol": "WTSLAX",
+        "issuer_id": "6878977dcbbf471de3366e85",
+        "issuer_name": "Backed Assets",
+        "price": 357.8413923269015,
+        "market_cap": 300637.75,
+        "volume_24h": 1658406.49422074
+      }
+    ],
+    "market_pairs": [],
+    "market_pairs_error": "CMC request failed for /v5/real-world-assets/market-pairs/list: HTTP 403",
+    "issuers": [
+      {
+        "issuer_id": "6878977dcbbf471de3366e85",
+        "name": "Backed Assets",
+        "website": "https://assets.backed.fi/",
+        "logo": null,
+        "num_tokens": 1176,
+        "total_size": 1176,
+        "has_more": true,
+        "tokens": [
+          {
+            "name": "Coinbase tokenized stock (xStock)",
+            "symbol": "COINX",
+            "crypto_id": 36989,
+            "rwa_id": 82
+          },
+          {
+            "name": "NVIDIA tokenized stock (xStock)",
+            "symbol": "NVDAX",
+            "crypto_id": 36992,
+            "rwa_id": 2
+          },
+          {
+            "name": "Apple tokenized stock (xStock)",
+            "symbol": "AAPLX",
+            "crypto_id": 36994,
+            "rwa_id": 3
+          },
+          {
+            "name": "MicroStrategy tokenized stock (xStock)",
+            "symbol": "MSTRX",
+            "crypto_id": 37003,
+            "rwa_id": 114
+          },
+          {
+            "name": "Tesla tokenized stock (xStock)",
+            "symbol": "TSLAX",
+            "crypto_id": 37004,
+            "rwa_id": 14
+          },
+          {
+            "name": "Circle tokenized stock (xStock)",
+            "symbol": "CRCLX",
+            "crypto_id": 37005,
+            "rwa_id": 115
+          },
+          {
+            "name": "SP500 tokenized ETF (xStock)",
+            "symbol": "SPYX",
+            "crypto_id": 37006,
+            "rwa_id": 86
+          },
+          {
+            "name": "Abbott tokenized stock (xStock)",
+            "symbol": "ABTX",
+            "crypto_id": 37010,
+            "rwa_id": 112
+          },
+          {
+            "name": "AbbVie tokenized stock (xStock)",
+            "symbol": "ABBVX",
+            "crypto_id": 37011,
+            "rwa_id": 21
+          },
+          {
+            "name": "Accenture tokenized stock (xStock)",
+            "symbol": "ACNX",
+            "crypto_id": 37012,
+            "rwa_id": 136
+          },
+          {
+            "name": "Alphabet tokenized stock (xStock)",
+            "symbol": "GOOGLX",
+            "crypto_id": 37013,
+            "rwa_id": 4
+          },
+          {
+            "name": "Amazon tokenized stock (xStock)",
+            "symbol": "AMZNX",
+            "crypto_id": 37014,
+            "rwa_id": 6
+          },
+          {
+            "name": "Amber tokenized stock (xStock)",
+            "symbol": "AMBRX",
+            "crypto_id": 37015,
+            "rwa_id": 117
+          },
+          {
+            "name": "AppLovin tokenized stock (xStock)",
+            "symbol": "APPX",
+            "crypto_id": 37017,
+            "rwa_id": 108
+          },
+          {
+            "name": "AstraZeneca tokenized stock (xStock)",
+            "symbol": "AZNX",
+            "crypto_id": 37018,
+            "rwa_id": 40
+          },
+          {
+            "name": "Bank of America tokenized stock (xStock)",
+            "symbol": "BACX",
+            "crypto_id": 37019,
+            "rwa_id": 23
+          },
+          {
+            "name": "Berkshire Hathaway tokenized stock (xStock)",
+            "symbol": "BRK.BX",
+            "crypto_id": 37020,
+            "rwa_id": 15
+          },
+          {
+            "name": "Broadcom tokenized stock (xStock)",
+            "symbol": "AVGOX",
+            "crypto_id": 37021,
+            "rwa_id": 13
+          },
+          {
+            "name": "Chevron tokenized stock (xStock)",
+            "symbol": "CVXX",
+            "crypto_id": 37022,
+            "rwa_id": 51
+          },
+          {
+            "name": "Gamestop tokenized stock (xStock)",
+            "symbol": "GMEX",
+            "crypto_id": 37023,
+            "rwa_id": 116
+          },
+          {
+            "name": "Gold tokenized ETF (xStock)",
+            "symbol": "GLDX",
+            "crypto_id": 37024,
+            "rwa_id": 87
+          },
+          {
+            "name": "Goldman Sachs tokenized stock (xStock)",
+            "symbol": "GSX",
+            "crypto_id": 37025,
+            "rwa_id": 39
+          },
+          {
+            "name": "Home Depot tokenized stock (xStock)",
+            "symbol": "HDX",
+            "crypto_id": 37026,
+            "rwa_id": 36
+          },
+          {
+            "name": "Honeywell tokenized stock (xStock)",
+            "symbol": "HONX",
+            "crypto_id": 37027,
+            "rwa_id": null
+          },
+          {
+            "name": "Intel tokenized stock (xStock)",
+            "symbol": "INTCX",
+            "crypto_id": 37028,
+            "rwa_id": 20
+          },
+          {
+            "name": "International Business Machines tokenized stock (xStock)",
+            "symbol": "IBMX",
+            "crypto_id": 37029,
+            "rwa_id": 42
+          },
+          {
+            "name": "Johnson & Johnson tokenized stock (xStock)",
+            "symbol": "JNJX",
+            "crypto_id": 37030,
+            "rwa_id": 19
+          },
+          {
+            "name": "JPMorgan Chase tokenized stock (xStock)",
+            "symbol": "JPMX",
+            "crypto_id": 37031,
+            "rwa_id": 16
+          },
+          {
+            "name": "Cisco tokenized stock (xStock)",
+            "symbol": "CSCOX",
+            "crypto_id": 37032,
+            "rwa_id": 29
+          },
+          {
+            "name": "Coca-Cola tokenized stock (xStock)",
+            "symbol": "KOX",
+            "crypto_id": 37033,
+            "rwa_id": 34
+          },
+          {
+            "name": "Comcast tokenized stock (xStock)",
+            "symbol": "CMCSAX",
+            "crypto_id": 37034,
+            "rwa_id": 208
+          },
+          {
+            "name": "CrowdStrike tokenized stock (xStock)",
+            "symbol": "CRWDX",
+            "crypto_id": 37035,
+            "rwa_id": 102
+          },
+          {
+            "name": "Danaher tokenized stock (xStock)",
+            "symbol": "DHRX",
+            "crypto_id": 37036,
+            "rwa_id": 145
+          },
+          {
+            "name": "DFDV tokenized stock (xStock)",
+            "symbol": "DFDVx",
+            "crypto_id": 37037,
+            "rwa_id": 85
+          },
+          {
+            "name": "Eli Lilly tokenized stock (xStock)",
+            "symbol": "LLYX",
+            "crypto_id": 37038,
+            "rwa_id": 11
+          },
+          {
+            "name": "Exxon Mobil tokenized stock (xStock)",
+            "symbol": "XOMX",
+            "crypto_id": 37039,
+            "rwa_id": 27
+          },
+          {
+            "name": "Procter & Gamble tokenized stock (xStock)",
+            "symbol": "PGX",
+            "crypto_id": 37040,
+            "rwa_id": 50
+          },
+          {
+            "name": "Robinhood tokenized stock (xStock)",
+            "symbol": "HOODX",
+            "crypto_id": 37041,
+            "rwa_id": 84
+          },
+          {
+            "name": "Salesforce tokenized stock (xStock)",
+            "symbol": "CRMX",
+            "crypto_id": 37042,
+            "rwa_id": 198
+          },
+          {
+            "name": "Thermo Fisher tokenized stock (xStock)",
+            "symbol": "TMOX",
+            "crypto_id": 37043,
+            "rwa_id": 104
+          },
+          {
+            "name": "TQQQ tokenized ETF (xStock)",
+            "symbol": "TQQQX",
+            "crypto_id": 37044,
+            "rwa_id": 211
+          },
+          {
+            "name": "UnitedHealth tokenized stock (xStock)",
+            "symbol": "UNHX",
+            "crypto_id": 37045,
+            "rwa_id": 33
+          },
+          {
+            "name": "Visa tokenized stock (xStock)",
+            "symbol": "VX",
+            "crypto_id": 37046,
+            "rwa_id": 18
+          },
+          {
+            "name": "Vanguard tokenized ETF (xStock)",
+            "symbol": "VTIX",
+            "crypto_id": 37047,
+            "rwa_id": 148
+          },
+          {
+            "name": "Walmart tokenized stock (xStock)",
+            "symbol": "WMTX",
+            "crypto_id": 37048,
+            "rwa_id": 17
+          },
+          {
+            "name": "Linde tokenized stock (xStock)",
+            "symbol": "LINX",
+            "crypto_id": 37049,
+            "rwa_id": 61
+          },
+          {
+            "name": "Marvell tokenized stock (xStock)",
+            "symbol": "MRVLX",
+            "crypto_id": 37050,
+            "rwa_id": 70
+          },
+          {
+            "name": "Mastercard tokenized stock (xStock)",
+            "symbol": "MAX",
+            "crypto_id": 37051,
+            "rwa_id": 28
+          },
+          {
+            "name": "McDonald's tokenized stock (xStock)",
+            "symbol": "MCDX",
+            "crypto_id": 37052,
+            "rwa_id": 68
+          },
+          {
+            "name": "Medtronic tokenized stock (xStock)",
+            "symbol": "MDTX",
+            "crypto_id": 37053,
+            "rwa_id": 146
+          },
+          {
+            "name": "Merck tokenized stock (xStock)",
+            "symbol": "MRKX",
+            "crypto_id": 37054,
+            "rwa_id": 38
+          },
+          {
+            "name": "Meta tokenized stock (xStock)",
+            "symbol": "METAX",
+            "crypto_id": 37055,
+            "rwa_id": 10
+          },
+          {
+            "name": "Microsoft tokenized stock (xStock)",
+            "symbol": "MSFTX",
+            "crypto_id": 37056,
+            "rwa_id": 7
+          },
+          {
+            "name": "Nasdaq tokenized ETF (xStock)",
+            "symbol": "QQQX",
+            "crypto_id": 37057,
+            "rwa_id": 118
+          },
+          {
+            "name": "Novo Nordisk tokenized stock (xStock)",
+            "symbol": "NVOX",
+            "crypto_id": 37058,
+            "rwa_id": 65
+          },
+          {
+            "name": "Oracle tokenized stock (xStock)",
+            "symbol": "ORCLX",
+            "crypto_id": 37059,
+            "rwa_id": 24
+          },
+          {
+            "name": "Netflix tokenized stock (xStock)",
+            "symbol": "NFLXX",
+            "crypto_id": 37060,
+            "rwa_id": 37
+          },
+          {
+            "name": "Palantir tokenized stock (xStock)",
+            "symbol": "PLTRX",
+            "crypto_id": 37062,
+            "rwa_id": 53
+          },
+          {
+            "name": "Pfizer tokenized stock (xStock)",
+            "symbol": "PFEX",
+            "crypto_id": 37063,
+            "rwa_id": 92
+          },
+          {
+            "name": "PepsiCo tokenized stock (xStock)",
+            "symbol": "PEPX",
+            "crypto_id": 37064,
+            "rwa_id": 69
+          },
+          {
+            "name": "Philip Morris tokenized stock (xStock)",
+            "symbol": "PMX",
+            "crypto_id": 37065,
+            "rwa_id": 56
+          },
+          {
+            "name": "Wrapped Abbott tokenized stock (xStock)",
+            "symbol": "WABTX",
+            "crypto_id": 37095,
+            "rwa_id": 112
+          },
+          {
+            "name": "Wrapped Accenture Tokenized stock (xStock)",
+            "symbol": "WACNX",
+            "crypto_id": 37099,
+            "rwa_id": 136
+          },
+          {
+            "name": "Wrapped Amazon Tokenized stock (xStock)",
+            "symbol": "WAMZNX",
+            "crypto_id": 37112,
+            "rwa_id": 6
+          },
+          {
+            "name": "Wrapped AppLovin Tokenized stock (xStock)",
+            "symbol": "WAPPX",
+            "crypto_id": 37113,
+            "rwa_id": 108
+          },
+          {
+            "name": "Wrapped Pfizer Tokenized stock (xStock)",
+            "symbol": "WPFEX",
+            "crypto_id": 37115,
+            "rwa_id": 92
+          },
+          {
+            "name": "Wrapped Procter & Gamble Tokenized stock (xStock)",
+            "symbol": "WPGX",
+            "crypto_id": 37116,
+            "rwa_id": 50
+          },
+          {
+            "name": "Wrapped Chevron Tokenized stock (xStock)",
+            "symbol": "WCVXX",
+            "crypto_id": 37118,
+            "rwa_id": 51
+          },
+          {
+            "name": "Wrapped Danaher Tokenized stock (xStock)",
+            "symbol": "WDHRX",
+            "crypto_id": 37119,
+            "rwa_id": 145
+          },
+          {
+            "name": "Wrapped Gamestop Tokenized stock (xStock)",
+            "symbol": "WGMEX",
+            "crypto_id": 37120,
+            "rwa_id": 116
+          },
+          {
+            "name": "Wrapped Alphabet Tokenized stock (xStock)",
+            "symbol": "WGOOGLX",
+            "crypto_id": 37121,
+            "rwa_id": 4
+          },
+          {
+            "name": "Wrapped Broadcom Tokenized stock (xStock)",
+            "symbol": "WAVGOX",
+            "crypto_id": 37129,
+            "rwa_id": 13
+          },
+          {
+            "name": "Wrapped AstraZeneca Tokenized stock (xStock)",
+            "symbol": "WAZNX",
+            "crypto_id": 37183,
+            "rwa_id": 40
+          },
+          {
+            "name": "Wrapped Bank of America Tokenized stock (xStock)",
+            "symbol": "WBACX",
+            "crypto_id": 37190,
+            "rwa_id": 23
+          },
+          {
+            "name": "Wrapped Berkshire Hathaway Tokenized stock (xStock)",
+            "symbol": "WBRK.BX",
+            "crypto_id": 37191,
+            "rwa_id": 15
+          },
+          {
+            "name": "Wrapped Comcast Tokenized stock (xStock)",
+            "symbol": "WCMCSAX",
+            "crypto_id": 37192,
+            "rwa_id": 208
+          },
+          {
+            "name": "Wrapped Coinbase Tokenized stock (xStock)",
+            "symbol": "WCOINX",
+            "crypto_id": 37193,
+            "rwa_id": 82
+          },
+          {
+            "name": "Wrapped Salesforce Tokenized stock (xStock)",
+            "symbol": "WCRMX",
+            "crypto_id": 37194,
+            "rwa_id": 198
+          },
+          {
+            "name": "Wrapped CrowdStrike Tokenized stock (xStock)",
+            "symbol": "WCRWDX",
+            "crypto_id": 37195,
+            "rwa_id": 102
+          },
+          {
+            "name": "Wrapped Cisco Tokenized stock (xStock)",
+            "symbol": "WCSCOX",
+            "crypto_id": 37196,
+            "rwa_id": 29
+          },
+          {
+            "name": "Wrapped Goldman Sachs Tokenized stock (xStock)",
+            "symbol": "WGSX",
+            "crypto_id": 37197,
+            "rwa_id": 39
+          },
+          {
+            "name": "Wrapped Home Depot Tokenized stock (xStock)",
+            "symbol": "WHDX",
+            "crypto_id": 37198,
+            "rwa_id": 36
+          },
+          {
+            "name": "Wrapped Honeywell Tokenized stock (xStock)",
+            "symbol": "WHONX",
+            "crypto_id": 37199,
+            "rwa_id": null
+          },
+          {
+            "name": "Wrapped Robinhood Tokenized stock (xStock)",
+            "symbol": "WHOODX",
+            "crypto_id": 37200,
+            "rwa_id": 84
+          },
+          {
+            "name": "Wrapped Intel Tokenized stock (xStock)",
+            "symbol": "WINTCX",
+            "crypto_id": 37202,
+            "rwa_id": 20
+          },
+          {
+            "name": "Wrapped Johnson & Johnson Tokenized stock (xStock)",
+            "symbol": "WJNJX",
+            "crypto_id": 37203,
+            "rwa_id": 19
+          },
+          {
+            "name": "Wrapped JPMorgan Chase Tokenized stock (xStock)",
+            "symbol": "WJPMX",
+            "crypto_id": 37204,
+            "rwa_id": 16
+          },
+          {
+            "name": "Wrapped Coca-Cola Tokenized stock (xStock)",
+            "symbol": "WKOX",
+            "crypto_id": 37205,
+            "rwa_id": 34
+          },
+          {
+            "name": "Wrapped Eli Lilly Tokenized stock (xStock)",
+            "symbol": "WLLYX",
+            "crypto_id": 37207,
+            "rwa_id": 11
+          },
+          {
+            "name": "Wrapped Mastercard Tokenized stock (xStock)",
+            "symbol": "WMAX",
+            "crypto_id": 37208,
+            "rwa_id": 28
+          },
+          {
+            "name": "Wrapped McDonald's Tokenized stock (xStock)",
+            "symbol": "WMCDX",
+            "crypto_id": 37209,
+            "rwa_id": 68
+          },
+          {
+            "name": "Wrapped Medtronic Tokenized stock (xStock)",
+            "symbol": "WMDTX",
+            "crypto_id": 37210,
+            "rwa_id": 146
+          },
+          {
+            "name": "Wrapped Meta Tokenized stock (xStock)",
+            "symbol": "WMETAX",
+            "crypto_id": 37211,
+            "rwa_id": 10
+          },
+          {
+            "name": "Wrapped Merck Tokenized stock (xStock)",
+            "symbol": "WMRKX",
+            "crypto_id": 37212,
+            "rwa_id": 38
+          },
+          {
+            "name": "Wrapped Marvell Tokenized stock (xStock)",
+            "symbol": "WMRVLX",
+            "crypto_id": 37213,
+            "rwa_id": 70
+          },
+          {
+            "name": "Wrapped Microsoft Tokenized stock (xStock)",
+            "symbol": "WMSFTX",
+            "crypto_id": 37214,
+            "rwa_id": 7
+          },
+          {
+            "name": "Wrapped MicroStrategy Tokenized stock (xStock)",
+            "symbol": "WMSTRX",
+            "crypto_id": 37215,
+            "rwa_id": 114
+          },
+          {
+            "name": "Wrapped Netflix Tokenized stock (xStock)",
+            "symbol": "WNFLXX",
+            "crypto_id": 37216,
+            "rwa_id": 37
+          },
+          {
+            "name": "Wrapped Novo Nordisk Tokenized stock (xStock)",
+            "symbol": "WNVOX",
+            "crypto_id": 37217,
+            "rwa_id": 65
+          },
+          {
+            "name": "Wrapped Oracle Tokenized stock (xStock)",
+            "symbol": "WORCLX",
+            "crypto_id": 37218,
+            "rwa_id": 24
+          }
+        ]
+      },
+      {
+        "issuer_id": "688c6172abae9b5b9fb30359",
+        "name": "Dinari Assets",
+        "website": "https://dinari.com/",
+        "logo": "https://s2.coinmarketcap.com/static/img/issuer/5a59aaed_253f_4771_8e52_4ecc50ef127c_medium.jpg",
+        "num_tokens": 91,
+        "total_size": 91,
+        "has_more": false,
+        "tokens": [
+          {
+            "name": "NVIDIA tokenized stock (Dinari)",
+            "symbol": "NVDA.D",
+            "crypto_id": 28616,
+            "rwa_id": 2
+          },
+          {
+            "name": "Netflix tokenized stock (Dinari)",
+            "symbol": "NFLX.D",
+            "crypto_id": 28617,
+            "rwa_id": 37
+          },
+          {
+            "name": "MSFT tokenized stock (Dinari)",
+            "symbol": "MSFT.D",
+            "crypto_id": 28618,
+            "rwa_id": 7
+          },
+          {
+            "name": "META tokenized stock (Dinari)",
+            "symbol": "META.D",
+            "crypto_id": 28621,
+            "rwa_id": 10
+          },
+          {
+            "name": "DIS tokenized stock (Dinari)",
+            "symbol": "DIS.D",
+            "crypto_id": 28622,
+            "rwa_id": 110
+          },
+          {
+            "name": "Paypal tokenized stock (Dinari)",
+            "symbol": "PYPL.D",
+            "crypto_id": 28623,
+            "rwa_id": 93
+          },
+          {
+            "name": "AAPL tokenized stock (Dinari)",
+            "symbol": "AAPL.D",
+            "crypto_id": 28624,
+            "rwa_id": 3
+          },
+          {
+            "name": "COIN tokenized stock (Dinari)",
+            "symbol": "COIN.D",
+            "crypto_id": 28625,
+            "rwa_id": 82
+          },
+          {
+            "name": "TSLA tokenized stock (Dinari)",
+            "symbol": "TSLA.D",
+            "crypto_id": 28626,
+            "rwa_id": 14
+          },
+          {
+            "name": "WisdomTree Floating Rate Tokenized Treasury Fund (Dinari)",
+            "symbol": "USFR.D",
+            "crypto_id": 28627,
+            "rwa_id": 149
+          },
+          {
+            "name": "SPY tokenized ETF (Dinari)",
+            "symbol": "SPY.D",
+            "crypto_id": 28628,
+            "rwa_id": 86
+          },
+          {
+            "name": "PFE tokenized stock (Dinari)",
+            "symbol": "PFE.D",
+            "crypto_id": 28629,
+            "rwa_id": 92
+          },
+          {
+            "name": "BRK tokenized stock (Dinari)",
+            "symbol": "BRK.A.D",
+            "crypto_id": 28630,
+            "rwa_id": 15
+          },
+          {
+            "name": "PLD tokenized stock (Dinari)",
+            "symbol": "PLD.D",
+            "crypto_id": 28631,
+            "rwa_id": 213
+          },
+          {
+            "name": "AMD tokenized stock (Dinari)",
+            "symbol": "AMD.D",
+            "crypto_id": 28632,
+            "rwa_id": 25
+          },
+          {
+            "name": "ARM tokenized stock (Dinari)",
+            "symbol": "ARM.D",
+            "crypto_id": 28633,
+            "rwa_id": 54
+          },
+          {
+            "name": "GOOGL tokenized stock (Dinari)",
+            "symbol": "GOOGL.D",
+            "crypto_id": 28634,
+            "rwa_id": 4
+          },
+          {
+            "name": "HYMB tokenized stock (Dinari)",
+            "symbol": "HYMB.D",
+            "crypto_id": 37071,
+            "rwa_id": 150
+          },
+          {
+            "name": "SPDR Gold Shares tokenized ETF (Dinari)",
+            "symbol": "GLD.D",
+            "crypto_id": 37081,
+            "rwa_id": 87
+          },
+          {
+            "name": "abrdn Physical Palladium Shares tokenized ETF (Dinari)",
+            "symbol": "PALL.D",
+            "crypto_id": 37090,
+            "rwa_id": 214
+          },
+          {
+            "name": "iShares Bitcoin Trust tokenized ETF (Dinari)",
+            "symbol": "IBIT.D",
+            "crypto_id": 37091,
+            "rwa_id": 151
+          },
+          {
+            "name": "Grayscale Ethereum Trust tokenized ETF (Dinari)",
+            "symbol": "ETHE.D",
+            "crypto_id": 37092,
+            "rwa_id": 215
+          },
+          {
+            "name": "ARK 21Shares Bitcoin tokenized ETF (Dinari)",
+            "symbol": "ARKB.D",
+            "crypto_id": 37093,
+            "rwa_id": null
+          },
+          {
+            "name": "abrdn Physical Platinum Shares tokenized ETF (Dinari)",
+            "symbol": "PPLT.D",
+            "crypto_id": 37094,
+            "rwa_id": null
+          },
+          {
+            "name": "Alpha Architect 1-3 Month Box tokenized ETF (Dinari)",
+            "symbol": "BOXX.D",
+            "crypto_id": 37101,
+            "rwa_id": null
+          },
+          {
+            "name": "GME Tokenized Stock (Dinari)",
+            "symbol": "GME.D",
+            "crypto_id": 37117,
+            "rwa_id": 116
+          },
+          {
+            "name": "ADBE tokenized stock (Dinari)",
+            "symbol": "ADBE.D",
+            "crypto_id": 37123,
+            "rwa_id": 138
+          },
+          {
+            "name": "AVGO tokenized stock (Dinari)",
+            "symbol": "AVGO.D",
+            "crypto_id": 37126,
+            "rwa_id": 13
+          },
+          {
+            "name": "BITB tokenized stock (Dinari)",
+            "symbol": "BITB.D",
+            "crypto_id": 37127,
+            "rwa_id": null
+          },
+          {
+            "name": "FBTC tokenized stock (Dinari)",
+            "symbol": "FBTC.D",
+            "crypto_id": 37128,
+            "rwa_id": null
+          },
+          {
+            "name": "MARA tokenized stock (Dinari)",
+            "symbol": "MARA.D",
+            "crypto_id": 37130,
+            "rwa_id": 123
+          },
+          {
+            "name": "NLY tokenized stock (Dinari)",
+            "symbol": "NLY.D",
+            "crypto_id": 37132,
+            "rwa_id": null
+          },
+          {
+            "name": "WOOD tokenized stock (Dinari)",
+            "symbol": "WOOD.D",
+            "crypto_id": 37133,
+            "rwa_id": null
+          },
+          {
+            "name": "WEAT tokenized stock (Dinari)",
+            "symbol": "WEAT.D",
+            "crypto_id": 37134,
+            "rwa_id": null
+          },
+          {
+            "name": "SLX tokenized stock (Dinari)",
+            "symbol": "SLX.D",
+            "crypto_id": 37135,
+            "rwa_id": null
+          },
+          {
+            "name": "GBTC tokenized stock (Dinari)",
+            "symbol": "GBTC.D",
+            "crypto_id": 37136,
+            "rwa_id": null
+          },
+          {
+            "name": "ARKX tokenized stock (Dinari)",
+            "symbol": "ARKX.D",
+            "crypto_id": 37137,
+            "rwa_id": null
+          },
+          {
+            "name": "BA tokenized stock (Dinari)",
+            "symbol": "BA.D",
+            "crypto_id": 37138,
+            "rwa_id": 106
+          },
+          {
+            "name": "BRRR tokenized stock (Dinari)",
+            "symbol": "BRRR.D",
+            "crypto_id": 37139,
+            "rwa_id": null
+          },
+          {
+            "name": "ARKK tokenized stock (Dinari)",
+            "symbol": "ARKK.D",
+            "crypto_id": 37140,
+            "rwa_id": null
+          },
+          {
+            "name": "AZN tokenized stock (Dinari)",
+            "symbol": "AZN.D",
+            "crypto_id": 37141,
+            "rwa_id": null
+          },
+          {
+            "name": "BLK tokenized stock (Dinari)",
+            "symbol": "BLK.D",
+            "crypto_id": 37142,
+            "rwa_id": null
+          },
+          {
+            "name": "JNJ tokenized stock (Dinari)",
+            "symbol": "JNJ.D",
+            "crypto_id": 37145,
+            "rwa_id": null
+          },
+          {
+            "name": "MCD tokenized stock (Dinari)",
+            "symbol": "MCD.D",
+            "crypto_id": 37147,
+            "rwa_id": null
+          },
+          {
+            "name": "QQQ tokenized stock (Dinari)",
+            "symbol": "QQQ.D",
+            "crypto_id": 37151,
+            "rwa_id": null
+          },
+          {
+            "name": "TQQQ tokenized stock (Dinari)",
+            "symbol": "TQQQ.D",
+            "crypto_id": 37152,
+            "rwa_id": null
+          },
+          {
+            "name": "HOOD tokenized stock (Dinari)",
+            "symbol": "HOOD.D",
+            "crypto_id": 37153,
+            "rwa_id": null
+          },
+          {
+            "name": "DEFI tokenized stock (Dinari)",
+            "symbol": "DEFI.D",
+            "crypto_id": 37154,
+            "rwa_id": null
+          },
+          {
+            "name": "CAT tokenized stock (Dinari)",
+            "symbol": "CAT.D",
+            "crypto_id": 37155,
+            "rwa_id": null
+          },
+          {
+            "name": "BTCW tokenized stock (Dinari)",
+            "symbol": "BTCW.D",
+            "crypto_id": 37156,
+            "rwa_id": null
+          },
+          {
+            "name": "BAC tokenized stock (Dinari)",
+            "symbol": "BAC.D",
+            "crypto_id": 37157,
+            "rwa_id": null
+          },
+          {
+            "name": "BTCO tokenized stock (Dinari)",
+            "symbol": "BTCO.D",
+            "crypto_id": 37158,
+            "rwa_id": null
+          },
+          {
+            "name": "HUT tokenized stock (Dinari)",
+            "symbol": "HUT.D",
+            "crypto_id": 37159,
+            "rwa_id": null
+          },
+          {
+            "name": "V tokenized stock (Dinari)",
+            "symbol": "V.D",
+            "crypto_id": 37160,
+            "rwa_id": null
+          },
+          {
+            "name": "XOM tokenized stock (Dinari)",
+            "symbol": "XOM.D",
+            "crypto_id": 37161,
+            "rwa_id": null
+          },
+          {
+            "name": "PHO tokenized stock (Dinari)",
+            "symbol": "PHO.D",
+            "crypto_id": 37162,
+            "rwa_id": null
+          },
+          {
+            "name": "LMT tokenized stock (Dinari)",
+            "symbol": "LMT.D",
+            "crypto_id": 37164,
+            "rwa_id": null
+          },
+          {
+            "name": "KO tokenized stock (Dinari)",
+            "symbol": "KO.D",
+            "crypto_id": 37165,
+            "rwa_id": null
+          },
+          {
+            "name": "JPM tokenized stock (Dinari)",
+            "symbol": "JPM.D",
+            "crypto_id": 37167,
+            "rwa_id": null
+          },
+          {
+            "name": "YUM tokenized stock (Dinari)",
+            "symbol": "YUM.D",
+            "crypto_id": 37168,
+            "rwa_id": null
+          },
+          {
+            "name": "EZBC tokenized stock (Dinari)",
+            "symbol": "EZBC.D",
+            "crypto_id": 37169,
+            "rwa_id": null
+          },
+          {
+            "name": "PG tokenized stock (Dinari)",
+            "symbol": "PG.D",
+            "crypto_id": 37170,
+            "rwa_id": null
+          },
+          {
+            "name": "CCL tokenized stock (Dinari)",
+            "symbol": "CCL.D",
+            "crypto_id": 37171,
+            "rwa_id": null
+          },
+          {
+            "name": "F tokenized stock (Dinari)",
+            "symbol": "F.D",
+            "crypto_id": 37173,
+            "rwa_id": null
+          },
+          {
+            "name": "CSCO tokenized stock (Dinari)",
+            "symbol": "CSCO.D",
+            "crypto_id": 37179,
+            "rwa_id": null
+          },
+          {
+            "name": "ITA tokenized stock (Dinari)",
+            "symbol": "ITA.D",
+            "crypto_id": 37181,
+            "rwa_id": null
+          },
+          {
+            "name": "RKLB tokenized stock (Dinari)",
+            "symbol": "RKLB.D",
+            "crypto_id": 37182,
+            "rwa_id": null
+          },
+          {
+            "name": "COST tokenized stock (Dinari)",
+            "symbol": "COST.D",
+            "crypto_id": 37184,
+            "rwa_id": null
+          },
+          {
+            "name": "WALRF tokenized stock (Dinari)",
+            "symbol": "WALRF.D",
+            "crypto_id": 37185,
+            "rwa_id": null
+          },
+          {
+            "name": "SPSK tokenized stock (Dinari)",
+            "symbol": "SPSK.D",
+            "crypto_id": 37206,
+            "rwa_id": null
+          },
+          {
+            "name": "SPTE tokenized stock (Dinari)",
+            "symbol": "SPTE.D",
+            "crypto_id": 37232,
+            "rwa_id": null
+          },
+          {
+            "name": "SPUS tokenized stock (Dinari)",
+            "symbol": "SPUS.D",
+            "crypto_id": 37233,
+            "rwa_id": null
+          },
+          {
+            "name": "SPWO tokenized stock (Dinari)",
+            "symbol": "SPWO.D",
+            "crypto_id": 37234,
+            "rwa_id": null
+          },
+          {
+            "name": "UFO tokenized stock (Dinari)",
+            "symbol": "UFO.D",
+            "crypto_id": 37235,
+            "rwa_id": null
+          },
+          {
+            "name": "VXX tokenized stock (Dinari)",
+            "symbol": "VXX.D",
+            "crypto_id": 37236,
+            "rwa_id": null
+          },
+          {
+            "name": "SNOW tokenized stock (Dinari)",
+            "symbol": "SNOW.D",
+            "crypto_id": 37239,
+            "rwa_id": null
+          },
+          {
+            "name": "SBUX tokenized stock (Dinari)",
+            "symbol": "SBUX.D",
+            "crypto_id": 37242,
+            "rwa_id": null
+          },
+          {
+            "name": "MELI tokenized stock (Dinari)",
+            "symbol": "MELI.D",
+            "crypto_id": 37243,
+            "rwa_id": null
+          },
+          {
+            "name": "EEM tokenized stock (Dinari)",
+            "symbol": "EEM.D",
+            "crypto_id": 37246,
+            "rwa_id": null
+          },
+          {
+            "name": "CVX tokenized stock (Dinari)",
+            "symbol": "CVX.D",
+            "crypto_id": 37247,
+            "rwa_id": null
+          },
+          {
+            "name": "USHY tokenized stock (Dinari)",
+            "symbol": "USHY.D",
+            "crypto_id": 37249,
+            "rwa_id": null
+          },
+          {
+            "name": "TJX tokenized stock (Dinari)",
+            "symbol": "TJX.D",
+            "crypto_id": 37254,
+            "rwa_id": null
+          },
+          {
+            "name": "SOXL tokenized stock (Dinari)",
+            "symbol": "SOXL.D",
+            "crypto_id": 37255,
+            "rwa_id": null
+          },
+          {
+            "name": "SQ tokenized stock (Dinari)",
+            "symbol": "SQ.D",
+            "crypto_id": 37261,
+            "rwa_id": null
+          },
+          {
+            "name": "ERO tokenized stock (Dinari)",
+            "symbol": "ERO.D",
+            "crypto_id": 37262,
+            "rwa_id": null
+          },
+          {
+            "name": "DAL tokenized stock (Dinari)",
+            "symbol": "DAL.D",
+            "crypto_id": 37264,
+            "rwa_id": null
+          },
+          {
+            "name": "RDDT tokenized stock (Dinari)",
+            "symbol": "RDDT.D",
+            "crypto_id": 37265,
+            "rwa_id": null
+          },
+          {
+            "name": "RBLX tokenized stock (Dinari)",
+            "symbol": "RBLX.D",
+            "crypto_id": 37267,
+            "rwa_id": null
+          },
+          {
+            "name": "SONY tokenized stock (Dinari)",
+            "symbol": "SONY.D",
+            "crypto_id": 37268,
+            "rwa_id": null
+          },
+          {
+            "name": "AMZN tokenized stock (Dinari)",
+            "symbol": "AMZN.D",
+            "crypto_id": 37271,
+            "rwa_id": null
+          },
+          {
+            "name": "AMC tokenized stock (Dinari)",
+            "symbol": "AMC.D",
+            "crypto_id": 37273,
+            "rwa_id": null
+          }
+        ]
+      },
+      {
+        "issuer_id": "688ca4ccabae9b5b9fb3167a",
+        "name": "Ondo Assets",
+        "website": "https://ondo.finance/",
+        "logo": null,
+        "num_tokens": 551,
+        "total_size": 551,
+        "has_more": true,
+        "tokens": [
+          {
+            "name": "Super Micro Computer Tokenized Stock (Ondo)",
+            "symbol": "SMCIon",
+            "crypto_id": 37996,
+            "rwa_id": 127
+          },
+          {
+            "name": "GameStop Tokenized Stock (Ondo)",
+            "symbol": "GMEon",
+            "crypto_id": 37997,
+            "rwa_id": 116
+          },
+          {
+            "name": "iShares Russell 2000 Value Tokenized ETF (Ondo)",
+            "symbol": "IWNon",
+            "crypto_id": 37998,
+            "rwa_id": 119
+          },
+          {
+            "name": "Petrobras Tokenized Stock (Ondo)",
+            "symbol": "PBRon",
+            "crypto_id": 37999,
+            "rwa_id": 90
+          },
+          {
+            "name": "Pfizer Tokenized Stock (Ondo)",
+            "symbol": "PFEon",
+            "crypto_id": 38000,
+            "rwa_id": 92
+          },
+          {
+            "name": "Alphabet Class A Tokenized Stock (Ondo)",
+            "symbol": "GOOGLon",
+            "crypto_id": 38001,
+            "rwa_id": 4
+          },
+          {
+            "name": "Novo Nordisk Tokenized Stock (Ondo)",
+            "symbol": "NVOon",
+            "crypto_id": 38002,
+            "rwa_id": 65
+          },
+          {
+            "name": "iShares Core S&P Total US Stock Market Tokenized ETF (Ondo)",
+            "symbol": "ITOTon",
+            "crypto_id": 38003,
+            "rwa_id": 89
+          },
+          {
+            "name": "Robinhood Markets Tokenized Stock (Ondo)",
+            "symbol": "HOODon",
+            "crypto_id": 38004,
+            "rwa_id": 84
+          },
+          {
+            "name": "Linde plc Tokenized Stock (Ondo)",
+            "symbol": "LINon",
+            "crypto_id": 38005,
+            "rwa_id": 61
+          },
+          {
+            "name": "Abbott Tokenized Stock (Ondo)",
+            "symbol": "ABTon",
+            "crypto_id": 38006,
+            "rwa_id": 112
+          },
+          {
+            "name": "iShares MSCI EAFE Tokenized ETF (Ondo)",
+            "symbol": "EFAon",
+            "crypto_id": 38007,
+            "rwa_id": 94
+          },
+          {
+            "name": "Chipotle Tokenized Stock (Ondo)",
+            "symbol": "CMGon",
+            "crypto_id": 38008,
+            "rwa_id": 130
+          },
+          {
+            "name": "Oracle Tokenized Stock (Ondo)",
+            "symbol": "ORCLon",
+            "crypto_id": 38009,
+            "rwa_id": 24
+          },
+          {
+            "name": "PayPal Tokenized Stock (Ondo)",
+            "symbol": "PYPLon",
+            "crypto_id": 38010,
+            "rwa_id": 93
+          },
+          {
+            "name": "D-Wave Quantum Tokenized Stock (Ondo)",
+            "symbol": "QBTSon",
+            "crypto_id": 38011,
+            "rwa_id": 88
+          },
+          {
+            "name": "Riot Platforms Tokenized Stock (Ondo)",
+            "symbol": "RIOTon",
+            "crypto_id": 38012,
+            "rwa_id": 91
+          },
+          {
+            "name": "MARA Holdings Tokenized Stock (Ondo)",
+            "symbol": "MARAon",
+            "crypto_id": 38013,
+            "rwa_id": 123
+          },
+          {
+            "name": "Micron Technology Tokenized Stock (Ondo)",
+            "symbol": "MUon",
+            "crypto_id": 38014,
+            "rwa_id": 12
+          },
+          {
+            "name": "PepsiCo Tokenized Stock (Ondo)",
+            "symbol": "PEPon",
+            "crypto_id": 38015,
+            "rwa_id": 69
+          },
+          {
+            "name": "AppLovin Tokenized Stock (Ondo)",
+            "symbol": "APPon",
+            "crypto_id": 38016,
+            "rwa_id": 108
+          },
+          {
+            "name": "Lockheed Tokenized Stock (Ondo)",
+            "symbol": "LMTon",
+            "crypto_id": 38017,
+            "rwa_id": 137
+          },
+          {
+            "name": "IBM Tokenized Stock (Ondo)",
+            "symbol": "IBMon",
+            "crypto_id": 38018,
+            "rwa_id": 42
+          },
+          {
+            "name": "Costco Tokenized Stock (Ondo)",
+            "symbol": "COSTon",
+            "crypto_id": 38019,
+            "rwa_id": 31
+          },
+          {
+            "name": "Grindr Tokenized Stock (Ondo)",
+            "symbol": "GRNDon",
+            "crypto_id": 38020,
+            "rwa_id": 143
+          },
+          {
+            "name": "iShares Core MSCI EAFE Tokenized ETF (Ondo)",
+            "symbol": "IEFAon",
+            "crypto_id": 38021,
+            "rwa_id": 95
+          },
+          {
+            "name": "iShares Russell 1000 Growth Tokenized ETF (Ondo)",
+            "symbol": "IWFon",
+            "crypto_id": 38022,
+            "rwa_id": 131
+          },
+          {
+            "name": "Salesforce Tokenized Stock (Ondo)",
+            "symbol": "CRMon",
+            "crypto_id": 38023,
+            "rwa_id": 198
+          },
+          {
+            "name": "Adobe Tokenized Stock (Ondo)",
+            "symbol": "ADBEon",
+            "crypto_id": 38024,
+            "rwa_id": 138
+          },
+          {
+            "name": "ServiceNow Tokenized Stock (Ondo)",
+            "symbol": "NOWon",
+            "crypto_id": 38025,
+            "rwa_id": 203
+          },
+          {
+            "name": "Shopify Tokenized Stock (Ondo)",
+            "symbol": "SHOPon",
+            "crypto_id": 38026,
+            "rwa_id": 132
+          },
+          {
+            "name": "AMD Tokenized Stock (Ondo)",
+            "symbol": "AMDon",
+            "crypto_id": 38027,
+            "rwa_id": 25
+          },
+          {
+            "name": "Spotify Tokenized Stock (Ondo)",
+            "symbol": "SPOTon",
+            "crypto_id": 38028,
+            "rwa_id": 202
+          },
+          {
+            "name": "Tesla Tokenized Stock (Ondo)",
+            "symbol": "TSLAon",
+            "crypto_id": 38029,
+            "rwa_id": 14
+          },
+          {
+            "name": "Blackrock, Inc. Tokenized Stock (Ondo)",
+            "symbol": "BLKon",
+            "crypto_id": 38030,
+            "rwa_id": 139
+          },
+          {
+            "name": "iShares 20+ Year Treasury Bond Tokenized ETF (Ondo)",
+            "symbol": "TLTon",
+            "crypto_id": 38031,
+            "rwa_id": 204
+          },
+          {
+            "name": "Netflix Tokenized Stock (Ondo)",
+            "symbol": "NFLXon",
+            "crypto_id": 38032,
+            "rwa_id": 37
+          },
+          {
+            "name": "iShares MSCI Emerging Markets Tokenized ETF (Ondo)",
+            "symbol": "EEMon",
+            "crypto_id": 38033,
+            "rwa_id": 124
+          },
+          {
+            "name": "Hims & Hers Health Tokenized Stock (Ondo)",
+            "symbol": "HIMSon",
+            "crypto_id": 38034,
+            "rwa_id": 125
+          },
+          {
+            "name": "Intel Tokenized Stock (Ondo)",
+            "symbol": "INTCon",
+            "crypto_id": 38035,
+            "rwa_id": 20
+          },
+          {
+            "name": "Coca-Cola Tokenized Stock (Ondo)",
+            "symbol": "KOon",
+            "crypto_id": 38036,
+            "rwa_id": 34
+          },
+          {
+            "name": "Apple Tokenized Stock (Ondo)",
+            "symbol": "AAPLon",
+            "crypto_id": 38037,
+            "rwa_id": 3
+          },
+          {
+            "name": "Goldman Sachs Tokenized Stock (Ondo)",
+            "symbol": "GSon",
+            "crypto_id": 38038,
+            "rwa_id": 39
+          },
+          {
+            "name": "UnitedHealth Tokenized Stock (Ondo)",
+            "symbol": "UNHon",
+            "crypto_id": 38039,
+            "rwa_id": 33
+          },
+          {
+            "name": "Visa Tokenized Stock (Ondo)",
+            "symbol": "Von",
+            "crypto_id": 38040,
+            "rwa_id": 18
+          },
+          {
+            "name": "iShares Gold Trust Tokenized ETF (Ondo)",
+            "symbol": "IAUon",
+            "crypto_id": 38041,
+            "rwa_id": 206
+          },
+          {
+            "name": "Chevron Tokenized Stock (Ondo)",
+            "symbol": "CVXon",
+            "crypto_id": 38042,
+            "rwa_id": 51
+          },
+          {
+            "name": "Eli Lilly Tokenized Stock (Ondo)",
+            "symbol": "LLYon",
+            "crypto_id": 38043,
+            "rwa_id": 11
+          },
+          {
+            "name": "Airbnb Tokenized Stock (Ondo)",
+            "symbol": "ABNBon",
+            "crypto_id": 38044,
+            "rwa_id": 193
+          },
+          {
+            "name": "Toyota Tokenized Stock (Ondo)",
+            "symbol": "TMon",
+            "crypto_id": 38045,
+            "rwa_id": 97
+          },
+          {
+            "name": "Coinbase Tokenized Stock (Ondo)",
+            "symbol": "COINon",
+            "crypto_id": 38046,
+            "rwa_id": 82
+          },
+          {
+            "name": "Equinix Tokenized Stock (Ondo)",
+            "symbol": "EQIXon",
+            "crypto_id": 38047,
+            "rwa_id": 122
+          },
+          {
+            "name": "Qualcomm Tokenized Stock (Ondo)",
+            "symbol": "QCOMon",
+            "crypto_id": 38048,
+            "rwa_id": 103
+          },
+          {
+            "name": "McDonald's Tokenized Stock (Ondo)",
+            "symbol": "MCDon",
+            "crypto_id": 38049,
+            "rwa_id": 68
+          },
+          {
+            "name": "ASML Holding NV Tokenized Stock (Ondo)",
+            "symbol": "ASMLon",
+            "crypto_id": 38050,
+            "rwa_id": 26
+          },
+          {
+            "name": "iShares Core S&P 500 Tokenized ETF (Ondo)",
+            "symbol": "IVVon",
+            "crypto_id": 38051,
+            "rwa_id": 141
+          },
+          {
+            "name": "JD.com Tokenized Stock (Ondo)",
+            "symbol": "JDon",
+            "crypto_id": 38052,
+            "rwa_id": 195
+          },
+          {
+            "name": "Reddit Tokenized Stock (Ondo)",
+            "symbol": "RDDTon",
+            "crypto_id": 38053,
+            "rwa_id": 196
+          },
+          {
+            "name": "Mastercard Tokenized Stock (Ondo)",
+            "symbol": "MAon",
+            "crypto_id": 38054,
+            "rwa_id": 28
+          },
+          {
+            "name": "Starbucks Tokenized Stock (Ondo)",
+            "symbol": "SBUXon",
+            "crypto_id": 38055,
+            "rwa_id": 129
+          },
+          {
+            "name": "Circle Internet Group Tokenized Stock (Ondo)",
+            "symbol": "CRCLon",
+            "crypto_id": 38056,
+            "rwa_id": 115
+          },
+          {
+            "name": "iShares Silver Trust Tokenized ETF (Ondo)",
+            "symbol": "SLVon",
+            "crypto_id": 38057,
+            "rwa_id": 205
+          },
+          {
+            "name": "Nike Tokenized Stock (Ondo)",
+            "symbol": "NKEon",
+            "crypto_id": 38058,
+            "rwa_id": 126
+          },
+          {
+            "name": "Arm Holdings plc Tokenized Stock (Ondo)",
+            "symbol": "ARMon",
+            "crypto_id": 38059,
+            "rwa_id": 54
+          },
+          {
+            "name": "Walmart Tokenized Stock (Ondo)",
+            "symbol": "WMTon",
+            "crypto_id": 38060,
+            "rwa_id": 17
+          },
+          {
+            "name": "Palo Alto Networks Tokenized Stock (Ondo)",
+            "symbol": "PANWon",
+            "crypto_id": 38061,
+            "rwa_id": 43
+          },
+          {
+            "name": "Broadcom Tokenized Stock (Ondo)",
+            "symbol": "AVGOon",
+            "crypto_id": 38062,
+            "rwa_id": 13
+          },
+          {
+            "name": "Snowflake Tokenized Stock (Ondo)",
+            "symbol": "SNOWon",
+            "crypto_id": 38063,
+            "rwa_id": 135
+          },
+          {
+            "name": "Accenture Tokenized Stock (Ondo)",
+            "symbol": "ACNon",
+            "crypto_id": 38064,
+            "rwa_id": 136
+          },
+          {
+            "name": "Meta Platforms Tokenized Stock (Ondo)",
+            "symbol": "METAon",
+            "crypto_id": 38065,
+            "rwa_id": 10
+          },
+          {
+            "name": "iShares Russell 2000 Tokenized ETF (Ondo)",
+            "symbol": "IWMon",
+            "crypto_id": 38066,
+            "rwa_id": 140
+          },
+          {
+            "name": "SPDR S&P 500 Tokenized ETF (Ondo)",
+            "symbol": "SPYon",
+            "crypto_id": 38067,
+            "rwa_id": 86
+          },
+          {
+            "name": "iShares TIPS Bond Tokenized ETF (Ondo)",
+            "symbol": "TIPon",
+            "crypto_id": 38068,
+            "rwa_id": 120
+          },
+          {
+            "name": "Uber Tokenized Stock (Ondo)",
+            "symbol": "UBERon",
+            "crypto_id": 38069,
+            "rwa_id": 128
+          },
+          {
+            "name": "Cisco Systems Tokenized Stock (Ondo)",
+            "symbol": "CSCOon",
+            "crypto_id": 38070,
+            "rwa_id": 29
+          },
+          {
+            "name": "Baidu Tokenized Stock (Ondo)",
+            "symbol": "BIDUon",
+            "crypto_id": 38071,
+            "rwa_id": 197
+          },
+          {
+            "name": "iShares Core US Aggregate Bond Tokenized ETF (Ondo)",
+            "symbol": "AGGon",
+            "crypto_id": 38072,
+            "rwa_id": 96
+          },
+          {
+            "name": "Palantir Technologies Tokenized Stock (Ondo)",
+            "symbol": "PLTRon",
+            "crypto_id": 38073,
+            "rwa_id": 53
+          },
+          {
+            "name": "S&P Global Tokenized Stock (Ondo)",
+            "symbol": "SPGIon",
+            "crypto_id": 38074,
+            "rwa_id": 134
+          },
+          {
+            "name": "Taiwan Semiconductor Manufacturing Tokenized Stock (Ondo)",
+            "symbol": "TSMon",
+            "crypto_id": 38075,
+            "rwa_id": 8
+          },
+          {
+            "name": "Alibaba Tokenized Stock (Ondo)",
+            "symbol": "BABAon",
+            "crypto_id": 38076,
+            "rwa_id": 63
+          },
+          {
+            "name": "American Express Tokenized Stock (Ondo)",
+            "symbol": "AXPon",
+            "crypto_id": 38077,
+            "rwa_id": 47
+          },
+          {
+            "name": "DoorDash Tokenized Stock (Ondo)",
+            "symbol": "DASHon",
+            "crypto_id": 38078,
+            "rwa_id": 199
+          },
+          {
+            "name": "Intuit Tokenized Stock (Ondo)",
+            "symbol": "INTUon",
+            "crypto_id": 38079,
+            "rwa_id": 201
+          },
+          {
+            "name": "Disney Tokenized Stock (Ondo)",
+            "symbol": "DISon",
+            "crypto_id": 38080,
+            "rwa_id": 110
+          },
+          {
+            "name": "Wells Fargo Tokenized Stock (Ondo)",
+            "symbol": "WFCon",
+            "crypto_id": 38081,
+            "rwa_id": 60
+          },
+          {
+            "name": "JPMorgan Chase Tokenized Stock (Ondo)",
+            "symbol": "JPMon",
+            "crypto_id": 38082,
+            "rwa_id": 16
+          },
+          {
+            "name": "Amazon Tokenized Stock (Ondo)",
+            "symbol": "AMZNon",
+            "crypto_id": 38083,
+            "rwa_id": 6
+          },
+          {
+            "name": "iShares Core S&P MidCap Tokenized ETF (Ondo)",
+            "symbol": "IJHon",
+            "crypto_id": 38084,
+            "rwa_id": 200
+          },
+          {
+            "name": "General Electric Tokenized Stock (Ondo)",
+            "symbol": "GEon",
+            "crypto_id": 38085,
+            "rwa_id": 49
+          },
+          {
+            "name": "Microsoft Tokenized Stock (Ondo)",
+            "symbol": "MSFTon",
+            "crypto_id": 38086,
+            "rwa_id": 7
+          },
+          {
+            "name": "SharpLink Gaming, Inc Tokenized Stock (Ondo)",
+            "symbol": "SBETon",
+            "crypto_id": 38087,
+            "rwa_id": 144
+          },
+          {
+            "name": "iBoxx $ High Yield Corporate Bond Tokenized ETF (Ondo)",
+            "symbol": "HYGon",
+            "crypto_id": 38088,
+            "rwa_id": 121
+          },
+          {
+            "name": "Marvell Technology Tokenized Stock (Ondo)",
+            "symbol": "MRVLon",
+            "crypto_id": 38089,
+            "rwa_id": 70
+          },
+          {
+            "name": "Futu Holdings Tokenized Stock (Ondo)",
+            "symbol": "FUTUon",
+            "crypto_id": 38090,
+            "rwa_id": 194
+          },
+          {
+            "name": "Boeing Tokenized Stock (Ondo)",
+            "symbol": "BAon",
+            "crypto_id": 38091,
+            "rwa_id": 106
+          },
+          {
+            "name": "MicroStrategy Tokenized Stock (Ondo)",
+            "symbol": "MSTRon",
+            "crypto_id": 38092,
+            "rwa_id": 114
+          },
+          {
+            "name": "NVIDIA Tokenized Stock (Ondo)",
+            "symbol": "NVDAon",
+            "crypto_id": 38093,
+            "rwa_id": 2
+          },
+          {
+            "name": "Invesco QQQ Tokenized ETF (Ondo)",
+            "symbol": "QQQon",
+            "crypto_id": 38094,
+            "rwa_id": 118
+          },
+          {
+            "name": "Apollo Global Management Tokenized Stock (Ondo)",
+            "symbol": "APOon",
+            "crypto_id": 38095,
+            "rwa_id": 133
+          }
+        ]
+      },
+      {
+        "issuer_id": "695e11f774b54210f3b95dc3",
+        "name": "NA (Derivatives)",
+        "website": null,
+        "logo": null,
+        "num_tokens": 238,
+        "total_size": 238,
+        "has_more": true,
+        "tokens": [
+          {
+            "name": "Tesla (Derivatives)",
+            "symbol": "TSLA",
+            "crypto_id": 38152,
+            "rwa_id": 14
+          },
+          {
+            "name": "NVIDIA (Derivatives)",
+            "symbol": "NVDA",
+            "crypto_id": 38153,
+            "rwa_id": 2
+          },
+          {
+            "name": "Circle Internet Group (Derivatives)",
+            "symbol": "CRCL",
+            "crypto_id": 38154,
+            "rwa_id": 115
+          },
+          {
+            "name": null,
+            "symbol": null,
+            "crypto_id": 39318,
+            "rwa_id": 5
+          },
+          {
+            "name": "Silver (Derivatives)",
+            "symbol": "XAG",
+            "crypto_id": 39343,
+            "rwa_id": 5
+          },
+          {
+            "name": "Gold (Derivatives)",
+            "symbol": "XAU",
+            "crypto_id": 39344,
+            "rwa_id": 1
+          },
+          {
+            "name": "Copper (Derivatives)",
+            "symbol": "XCU",
+            "crypto_id": 39467,
+            "rwa_id": null
+          },
+          {
+            "name": "Nasdaq index (Derivatives)",
+            "symbol": "IXIC",
+            "crypto_id": 39468,
+            "rwa_id": null
+          },
+          {
+            "name": "Micron Technology Inc (Derivatives)",
+            "symbol": "MU",
+            "crypto_id": 39469,
+            "rwa_id": 12
+          },
+          {
+            "name": "Alphabet Inc (Derivatives)",
+            "symbol": "GOOGL",
+            "crypto_id": 39470,
+            "rwa_id": 4
+          },
+          {
+            "name": "Amazon.com Inc (Derivatives)",
+            "symbol": "AMZN",
+            "crypto_id": 39471,
+            "rwa_id": 6
+          },
+          {
+            "name": "Intel Corp (Derivatives)",
+            "symbol": "INTC",
+            "crypto_id": 39472,
+            "rwa_id": 20
+          },
+          {
+            "name": "MicroStrategy Inc (Derivatives)",
+            "symbol": "MSTR",
+            "crypto_id": 39473,
+            "rwa_id": 114
+          },
+          {
+            "name": "Standard and Poor's 500 index (Derivatives)",
+            "symbol": "S&P500",
+            "crypto_id": 39474,
+            "rwa_id": null
+          },
+          {
+            "name": "Palantir Technologies Inc (Derivatives)",
+            "symbol": "PLTR",
+            "crypto_id": 39475,
+            "rwa_id": 53
+          },
+          {
+            "name": "Robinhood Markets (Derivatives)",
+            "symbol": "HOOD",
+            "crypto_id": 39478,
+            "rwa_id": 84
+          },
+          {
+            "name": "Netflix (Derivatives)",
+            "symbol": "NFLX",
+            "crypto_id": 39479,
+            "rwa_id": 37
+          },
+          {
+            "name": "Palladium (Derivatives)",
+            "symbol": "XPD",
+            "crypto_id": 39481,
+            "rwa_id": 16388
+          },
+          {
+            "name": "Oracle Corp (Derivatives)",
+            "symbol": "ORCL",
+            "crypto_id": 39482,
+            "rwa_id": 24
+          },
+          {
+            "name": "Coinbase Global Inc (Derivatives)",
+            "symbol": "COIN",
+            "crypto_id": 39483,
+            "rwa_id": 82
+          },
+          {
+            "name": "Global X Lithium & Battery Tech ETF (Derivatives)",
+            "symbol": "LIT",
+            "crypto_id": 39484,
+            "rwa_id": null
+          },
+          {
+            "name": "OpenAI (Derivatives)",
+            "symbol": "OPENAI",
+            "crypto_id": 39485,
+            "rwa_id": 250
+          },
+          {
+            "name": "Alibaba Group Holding Limited (Derivatives)",
+            "symbol": "BABA",
+            "crypto_id": 39486,
+            "rwa_id": 63
+          },
+          {
+            "name": "Advanced Micro Devices Inc (Derivatives)",
+            "symbol": "AMD",
+            "crypto_id": 39489,
+            "rwa_id": 25
+          },
+          {
+            "name": "Taiwan Semiconductor Manufacturing (Derivatives)",
+            "symbol": "TSM",
+            "crypto_id": 39490,
+            "rwa_id": 8
+          },
+          {
+            "name": "Apple Inc (Derivatives)",
+            "symbol": "AAPL",
+            "crypto_id": 39491,
+            "rwa_id": 3
+          },
+          {
+            "name": "iShares Russell 2000 ETF (Derivatives)",
+            "symbol": "IWM",
+            "crypto_id": 39493,
+            "rwa_id": 140
+          },
+          {
+            "name": "Aluminium (Derivatives)",
+            "symbol": "ALI",
+            "crypto_id": 39494,
+            "rwa_id": null
+          },
+          {
+            "name": "Microsoft Corporation (Derivatives)",
+            "symbol": "MSFT",
+            "crypto_id": 39495,
+            "rwa_id": 7
+          },
+          {
+            "name": "Anthropic (Derivatives)",
+            "symbol": "ANTHROPIC",
+            "crypto_id": 39496,
+            "rwa_id": 187
+          },
+          {
+            "name": "VanEck Semiconductor ETF (Derivatives)",
+            "symbol": "SMH",
+            "crypto_id": 39498,
+            "rwa_id": 7733
+          },
+          {
+            "name": "Rivian Automotive Inc (Derivatives)",
+            "symbol": "RIVN",
+            "crypto_id": 39499,
+            "rwa_id": 178
+          },
+          {
+            "name": "SK hynix Inc (Derivatives)",
+            "symbol": "000660",
+            "crypto_id": 39500,
+            "rwa_id": null
+          },
+          {
+            "name": "SpaceX (Derivatives)",
+            "symbol": "SPCX",
+            "crypto_id": 39501,
+            "rwa_id": 9
+          },
+          {
+            "name": null,
+            "symbol": null,
+            "crypto_id": 39502,
+            "rwa_id": null
+          },
+          {
+            "name": "Samsung Electronics Co Ltd (Derivatives)",
+            "symbol": "005930",
+            "crypto_id": 39503,
+            "rwa_id": null
+          },
+          {
+            "name": "State Street Technology Select Sector SPDR ETF (Derivatives)",
+            "symbol": "XLK",
+            "crypto_id": 39504,
+            "rwa_id": null
+          },
+          {
+            "name": "Nuclear Energy (Derivatives)",
+            "symbol": "NUCLEAR",
+            "crypto_id": 39506,
+            "rwa_id": null
+          },
+          {
+            "name": "SanDisk Corporation (Derivatives)",
+            "symbol": "SNDK",
+            "crypto_id": 39507,
+            "rwa_id": 48
+          },
+          {
+            "name": "Energy Sector (Derivatives)",
+            "symbol": "ENERGY",
+            "crypto_id": 39508,
+            "rwa_id": null
+          },
+          {
+            "name": "Eli Lilly and Company (Derivatives)",
+            "symbol": "LLY",
+            "crypto_id": 39509,
+            "rwa_id": 11
+          },
+          {
+            "name": "Roundhill Magnificent Seven ETF (Derivatives)",
+            "symbol": "MAGS",
+            "crypto_id": 39510,
+            "rwa_id": null
+          },
+          {
+            "name": "Uranium (Derivatives)",
+            "symbol": "URANIUM",
+            "crypto_id": 39511,
+            "rwa_id": null
+          },
+          {
+            "name": "Global X Robotics and Artificial Intelligence ETF (Derivatives)",
+            "symbol": "BOTZ",
+            "crypto_id": 39512,
+            "rwa_id": null
+          },
+          {
+            "name": "USA Rare Earth Inc (Derivatives)",
+            "symbol": "USAR",
+            "crypto_id": 39514,
+            "rwa_id": null
+          },
+          {
+            "name": "United States Oil Fund LP (Derivatives)",
+            "symbol": "USO",
+            "crypto_id": 39515,
+            "rwa_id": 183
+          },
+          {
+            "name": "Sprott Uranium Miners ETF (Derivatives)",
+            "symbol": "URNM",
+            "crypto_id": 39516,
+            "rwa_id": null
+          },
+          {
+            "name": "QQQ (Derivatives)",
+            "symbol": "QQQ",
+            "crypto_id": 39517,
+            "rwa_id": 118
+          },
+          {
+            "name": "USBOND (Derivatives)",
+            "symbol": "USBOND",
+            "crypto_id": 39518,
+            "rwa_id": null
+          },
+          {
+            "name": "Hyundai Motor Co (Derivatives)",
+            "symbol": "005380",
+            "crypto_id": 39573,
+            "rwa_id": null
+          },
+          {
+            "name": "Korea Composite Stock Price Index (Derivatives)",
+            "symbol": "KOSPI",
+            "crypto_id": 39575,
+            "rwa_id": null
+          },
+          {
+            "name": "Applovin (Derivatives)",
+            "symbol": "APP",
+            "crypto_id": 39629,
+            "rwa_id": 108
+          },
+          {
+            "name": "UnitedHealth Group (Derivatives)",
+            "symbol": "UNH",
+            "crypto_id": 39630,
+            "rwa_id": 33
+          },
+          {
+            "name": "Cisco Systems (Derivatives)",
+            "symbol": "CSCO",
+            "crypto_id": 39631,
+            "rwa_id": 29
+          },
+          {
+            "name": "Reddit (Derivatives)",
+            "symbol": "RDDT",
+            "crypto_id": 39633,
+            "rwa_id": 196
+          },
+          {
+            "name": "IBM (Derivatives)",
+            "symbol": "IBM",
+            "crypto_id": 39634,
+            "rwa_id": 42
+          },
+          {
+            "name": "Ishares Msci South Korea ETF (Derivatives)",
+            "symbol": "EWY",
+            "crypto_id": 39654,
+            "rwa_id": 1062
+          },
+          {
+            "name": "Global X Uranium ETF (Derivatives)",
+            "symbol": "URA",
+            "crypto_id": 39669,
+            "rwa_id": null
+          },
+          {
+            "name": "Bitmine Immersion Technologies (Derivatives)",
+            "symbol": "BMNR",
+            "crypto_id": 39670,
+            "rwa_id": 219
+          },
+          {
+            "name": "Hanmi Semiconductor Co Ltd (Derivatives)",
+            "symbol": "HANMI",
+            "crypto_id": 39672,
+            "rwa_id": null
+          },
+          {
+            "name": "State Street SPDR Dow Jones DIA ETF Trust (Derivatives)",
+            "symbol": "DIA",
+            "crypto_id": 39673,
+            "rwa_id": null
+          },
+          {
+            "name": "ASML Holding NV (Derivatives)",
+            "symbol": "ASML",
+            "crypto_id": 39677,
+            "rwa_id": 26
+          },
+          {
+            "name": "iShares MSCI Japan ETF (Derivatives)",
+            "symbol": "EWJ",
+            "crypto_id": 39685,
+            "rwa_id": null
+          },
+          {
+            "name": "PayPay Corp (Derivatives)",
+            "symbol": "PAYP",
+            "crypto_id": 39725,
+            "rwa_id": null
+          },
+          {
+            "name": "State Street SPDR S&P 500 ETF Trust (Derivatives)",
+            "symbol": "SPY",
+            "crypto_id": 39732,
+            "rwa_id": 86
+          },
+          {
+            "name": "Brent Oil (Derivatives)",
+            "symbol": "BZ",
+            "crypto_id": 39804,
+            "rwa_id": null
+          },
+          {
+            "name": null,
+            "symbol": null,
+            "crypto_id": 39839,
+            "rwa_id": 118
+          },
+          {
+            "name": "iShares Silver Trust (Derivatives)",
+            "symbol": "SLV",
+            "crypto_id": 39845,
+            "rwa_id": 205
+          },
+          {
+            "name": "Nikkei 225 (Derivatives)",
+            "symbol": "NI225",
+            "crypto_id": 39852,
+            "rwa_id": null
+          },
+          {
+            "name": "PDD Holdings Inc (Derivatives)",
+            "symbol": "PDD",
+            "crypto_id": 39861,
+            "rwa_id": 175
+          },
+          {
+            "name": "Allbirds Inc (Derivatives)",
+            "symbol": "BIRD",
+            "crypto_id": 39872,
+            "rwa_id": null
+          },
+          {
+            "name": "GameStop Corp (Derivatives)",
+            "symbol": "GME",
+            "crypto_id": 39928,
+            "rwa_id": 116
+          },
+          {
+            "name": "Xiaomi Corp (Derivatives)",
+            "symbol": "1810",
+            "crypto_id": 39929,
+            "rwa_id": null
+          },
+          {
+            "name": "Cerebras Systems (Derivatives)",
+            "symbol": "CBRS",
+            "crypto_id": 39931,
+            "rwa_id": 251
+          },
+          {
+            "name": "Qualcomm (Derivatives)",
+            "symbol": "QCOM",
+            "crypto_id": 39932,
+            "rwa_id": 103
+          },
+          {
+            "name": "State Street Energy Select Sector SPDR ETF (Derivatives)",
+            "symbol": "XLE",
+            "crypto_id": 39943,
+            "rwa_id": null
+          },
+          {
+            "name": "Lumentum Holdings (Derivatives)",
+            "symbol": "LITE",
+            "crypto_id": 39944,
+            "rwa_id": null
+          },
+          {
+            "name": "Roundhill Memory ETF (Derivatives)",
+            "symbol": "DRAM",
+            "crypto_id": 39945,
+            "rwa_id": null
+          },
+          {
+            "name": "Marvell Technology (Derivatives)",
+            "symbol": "MRVL",
+            "crypto_id": 39946,
+            "rwa_id": null
+          },
+          {
+            "name": "Blackstone (Derivatives)",
+            "symbol": "BX",
+            "crypto_id": 39947,
+            "rwa_id": null
+          },
+          {
+            "name": "Rocket Lab Corp (Derivatives)",
+            "symbol": "RKLB",
+            "crypto_id": 39948,
+            "rwa_id": null
+          },
+          {
+            "name": "Ishares Msci Brazil ETF (Derivatives)",
+            "symbol": "EWZ",
+            "crypto_id": 39949,
+            "rwa_id": null
+          },
+          {
+            "name": "eBay (Derivatives)",
+            "symbol": "EBAY",
+            "crypto_id": 39953,
+            "rwa_id": null
+          },
+          {
+            "name": "Zoom (Derivatives)",
+            "symbol": "ZM",
+            "crypto_id": 39954,
+            "rwa_id": 376
+          },
+          {
+            "name": "Pop Mart International Group Limited (Derivatives)",
+            "symbol": "POPMART",
+            "crypto_id": 39958,
+            "rwa_id": null
+          },
+          {
+            "name": "MiniMax Group (Derivatives)",
+            "symbol": "MINIMAX",
+            "crypto_id": 39960,
+            "rwa_id": null
+          },
+          {
+            "name": "Tencent Holdings Ltd (Derivatives)",
+            "symbol": "TENCENT",
+            "crypto_id": 39961,
+            "rwa_id": null
+          },
+          {
+            "name": "Direxion Daily Semiconductor ETF (Derivatives)",
+            "symbol": "SOXL",
+            "crypto_id": 39964,
+            "rwa_id": null
+          },
+          {
+            "name": null,
+            "symbol": null,
+            "crypto_id": 39980,
+            "rwa_id": null
+          },
+          {
+            "name": "Global X Defense Tech ETF  (Derivatives)",
+            "symbol": "SHLD",
+            "crypto_id": 39989,
+            "rwa_id": null
+          },
+          {
+            "name": "Western Digital Corp (Derivatives)",
+            "symbol": "WDC",
+            "crypto_id": 39990,
+            "rwa_id": null
+          },
+          {
+            "name": "Arm Holdings PLC - ADR (Derivatives)",
+            "symbol": "ARM",
+            "crypto_id": 39994,
+            "rwa_id": null
+          },
+          {
+            "name": "Coherent (Derivatives)",
+            "symbol": "COHR",
+            "crypto_id": 39995,
+            "rwa_id": 188
+          },
+          {
+            "name": "Home Depot Inc (Derivatives)",
+            "symbol": "HD",
+            "crypto_id": 39996,
+            "rwa_id": 36
+          },
+          {
+            "name": "Uber Technologies Inc (Derivatives)",
+            "symbol": "UBER",
+            "crypto_id": 39997,
+            "rwa_id": 128
+          },
+          {
+            "name": "Walt Disney Co (Derivatives)",
+            "symbol": "DIS",
+            "crypto_id": 39998,
+            "rwa_id": 110
+          },
+          {
+            "name": "Hyperliquid Strategies Inc (Derivatives)",
+            "symbol": "PURR",
+            "crypto_id": 40003,
+            "rwa_id": null
+          },
+          {
+            "name": "Fluence Energy, Inc. Class A Common Stock (Derivatives)",
+            "symbol": "FLNC",
+            "crypto_id": 40007,
+            "rwa_id": null
+          },
+          {
+            "name": "Corning Inc (Derivatives)",
+            "symbol": "GLW",
+            "crypto_id": 40010,
+            "rwa_id": null
+          },
+          {
+            "name": "JPmorgan Chase & Co (Derivatives)",
+            "symbol": "JPM",
+            "crypto_id": 40013,
+            "rwa_id": 16
+          }
+        ]
+      },
+      {
+        "issuer_id": "699ed38db54c9320b15928e3",
+        "name": "Hyperliquid Assets",
+        "website": "https://app.hyperliquid.xyz/trade",
+        "logo": "https://s2.coinmarketcap.com/static/img/issuer/hyperliquid.png",
+        "num_tokens": 12,
+        "total_size": 12,
+        "has_more": false,
+        "tokens": [
+          {
+            "name": "Meta Platforms Tokenized Stock (Hyperliquid)",
+            "symbol": "META",
+            "crypto_id": 39615,
+            "rwa_id": 10
+          },
+          {
+            "name": "Microsoft Tokenized Stock (Hyperliquid)",
+            "symbol": "MSFT",
+            "crypto_id": 39616,
+            "rwa_id": 7
+          },
+          {
+            "name": "SPDR Gold Shares Tokenized ETF (Hyperliquid)",
+            "symbol": "GLD",
+            "crypto_id": 39617,
+            "rwa_id": 87
+          },
+          {
+            "name": "Tesla Tokenized Stock (Hyperliquid)",
+            "symbol": "TSLA",
+            "crypto_id": 39618,
+            "rwa_id": 14
+          },
+          {
+            "name": "Amazon Tokenized Stock (Hyperliquid)",
+            "symbol": "AMZN",
+            "crypto_id": 39619,
+            "rwa_id": 6
+          },
+          {
+            "name": "iShares Silver Trust Tokenized (Hyperliquid)",
+            "symbol": "SLV",
+            "crypto_id": 39620,
+            "rwa_id": 205
+          },
+          {
+            "name": "SPDR S&P 500 ETF Trust Tokenized ETF (Hyperliquid)",
+            "symbol": "SPY",
+            "crypto_id": 39621,
+            "rwa_id": 86
+          },
+          {
+            "name": "Alphabet Tokenized Stock (Hyperliquid)",
+            "symbol": "GOOGL",
+            "crypto_id": 39622,
+            "rwa_id": 4
+          },
+          {
+            "name": "Invesco QQQ Trust Tokenized ETF (Hyperliquid)",
+            "symbol": "QQQ",
+            "crypto_id": 39623,
+            "rwa_id": 118
+          },
+          {
+            "name": "Apple Tokenized Stock (Hyperliquid)",
+            "symbol": "AAPL",
+            "crypto_id": 39624,
+            "rwa_id": 3
+          },
+          {
+            "name": "Robinhood Tokenized Stock (Hyperliquid)",
+            "symbol": "HOOD",
+            "crypto_id": 39625,
+            "rwa_id": 84
+          },
+          {
+            "name": "SPDR Gold Shares Tokenized ETF (Derivatives)",
+            "symbol": "GLD",
+            "crypto_id": 41957,
+            "rwa_id": 87
+          }
+        ]
+      },
+      {
+        "issuer_id": "6a2aed5097c45356b1a5f710",
+        "name": "bStocks",
+        "website": null,
+        "logo": "https://s2.coinmarketcap.com/static/img/issuer/Untitled_design__2_.png",
+        "num_tokens": 75,
+        "total_size": 75,
+        "has_more": false,
+        "tokens": [
+          {
+            "name": "Micron Technology Tokenized bStocks",
+            "symbol": "MUB",
+            "crypto_id": 40212,
+            "rwa_id": 12
+          },
+          {
+            "name": "Circle Internet Group Tokenized bStocks",
+            "symbol": "CRCLB",
+            "crypto_id": 40213,
+            "rwa_id": 115
+          },
+          {
+            "name": "Tesla Tokenized bStocks",
+            "symbol": "TSLAB",
+            "crypto_id": 40214,
+            "rwa_id": 14
+          },
+          {
+            "name": "NVIDIA Tokenized bStocks",
+            "symbol": "NVDAB",
+            "crypto_id": 40215,
+            "rwa_id": 2
+          },
+          {
+            "name": "SanDisk Tokenized bStocks",
+            "symbol": "SNDKB",
+            "crypto_id": 40216,
+            "rwa_id": 48
+          },
+          {
+            "name": "SpaceX Tokenized bStocks",
+            "symbol": "SPCXB",
+            "crypto_id": 40217,
+            "rwa_id": 9
+          },
+          {
+            "name": "Strategy Tokenized bStocks",
+            "symbol": "MSTRB",
+            "crypto_id": 40536,
+            "rwa_id": 114
+          },
+          {
+            "name": "Advanced Micro Devices Tokenized bStocks",
+            "symbol": "AMDB",
+            "crypto_id": 40538,
+            "rwa_id": 25
+          },
+          {
+            "name": "iShares MSCI South Korea ETF Tokenized bStocks",
+            "symbol": "EWYB",
+            "crypto_id": 40539,
+            "rwa_id": 1062
+          },
+          {
+            "name": "Intel Tokenized bStocks",
+            "symbol": "INTCB",
+            "crypto_id": 40540,
+            "rwa_id": 20
+          },
+          {
+            "name": "Microsoft Tokenized bStocks",
+            "symbol": "MSFTB",
+            "crypto_id": 40589,
+            "rwa_id": 7
+          },
+          {
+            "name": "Palantir Tokenized bStocks",
+            "symbol": "PLTRB",
+            "crypto_id": 40590,
+            "rwa_id": 53
+          },
+          {
+            "name": "Lumentum Tokenized bStocks",
+            "symbol": "LITEB",
+            "crypto_id": 40591,
+            "rwa_id": 189
+          },
+          {
+            "name": "Meta Tokenized bStocks",
+            "symbol": "METAB",
+            "crypto_id": 40592,
+            "rwa_id": 10
+          },
+          {
+            "name": "Invesco QQQ Trust Tokenized bStocks",
+            "symbol": "QQQB",
+            "crypto_id": 40593,
+            "rwa_id": 118
+          },
+          {
+            "name": "Coinbase Tokenized bStocks",
+            "symbol": "COINB",
+            "crypto_id": 40789,
+            "rwa_id": 82
+          },
+          {
+            "name": "State Street SPDR S&P 500 ETF Tokenized bStocks",
+            "symbol": "SPYB",
+            "crypto_id": 40790,
+            "rwa_id": 86
+          },
+          {
+            "name": "Cerebras Tokenized bStocks",
+            "symbol": "CBRSB",
+            "crypto_id": 40791,
+            "rwa_id": 251
+          },
+          {
+            "name": "Qualcomm Tokenized bStocks",
+            "symbol": "QCOMB",
+            "crypto_id": 40792,
+            "rwa_id": 103
+          },
+          {
+            "name": "Alphabet Tokenized bStocks",
+            "symbol": "GOOGLB",
+            "crypto_id": 40793,
+            "rwa_id": 4
+          },
+          {
+            "name": "Semicon Bull 3X ETF Tokenized bStocks",
+            "symbol": "SOXLB",
+            "crypto_id": 40794,
+            "rwa_id": 7750
+          },
+          {
+            "name": "Corning Tokenized bStocks",
+            "symbol": "GLWB",
+            "crypto_id": 40795,
+            "rwa_id": 256
+          },
+          {
+            "name": "Western Digital Tokenized bStocks",
+            "symbol": "WDCB",
+            "crypto_id": 40796,
+            "rwa_id": 75
+          },
+          {
+            "name": "Nebius Tokenized bStocks",
+            "symbol": "NBISB",
+            "crypto_id": 40797,
+            "rwa_id": 254
+          },
+          {
+            "name": "Roundhill Memory ETF Tokenized bStocks",
+            "symbol": "DRAMB",
+            "crypto_id": 40798,
+            "rwa_id": 4789
+          },
+          {
+            "name": "SK Hynix Tokenized bStocks",
+            "symbol": "SKHYB",
+            "crypto_id": 40813,
+            "rwa_id": 8065
+          },
+          {
+            "name": "Applied Optoelectronics Tokenized bStocks",
+            "symbol": "AAOIB",
+            "crypto_id": 40844,
+            "rwa_id": 191
+          },
+          {
+            "name": "Broadcom Tokenized bStocks",
+            "symbol": "AVGOB",
+            "crypto_id": 40845,
+            "rwa_id": 13
+          },
+          {
+            "name": "TSMC Tokenized bStocks",
+            "symbol": "TSMB",
+            "crypto_id": 40846,
+            "rwa_id": 8
+          },
+          {
+            "name": "IBM Tokenized bStocks",
+            "symbol": "IBMB",
+            "crypto_id": 40847,
+            "rwa_id": 42
+          },
+          {
+            "name": "Marvell Technology Tokenized bStocks",
+            "symbol": "MRVLB",
+            "crypto_id": 40848,
+            "rwa_id": 70
+          },
+          {
+            "name": "Rocket Lab Tokenized bStocks",
+            "symbol": "RKLBB",
+            "crypto_id": 40849,
+            "rwa_id": 297
+          },
+          {
+            "name": "Robinhood Tokenized bStocks",
+            "symbol": "HOODB",
+            "crypto_id": 40850,
+            "rwa_id": 84
+          },
+          {
+            "name": "Arm Tokenized bStocks",
+            "symbol": "ARMB",
+            "crypto_id": 40851,
+            "rwa_id": 54
+          },
+          {
+            "name": "Alibaba Tokenized bStocks",
+            "symbol": "BABAB",
+            "crypto_id": 40852,
+            "rwa_id": 63
+          },
+          {
+            "name": "Nokia Tokenized bStocks",
+            "symbol": "NOKB",
+            "crypto_id": 40853,
+            "rwa_id": 1588
+          },
+          {
+            "name": "AXT Tokenized bStocks",
+            "symbol": "AXTIB",
+            "crypto_id": 40875,
+            "rwa_id": 1164
+          },
+          {
+            "name": "South Korea Bull 3X ETF Tokenized bStocks",
+            "symbol": "KORUB",
+            "crypto_id": 40876,
+            "rwa_id": 5289
+          },
+          {
+            "name": "CoreWeave Tokenized bStocks",
+            "symbol": "CRWVB",
+            "crypto_id": 40877,
+            "rwa_id": 443
+          },
+          {
+            "name": "Quantinuum Tokenized bStocks",
+            "symbol": "QNTB",
+            "crypto_id": 40878,
+            "rwa_id": 16386
+          },
+          {
+            "name": "GraniteShares 2X Long MRVL ETF Tokenized bStocks",
+            "symbol": "MVLLB",
+            "crypto_id": 40879,
+            "rwa_id": 5383
+          },
+          {
+            "name": "Tradr 2X Long SNDK ETF Tokenized bStocks",
+            "symbol": "SNXXB",
+            "crypto_id": 40880,
+            "rwa_id": 5699
+          },
+          {
+            "name": "Direxion MU Bull 2X ETF Tokenized bStocks",
+            "symbol": "MUUB",
+            "crypto_id": 40881,
+            "rwa_id": 5382
+          },
+          {
+            "name": "Oracle Tokenized bStocks",
+            "symbol": "ORCLB",
+            "crypto_id": 40882,
+            "rwa_id": 24
+          },
+          {
+            "name": "GraniteShares 2X Long INTC ETF Tokenized bStocks",
+            "symbol": "INTWB",
+            "crypto_id": 40883,
+            "rwa_id": 5186
+          },
+          {
+            "name": "ProShares UltraPro QQQ Tokenized bStocks",
+            "symbol": "TQQQB",
+            "crypto_id": 40884,
+            "rwa_id": 211
+          },
+          {
+            "name": "Apple Tokenized bStocks",
+            "symbol": "AAPLB",
+            "crypto_id": 40927,
+            "rwa_id": 3
+          },
+          {
+            "name": "VanEck Semiconductor ETF Tokenized bStocks",
+            "symbol": "SMHB",
+            "crypto_id": 40928,
+            "rwa_id": 7733
+          },
+          {
+            "name": "Amazon Tokenized bStocks",
+            "symbol": "AMZNB",
+            "crypto_id": 40929,
+            "rwa_id": 6
+          },
+          {
+            "name": "Direxion Semiconductor Bear 3X ETF Tokenized bStocks",
+            "symbol": "SOXSB",
+            "crypto_id": 40930,
+            "rwa_id": 7751
+          },
+          {
+            "name": "Dell Tokenized bStocks",
+            "symbol": "DELLB",
+            "crypto_id": 40931,
+            "rwa_id": 44
+          },
+          {
+            "name": "Fluence Energy Tokenized bStocks",
+            "symbol": "FLNCB",
+            "crypto_id": 40932,
+            "rwa_id": 1400
+          },
+          {
+            "name": "Bloom Energy Tokenized bStocks",
+            "symbol": "BEB",
+            "crypto_id": 40933,
+            "rwa_id": 190
+          },
+          {
+            "name": "Goldman Sachs Tokenized bStocks",
+            "symbol": "GSB",
+            "crypto_id": 40934,
+            "rwa_id": 39
+          },
+          {
+            "name": "Paypal Tokenized bStocks",
+            "symbol": "PYPLB",
+            "crypto_id": 40935,
+            "rwa_id": 93
+          },
+          {
+            "name": "Applied Materials Tokenized bStocks",
+            "symbol": "AMATB",
+            "crypto_id": 40936,
+            "rwa_id": 22
+          },
+          {
+            "name": "BitMine Immersion Technologies Tokenized bStocks",
+            "symbol": "BMNRB",
+            "crypto_id": 40964,
+            "rwa_id": 219
+          },
+          {
+            "name": "Coherent Tokenized bStocks",
+            "symbol": "COHRB",
+            "crypto_id": 40965,
+            "rwa_id": 188
+          },
+          {
+            "name": "Super Micro Computer Tokenized bStocks",
+            "symbol": "SMCIB",
+            "crypto_id": 40966,
+            "rwa_id": 127
+          },
+          {
+            "name": "Credo Technology Tokenized bStocks",
+            "symbol": "CRDOB",
+            "crypto_id": 40967,
+            "rwa_id": 252
+          },
+          {
+            "name": "ASML Tokenized bStocks",
+            "symbol": "ASMLB",
+            "crypto_id": 40968,
+            "rwa_id": 26
+          },
+          {
+            "name": "USA Rare Earth Tokenized bStocks",
+            "symbol": "USARB",
+            "crypto_id": 40969,
+            "rwa_id": 1682
+          },
+          {
+            "name": "IREN Limited Tokenized bStocks",
+            "symbol": "IRENB",
+            "crypto_id": 40970,
+            "rwa_id": 229
+          },
+          {
+            "name": "AST SpaceMobile Tokenized bStocks",
+            "symbol": "ASTSB",
+            "crypto_id": 40971,
+            "rwa_id": 511
+          },
+          {
+            "name": "Astera Labs Tokenized bStocks",
+            "symbol": "ALABB",
+            "crypto_id": 40972,
+            "rwa_id": 255
+          },
+          {
+            "name": "Netflix Tokenized bStocks",
+            "symbol": "NFLXB",
+            "crypto_id": 40973,
+            "rwa_id": 37
+          },
+          {
+            "name": "GameStop Tokenized bStocks",
+            "symbol": "GMEB",
+            "crypto_id": 41077,
+            "rwa_id": 116
+          },
+          {
+            "name": "Trump Media & Technology Group Tokenized bStocks",
+            "symbol": "DJTB",
+            "crypto_id": 41915,
+            "rwa_id": 2023
+          },
+          {
+            "name": "CrowdStrike Tokenized bStocks",
+            "symbol": "CRWDB",
+            "crypto_id": 41960,
+            "rwa_id": 102
+          },
+          {
+            "name": "Moderna Tokenized bStocks",
+            "symbol": "MRNAB",
+            "crypto_id": 41961,
+            "rwa_id": 232
+          },
+          {
+            "name": "ProShares UltraPro Short QQQ Tokenized bStocks",
+            "symbol": "SQQQB",
+            "crypto_id": 41962,
+            "rwa_id": 181
+          },
+          {
+            "name": "Seagate Tokenized bStocks",
+            "symbol": "STXB",
+            "crypto_id": 41963,
+            "rwa_id": 73
+          },
+          {
+            "name": "Salesforce Tokenized bStocks",
+            "symbol": "CRMB",
+            "crypto_id": 42045,
+            "rwa_id": 198
+          },
+          {
+            "name": "Hims & Hers Tokenized bStocks",
+            "symbol": "HIMSB",
+            "crypto_id": 42046,
+            "rwa_id": 125
+          },
+          {
+            "name": "CEA Industries Tokenized bStocks",
+            "symbol": "BNCB",
+            "crypto_id": 42290,
+            "rwa_id": 3066
+          }
+        ]
+      },
+      {
+        "issuer_id": "6a43600c282e7240b76c8bbb",
+        "name": "Reality",
+        "website": null,
+        "logo": null,
+        "num_tokens": 71,
+        "total_size": 71,
+        "has_more": false,
+        "tokens": [
+          {
+            "name": "Apple Tokenized Stock (Reality)",
+            "symbol": "rAAPL",
+            "crypto_id": 40598,
+            "rwa_id": 3
+          },
+          {
+            "name": "Super Micro Tokenized Stock (Reality)",
+            "symbol": "rSMCI",
+            "crypto_id": 40599,
+            "rwa_id": 127
+          },
+          {
+            "name": "Direxion Semiconductor Bull 3X Tokenized Stock (Reality)",
+            "symbol": "rSOXL",
+            "crypto_id": 40600,
+            "rwa_id": 7750
+          },
+          {
+            "name": "AMD Tokenized Stock (Reality)",
+            "symbol": "rAMD",
+            "crypto_id": 40601,
+            "rwa_id": 25
+          },
+          {
+            "name": "Meta Tokenized Stock (Reality)",
+            "symbol": "rMETA",
+            "crypto_id": 40602,
+            "rwa_id": 10
+          },
+          {
+            "name": "Amazon Tokenized Stock (Reality)",
+            "symbol": "rAMZN",
+            "crypto_id": 40603,
+            "rwa_id": 6
+          },
+          {
+            "name": "Broadcom Tokenized Stock (Reality)",
+            "symbol": "rAVGO",
+            "crypto_id": 40604,
+            "rwa_id": 13
+          },
+          {
+            "name": "NVIDIA Tokenized Stock (Reality)",
+            "symbol": "rNVDA",
+            "crypto_id": 40605,
+            "rwa_id": 2
+          },
+          {
+            "name": "Invesco QQQ Tokenized Stock (Reality)",
+            "symbol": "rQQQ",
+            "crypto_id": 40606,
+            "rwa_id": 118
+          },
+          {
+            "name": "TSMC Tokenized Stock (Reality)",
+            "symbol": "rTSM",
+            "crypto_id": 40607,
+            "rwa_id": 8
+          },
+          {
+            "name": "Eli Lilly Tokenized Stock (Reality)",
+            "symbol": "rLLY",
+            "crypto_id": 40608,
+            "rwa_id": 11
+          },
+          {
+            "name": "Microsoft Tokenized Stock (Reality)",
+            "symbol": "rMSFT",
+            "crypto_id": 40609,
+            "rwa_id": 7
+          },
+          {
+            "name": "IBM Tokenized Stock (Reality)",
+            "symbol": "rIBM",
+            "crypto_id": 40610,
+            "rwa_id": 42
+          },
+          {
+            "name": "Western Digital Tokenized Stock (Reality)",
+            "symbol": "rWDC",
+            "crypto_id": 40611,
+            "rwa_id": 75
+          },
+          {
+            "name": "Oklo Tokenized Stock (Reality)",
+            "symbol": "rOKLO",
+            "crypto_id": 40612,
+            "rwa_id": 171
+          },
+          {
+            "name": "Google Tokenized Stock (Reality)",
+            "symbol": "rGOOGL",
+            "crypto_id": 40613,
+            "rwa_id": 4
+          },
+          {
+            "name": "Marvell Tokenized Stock (Reality)",
+            "symbol": "rMRVL",
+            "crypto_id": 40614,
+            "rwa_id": 70
+          },
+          {
+            "name": "Rigetti Computing Tokenized Stock (Reality)",
+            "symbol": "rRGTI",
+            "crypto_id": 40615,
+            "rwa_id": 241
+          },
+          {
+            "name": "Micron Tokenized Stock (Reality)",
+            "symbol": "rMU",
+            "crypto_id": 40616,
+            "rwa_id": 12
+          },
+          {
+            "name": "Dell Tokenized Stock (Reality)",
+            "symbol": "rDELL",
+            "crypto_id": 40617,
+            "rwa_id": 44
+          },
+          {
+            "name": "Intel Tokenized Stock (Reality)",
+            "symbol": "rINTC",
+            "crypto_id": 40618,
+            "rwa_id": 20
+          },
+          {
+            "name": "ProShares UltraPro Short QQQ Tokenized Stock (Reality)",
+            "symbol": "rSQQQ",
+            "crypto_id": 40619,
+            "rwa_id": 181
+          },
+          {
+            "name": "Robinhood Tokenized Stock (Reality)",
+            "symbol": "rHOOD",
+            "crypto_id": 40620,
+            "rwa_id": 84
+          },
+          {
+            "name": "Direxion Semiconductor Bear 3X Tokenized Stock (Reality)",
+            "symbol": "rSOXS",
+            "crypto_id": 40621,
+            "rwa_id": 7751
+          },
+          {
+            "name": "Silicon Motion Tokenized Stock (Reality)",
+            "symbol": "rSIMO",
+            "crypto_id": 40622,
+            "rwa_id": 1135
+          },
+          {
+            "name": "IREN Tokenized Stock (Reality)",
+            "symbol": "rIREN",
+            "crypto_id": 40623,
+            "rwa_id": 229
+          },
+          {
+            "name": "Tesla Tokenized Stock (Reality)",
+            "symbol": "rTSLA",
+            "crypto_id": 40624,
+            "rwa_id": 14
+          },
+          {
+            "name": "SPDR S&P 500 Tokenized Stock (Reality)",
+            "symbol": "rSPY",
+            "crypto_id": 40625,
+            "rwa_id": 86
+          },
+          {
+            "name": "Coherent Tokenized Stock (Reality)",
+            "symbol": "rCOHR",
+            "crypto_id": 40626,
+            "rwa_id": 188
+          },
+          {
+            "name": "Futu Tokenized Stock (Reality)",
+            "symbol": "rFUTU",
+            "crypto_id": 40627,
+            "rwa_id": 194
+          },
+          {
+            "name": "Ciena Tokenized Stock (Reality)",
+            "symbol": "rCIEN",
+            "crypto_id": 40628,
+            "rwa_id": 302
+          },
+          {
+            "name": "Credo Technology Tokenized Stock (Reality)",
+            "symbol": "rCRDO",
+            "crypto_id": 40629,
+            "rwa_id": 252
+          },
+          {
+            "name": "Applied Optoelectronics Tokenized Stock (Reality)",
+            "symbol": "rAAOI",
+            "crypto_id": 40630,
+            "rwa_id": 191
+          },
+          {
+            "name": "CBRS Tokenized Stock (Reality)",
+            "symbol": "rCBRS",
+            "crypto_id": 40631,
+            "rwa_id": 251
+          },
+          {
+            "name": "MicroStrategy Tokenized Stock (Reality)",
+            "symbol": "rMSTR",
+            "crypto_id": 40632,
+            "rwa_id": 114
+          },
+          {
+            "name": "ProShares UltraPro QQQ Tokenized Stock (Reality)",
+            "symbol": "rTQQQ",
+            "crypto_id": 40633,
+            "rwa_id": 211
+          },
+          {
+            "name": "IonQ Tokenized Stock (Reality)",
+            "symbol": "rIONQ",
+            "crypto_id": 40634,
+            "rwa_id": 545
+          },
+          {
+            "name": "Circle Tokenized Stock (Reality)",
+            "symbol": "rCRCL",
+            "crypto_id": 40635,
+            "rwa_id": 115
+          },
+          {
+            "name": "Global X DRAM ETF Tokenized Stock (Reality)",
+            "symbol": "rDRAM",
+            "crypto_id": 40636,
+            "rwa_id": 4789
+          },
+          {
+            "name": "CoreWeave Tokenized Stock (Reality)",
+            "symbol": "rCRWV",
+            "crypto_id": 40637,
+            "rwa_id": 443
+          },
+          {
+            "name": "MP Materials Tokenized Stock (Reality)",
+            "symbol": "rMP",
+            "crypto_id": 40638,
+            "rwa_id": 168
+          },
+          {
+            "name": "Applied Materials Tokenized Stock (Reality)",
+            "symbol": "rAMAT",
+            "crypto_id": 40639,
+            "rwa_id": 22
+          },
+          {
+            "name": "AXT Tokenized Stock (Reality)",
+            "symbol": "rAXTI",
+            "crypto_id": 40640,
+            "rwa_id": 1164
+          },
+          {
+            "name": "Clearwater Paper Tokenized Stock (Reality)",
+            "symbol": "rCLW",
+            "crypto_id": 40641,
+            "rwa_id": 3831
+          },
+          {
+            "name": "Lam Research Tokenized Stock (Reality)",
+            "symbol": "rLRCX",
+            "crypto_id": 40642,
+            "rwa_id": 32
+          },
+          {
+            "name": "ServiceNow Tokenized Stock (Reality)",
+            "symbol": "rNOW",
+            "crypto_id": 40644,
+            "rwa_id": 203
+          },
+          {
+            "name": "iShares MSCI South Korea ETF Tokenized Stock (Reality)",
+            "symbol": "rEWY",
+            "crypto_id": 40645,
+            "rwa_id": 1062
+          },
+          {
+            "name": "D-Wave Quantum Tokenized Stock (Reality)",
+            "symbol": "rQBTS",
+            "crypto_id": 40646,
+            "rwa_id": 88
+          },
+          {
+            "name": "USA Rare Earth ETF Tokenized Stock (Reality)",
+            "symbol": "rUSAR",
+            "crypto_id": 40647,
+            "rwa_id": 1682
+          },
+          {
+            "name": "SanDisk Tokenized Stock (Reality)",
+            "symbol": "rSNDK",
+            "crypto_id": 40648,
+            "rwa_id": 48
+          },
+          {
+            "name": "Qualcomm Tokenized Stock (Reality)",
+            "symbol": "rQCOM",
+            "crypto_id": 40649,
+            "rwa_id": 103
+          },
+          {
+            "name": "Nebius Tokenized Stock (Reality)",
+            "symbol": "rNBIS",
+            "crypto_id": 40650,
+            "rwa_id": 254
+          },
+          {
+            "name": "Coinbase Tokenized Stock (Reality)",
+            "symbol": "rCOIN",
+            "crypto_id": 40651,
+            "rwa_id": 82
+          },
+          {
+            "name": "ASML Tokenized Stock (Reality)",
+            "symbol": "rASML",
+            "crypto_id": 40652,
+            "rwa_id": 26
+          },
+          {
+            "name": "Seagate Tokenized Stock (Reality)",
+            "symbol": "rSTX",
+            "crypto_id": 40653,
+            "rwa_id": 73
+          },
+          {
+            "name": "Oracle Tokenized Stock (Reality)",
+            "symbol": "rORCL",
+            "crypto_id": 40654,
+            "rwa_id": 24
+          },
+          {
+            "name": "Palantir Tokenized Stock (Reality)",
+            "symbol": "rPLTR",
+            "crypto_id": 40655,
+            "rwa_id": 53
+          },
+          {
+            "name": "Alibaba Tokenized Stock (Reality)",
+            "symbol": "rBABA",
+            "crypto_id": 40656,
+            "rwa_id": 63
+          },
+          {
+            "name": "Bloom Energy Tokenized Stock (Reality)",
+            "symbol": "rBE",
+            "crypto_id": 40657,
+            "rwa_id": 190
+          },
+          {
+            "name": "Joby Aviation Tokenized Stock (Reality)",
+            "symbol": "rJOBY",
+            "crypto_id": 40658,
+            "rwa_id": 712
+          },
+          {
+            "name": "Ondas Tokenized Stock (Reality)",
+            "symbol": "rONDS",
+            "crypto_id": 40660,
+            "rwa_id": 235
+          },
+          {
+            "name": "Nokia Tokenized Stock (Reality)",
+            "symbol": "rNOK",
+            "crypto_id": 40661,
+            "rwa_id": 1588
+          },
+          {
+            "name": "SoFi Tokenized Stock (Reality)",
+            "symbol": "rSOFI",
+            "crypto_id": 40662,
+            "rwa_id": 243
+          },
+          {
+            "name": "Arm Tokenized Stock (Reality)",
+            "symbol": "rARM",
+            "crypto_id": 40663,
+            "rwa_id": 54
+          },
+          {
+            "name": "Lumentum Tokenized Stock (Reality)",
+            "symbol": "rLITE",
+            "crypto_id": 40664,
+            "rwa_id": 189
+          },
+          {
+            "name": "AST SpaceMobile Tokenized Stock (Reality)",
+            "symbol": "rASTS",
+            "crypto_id": 40665,
+            "rwa_id": 511
+          },
+          {
+            "name": "Rocket Lab Tokenized Stock (Reality)",
+            "symbol": "rRKLB",
+            "crypto_id": 40666,
+            "rwa_id": 297
+          },
+          {
+            "name": "Redwire Tokenized Stock (Reality)",
+            "symbol": "rRDW",
+            "crypto_id": 40667,
+            "rwa_id": 1945
+          },
+          {
+            "name": "SpaceX Tokenized Stock (Reality)",
+            "symbol": "rSPCX",
+            "crypto_id": 40668,
+            "rwa_id": 9
+          },
+          {
+            "name": "Arista Networks Tokenized Stock (Reality)",
+            "symbol": "rANET",
+            "crypto_id": 40669,
+            "rwa_id": 66
+          },
+          {
+            "name": "Cisco Systems Tokenized Stock (Reality)",
+            "symbol": "rCSCO",
+            "crypto_id": 40893,
+            "rwa_id": 29
+          }
+        ]
+      },
+      {
+        "issuer_id": "6a465832fbe3004b1a0ea2dd",
+        "name": "Robinhood",
+        "website": "https://robinhood.com/us/en/",
+        "logo": null,
+        "num_tokens": 107,
+        "total_size": 107,
+        "has_more": true,
+        "tokens": [
+          {
+            "name": "SpaceX Tokenized Stock (Robinhood)",
+            "symbol": "SPCX",
+            "crypto_id": 37068,
+            "rwa_id": 9
+          },
+          {
+            "name": "NVIDIA Tokenized Stock (Robinhood)",
+            "symbol": "NVDA",
+            "crypto_id": 40685,
+            "rwa_id": 2
+          },
+          {
+            "name": "Invesco QQQ Tokenized ETF (Robinhood)",
+            "symbol": "QQQ",
+            "crypto_id": 40686,
+            "rwa_id": 118
+          },
+          {
+            "name": "AMD Tokenized Stock (Robinhood)",
+            "symbol": "AMD",
+            "crypto_id": 40687,
+            "rwa_id": 25
+          },
+          {
+            "name": "Netflix Tokenized ETF (Robinhood)",
+            "symbol": "NFLX",
+            "crypto_id": 40688,
+            "rwa_id": 37
+          },
+          {
+            "name": "Palantir Technologies Tokenized Stock (Robinhood)",
+            "symbol": "PLTR",
+            "crypto_id": 40689,
+            "rwa_id": 53
+          },
+          {
+            "name": "Rocket Lab Corporation Tokenized Stock (Robinhood)",
+            "symbol": "RKLB",
+            "crypto_id": 40690,
+            "rwa_id": 297
+          },
+          {
+            "name": "Tesla Tokenized Stock (Robinhood)",
+            "symbol": "TSLA",
+            "crypto_id": 40691,
+            "rwa_id": 14
+          },
+          {
+            "name": "CoreWeave Tokenized Stock (Robinhood)",
+            "symbol": "CRWV",
+            "crypto_id": 40692,
+            "rwa_id": 443
+          },
+          {
+            "name": "Arm Holdings plc Tokenized Stock (Robinhood)",
+            "symbol": "ARM",
+            "crypto_id": 40693,
+            "rwa_id": 54
+          },
+          {
+            "name": "SPDR S&P 500 Trust Tokenized ETF (Robinhood)",
+            "symbol": "SPY",
+            "crypto_id": 40694,
+            "rwa_id": 86
+          },
+          {
+            "name": "Microsoft Tokenized Stock (Robinhood)",
+            "symbol": "MSFT",
+            "crypto_id": 40695,
+            "rwa_id": 7
+          },
+          {
+            "name": "Micron Technology Tokenized Stock (Robinhood)",
+            "symbol": "MU",
+            "crypto_id": 40696,
+            "rwa_id": 12
+          },
+          {
+            "name": "Intel Tokenized Stock (Robinhood)",
+            "symbol": "INTC",
+            "crypto_id": 40697,
+            "rwa_id": 20
+          },
+          {
+            "name": "Cerebras Systems Tokenized Stock (Robinhood)",
+            "symbol": "CBRS",
+            "crypto_id": 40698,
+            "rwa_id": 251
+          },
+          {
+            "name": "Applied Optoelectronics Tokenized Stock (Robinhood)",
+            "symbol": "AAOI",
+            "crypto_id": 40699,
+            "rwa_id": 191
+          },
+          {
+            "name": "Sandisk Corporation Tokenized Stock (Robinhood)",
+            "symbol": "SNDK",
+            "crypto_id": 40700,
+            "rwa_id": 48
+          },
+          {
+            "name": "IonQ Tokenized Stock (Robinhood)",
+            "symbol": "IONQ",
+            "crypto_id": 40701,
+            "rwa_id": 545
+          },
+          {
+            "name": "Roblox Tokenized Stock (Robinhood)",
+            "symbol": "RBLX",
+            "crypto_id": 40702,
+            "rwa_id": 365
+          },
+          {
+            "name": "Apple Tokenized Stock (Robinhood)",
+            "symbol": "AAPL",
+            "crypto_id": 40703,
+            "rwa_id": 3
+          },
+          {
+            "name": "GameStop Tokenized Stock (Robinhood)",
+            "symbol": "GME",
+            "crypto_id": 40704,
+            "rwa_id": 116
+          },
+          {
+            "name": "Broadcom Tokenized Stock (Robinhood)",
+            "symbol": "AVGO",
+            "crypto_id": 40705,
+            "rwa_id": 13
+          },
+          {
+            "name": "Redwire Tokenized Stock (Robinhood)",
+            "symbol": "RDW",
+            "crypto_id": 40706,
+            "rwa_id": 1945
+          },
+          {
+            "name": "iShares Silver Trust Tokenized Commodity (Robinhood)",
+            "symbol": "SLV",
+            "crypto_id": 40707,
+            "rwa_id": 205
+          },
+          {
+            "name": "Circle Internet Group Tokenized Stock (Robinhood)",
+            "symbol": "CRCL",
+            "crypto_id": 40708,
+            "rwa_id": 115
+          },
+          {
+            "name": "Xanadu Quantum Tokenized Stock (Robinhood)",
+            "symbol": "XNDU",
+            "crypto_id": 40709,
+            "rwa_id": 1304
+          },
+          {
+            "name": "EchoStar Tokenized Stock (Robinhood)",
+            "symbol": "SATS",
+            "crypto_id": 40710,
+            "rwa_id": 353
+          },
+          {
+            "name": "Rivian Automotive Tokenized Stock (Robinhood)",
+            "symbol": "RIVN",
+            "crypto_id": 40711,
+            "rwa_id": 178
+          },
+          {
+            "name": "RVI Tokenized Stock (Robinhood)",
+            "symbol": "RVI",
+            "crypto_id": 40712,
+            "rwa_id": null
+          },
+          {
+            "name": "Corning Tokenized Stock (Robinhood)",
+            "symbol": "GLW",
+            "crypto_id": 40713,
+            "rwa_id": 256
+          },
+          {
+            "name": "D-Wave Quantum Tokenized Stock (Robinhood)",
+            "symbol": "QBTS",
+            "crypto_id": 40714,
+            "rwa_id": 88
+          },
+          {
+            "name": "Datadog Tokenized Stock (Robinhood)",
+            "symbol": "DDOG",
+            "crypto_id": 40715,
+            "rwa_id": 278
+          },
+          {
+            "name": "Futu Holdings Tokenized Stock (Robinhood)",
+            "symbol": "FUTU",
+            "crypto_id": 40716,
+            "rwa_id": 194
+          },
+          {
+            "name": "e.l.f. Beauty Tokenized Stock (Robinhood)",
+            "symbol": "ELF",
+            "crypto_id": 40717,
+            "rwa_id": 1843
+          },
+          {
+            "name": "Amazon Tokenized Stock (Robinhood)",
+            "symbol": "AMZN",
+            "crypto_id": 40718,
+            "rwa_id": 6
+          },
+          {
+            "name": "iShares Semiconductor Tokenized ETF (Robinhood)",
+            "symbol": "SOXX",
+            "crypto_id": 40719,
+            "rwa_id": 5704
+          },
+          {
+            "name": "Eli Lilly Tokenized Stock (Robinhood)",
+            "symbol": "LLY",
+            "crypto_id": 40720,
+            "rwa_id": 11
+          },
+          {
+            "name": "Carnival Corporation Tokenized Stock (Robinhood)",
+            "symbol": "CCL",
+            "crypto_id": 40721,
+            "rwa_id": 345
+          },
+          {
+            "name": "Coinbase Tokenized Stock (Robinhood)",
+            "symbol": "COIN",
+            "crypto_id": 40722,
+            "rwa_id": 82
+          },
+          {
+            "name": "Marvell Technology Tokenized Stock (Robinhood)",
+            "symbol": "MRVL",
+            "crypto_id": 40723,
+            "rwa_id": 70
+          },
+          {
+            "name": "AST SpaceMobile Tokenized Stock (Robinhood)",
+            "symbol": "ASTS",
+            "crypto_id": 40724,
+            "rwa_id": 511
+          },
+          {
+            "name": "SoFi Technologies Tokenized Stock (Robinhood)",
+            "symbol": "SOFI",
+            "crypto_id": 40725,
+            "rwa_id": 243
+          },
+          {
+            "name": "ASML Holding NV Tokenized Stock (Robinhood)",
+            "symbol": "ASML",
+            "crypto_id": 40726,
+            "rwa_id": 26
+          },
+          {
+            "name": "Shopify Tokenized Stock (Robinhood)",
+            "symbol": "SHOP",
+            "crypto_id": 40727,
+            "rwa_id": 132
+          },
+          {
+            "name": "Zoom Tokenized Stock (Robinhood)",
+            "symbol": "ZM",
+            "crypto_id": 40728,
+            "rwa_id": 376
+          },
+          {
+            "name": "Fluence Energy Tokenized Stock (Robinhood)",
+            "symbol": "FLNC",
+            "crypto_id": 40729,
+            "rwa_id": 1400
+          },
+          {
+            "name": "United Microelectronics Tokenized Stock (Robinhood)",
+            "symbol": "UMC",
+            "crypto_id": 40730,
+            "rwa_id": 1083
+          },
+          {
+            "name": "IREN Limited Tokenized Stock (Robinhood)",
+            "symbol": "IREN",
+            "crypto_id": 40731,
+            "rwa_id": 229
+          },
+          {
+            "name": "State Street Technology Sector Tokenized ETF (Robinhood)",
+            "symbol": "XLK",
+            "crypto_id": 40732,
+            "rwa_id": 5967
+          },
+          {
+            "name": "Tema Space Innovators Tokenized ETF (Robinhood)",
+            "symbol": "NASA",
+            "crypto_id": 40733,
+            "rwa_id": 7436
+          },
+          {
+            "name": "Intuit Tokenized Stock (Robinhood)",
+            "symbol": "INTU",
+            "crypto_id": 40734,
+            "rwa_id": 201
+          },
+          {
+            "name": "Innodata Tokenized Stock (Robinhood)",
+            "symbol": "INOD",
+            "crypto_id": 40735,
+            "rwa_id": 1373
+          },
+          {
+            "name": "Everpure Tokenized Stock (Robinhood)",
+            "symbol": "P",
+            "crypto_id": 40736,
+            "rwa_id": 794
+          },
+          {
+            "name": "United States Oil Fund Tokenized Commodity (Robinhood)",
+            "symbol": "USO",
+            "crypto_id": 40737,
+            "rwa_id": 183
+          },
+          {
+            "name": "USA Rare Earth Tokenized Stock (Robinhood)",
+            "symbol": "USAR",
+            "crypto_id": 40738,
+            "rwa_id": 1682
+          },
+          {
+            "name": "Alibaba Tokenized Stock (Robinhood)",
+            "symbol": "BABA",
+            "crypto_id": 40739,
+            "rwa_id": 63
+          },
+          {
+            "name": "ServiceNow Tokenized Stock (Robinhood)",
+            "symbol": "NOW",
+            "crypto_id": 40740,
+            "rwa_id": 203
+          },
+          {
+            "name": "Exxon Mobil Tokenized Stock (Robinhood)",
+            "symbol": "XOM",
+            "crypto_id": 40741,
+            "rwa_id": 27
+          },
+          {
+            "name": "Boeing Tokenized Stock (Robinhood)",
+            "symbol": "BA",
+            "crypto_id": 40742,
+            "rwa_id": 106
+          },
+          {
+            "name": "Dell Tokenized Stock (Robinhood)",
+            "symbol": "DELL",
+            "crypto_id": 40743,
+            "rwa_id": 44
+          },
+          {
+            "name": "Quantum Computing Tokenized Stock (Robinhood)",
+            "symbol": "QUBT",
+            "crypto_id": 40744,
+            "rwa_id": 2028
+          },
+          {
+            "name": "Strategy Inc. Tokenized Stock (Robinhood)",
+            "symbol": "MSTR",
+            "crypto_id": 40745,
+            "rwa_id": 114
+          },
+          {
+            "name": "Nokia Tokenized Stock (Robinhood)",
+            "symbol": "NOK",
+            "crypto_id": 40746,
+            "rwa_id": 1588
+          },
+          {
+            "name": "Applied Digital Tokenized Stock (Robinhood)",
+            "symbol": "APLD",
+            "crypto_id": 40747,
+            "rwa_id": 912
+          },
+          {
+            "name": "UPS Tokenized Stock (Robinhood)",
+            "symbol": "UPS",
+            "crypto_id": 40748,
+            "rwa_id": 401
+          },
+          {
+            "name": "Qualcomm Tokenized Stock (Robinhood)",
+            "symbol": "QCOM",
+            "crypto_id": 40749,
+            "rwa_id": 103
+          },
+          {
+            "name": "Lumentum Tokenized Stock (Robinhood)",
+            "symbol": "LITE",
+            "crypto_id": 40750,
+            "rwa_id": 189
+          },
+          {
+            "name": "CleanSpark Tokenized Stock (Robinhood)",
+            "symbol": "CLSK",
+            "crypto_id": 40751,
+            "rwa_id": 1791
+          },
+          {
+            "name": "Applied Materials Tokenized Stock (Robinhood)",
+            "symbol": "AMAT",
+            "crypto_id": 40752,
+            "rwa_id": 22
+          },
+          {
+            "name": "Take-Two Interactive Software Tokenized Stock (Robinhood)",
+            "symbol": "TTWO",
+            "crypto_id": 40753,
+            "rwa_id": 466
+          },
+          {
+            "name": "MongoDB Tokenized Stock (Robinhood)",
+            "symbol": "MDB",
+            "crypto_id": 40754,
+            "rwa_id": 373
+          },
+          {
+            "name": "Ford Motor Tokenized Stock (Robinhood)",
+            "symbol": "F",
+            "crypto_id": 40755,
+            "rwa_id": 227
+          },
+          {
+            "name": "Lululemon Tokenized Stock (Robinhood)",
+            "symbol": "LULU",
+            "crypto_id": 40756,
+            "rwa_id": 868
+          },
+          {
+            "name": "Alphabet Class A Tokenized Stock (Robinhood)",
+            "symbol": "GOOGL",
+            "crypto_id": 40757,
+            "rwa_id": 4
+          },
+          {
+            "name": "Bloom Energy Tokenized Stock (Robinhood)",
+            "symbol": "BE",
+            "crypto_id": 40758,
+            "rwa_id": 190
+          },
+          {
+            "name": "POET Technologies Tokenized Stock (Robinhood)",
+            "symbol": "POET",
+            "crypto_id": 40759,
+            "rwa_id": 2032
+          },
+          {
+            "name": "Navitas Semiconductor Tokenized Stock (Robinhood)",
+            "symbol": "NVTS",
+            "crypto_id": 40760,
+            "rwa_id": 1701
+          },
+          {
+            "name": "Penguin Solutions Tokenized Stock (Robinhood)",
+            "symbol": "PENG",
+            "crypto_id": 40761,
+            "rwa_id": 1410
+          },
+          {
+            "name": "Costco Tokenized Stock (Robinhood)",
+            "symbol": "COST",
+            "crypto_id": 40762,
+            "rwa_id": 31
+          },
+          {
+            "name": "iShares MSCI South Korea fund Tokenized ETF (Robinhood)",
+            "symbol": "EWY",
+            "crypto_id": 40763,
+            "rwa_id": 1062
+          },
+          {
+            "name": "Celsius Tokenized Stock (Robinhood)",
+            "symbol": "CELH",
+            "crypto_id": 40764,
+            "rwa_id": 751
+          },
+          {
+            "name": "Invesco S&P 500 Momentum Tokenized ETF (Robinhood)",
+            "symbol": "SPMO",
+            "crypto_id": 40765,
+            "rwa_id": 7766
+          },
+          {
+            "name": "Zscaler Tokenized Stock (Robinhood)",
+            "symbol": "ZS",
+            "crypto_id": 40766,
+            "rwa_id": 552
+          },
+          {
+            "name": "Tower Semiconductor Tokenized Stock (Robinhood)",
+            "symbol": "TSEM",
+            "crypto_id": 40767,
+            "rwa_id": 1102
+          },
+          {
+            "name": "Rigetti Computing Tokenized Stock (Robinhood)",
+            "symbol": "RGTI",
+            "crypto_id": 40768,
+            "rwa_id": 241
+          },
+          {
+            "name": "TSMC Tokenized Stock (Robinhood)",
+            "symbol": "TSM",
+            "crypto_id": 40769,
+            "rwa_id": 8
+          },
+          {
+            "name": "Nebius Group Tokenized Stock (Robinhood)",
+            "symbol": "NBIS",
+            "crypto_id": 40770,
+            "rwa_id": 254
+          },
+          {
+            "name": "Intuitive Machines Tokenized Stock (Robinhood)",
+            "symbol": "LUNR",
+            "crypto_id": 40771,
+            "rwa_id": 1847
+          },
+          {
+            "name": "MaxLinear Tokenized Stock (Robinhood)",
+            "symbol": "MXL",
+            "crypto_id": 40772,
+            "rwa_id": 1551
+          },
+          {
+            "name": "Oracle Tokenized Stock (Robinhood)",
+            "symbol": "ORCL",
+            "crypto_id": 40773,
+            "rwa_id": 24
+          },
+          {
+            "name": "Super Micro Computer Tokenized Stock (Robinhood)",
+            "symbol": "SMCI",
+            "crypto_id": 40774,
+            "rwa_id": 127
+          },
+          {
+            "name": "Nu Tokenized Stock (Robinhood)",
+            "symbol": "NU",
+            "crypto_id": 40775,
+            "rwa_id": 438
+          },
+          {
+            "name": "Permian Resources Tokenized Stock (Robinhood)",
+            "symbol": "PR",
+            "crypto_id": 40776,
+            "rwa_id": 836
+          },
+          {
+            "name": "Reddit Tokenized Stock (Robinhood)",
+            "symbol": "RDDT",
+            "crypto_id": 40777,
+            "rwa_id": 196
+          },
+          {
+            "name": "Workday Tokenized Stock (Robinhood)",
+            "symbol": "WDAY",
+            "crypto_id": 40778,
+            "rwa_id": 350
+          },
+          {
+            "name": "Nano Nuclear Energy Tokenized Stock (Robinhood)",
+            "symbol": "NNE",
+            "crypto_id": 40779,
+            "rwa_id": 3233
+          },
+          {
+            "name": "Meta Platforms Tokenized Stock (Robinhood)",
+            "symbol": "META",
+            "crypto_id": 40780,
+            "rwa_id": 10
+          },
+          {
+            "name": "iShares 0-3 Month Tokenized Treasury Bond ETF (Robinhood)",
+            "symbol": "SGOV",
+            "crypto_id": 40781,
+            "rwa_id": 242
+          },
+          {
+            "name": "Roundhill Memory Tokenized ETF (Robinhood)",
+            "symbol": "DRAM",
+            "crypto_id": 40782,
+            "rwa_id": 4789
+          },
+          {
+            "name": "CrowdStrike Holdings Tokenized Stock (Robinhood)",
+            "symbol": "CRWD",
+            "crypto_id": 40783,
+            "rwa_id": 102
+          }
+        ]
+      }
+    ],
+    "crypto_info": [
+      {
+        "id": 40624,
+        "name": "Tesla Tokenized Stock (Reality)",
+        "symbol": "rTSLA",
+        "slug": "tesla-tokenized-stock-reality",
+        "description": "Tesla Tokenized Stock (Reality) (rTSLA) is a cryptocurrency and operates on the Arbitrum platform. Tesla Tokenized Stock (Reality) has a current supply of 11,039.9607258. The last known price of Tesla Tokenized Stock (Reality) is 357.69897274 USD and is down -2.15 over the last 24 hours. It is currently trading on 3 active market(s) with $160,608.86 traded over the last 24 hours. More information can be found at https://realityfinance.xyz/.",
+        "category": "token",
+        "platform": {
+          "id": "11841",
+          "name": "Arbitrum",
+          "symbol": "ARB",
+          "slug": "arbitrum",
+          "token_address": "0xf912911c9c8d5131929c758e66e6dc54e65cf3ba"
+        },
+        "contract_address": "0xf912911c9c8d5131929c758e66e6dc54e65cf3ba",
+        "tags": [
+          "defi",
+          "tokenized-stock",
+          "arbitrum-ecosystem",
+          "tokenized-assets",
+          "bitget-ecosystem"
+        ],
+        "website": "https://realityfinance.xyz/"
+      },
+      {
+        "id": 28626,
+        "name": "TSLA tokenized stock (Dinari)",
+        "symbol": "TSLA.D",
+        "slug": "dinari-tsla",
+        "description": "Dinari dShares are RWA tokens issued by Dinari, an SEC registered Transfer Agent. These assets have 1:1 backing of Google stock shares in a transparent treasury vault with regular audits. Qualifying dShare holders are eligible to recieve dividends paid out by the underlying asset where applicable.\r\n\r\nDinari was founded by Gabirel Otte, Chas Rampenthal, and Jake Timothy to foster financial inclusion, create more efficient markets, and level the playing field for retail and business investors globally.\r\n\r\nDinari assets are unique to both blockchain and traditional finance for a number of reasons. All Dinari dShares maintain a 1-to-1 backing with underlying assets, eliminating borrowing risk in traditional finance. dShares directly represent real shares, ensuring utmost transparency. Dinari assets also mitigate hypothecation risk, enhancing safety. The tokenizatized nature of dShares offers technical advantages over centralized equities, including rapid transferability, instant settlement, 24/7 trading, and fractional ownership, increasing accessibility and liquidity.\r\n\r\nThe number of any Dinari dShare asset depends on how many shares have been minted or burned. The circulation of the underlying asset the dShare is based on is determined by the underlying company and how they issue their shares, which is equivalent to the theoretical maximum possible circulating supply of corresponding dShares.\r\n\r\nDinari assets are secured through a number of mechanisms. All dShares are backed 1:1 by the underlying asset, with regular external audits by a Big 4 Accounting firm to verify their contents. Additionally, Dinari employs a legal wrapper to shield the assets from potential claims in case of bankruptcy, ensuring allocation to token holders. Dinari also conducts regular smart contract audits to mitigate technical risks.\r\n\r\nFor a detailed breakdown of asset holdings, users can visit Dinari's transparency page at [https://www.dinari.com/transparency](https://www.dinari.com/transparency).\r\n\r\nDinari dShare assets can be minted and burned in the Dinari dApp at sbt.dinari.com. As ERC-20 tokens, dShares are theoretically in DeFi protocols such as DEXs, AMMs, etc.",
+        "category": "token",
+        "platform": {
+          "id": "11841",
+          "name": "Arbitrum",
+          "symbol": "ARB",
+          "slug": "arbitrum",
+          "token_address": "0x36d37B6cbCA364Cf1D843efF8C2f6824491bcF81"
+        },
+        "contract_address": "0x36d37B6cbCA364Cf1D843efF8C2f6824491bcF81",
+        "tags": [
+          "defi",
+          "tokenized-stock",
+          "tokenized-assets"
+        ],
+        "website": "https://www.dinari.com/"
+      },
+      {
+        "id": 39618,
+        "name": "Tesla Tokenized Stock (Hyperliquid)",
+        "symbol": "TSLA",
+        "slug": "tesla-tokenized-stock-hyperliquid",
+        "description": "Tesla Tokenized Stock (Hyperliquid) (TSLA) is a cryptocurrency and operates on the HyperEVM platform. Tesla Tokenized Stock (Hyperliquid) has a current supply of 20.21051. The last known price of Tesla Tokenized Stock (Hyperliquid) is 234.96740689 USD and is up 0.00 over the last 24 hours. It is currently trading on 1 active market(s) with $0.00 traded over the last 24 hours. More information can be found at https://app.hyperliquid.xyz/trade/.",
+        "category": "token",
+        "platform": {
+          "id": "32196",
+          "name": "Hyperliquid",
+          "symbol": "HYPE",
+          "slug": "hyperliquid",
+          "token_address": "0x7374dc1894fbd1bc6c42f6ebbc50b78c211a8606"
+        },
+        "contract_address": "0x7374dc1894fbd1bc6c42f6ebbc50b78c211a8606",
+        "tags": [
+          "defi",
+          "tokenized-stock",
+          "hyperliquid-ecosystem",
+          "tokenized-assets",
+          "hyperevm-ecosystem"
+        ],
+        "website": "https://app.hyperliquid.xyz/trade/"
+      },
+      {
+        "id": 40691,
+        "name": "Tesla Tokenized Stock (Robinhood)",
+        "symbol": "TSLA",
+        "slug": "tesla-tokenized-stock-robinhood",
+        "description": "Tesla Tokenized Stock (Robinhood) (TSLA) is a cryptocurrency and operates on the Robinhood Chain platform. Tesla Tokenized Stock (Robinhood) has a current supply of 12,545.608. The last known price of Tesla Tokenized Stock (Robinhood) is 358.85898852 USD and is down -1.51 over the last 24 hours. It is currently trading on 36 active market(s) with $3,080,463.63 traded over the last 24 hours. More information can be found at https://robinhood.com/us/en/.",
+        "category": "token",
+        "platform": {
+          "id": "40670",
+          "name": "Robinhood",
+          "symbol": "-",
+          "slug": "robinhood-placeholder",
+          "token_address": "0x322F0929c4625eD5bAd873c95208D54E1c003b2d"
+        },
+        "contract_address": "0x322F0929c4625eD5bAd873c95208D54E1c003b2d",
+        "tags": [
+          "tokenized-assets",
+          "robinhood-ecosystem",
+          "robinhood-stock"
+        ],
+        "website": "https://robinhood.com/us/en/"
+      },
+      {
+        "id": 40214,
+        "name": "Tesla Tokenized bStocks",
+        "symbol": "TSLAB",
+        "slug": "tesla-tokenized-bstocks",
+        "description": "Tesla Tokenized bStocks (TSLAB) is a cryptocurrency and operates on the BNB Smart Chain (BEP20) platform. Tesla Tokenized bStocks has a current supply of 52,647.09774012. The last known price of Tesla Tokenized bStocks is 358.0375241 USD and is down -1.78 over the last 24 hours. It is currently trading on 54 active market(s) with $4,506,801.41 traded over the last 24 hours. More information can be found at https://www.bstocks.finance/.",
+        "category": "token",
+        "platform": {
+          "id": "1839",
+          "name": "BNB",
+          "symbol": "BNB",
+          "slug": "bnb",
+          "token_address": "0x5b1910eaad6450e50f816082aa078c41f10c292f"
+        },
+        "contract_address": "0x5b1910eaad6450e50f816082aa078c41f10c292f",
+        "tags": [
+          "defi",
+          "tokenized-stock",
+          "bnb-chain-ecosystem",
+          "binance-ecosystem",
+          "binance-listing",
+          "tokenized-assets",
+          "bstocks"
+        ],
+        "website": "https://www.bstocks.finance/"
+      },
+      {
+        "id": 38152,
+        "name": "Tesla (Derivatives)",
+        "symbol": "TSLA",
+        "slug": "tesla-derivatives",
+        "description": "Tesla (Derivatives) (TSLA) is a cryptocurrency . Tesla (Derivatives) has a current supply of 0. The last known price of Tesla (Derivatives) is 358.30674902 USD and is down -1.78 over the last 24 hours. It is currently trading on 108 active market(s) with $378,928.29 traded over the last 24 hours.",
+        "category": "token",
+        "platform": null,
+        "contract_address": null,
+        "tags": [
+          "defi",
+          "tokenized-stock",
+          "synthetics",
+          "binance-ecosystem",
+          "binance-listing",
+          "tokenized-assets",
+          "tradfi-assets-derivatives"
+        ],
+        "website": null
+      },
+      {
+        "id": 37227,
+        "name": "Wrapped Tesla Tokenized stock (xStock)",
+        "symbol": "WTSLAX",
+        "slug": "wrapped-tesla-tokenized-stock-xstock",
+        "description": "Wrapped Tesla Tokenized stock (xStock) (WTSLAX) is a cryptocurrency and operates on the X Layer platform. Wrapped Tesla Tokenized stock (xStock) has a current supply of 840.14246122. The last known price of Wrapped Tesla Tokenized stock (xStock) is 357.84139233 USD and is down -1.96 over the last 24 hours. It is currently trading on 2 active market(s) with $1,659,215.85 traded over the last 24 hours. More information can be found at https://assets.backed.fi/.",
+        "category": "token",
+        "platform": {
+          "id": "3897",
+          "name": "OKB",
+          "symbol": "OKB",
+          "slug": "okb",
+          "token_address": "0xc3FdBe3A68EE5dE461D30415a8165cf9Aefe1171"
+        },
+        "contract_address": "0xc3FdBe3A68EE5dE461D30415a8165cf9Aefe1171",
+        "tags": [
+          "defi",
+          "tokenized-stock",
+          "arbitrum-ecosystem",
+          "x-layer-ecosystem",
+          "tokenized-assets"
+        ],
+        "website": "https://assets.backed.fi/"
+      },
+      {
+        "id": 37004,
+        "name": "Tesla tokenized stock (xStock)",
+        "symbol": "TSLAX",
+        "slug": "tesla-tokenized-stock-xstock",
+        "description": "Tesla tokenized stock (xStock) (TSLAX) is a cryptocurrency and operates on the Solana platform. Tesla tokenized stock (xStock) has a current supply of 539,908.49468932 with 194,984.49546773 in circulation. The last known price of Tesla tokenized stock (xStock) is 357.97678534 USD and is down -1.75 over the last 24 hours. It is currently trading on 102 active market(s) with $8,105,294.79 traded over the last 24 hours. More information can be found at https://assets.backed.fi/products/tesla-xstock.",
+        "category": "token",
+        "platform": {
+          "id": "5426",
+          "name": "Solana",
+          "symbol": "SOL",
+          "slug": "solana",
+          "token_address": "XsDoVfqeBukxuZHWhdvWHBhgEHjGNst4MLodqsJHzoB"
+        },
+        "contract_address": "XsDoVfqeBukxuZHWhdvWHBhgEHjGNst4MLodqsJHzoB",
+        "tags": [
+          "defi",
+          "ethereum-ecosystem",
+          "tokenized-stock",
+          "solana-ecosystem",
+          "arbitrum-ecosystem",
+          "bnb-chain-ecosystem",
+          "toncoin-ecosystem",
+          "x-layer-ecosystem",
+          "internet-capital-markets",
+          "tokenized-assets",
+          "xstocks-ecosystem"
+        ],
+        "website": "https://assets.backed.fi/products/tesla-xstock"
+      },
+      {
+        "id": 38029,
+        "name": "Tesla Tokenized Stock (Ondo)",
+        "symbol": "TSLAon",
+        "slug": "tesla-tokenized-stock-ondo",
+        "description": "Tesla Tokenized Stock (Ondo) (TSLAon) is a cryptocurrency and operates on the Ethereum platform. Tesla Tokenized Stock (Ondo) has a current supply of 44,912.66919075. The last known price of Tesla Tokenized Stock (Ondo) is 358.06255532 USD and is down -1.84 over the last 24 hours. It is currently trading on 49 active market(s) with $3,346,383.31 traded over the last 24 hours. More information can be found at https://app.ondo.finance/assets/tslaon.",
+        "category": "token",
+        "platform": {
+          "id": "1027",
+          "name": "Ethereum",
+          "symbol": "ETH",
+          "slug": "ethereum",
+          "token_address": "0xf6b1117ec07684D3958caD8BEb1b302bfD21103f"
+        },
+        "contract_address": "0xf6b1117ec07684D3958caD8BEb1b302bfD21103f",
+        "tags": [
+          "defi",
+          "ethereum-ecosystem",
+          "tokenized-stock",
+          "solana-ecosystem",
+          "bnb-chain-ecosystem",
+          "binance-alpha",
+          "binance-ecosystem",
+          "tokenized-assets",
+          "hyperevm-ecosystem",
+          "ondo-stocks-ecosystem"
+        ],
+        "website": "https://app.ondo.finance/assets/tslaon"
+      }
+    ],
+    "dex_evidence": {
+      "schema_version": "bell.rwa.dex.evidence.v1",
+      "tokens": [
+        {
+          "crypto_id": 37004,
+          "symbol": "TSLAX",
+          "name": "Tesla tokenized stock (xStock)",
+          "network": "solana",
+          "contract_address": "XsDoVfqeBukxuZHWhdvWHBhgEHjGNst4MLodqsJHzoB",
+          "state": "available",
+          "surfaces": [
+            "detail",
+            "price",
+            "pools",
+            "security",
+            "holders",
+            "holder_tags"
+          ],
+          "errors": [],
+          "detail": {
+            "name": "Tesla xStock",
+            "symbol": "TSLAx",
+            "address": "XsDoVfqeBukxuZHWhdvWHBhgEHjGNst4MLodqsJHzoB",
+            "platform": "Solana",
+            "price": "358.2651542396385688182001207972619",
+            "price_change_24h": "356.321778496435624296021132790822251187",
+            "volume_24h": null,
+            "market_cap": "82270966.064570422846867239",
+            "liquidity_usd": "3011436.472237647538752113",
+            "holders": null,
+            "pool_count": "15",
+            "primary_dex": "Solana"
+          },
+          "price": {
+            "price": 358.26515423963855,
+            "price_change_24h": -0.0203,
+            "volume_24h": 1891198.469736775,
+            "market_cap": 82270966.06457043,
+            "liquidity_usd": 3011436.4722376475,
+            "primary_dex": "Solana",
+            "timestamp": "1789379765000"
+          },
+          "pools": [
+            {
+              "address": "c87dd875bb8ea42a3427e789dcbca662f43bcc7e686a",
+              "exchange": null,
+              "exchange_id": null,
+              "factory_address": "61DFfeTKM7trxYcPQCM78bJ794ddZprZpAwAnLiwTpYH",
+              "liquidity_usd": null,
+              "volume_24h": "838.148464278201694908",
+              "published_at": null,
+              "is_top": true,
+              "is_multichain": false,
+              "base": {
+                "address": "Xsc9qvGR1efVDFGLrVsmkzv3qi45LTBjeUKSPmx9qEh",
+                "name": "NVIDIA xStock",
+                "symbol": "NVDAx",
+                "liquidity": null,
+                "liquidity_usd": "0"
+              },
+              "quote": {
+                "address": "XsDoVfqeBukxuZHWhdvWHBhgEHjGNst4MLodqsJHzoB",
+                "name": "Tesla xStock",
+                "symbol": "TSLAx",
+                "liquidity": null,
+                "liquidity_usd": "0"
+              }
+            },
+            {
+              "address": "47c68df1abd713389e0c6e86bd6d2e36799d4f6351fe",
+              "exchange": null,
+              "exchange_id": null,
+              "factory_address": "61DFfeTKM7trxYcPQCM78bJ794ddZprZpAwAnLiwTpYH",
+              "liquidity_usd": null,
+              "volume_24h": "126.25195135663301096",
+              "published_at": null,
+              "is_top": true,
+              "is_multichain": false,
+              "base": {
+                "address": "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
+                "name": "USDT",
+                "symbol": "USDT",
+                "liquidity": null,
+                "liquidity_usd": "0"
+              },
+              "quote": {
+                "address": "XsDoVfqeBukxuZHWhdvWHBhgEHjGNst4MLodqsJHzoB",
+                "name": "Tesla xStock",
+                "symbol": "TSLAx",
+                "liquidity": null,
+                "liquidity_usd": "0"
+              }
+            },
+            {
+              "address": "9df9e0f11a1ac9ff6cd78bf0adb2c72eb38d3a8e12f9",
+              "exchange": null,
+              "exchange_id": null,
+              "factory_address": "61DFfeTKM7trxYcPQCM78bJ794ddZprZpAwAnLiwTpYH",
+              "liquidity_usd": null,
+              "volume_24h": "119.650315437302992442",
+              "published_at": null,
+              "is_top": true,
+              "is_multichain": false,
+              "base": {
+                "address": "pumpCmXqMfrsAkQ5r49WcJnRayYRqmXz6ae8H7H9Dfn",
+                "name": "Pump",
+                "symbol": "PUMP",
+                "liquidity": null,
+                "liquidity_usd": null
+              },
+              "quote": {
+                "address": "XsDoVfqeBukxuZHWhdvWHBhgEHjGNst4MLodqsJHzoB",
+                "name": "Tesla xStock",
+                "symbol": "TSLAx",
+                "liquidity": null,
+                "liquidity_usd": null
+              }
+            }
+          ],
+          "security": {
+            "platform": "Solana",
+            "address": "XsDoVfqeBukxuZHWhdvWHBhgEHjGNst4MLodqsJHzoB",
+            "security_level": "unknown",
+            "category_level": "unknown",
+            "buy_tax": null,
+            "sell_tax": null,
+            "source": null,
+            "tags": [],
+            "security_item_count": 0,
+            "hit_count": 0
+          },
+          "holders": {
+            "count": "38618",
+            "platform_id": 16,
+            "address": "XsDoVfqeBukxuZHWhdvWHBhgEHjGNst4MLodqsJHzoB"
+          },
+          "holder_tags": {
+            "platform_id": 16,
+            "address": "XsDoVfqeBukxuZHWhdvWHBhgEHjGNst4MLodqsJHzoB",
+            "tags": [
+              {
+                "tag": "tag_dev",
+                "holder_count": "1",
+                "token_balance": "46705.892099920000000000000000000000000000",
+                "holder_ratio": "0.203391"
+              },
+              {
+                "tag": "tag_sniper",
+                "holder_count": "0",
+                "token_balance": "0",
+                "holder_ratio": "0E-18"
+              },
+              {
+                "tag": "tag_kol",
+                "holder_count": "99",
+                "token_balance": "91.495590720000000000000000000000000000",
+                "holder_ratio": "0.000399"
+              },
+              {
+                "tag": "tag_whale",
+                "holder_count": "165",
+                "token_balance": "146649.732022790000000000000000000000000000",
+                "holder_ratio": "0.638616"
+              },
+              {
+                "tag": "tag_bot",
+                "holder_count": "4177",
+                "token_balance": "963.635975070000000000000000000000000000",
+                "holder_ratio": "0.004197"
+              },
+              {
+                "tag": "tag_insider",
+                "holder_count": "0",
+                "token_balance": "0",
+                "holder_ratio": "0E-18"
+              },
+              {
+                "tag": "tag_initial_bundler",
+                "holder_count": "0",
+                "token_balance": "0",
+                "holder_ratio": "0E-18"
+              },
+              {
+                "tag": "tag_smart_money",
+                "holder_count": "1",
+                "token_balance": "0.032022930000000000000000000000000000",
+                "holder_ratio": "0.000001"
+              }
+            ]
+          }
+        },
+        {
+          "crypto_id": 28626,
+          "symbol": "TSLA.D",
+          "name": "TSLA tokenized stock (Dinari)",
+          "network": "arbitrum",
+          "contract_address": "0x36d37B6cbCA364Cf1D843efF8C2f6824491bcF81",
+          "state": "available",
+          "surfaces": [
+            "detail",
+            "price",
+            "pools",
+            "security",
+            "holders",
+            "holder_tags"
+          ],
+          "errors": [],
+          "detail": {
+            "name": "Tesla, Inc. - Dinari",
+            "symbol": "TSLA",
+            "address": "0x36d37b6cbca364cf1d843eff8c2f6824491bcf81",
+            "platform": "Arbitrum",
+            "price": null,
+            "price_change_24h": null,
+            "volume_24h": null,
+            "market_cap": null,
+            "liquidity_usd": "25.403070501576511607",
+            "holders": null,
+            "pool_count": "1",
+            "primary_dex": "Arbitrum"
+          },
+          "price": {
+            "price": null,
+            "price_change_24h": null,
+            "volume_24h": null,
+            "market_cap": null,
+            "liquidity_usd": 25.40307050157651,
+            "primary_dex": "Arbitrum",
+            "timestamp": "1786740486000"
+          },
+          "pools": [
+            {
+              "address": "0x83e58b95b8b2e47f600123b3ff14cede68ae47cc6b1ffe6fb551bdc3c3a32a77",
+              "exchange": "Uniswap v4 (Arbitrum)",
+              "exchange_id": 11950,
+              "factory_address": "0x360e68faccca8ca495c1b759fd9eee466db9fb32",
+              "liquidity_usd": "25.403070501576511607",
+              "volume_24h": null,
+              "published_at": "1786348466000",
+              "is_top": true,
+              "is_multichain": false,
+              "base": {
+                "address": "0x36d37b6cbca364cf1d843eff8c2f6824491bcf81",
+                "name": "Tesla, Inc. - Dinari",
+                "symbol": "TSLA",
+                "liquidity": "0.149461699083707182",
+                "liquidity_usd": "0"
+              },
+              "quote": {
+                "address": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+                "name": "USD Coin",
+                "symbol": "USDC",
+                "liquidity": "25.407153",
+                "liquidity_usd": "25.403070501576511607"
+              }
+            }
+          ],
+          "security": {
+            "platform": "Arbitrum",
+            "address": "0x36d37B6cbCA364Cf1D843efF8C2f6824491bcF81",
+            "security_level": "unknown",
+            "category_level": "unknown",
+            "buy_tax": null,
+            "sell_tax": null,
+            "source": null,
+            "tags": [],
+            "security_item_count": 0,
+            "hit_count": 0
+          },
+          "holders": {
+            "count": "146",
+            "platform_id": 51,
+            "address": "0x36d37b6cbca364cf1d843eff8c2f6824491bcf81"
+          },
+          "holder_tags": {
+            "platform_id": 51,
+            "address": "0x36d37b6cbca364cf1d843eff8c2f6824491bcf81",
+            "tags": [
+              {
+                "tag": "tag_dev",
+                "holder_count": "0",
+                "token_balance": "0",
+                "holder_ratio": "0E-18"
+              },
+              {
+                "tag": "tag_sniper",
+                "holder_count": "0",
+                "token_balance": "0",
+                "holder_ratio": "0E-18"
+              },
+              {
+                "tag": "tag_kol",
+                "holder_count": "1",
+                "token_balance": "0.000060483000000000000000000000000000",
+                "holder_ratio": "0.000001"
+              },
+              {
+                "tag": "tag_whale",
+                "holder_count": "0",
+                "token_balance": "0",
+                "holder_ratio": "0E-18"
+              },
+              {
+                "tag": "tag_bot",
+                "holder_count": "0",
+                "token_balance": "0",
+                "holder_ratio": "0E-18"
+              },
+              {
+                "tag": "tag_insider",
+                "holder_count": "0",
+                "token_balance": "0",
+                "holder_ratio": "0E-18"
+              },
+              {
+                "tag": "tag_initial_bundler",
+                "holder_count": "0",
+                "token_balance": "0",
+                "holder_ratio": "0E-18"
+              },
+              {
+                "tag": "tag_smart_money",
+                "holder_count": "0",
+                "token_balance": "0",
+                "holder_ratio": "0E-18"
+              }
+            ]
+          }
+        },
+        {
+          "crypto_id": 38029,
+          "symbol": "TSLAon",
+          "name": "Tesla Tokenized Stock (Ondo)",
+          "network": "ethereum",
+          "contract_address": "0xf6b1117ec07684D3958caD8BEb1b302bfD21103f",
+          "state": "available",
+          "surfaces": [
+            "detail",
+            "price",
+            "pools",
+            "security",
+            "holders",
+            "holder_tags"
+          ],
+          "errors": [],
+          "detail": {
+            "name": "Tesla (Ondo Tokenized)",
+            "symbol": "TSLAon",
+            "address": "0xf6b1117ec07684d3958cad8beb1b302bfd21103f",
+            "platform": "Ethereum",
+            "price": "358.1143019122355894212704959574966",
+            "price_change_24h": "325.751750213612602053724298379102351345",
+            "volume_24h": null,
+            "market_cap": "6200508.594261116412911918",
+            "liquidity_usd": "0",
+            "holders": null,
+            "pool_count": "7",
+            "primary_dex": "Ethereum"
+          },
+          "price": {
+            "price": 358.1143019122356,
+            "price_change_24h": -0.0158,
+            "volume_24h": 111650.45900310997,
+            "market_cap": 6200508.594261116,
+            "liquidity_usd": 0,
+            "primary_dex": "Ethereum",
+            "timestamp": "1789378079000"
+          },
+          "pools": [
+            {
+              "address": "0x65ce4e771e4ec79f4c921f174b045cf54598e97d",
+              "exchange": "Ondo Global Markets (Ethereum)",
+              "exchange_id": 33109,
+              "factory_address": "0x2c158bc456e027b2affccadf1bdbd9f5fc4c5c8c",
+              "liquidity_usd": null,
+              "volume_24h": "110390.590310295823933199",
+              "published_at": null,
+              "is_top": true,
+              "is_multichain": false,
+              "base": {
+                "address": "0xace8e719899f6e91831b18ae746c9a965c2119f1",
+                "name": "Ondo U.S. Dollar Token",
+                "symbol": "USDon",
+                "liquidity": null,
+                "liquidity_usd": null
+              },
+              "quote": {
+                "address": "0xf6b1117ec07684d3958cad8beb1b302bfd21103f",
+                "name": "Tesla (Ondo Tokenized)",
+                "symbol": "TSLAon",
+                "liquidity": null,
+                "liquidity_usd": null
+              }
+            },
+            {
+              "address": "0xc3dd48198580f03e2ece145fa4fcd8161a9190d2",
+              "exchange": null,
+              "exchange_id": null,
+              "factory_address": "0xbbbbbbb520d69a9775e85b458c58c648259fad5f",
+              "liquidity_usd": null,
+              "volume_24h": "531.987491930189145948",
+              "published_at": null,
+              "is_top": true,
+              "is_multichain": false,
+              "base": {
+                "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+                "name": "Wrapped Ether",
+                "symbol": "WETH",
+                "liquidity": null,
+                "liquidity_usd": null
+              },
+              "quote": {
+                "address": "0xf6b1117ec07684d3958cad8beb1b302bfd21103f",
+                "name": "Tesla (Ondo Tokenized)",
+                "symbol": "TSLAon",
+                "liquidity": null,
+                "liquidity_usd": null
+              }
+            },
+            {
+              "address": "0xcd49b75120c62e1b36c345865b20ed29a0f06cef",
+              "exchange": null,
+              "exchange_id": null,
+              "factory_address": "0xbbbbbbb520d69a9775e85b458c58c648259fad5f",
+              "liquidity_usd": null,
+              "volume_24h": "49.55759182428887076",
+              "published_at": null,
+              "is_top": true,
+              "is_multichain": false,
+              "base": {
+                "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+                "name": "Tether USD",
+                "symbol": "USDT",
+                "liquidity": null,
+                "liquidity_usd": null
+              },
+              "quote": {
+                "address": "0xf6b1117ec07684d3958cad8beb1b302bfd21103f",
+                "name": "Tesla (Ondo Tokenized)",
+                "symbol": "TSLAon",
+                "liquidity": null,
+                "liquidity_usd": null
+              }
+            }
+          ],
+          "security": {
+            "platform": "Ethereum",
+            "address": "0xf6b1117ec07684D3958caD8BEb1b302bfD21103f",
+            "security_level": "unknown",
+            "category_level": "unknown",
+            "buy_tax": null,
+            "sell_tax": null,
+            "source": null,
+            "tags": [],
+            "security_item_count": 0,
+            "hit_count": 0
+          },
+          "holders": {
+            "count": "4214",
+            "platform_id": 1,
+            "address": "0xf6b1117ec07684d3958cad8beb1b302bfd21103f"
+          },
+          "holder_tags": {
+            "platform_id": 1,
+            "address": "0xf6b1117ec07684d3958cad8beb1b302bfd21103f",
+            "tags": [
+              {
+                "tag": "tag_dev",
+                "holder_count": "0",
+                "token_balance": "0",
+                "holder_ratio": "0E-18"
+              },
+              {
+                "tag": "tag_sniper",
+                "holder_count": "0",
+                "token_balance": "0",
+                "holder_ratio": "0E-18"
+              },
+              {
+                "tag": "tag_kol",
+                "holder_count": "1",
+                "token_balance": "7.460873888240275595000000000000000000",
+                "holder_ratio": "0.000431"
+              },
+              {
+                "tag": "tag_whale",
+                "holder_count": "25",
+                "token_balance": "11535.092813732973660103000000000000000000",
+                "holder_ratio": "0.666185"
+              },
+              {
+                "tag": "tag_bot",
+                "holder_count": "0",
+                "token_balance": "0",
+                "holder_ratio": "0E-18"
+              },
+              {
+                "tag": "tag_insider",
+                "holder_count": "0",
+                "token_balance": "0",
+                "holder_ratio": "0E-18"
+              },
+              {
+                "tag": "tag_initial_bundler",
+                "holder_count": "0",
+                "token_balance": "0",
+                "holder_ratio": "0E-18"
+              },
+              {
+                "tag": "tag_smart_money",
+                "holder_count": "0",
+                "token_balance": "0",
+                "holder_ratio": "0E-18"
+              }
+            ]
+          }
+        },
+        {
+          "crypto_id": 38152,
+          "symbol": "TSLA",
+          "name": "Tesla (Derivatives)",
+          "network": null,
+          "contract_address": null,
+          "state": "no_contract",
+          "surfaces": [],
+          "errors": [],
+          "detail": {},
+          "price": {},
+          "pools": [],
+          "security": {},
+          "holders": {},
+          "holder_tags": {}
+        },
+        {
+          "crypto_id": 39618,
+          "symbol": "TSLA",
+          "name": "Tesla Tokenized Stock (Hyperliquid)",
+          "network": "hyperliquid",
+          "contract_address": "0x7374dc1894fbd1bc6c42f6ebbc50b78c211a8606",
+          "state": "unavailable",
+          "surfaces": [],
+          "errors": [
+            {
+              "surface": "detail",
+              "error": "CMC request failed for /v1/dex/token: HTTP 500"
+            },
+            {
+              "surface": "price",
+              "error": "CMC request failed for /v1/dex/token/price: HTTP 500"
+            },
+            {
+              "surface": "pools",
+              "error": "CMC request failed for /v1/dex/token/pools: HTTP 500"
+            },
+            {
+              "surface": "security",
+              "error": "CMC request failed for /v1/dex/security/detail: HTTP 400"
+            },
+            {
+              "surface": "holders",
+              "error": "CMC request failed for /v1/dex/holders/count: HTTP 400"
+            },
+            {
+              "surface": "holder_tags",
+              "error": "CMC request failed for /v1/dex/holders/tag_count: HTTP 400"
+            }
+          ],
+          "detail": {},
+          "price": {},
+          "pools": [],
+          "security": {},
+          "holders": {},
+          "holder_tags": {}
+        },
+        {
+          "crypto_id": 40214,
+          "symbol": "TSLAB",
+          "name": "Tesla Tokenized bStocks",
+          "network": "bnb",
+          "contract_address": "0x5b1910eaad6450e50f816082aa078c41f10c292f",
+          "state": "unavailable",
+          "surfaces": [],
+          "errors": [
+            {
+              "surface": "detail",
+              "error": "CMC request failed for /v1/dex/token: HTTP 500"
+            },
+            {
+              "surface": "price",
+              "error": "CMC request failed for /v1/dex/token/price: HTTP 500"
+            },
+            {
+              "surface": "pools",
+              "error": "CMC request failed for /v1/dex/token/pools: HTTP 500"
+            },
+            {
+              "surface": "security",
+              "error": "CMC request failed for /v1/dex/security/detail: HTTP 400"
+            },
+            {
+              "surface": "holders",
+              "error": "CMC request failed for /v1/dex/holders/count: HTTP 400"
+            },
+            {
+              "surface": "holder_tags",
+              "error": "CMC request failed for /v1/dex/holders/tag_count: HTTP 400"
+            }
+          ],
+          "detail": {},
+          "price": {},
+          "pools": [],
+          "security": {},
+          "holders": {},
+          "holder_tags": {}
+        },
+        {
+          "crypto_id": 40624,
+          "symbol": "rTSLA",
+          "name": "Tesla Tokenized Stock (Reality)",
+          "network": "arbitrum",
+          "contract_address": "0xf912911c9c8d5131929c758e66e6dc54e65cf3ba",
+          "state": "available",
+          "surfaces": [
+            "detail",
+            "price",
+            "pools",
+            "security",
+            "holders",
+            "holder_tags"
+          ],
+          "errors": [],
+          "detail": {
+            "name": "Tesla (Reality Tokenized)",
+            "symbol": "rTSLA",
+            "address": "0xf912911c9c8d5131929c758e66e6dc54e65cf3ba",
+            "platform": "Arbitrum",
+            "price": "20.72317724715915356888",
+            "price_change_24h": "20.723177247159",
+            "volume_24h": null,
+            "market_cap": "4.040801762603167304",
+            "liquidity_usd": "29.039626545361894671",
+            "holders": null,
+            "pool_count": "0",
+            "primary_dex": "Arbitrum"
+          },
+          "price": {
+            "price": 20.723177247159153,
+            "price_change_24h": 0.0,
+            "volume_24h": 0.0,
+            "market_cap": 4.040801762603167,
+            "liquidity_usd": 29.039626545361894,
+            "primary_dex": "Arbitrum",
+            "timestamp": "1780407215000"
+          },
+          "pools": [
+            {
+              "address": "0x29ed5204d31c736a2d1e763b38a745cabf3b84f9aec6f9dd2540b474ee604ab7",
+              "exchange": "Uniswap v4 (Arbitrum)",
+              "exchange_id": 11950,
+              "factory_address": "0x360e68faccca8ca495c1b759fd9eee466db9fb32",
+              "liquidity_usd": "29.039626545361894671",
+              "volume_24h": "0",
+              "published_at": "1780407158000",
+              "is_top": null,
+              "is_multichain": false,
+              "base": {
+                "address": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+                "name": "USD Coin",
+                "symbol": "USDC",
+                "liquidity": "29.050659",
+                "liquidity_usd": "29.039626545361894671"
+              },
+              "quote": {
+                "address": "0xf912911c9c8d5131929c758e66e6dc54e65cf3ba",
+                "name": "Tesla (Reality Tokenized)",
+                "symbol": "rTSLA",
+                "liquidity": "0.069999997975417332",
+                "liquidity_usd": "0"
+              }
+            }
+          ],
+          "security": {
+            "platform": "Arbitrum",
+            "address": "0xf912911c9c8d5131929c758e66e6dc54e65cf3ba",
+            "security_level": "caution",
+            "category_level": "caution",
+            "buy_tax": null,
+            "sell_tax": null,
+            "source": "W3W",
+            "tags": [],
+            "security_item_count": 27,
+            "hit_count": 2
+          },
+          "holders": {
+            "count": "12",
+            "platform_id": 51,
+            "address": "0xf912911c9c8d5131929c758e66e6dc54e65cf3ba"
+          },
+          "holder_tags": {
+            "platform_id": 51,
+            "address": "0xf912911c9c8d5131929c758e66e6dc54e65cf3ba",
+            "tags": [
+              {
+                "tag": "tag_dev",
+                "holder_count": "0",
+                "token_balance": "0",
+                "holder_ratio": "0E-18"
+              },
+              {
+                "tag": "tag_sniper",
+                "holder_count": "0",
+                "token_balance": "0",
+                "holder_ratio": "0E-18"
+              },
+              {
+                "tag": "tag_kol",
+                "holder_count": "0",
+                "token_balance": "0",
+                "holder_ratio": "0E-18"
+              },
+              {
+                "tag": "tag_whale",
+                "holder_count": "3",
+                "token_balance": "11036.430676640000000000000000000000000000",
+                "holder_ratio": "0.999681"
+              },
+              {
+                "tag": "tag_bot",
+                "holder_count": "0",
+                "token_balance": "0",
+                "holder_ratio": "0E-18"
+              },
+              {
+                "tag": "tag_insider",
+                "holder_count": "0",
+                "token_balance": "0",
+                "holder_ratio": "0E-18"
+              },
+              {
+                "tag": "tag_initial_bundler",
+                "holder_count": "0",
+                "token_balance": "0",
+                "holder_ratio": "0E-18"
+              },
+              {
+                "tag": "tag_smart_money",
+                "holder_count": "0",
+                "token_balance": "0",
+                "holder_ratio": "0E-18"
+              }
+            ]
+          }
+        },
+        {
+          "crypto_id": 40691,
+          "symbol": "TSLA",
+          "name": "Tesla Tokenized Stock (Robinhood)",
+          "network": "robinhood-placeholder",
+          "contract_address": "0x322F0929c4625eD5bAd873c95208D54E1c003b2d",
+          "state": "unavailable",
+          "surfaces": [],
+          "errors": [
+            {
+              "surface": "detail",
+              "error": "CMC request failed for /v1/dex/token: HTTP 500"
+            },
+            {
+              "surface": "price",
+              "error": "CMC request failed for /v1/dex/token/price: HTTP 500"
+            },
+            {
+              "surface": "pools",
+              "error": "CMC request failed for /v1/dex/token/pools: HTTP 500"
+            },
+            {
+              "surface": "security",
+              "error": "CMC request failed for /v1/dex/security/detail: HTTP 400"
+            },
+            {
+              "surface": "holders",
+              "error": "CMC request failed for /v1/dex/holders/count: HTTP 400"
+            },
+            {
+              "surface": "holder_tags",
+              "error": "CMC request failed for /v1/dex/holders/tag_count: HTTP 400"
+            }
+          ],
+          "detail": {},
+          "price": {},
+          "pools": [],
+          "security": {},
+          "holders": {},
+          "holder_tags": {}
+        },
+        {
+          "crypto_id": 37227,
+          "symbol": "WTSLAX",
+          "name": "Wrapped Tesla Tokenized stock (xStock)",
+          "network": "okb",
+          "contract_address": "0xc3FdBe3A68EE5dE461D30415a8165cf9Aefe1171",
+          "state": "unavailable",
+          "surfaces": [],
+          "errors": [
+            {
+              "surface": "detail",
+              "error": "CMC request failed for /v1/dex/token: HTTP 500"
+            },
+            {
+              "surface": "price",
+              "error": "CMC request failed for /v1/dex/token/price: HTTP 500"
+            },
+            {
+              "surface": "pools",
+              "error": "CMC request failed for /v1/dex/token/pools: HTTP 500"
+            },
+            {
+              "surface": "security",
+              "error": "CMC request failed for /v1/dex/security/detail: HTTP 400"
+            },
+            {
+              "surface": "holders",
+              "error": "CMC request failed for /v1/dex/holders/count: HTTP 400"
+            },
+            {
+              "surface": "holder_tags",
+              "error": "CMC request failed for /v1/dex/holders/tag_count: HTTP 400"
+            }
+          ],
+          "detail": {},
+          "price": {},
+          "pools": [],
+          "security": {},
+          "holders": {},
+          "holder_tags": {}
+        }
+      ],
+      "requested_token_count": 9,
+      "probed_token_count": 9,
+      "omitted_token_count": 0,
+      "contract_token_count": 8,
+      "covered_token_count": 4,
+      "unavailable_token_count": 4,
+      "no_contract_token_count": 1,
+      "surface_counts": {
+        "detail": 4,
+        "price": 4,
+        "pools": 4,
+        "security": 4,
+        "holders": 4,
+        "holder_tags": 4
+      },
+      "coverage_limited": false
+    },
+    "provenance": {
+      "source": "CoinMarketCap Pro API",
+      "observed_at": "2026-09-14T09:56:21.215745+00:00",
+      "endpoints": [
+        "/v1/dex/holders/count",
+        "/v1/dex/holders/tag_count",
+        "/v1/dex/security/detail",
+        "/v1/dex/token",
+        "/v1/dex/token/pools",
+        "/v1/dex/token/price",
+        "/v2/cryptocurrency/info",
+        "/v5/real-world-assets/info",
+        "/v5/real-world-assets/issuers",
+        "/v5/real-world-assets/market-pairs/list",
+        "/v5/real-world-assets/quotes/latest"
+      ],
+      "calls": [
+        {
+          "endpoint": "/v5/real-world-assets/quotes/latest",
+          "params": {
+            "rwa_slug": "tesla",
+            "convert": "USD"
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:21.216005+00:00"
+        },
+        {
+          "endpoint": "/v5/real-world-assets/info",
+          "params": {
+            "rwa_slug": "tesla"
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:21.594060+00:00"
+        },
+        {
+          "endpoint": "/v5/real-world-assets/market-pairs/list",
+          "params": {
+            "rwa_slug": "tesla",
+            "convert": "USD"
+          },
+          "status": 403,
+          "error": "HTTPError",
+          "observed_at": "2026-09-14T09:56:21.749929+00:00"
+        },
+        {
+          "endpoint": "/v5/real-world-assets/issuers",
+          "params": {
+            "issuer_id": "6878977dcbbf471de3366e85"
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:21.898124+00:00"
+        },
+        {
+          "endpoint": "/v5/real-world-assets/issuers",
+          "params": {
+            "issuer_id": "688c6172abae9b5b9fb30359"
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:22.081024+00:00"
+        },
+        {
+          "endpoint": "/v5/real-world-assets/issuers",
+          "params": {
+            "issuer_id": "688ca4ccabae9b5b9fb3167a"
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:22.463465+00:00"
+        },
+        {
+          "endpoint": "/v5/real-world-assets/issuers",
+          "params": {
+            "issuer_id": "695e11f774b54210f3b95dc3"
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:22.621478+00:00"
+        },
+        {
+          "endpoint": "/v5/real-world-assets/issuers",
+          "params": {
+            "issuer_id": "699ed38db54c9320b15928e3"
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:22.997983+00:00"
+        },
+        {
+          "endpoint": "/v5/real-world-assets/issuers",
+          "params": {
+            "issuer_id": "6a2aed5097c45356b1a5f710"
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:23.156724+00:00"
+        },
+        {
+          "endpoint": "/v5/real-world-assets/issuers",
+          "params": {
+            "issuer_id": "6a43600c282e7240b76c8bbb"
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:23.315084+00:00"
+        },
+        {
+          "endpoint": "/v5/real-world-assets/issuers",
+          "params": {
+            "issuer_id": "6a465832fbe3004b1a0ea2dd"
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:23.473137+00:00"
+        },
+        {
+          "endpoint": "/v2/cryptocurrency/info",
+          "params": {
+            "id": "37004,28626,38029,38152,39618,40214,40624,40691,37227"
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:23.652654+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/token",
+          "params": {
+            "platform": "solana",
+            "address": "XsDoVfqeBukxuZHWhdvWHBhgEHjGNst4MLodqsJHzoB"
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:23.820267+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/token/price",
+          "params": {
+            "platform": "solana",
+            "address": "XsDoVfqeBukxuZHWhdvWHBhgEHjGNst4MLodqsJHzoB"
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:24.176626+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/token/pools",
+          "params": {
+            "platform": "solana",
+            "address": "XsDoVfqeBukxuZHWhdvWHBhgEHjGNst4MLodqsJHzoB",
+            "size": 3
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:24.518202+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/security/detail",
+          "params": {
+            "platformName": "solana",
+            "address": "XsDoVfqeBukxuZHWhdvWHBhgEHjGNst4MLodqsJHzoB"
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:24.963649+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/holders/count",
+          "params": {
+            "platform": "solana",
+            "tokenAddress": "XsDoVfqeBukxuZHWhdvWHBhgEHjGNst4MLodqsJHzoB"
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:25.520615+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/holders/tag_count",
+          "params": {
+            "platform": "solana",
+            "tokenAddress": "XsDoVfqeBukxuZHWhdvWHBhgEHjGNst4MLodqsJHzoB"
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:25.859801+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/token",
+          "params": {
+            "platform": "arbitrum",
+            "address": "0x36d37B6cbCA364Cf1D843efF8C2f6824491bcF81"
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:26.274410+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/token/price",
+          "params": {
+            "platform": "arbitrum",
+            "address": "0x36d37B6cbCA364Cf1D843efF8C2f6824491bcF81"
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:26.610243+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/token/pools",
+          "params": {
+            "platform": "arbitrum",
+            "address": "0x36d37B6cbCA364Cf1D843efF8C2f6824491bcF81",
+            "size": 3
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:26.929287+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/security/detail",
+          "params": {
+            "platformName": "arbitrum",
+            "address": "0x36d37B6cbCA364Cf1D843efF8C2f6824491bcF81"
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:27.481752+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/holders/count",
+          "params": {
+            "platform": "arbitrum",
+            "tokenAddress": "0x36d37B6cbCA364Cf1D843efF8C2f6824491bcF81"
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:27.846694+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/holders/tag_count",
+          "params": {
+            "platform": "arbitrum",
+            "tokenAddress": "0x36d37B6cbCA364Cf1D843efF8C2f6824491bcF81"
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:28.178506+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/token",
+          "params": {
+            "platform": "ethereum",
+            "address": "0xf6b1117ec07684D3958caD8BEb1b302bfD21103f"
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:28.562791+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/token/price",
+          "params": {
+            "platform": "ethereum",
+            "address": "0xf6b1117ec07684D3958caD8BEb1b302bfD21103f"
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:28.961273+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/token/pools",
+          "params": {
+            "platform": "ethereum",
+            "address": "0xf6b1117ec07684D3958caD8BEb1b302bfD21103f",
+            "size": 3
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:29.295622+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/security/detail",
+          "params": {
+            "platformName": "ethereum",
+            "address": "0xf6b1117ec07684D3958caD8BEb1b302bfD21103f"
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:29.714059+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/holders/count",
+          "params": {
+            "platform": "ethereum",
+            "tokenAddress": "0xf6b1117ec07684D3958caD8BEb1b302bfD21103f"
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:30.034330+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/holders/tag_count",
+          "params": {
+            "platform": "ethereum",
+            "tokenAddress": "0xf6b1117ec07684D3958caD8BEb1b302bfD21103f"
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:30.468652+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/token",
+          "params": {
+            "platform": "hyperliquid",
+            "address": "0x7374dc1894fbd1bc6c42f6ebbc50b78c211a8606"
+          },
+          "status": 500,
+          "error": "HTTPError",
+          "observed_at": "2026-09-14T09:56:30.844082+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/token/price",
+          "params": {
+            "platform": "hyperliquid",
+            "address": "0x7374dc1894fbd1bc6c42f6ebbc50b78c211a8606"
+          },
+          "status": 500,
+          "error": "HTTPError",
+          "observed_at": "2026-09-14T09:56:31.167675+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/token/pools",
+          "params": {
+            "platform": "hyperliquid",
+            "address": "0x7374dc1894fbd1bc6c42f6ebbc50b78c211a8606",
+            "size": 3
+          },
+          "status": 500,
+          "error": "HTTPError",
+          "observed_at": "2026-09-14T09:56:31.514407+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/security/detail",
+          "params": {
+            "platformName": "hyperliquid",
+            "address": "0x7374dc1894fbd1bc6c42f6ebbc50b78c211a8606"
+          },
+          "status": 400,
+          "error": "HTTPError",
+          "observed_at": "2026-09-14T09:56:31.841407+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/holders/count",
+          "params": {
+            "platform": "hyperliquid",
+            "tokenAddress": "0x7374dc1894fbd1bc6c42f6ebbc50b78c211a8606"
+          },
+          "status": 400,
+          "error": "HTTPError",
+          "observed_at": "2026-09-14T09:56:32.158404+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/holders/tag_count",
+          "params": {
+            "platform": "hyperliquid",
+            "tokenAddress": "0x7374dc1894fbd1bc6c42f6ebbc50b78c211a8606"
+          },
+          "status": 400,
+          "error": "HTTPError",
+          "observed_at": "2026-09-14T09:56:32.565569+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/token",
+          "params": {
+            "platform": "bnb",
+            "address": "0x5b1910eaad6450e50f816082aa078c41f10c292f"
+          },
+          "status": 500,
+          "error": "HTTPError",
+          "observed_at": "2026-09-14T09:56:32.890458+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/token/price",
+          "params": {
+            "platform": "bnb",
+            "address": "0x5b1910eaad6450e50f816082aa078c41f10c292f"
+          },
+          "status": 500,
+          "error": "HTTPError",
+          "observed_at": "2026-09-14T09:56:33.211722+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/token/pools",
+          "params": {
+            "platform": "bnb",
+            "address": "0x5b1910eaad6450e50f816082aa078c41f10c292f",
+            "size": 3
+          },
+          "status": 500,
+          "error": "HTTPError",
+          "observed_at": "2026-09-14T09:56:33.613250+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/security/detail",
+          "params": {
+            "platformName": "bnb",
+            "address": "0x5b1910eaad6450e50f816082aa078c41f10c292f"
+          },
+          "status": 400,
+          "error": "HTTPError",
+          "observed_at": "2026-09-14T09:56:33.941596+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/holders/count",
+          "params": {
+            "platform": "bnb",
+            "tokenAddress": "0x5b1910eaad6450e50f816082aa078c41f10c292f"
+          },
+          "status": 400,
+          "error": "HTTPError",
+          "observed_at": "2026-09-14T09:56:34.260822+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/holders/tag_count",
+          "params": {
+            "platform": "bnb",
+            "tokenAddress": "0x5b1910eaad6450e50f816082aa078c41f10c292f"
+          },
+          "status": 400,
+          "error": "HTTPError",
+          "observed_at": "2026-09-14T09:56:34.662083+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/token",
+          "params": {
+            "platform": "arbitrum",
+            "address": "0xf912911c9c8d5131929c758e66e6dc54e65cf3ba"
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:34.984654+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/token/price",
+          "params": {
+            "platform": "arbitrum",
+            "address": "0xf912911c9c8d5131929c758e66e6dc54e65cf3ba"
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:35.315814+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/token/pools",
+          "params": {
+            "platform": "arbitrum",
+            "address": "0xf912911c9c8d5131929c758e66e6dc54e65cf3ba",
+            "size": 3
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:35.710781+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/security/detail",
+          "params": {
+            "platformName": "arbitrum",
+            "address": "0xf912911c9c8d5131929c758e66e6dc54e65cf3ba"
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:36.071250+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/holders/count",
+          "params": {
+            "platform": "arbitrum",
+            "tokenAddress": "0xf912911c9c8d5131929c758e66e6dc54e65cf3ba"
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:36.403512+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/holders/tag_count",
+          "params": {
+            "platform": "arbitrum",
+            "tokenAddress": "0xf912911c9c8d5131929c758e66e6dc54e65cf3ba"
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:36.760568+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/token",
+          "params": {
+            "platform": "robinhood-placeholder",
+            "address": "0x322F0929c4625eD5bAd873c95208D54E1c003b2d"
+          },
+          "status": 500,
+          "error": "HTTPError",
+          "observed_at": "2026-09-14T09:56:37.104244+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/token/price",
+          "params": {
+            "platform": "robinhood-placeholder",
+            "address": "0x322F0929c4625eD5bAd873c95208D54E1c003b2d"
+          },
+          "status": 500,
+          "error": "HTTPError",
+          "observed_at": "2026-09-14T09:56:37.417473+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/token/pools",
+          "params": {
+            "platform": "robinhood-placeholder",
+            "address": "0x322F0929c4625eD5bAd873c95208D54E1c003b2d",
+            "size": 3
+          },
+          "status": 500,
+          "error": "HTTPError",
+          "observed_at": "2026-09-14T09:56:37.807890+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/security/detail",
+          "params": {
+            "platformName": "robinhood-placeholder",
+            "address": "0x322F0929c4625eD5bAd873c95208D54E1c003b2d"
+          },
+          "status": 400,
+          "error": "HTTPError",
+          "observed_at": "2026-09-14T09:56:38.126028+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/holders/count",
+          "params": {
+            "platform": "robinhood-placeholder",
+            "tokenAddress": "0x322F0929c4625eD5bAd873c95208D54E1c003b2d"
+          },
+          "status": 400,
+          "error": "HTTPError",
+          "observed_at": "2026-09-14T09:56:38.456744+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/holders/tag_count",
+          "params": {
+            "platform": "robinhood-placeholder",
+            "tokenAddress": "0x322F0929c4625eD5bAd873c95208D54E1c003b2d"
+          },
+          "status": 400,
+          "error": "HTTPError",
+          "observed_at": "2026-09-14T09:56:38.856854+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/token",
+          "params": {
+            "platform": "okb",
+            "address": "0xc3FdBe3A68EE5dE461D30415a8165cf9Aefe1171"
+          },
+          "status": 500,
+          "error": "HTTPError",
+          "observed_at": "2026-09-14T09:56:39.183037+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/token/price",
+          "params": {
+            "platform": "okb",
+            "address": "0xc3FdBe3A68EE5dE461D30415a8165cf9Aefe1171"
+          },
+          "status": 500,
+          "error": "HTTPError",
+          "observed_at": "2026-09-14T09:56:39.516007+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/token/pools",
+          "params": {
+            "platform": "okb",
+            "address": "0xc3FdBe3A68EE5dE461D30415a8165cf9Aefe1171",
+            "size": 3
+          },
+          "status": 500,
+          "error": "HTTPError",
+          "observed_at": "2026-09-14T09:56:39.905249+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/security/detail",
+          "params": {
+            "platformName": "okb",
+            "address": "0xc3FdBe3A68EE5dE461D30415a8165cf9Aefe1171"
+          },
+          "status": 400,
+          "error": "HTTPError",
+          "observed_at": "2026-09-14T09:56:40.233969+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/holders/count",
+          "params": {
+            "platform": "okb",
+            "tokenAddress": "0xc3FdBe3A68EE5dE461D30415a8165cf9Aefe1171"
+          },
+          "status": 400,
+          "error": "HTTPError",
+          "observed_at": "2026-09-14T09:56:40.597594+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/holders/tag_count",
+          "params": {
+            "platform": "okb",
+            "tokenAddress": "0xc3FdBe3A68EE5dE461D30415a8165cf9Aefe1171"
+          },
+          "status": 400,
+          "error": "HTTPError",
+          "observed_at": "2026-09-14T09:56:40.953975+00:00"
+        }
+      ],
+      "optional_errors": [
+        {
+          "surface": "market_pairs",
+          "error": "CMC request failed for /v5/real-world-assets/market-pairs/list: HTTP 403"
+        },
+        {
+          "surface": "dex",
+          "error": "24 optional DEX request(s) failed; see dex_evidence.tokens[].errors"
+        }
+      ],
+      "raw_responses_included": false
+    }
+  }
+}

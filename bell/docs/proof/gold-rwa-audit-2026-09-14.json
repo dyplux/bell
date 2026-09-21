@@ -1,0 +1,2390 @@
+{
+  "schema_version": "bell.rwa.audit.v1",
+  "asset": {
+    "rwa_id": 1,
+    "name": "Gold",
+    "symbol": "GOLD",
+    "slug": "gold",
+    "asset_type": "commodity",
+    "rwa_rank": 1,
+    "has_tokens": true,
+    "average_tokenized_price": 4285.700700332533,
+    "tokenized_market_cap": 4615279875.248561,
+    "tokenized_volume_24h": 281004770.0710839,
+    "last_updated": "2026-09-14T09:53:37.356Z"
+  },
+  "conclusion": "do_not_compare",
+  "findings": [
+    {
+      "code": "denomination_unresolved",
+      "severity": "critical",
+      "message": "Token prices span at least 10x; unit or claim denomination must be resolved before comparing prices.",
+      "evidence": {
+        "min_price": 137.72314797669193,
+        "max_price": 4296.112569776472,
+        "price_ratio": 31.193831
+      }
+    },
+    {
+      "code": "market_pairs_unavailable",
+      "severity": "warning",
+      "message": "The CMC market-pair surface is unavailable for this API plan; this is not evidence that the RWA has no market.",
+      "evidence": {
+        "error": "CMC request failed for /v5/real-world-assets/market-pairs/list: HTTP 403"
+      }
+    },
+    {
+      "code": "dex_coverage_partial",
+      "severity": "warning",
+      "message": "DEX evidence was resolved for only part of the token wrappers with a contract address.",
+      "evidence": {
+        "covered_token_count": 4,
+        "contract_token_count": 6,
+        "unavailable_token_count": 2,
+        "no_contract_token_count": 1
+      }
+    },
+    {
+      "code": "representation_signals",
+      "severity": "warning",
+      "message": "Token names contain representation signals that require separate comparability treatment.",
+      "evidence": {
+        "tokens": [
+          {
+            "symbol": "XAU",
+            "signals": [
+              "derivative"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "evidence": {
+    "schema_version": "bell.rwa.audit.evidence.v1",
+    "mode": "live_cmc",
+    "observed_at": "2026-09-14T09:56:04.859894+00:00",
+    "asset": {
+      "rwa_id": 1,
+      "name": "Gold",
+      "symbol": "GOLD",
+      "slug": "gold",
+      "asset_type": "commodity",
+      "rwa_rank": 1,
+      "has_tokens": true,
+      "average_tokenized_price": 4285.700700332533,
+      "tokenized_market_cap": 4615279875.248561,
+      "tokenized_volume_24h": 281004770.0710839,
+      "last_updated": "2026-09-14T09:53:37.356Z"
+    },
+    "metadata": {
+      "rwa_id": 1,
+      "name": "Gold",
+      "symbol": "GOLD",
+      "slug": "gold",
+      "asset_type": "commodity",
+      "website": null,
+      "employees": null,
+      "founded": null,
+      "industry": null,
+      "cik": null,
+      "primary_exchange": null,
+      "about": {
+        "description": "### What is gold, and why is it considered a safe-haven asset?\n\nWhen markets turn volatile, many investors shift to assets they perceive as stable. Gold tops that list.\n\nGold is a physical commodity and monetary metal that has served as a store of value for thousands of years. It’s considered a “safe haven” because it historically retains purchasing power during inflation, political instability, or financial crises. Unlike fiat currencies, gold cannot be printed or debased by central banks. It doesn’t default, it doesn’t rely on a counterparty, and it tends to perform well when trust in the financial system erodes.\n\n\n### Who controls gold production globally?\n\nNo single entity owns the gold market - but production is concentrated.\n\nGold is mined across the globe, with major producers including China, Russia, Australia, the U.S., and Canada. While governments regulate extraction, most gold mining is conducted by private or public companies like Newmont Corporation, Barrick Gold, and AngloGold Ashanti. Central banks influence reserves and price direction through monetary policy and holdings, but no institution fully controls supply. Production levels depend on geology, mining costs, and geopolitical stability.\n\n\n### How has gold been used historically as money and a store of value?\n\nFiat currencies fade. Empires fall. Gold endures.\n\nFor over 5,000 years, gold has been used as currency, collateral, and a benchmark for monetary systems. It backed national currencies under the gold standard until the 20th century. Even after being replaced by fiat, gold remained a global store of value. In many cultures, gold jewelry also functions as a form of liquid wealth. Its scarcity, durability, and universality have made it a cross-border monetary reserve throughout history.\n\n\n### What factors influence the price of gold (inflation, interest rates, demand)?\n\nGold isn’t just shiny metal - it reacts to macro forces in real time.\n\nKey drivers include inflation expectations, real interest rates, U.S. dollar strength, central bank demand, and geopolitical risk. When inflation rises or interest rates fall, gold tends to strengthen. It also benefits from dollar weakness and flight-to-safety behavior during war or recession. Jewelry demand in countries like India and China, along with ETF inflows and mining supply, adds further short- and long-term price pressure.\n\n\n### Why do investors buy gold in 2025?\n\nIn a world of AI hype, unstable geopolitics, and inflation uncertainty - gold feels familiar.\n\nInvestors in 2025 are allocating to gold as a portfolio hedge against rate cuts, debt monetization, and U.S. dollar depreciation. \n\nPersistent inflation and concerns about financial system fragility have renewed interest in hard assets. Unlike many digital assets, gold has low counterparty risk and high liquidity, especially during global drawdowns. Institutional portfolios often use it to reduce overall volatility.\n\n### How does gold compare to stocks, bonds, and Bitcoin as a hedge?\n\nNot all hedges behave the same - and gold’s track record is longer.\n\nGold typically holds or gains value when stocks fall, making it a defensive asset. It’s uncorrelated with bonds and often outperforms them during inflationary periods. Compared to Bitcoin, gold is less volatile, more regulated, and historically more trusted by institutions. \n\nBitcoin has shown hedge-like qualities during monetary debasement but still trades more like a tech stock. Gold remains the benchmark for traditional risk-off hedging.\n\n\n### What is tokenized gold, and how does it work?\n\nPhysical gold is hard to move - tokenized gold solves that.\n\nTokenized gold represents digital tokens backed 1:1 by physical gold held in vaults. Projects like PAX Gold (PAXG), Tether Gold (XAUT), and Matrixdock tokenize real gold bars stored in secure custodial facilities. Each token reflects the real-time price of gold and can be traded on blockchains like Ethereum or Tron. These assets bring gold into the crypto ecosystem with easier transferability and lower custody friction.\n\n\n### Where can I buy tokenized gold (PAXG, Tether Gold, Matrixdock Gold)?\n\nTokenized gold is available across major crypto platforms.\n\nYou can buy PAXG, XAUT, and other tokenized gold assets on centralized exchanges like Binance, Kraken, or Bitfinex. Some DeFi protocols and DEXs on Ethereum, Arbitrum, and other chains also support them via stablecoin pairs. Availability depends on your location and the exchange’s listing policies. These tokens can be stored in self-custody wallets like MetaMask, making gold accessible to crypto-native users.\n\n\n### Is tokenized gold fully backed by physical gold reserves?\n\nBacking matters - especially when trust is the selling point.\n\nYes, most reputable tokenized gold assets like PAXG and Tether Gold claim to be fully backed by physical gold bars stored in regulated vaults. Issuers publish audit reports and allow token holders to redeem for actual metal under specific conditions. \n\nHowever, redemption policies, jurisdictions, and fees vary. Always verify the custodian details and audit transparency before treating the tokens as equivalent to vault-stored gold.\n\n\n### How is gold being integrated into DeFi and blockchain ecosystems?\n\nDeFi users want low-volatility collateral - and gold fits.\n\nTokenized gold is increasingly used in lending, staking, and synthetic asset protocols. Platforms like [Aave] (https://coinmarketcap.com/currencies/aave/) and DeFiChain allow users to borrow against gold tokens or earn yield through liquidity pools. Unlike stablecoins, gold-backed tokens can preserve purchasing power without relying on fiat pegs. Gold also serves as a collateral layer in emerging real-world asset [(RWA)] (https://coinmarketcap.com/real-world-assets/) protocols that aim to tokenize traditional assets in a permissionless way.\n\n\n### Which blockchains support tokenized gold?\n\nTokenized gold needs scale and security - and blockchains like Ethereum deliver both.\n\nEthereum is the most widely used chain for tokenized gold, with projects like [PAXG] (https://coinmarketcap.com/currencies/pax-gold/) and [XAUT] (https://coinmarketcap.com/currencies/tether-gold/) operating as ERC-20 tokens. Tron offers lower fees and supports alternatives like Tether Gold. Other chains such as [BNB Chain] (https://coinmarketcap.com/currencies/bnb/), Polygon, and Avalanche may also list bridged versions of gold tokens. Interoperability protocols and multichain wallets now make it easy to transfer tokenized gold across ecosystems.\n\n\n### How does tokenized gold compare to [Bitcoin] (https://coinmarketcap.com/currencies/bitcoin/) as “digital gold”?\n\nBitcoin is called digital gold - but tokenized gold is literally that.\n\nTokenized gold tracks the physical commodity directly, backed by vault-stored assets. Bitcoin is a decentralized, fixed-supply digital currency often positioned as a long-term inflation hedge. \n\nWhile Bitcoin has outperformed gold in recent bull markets, it remains more volatile and unbacked. Tokenized gold offers stability and is easier for traditional institutions to integrate into portfolios. The two assets serve different risk profiles and roles within crypto.\n\n\n### Why is the price of gold rising (or falling) today?\n\nGold doesn’t trade on hype - it trades on macro signals.\n\nThe price of gold often rises due to falling real interest rates, central bank accumulation, or geopolitical tensions. It may fall when bond yields rise or the U.S. dollar strengthens. Short-term moves can also result from ETF flows or profit-taking after sharp rallies. In recent years, price shifts have increasingly reflected investor views on monetary policy, inflation expectations, and global de-dollarization trends.\n\n\n### How does gold perform during recessions or stock market crashes?\n\nGold tends to rise when everything else is falling.\n\nDuring recessions or market crashes, gold often outperforms both stocks and risk assets. It held value during the 2008 financial crisis, and in early COVID-19 panic, gold recovered faster than equities. It doesn’t pay dividends, but its role as a hedge and store of value typically attracts capital in risk-off cycles. While not immune to drawdowns, gold usually provides relative stability during systemic stress.",
+        "logo": null,
+        "website": null,
+        "date_added": "2025-07-17T06:57:15.000Z"
+      }
+    },
+    "tokens": [
+      {
+        "crypto_id": 4705,
+        "name": "PAX Gold",
+        "symbol": "PAXG",
+        "issuer_id": "68904c24abae9b5b9fb35815",
+        "issuer_name": "Paxos",
+        "price": 4290.784080108748,
+        "market_cap": 1857508741.19,
+        "volume_24h": 112005063.93875638
+      },
+      {
+        "crypto_id": 5176,
+        "name": "Tether Gold",
+        "symbol": "XAUt",
+        "issuer_id": "68904e9cabae9b5b9fb358ac",
+        "issuer_name": "Tether Holdings",
+        "price": 4286.268582762686,
+        "market_cap": 2669589484.45,
+        "volume_24h": 164527357.466544
+      },
+      {
+        "crypto_id": 34212,
+        "name": "Matrixdock Gold",
+        "symbol": "XAUM",
+        "issuer_id": "68905a7babae9b5b9fb35a8d",
+        "issuer_name": "Matrixdock",
+        "price": 4284.272712210841,
+        "market_cap": 47015279.71,
+        "volume_24h": 493689.79885152
+      },
+      {
+        "crypto_id": 20245,
+        "name": "Comtech Gold",
+        "symbol": "CGO",
+        "issuer_id": "68904cceabae9b5b9fb35839",
+        "issuer_name": "Comtech Gold",
+        "price": 137.72314797669193,
+        "market_cap": 19418963.86,
+        "volume_24h": 889337.80763225
+      },
+      {
+        "crypto_id": 22492,
+        "name": "VNX Gold",
+        "symbol": "VNXAU",
+        "issuer_id": "68905b43abae9b5b9fb35a95",
+        "issuer_name": "VNX",
+        "price": 139.79722512945114,
+        "market_cap": 5885463.18,
+        "volume_24h": 1665.2155714
+      },
+      {
+        "crypto_id": 37082,
+        "name": "Tether Gold Tokens",
+        "symbol": "XAUT0",
+        "issuer_id": "68904e9cabae9b5b9fb358ac",
+        "issuer_name": "Tether Holdings",
+        "price": 4296.112569776472,
+        "market_cap": 17201496.15,
+        "volume_24h": 389902.74931644
+      },
+      {
+        "crypto_id": 39344,
+        "name": "Gold (Derivatives)",
+        "symbol": "XAU",
+        "issuer_id": "695e11f774b54210f3b95dc3",
+        "issuer_name": "NA (Derivatives)",
+        "price": 4289.1050298398895,
+        "market_cap": 0,
+        "volume_24h": 0
+      }
+    ],
+    "market_pairs": [],
+    "market_pairs_error": "CMC request failed for /v5/real-world-assets/market-pairs/list: HTTP 403",
+    "issuers": [
+      {
+        "issuer_id": "68904c24abae9b5b9fb35815",
+        "name": "Paxos",
+        "website": "https://www.paxos.com/",
+        "logo": null,
+        "num_tokens": 1,
+        "total_size": 1,
+        "has_more": false,
+        "tokens": [
+          {
+            "name": "PAX Gold",
+            "symbol": "PAXG",
+            "crypto_id": 4705,
+            "rwa_id": 1
+          }
+        ]
+      },
+      {
+        "issuer_id": "68904e9cabae9b5b9fb358ac",
+        "name": "Tether Holdings",
+        "website": "https://tether.to/",
+        "logo": "https://s2.coinmarketcap.com/static/img/issuer/tether.png",
+        "num_tokens": 2,
+        "total_size": 2,
+        "has_more": false,
+        "tokens": [
+          {
+            "name": "Tether Gold",
+            "symbol": "XAUt",
+            "crypto_id": 5176,
+            "rwa_id": 1
+          },
+          {
+            "name": "Tether Gold Tokens",
+            "symbol": "XAUT0",
+            "crypto_id": 37082,
+            "rwa_id": 1
+          }
+        ]
+      },
+      {
+        "issuer_id": "68905a7babae9b5b9fb35a8d",
+        "name": "Matrixdock",
+        "website": "https://www.matrixdock.com/",
+        "logo": "https://s2.coinmarketcap.com/static/img/issuer/matrixdock.png",
+        "num_tokens": 1,
+        "total_size": 1,
+        "has_more": false,
+        "tokens": [
+          {
+            "name": "Matrixdock Gold",
+            "symbol": "XAUM",
+            "crypto_id": 34212,
+            "rwa_id": 1
+          }
+        ]
+      },
+      {
+        "issuer_id": "68904cceabae9b5b9fb35839",
+        "name": "Comtech Gold",
+        "website": "https://www.comtechgold.com/",
+        "logo": "https://s2.coinmarketcap.com/static/img/issuer/comtech.png",
+        "num_tokens": 1,
+        "total_size": 1,
+        "has_more": false,
+        "tokens": [
+          {
+            "name": "Comtech Gold",
+            "symbol": "CGO",
+            "crypto_id": 20245,
+            "rwa_id": 1
+          }
+        ]
+      },
+      {
+        "issuer_id": "68905b43abae9b5b9fb35a95",
+        "name": "VNX",
+        "website": "https://vnx.li/",
+        "logo": "https://s2.coinmarketcap.com/static/img/issuer/vnx.png",
+        "num_tokens": 1,
+        "total_size": 1,
+        "has_more": false,
+        "tokens": [
+          {
+            "name": "VNX Gold",
+            "symbol": "VNXAU",
+            "crypto_id": 22492,
+            "rwa_id": 1
+          }
+        ]
+      },
+      {
+        "issuer_id": "695e11f774b54210f3b95dc3",
+        "name": "NA (Derivatives)",
+        "website": null,
+        "logo": null,
+        "num_tokens": 238,
+        "total_size": 238,
+        "has_more": true,
+        "tokens": [
+          {
+            "name": "Tesla (Derivatives)",
+            "symbol": "TSLA",
+            "crypto_id": 38152,
+            "rwa_id": 14
+          },
+          {
+            "name": "NVIDIA (Derivatives)",
+            "symbol": "NVDA",
+            "crypto_id": 38153,
+            "rwa_id": 2
+          },
+          {
+            "name": "Circle Internet Group (Derivatives)",
+            "symbol": "CRCL",
+            "crypto_id": 38154,
+            "rwa_id": 115
+          },
+          {
+            "name": null,
+            "symbol": null,
+            "crypto_id": 39318,
+            "rwa_id": 5
+          },
+          {
+            "name": "Silver (Derivatives)",
+            "symbol": "XAG",
+            "crypto_id": 39343,
+            "rwa_id": 5
+          },
+          {
+            "name": "Gold (Derivatives)",
+            "symbol": "XAU",
+            "crypto_id": 39344,
+            "rwa_id": 1
+          },
+          {
+            "name": "Copper (Derivatives)",
+            "symbol": "XCU",
+            "crypto_id": 39467,
+            "rwa_id": null
+          },
+          {
+            "name": "Nasdaq index (Derivatives)",
+            "symbol": "IXIC",
+            "crypto_id": 39468,
+            "rwa_id": null
+          },
+          {
+            "name": "Micron Technology Inc (Derivatives)",
+            "symbol": "MU",
+            "crypto_id": 39469,
+            "rwa_id": 12
+          },
+          {
+            "name": "Alphabet Inc (Derivatives)",
+            "symbol": "GOOGL",
+            "crypto_id": 39470,
+            "rwa_id": 4
+          },
+          {
+            "name": "Amazon.com Inc (Derivatives)",
+            "symbol": "AMZN",
+            "crypto_id": 39471,
+            "rwa_id": 6
+          },
+          {
+            "name": "Intel Corp (Derivatives)",
+            "symbol": "INTC",
+            "crypto_id": 39472,
+            "rwa_id": 20
+          },
+          {
+            "name": "MicroStrategy Inc (Derivatives)",
+            "symbol": "MSTR",
+            "crypto_id": 39473,
+            "rwa_id": 114
+          },
+          {
+            "name": "Standard and Poor's 500 index (Derivatives)",
+            "symbol": "S&P500",
+            "crypto_id": 39474,
+            "rwa_id": null
+          },
+          {
+            "name": "Palantir Technologies Inc (Derivatives)",
+            "symbol": "PLTR",
+            "crypto_id": 39475,
+            "rwa_id": 53
+          },
+          {
+            "name": "Robinhood Markets (Derivatives)",
+            "symbol": "HOOD",
+            "crypto_id": 39478,
+            "rwa_id": 84
+          },
+          {
+            "name": "Netflix (Derivatives)",
+            "symbol": "NFLX",
+            "crypto_id": 39479,
+            "rwa_id": 37
+          },
+          {
+            "name": "Palladium (Derivatives)",
+            "symbol": "XPD",
+            "crypto_id": 39481,
+            "rwa_id": 16388
+          },
+          {
+            "name": "Oracle Corp (Derivatives)",
+            "symbol": "ORCL",
+            "crypto_id": 39482,
+            "rwa_id": 24
+          },
+          {
+            "name": "Coinbase Global Inc (Derivatives)",
+            "symbol": "COIN",
+            "crypto_id": 39483,
+            "rwa_id": 82
+          },
+          {
+            "name": "Global X Lithium & Battery Tech ETF (Derivatives)",
+            "symbol": "LIT",
+            "crypto_id": 39484,
+            "rwa_id": null
+          },
+          {
+            "name": "OpenAI (Derivatives)",
+            "symbol": "OPENAI",
+            "crypto_id": 39485,
+            "rwa_id": 250
+          },
+          {
+            "name": "Alibaba Group Holding Limited (Derivatives)",
+            "symbol": "BABA",
+            "crypto_id": 39486,
+            "rwa_id": 63
+          },
+          {
+            "name": "Advanced Micro Devices Inc (Derivatives)",
+            "symbol": "AMD",
+            "crypto_id": 39489,
+            "rwa_id": 25
+          },
+          {
+            "name": "Taiwan Semiconductor Manufacturing (Derivatives)",
+            "symbol": "TSM",
+            "crypto_id": 39490,
+            "rwa_id": 8
+          },
+          {
+            "name": "Apple Inc (Derivatives)",
+            "symbol": "AAPL",
+            "crypto_id": 39491,
+            "rwa_id": 3
+          },
+          {
+            "name": "iShares Russell 2000 ETF (Derivatives)",
+            "symbol": "IWM",
+            "crypto_id": 39493,
+            "rwa_id": 140
+          },
+          {
+            "name": "Aluminium (Derivatives)",
+            "symbol": "ALI",
+            "crypto_id": 39494,
+            "rwa_id": null
+          },
+          {
+            "name": "Microsoft Corporation (Derivatives)",
+            "symbol": "MSFT",
+            "crypto_id": 39495,
+            "rwa_id": 7
+          },
+          {
+            "name": "Anthropic (Derivatives)",
+            "symbol": "ANTHROPIC",
+            "crypto_id": 39496,
+            "rwa_id": 187
+          },
+          {
+            "name": "VanEck Semiconductor ETF (Derivatives)",
+            "symbol": "SMH",
+            "crypto_id": 39498,
+            "rwa_id": 7733
+          },
+          {
+            "name": "Rivian Automotive Inc (Derivatives)",
+            "symbol": "RIVN",
+            "crypto_id": 39499,
+            "rwa_id": 178
+          },
+          {
+            "name": "SK hynix Inc (Derivatives)",
+            "symbol": "000660",
+            "crypto_id": 39500,
+            "rwa_id": null
+          },
+          {
+            "name": "SpaceX (Derivatives)",
+            "symbol": "SPCX",
+            "crypto_id": 39501,
+            "rwa_id": 9
+          },
+          {
+            "name": null,
+            "symbol": null,
+            "crypto_id": 39502,
+            "rwa_id": null
+          },
+          {
+            "name": "Samsung Electronics Co Ltd (Derivatives)",
+            "symbol": "005930",
+            "crypto_id": 39503,
+            "rwa_id": null
+          },
+          {
+            "name": "State Street Technology Select Sector SPDR ETF (Derivatives)",
+            "symbol": "XLK",
+            "crypto_id": 39504,
+            "rwa_id": null
+          },
+          {
+            "name": "Nuclear Energy (Derivatives)",
+            "symbol": "NUCLEAR",
+            "crypto_id": 39506,
+            "rwa_id": null
+          },
+          {
+            "name": "SanDisk Corporation (Derivatives)",
+            "symbol": "SNDK",
+            "crypto_id": 39507,
+            "rwa_id": 48
+          },
+          {
+            "name": "Energy Sector (Derivatives)",
+            "symbol": "ENERGY",
+            "crypto_id": 39508,
+            "rwa_id": null
+          },
+          {
+            "name": "Eli Lilly and Company (Derivatives)",
+            "symbol": "LLY",
+            "crypto_id": 39509,
+            "rwa_id": 11
+          },
+          {
+            "name": "Roundhill Magnificent Seven ETF (Derivatives)",
+            "symbol": "MAGS",
+            "crypto_id": 39510,
+            "rwa_id": null
+          },
+          {
+            "name": "Uranium (Derivatives)",
+            "symbol": "URANIUM",
+            "crypto_id": 39511,
+            "rwa_id": null
+          },
+          {
+            "name": "Global X Robotics and Artificial Intelligence ETF (Derivatives)",
+            "symbol": "BOTZ",
+            "crypto_id": 39512,
+            "rwa_id": null
+          },
+          {
+            "name": "USA Rare Earth Inc (Derivatives)",
+            "symbol": "USAR",
+            "crypto_id": 39514,
+            "rwa_id": null
+          },
+          {
+            "name": "United States Oil Fund LP (Derivatives)",
+            "symbol": "USO",
+            "crypto_id": 39515,
+            "rwa_id": 183
+          },
+          {
+            "name": "Sprott Uranium Miners ETF (Derivatives)",
+            "symbol": "URNM",
+            "crypto_id": 39516,
+            "rwa_id": null
+          },
+          {
+            "name": "QQQ (Derivatives)",
+            "symbol": "QQQ",
+            "crypto_id": 39517,
+            "rwa_id": 118
+          },
+          {
+            "name": "USBOND (Derivatives)",
+            "symbol": "USBOND",
+            "crypto_id": 39518,
+            "rwa_id": null
+          },
+          {
+            "name": "Hyundai Motor Co (Derivatives)",
+            "symbol": "005380",
+            "crypto_id": 39573,
+            "rwa_id": null
+          },
+          {
+            "name": "Korea Composite Stock Price Index (Derivatives)",
+            "symbol": "KOSPI",
+            "crypto_id": 39575,
+            "rwa_id": null
+          },
+          {
+            "name": "Applovin (Derivatives)",
+            "symbol": "APP",
+            "crypto_id": 39629,
+            "rwa_id": 108
+          },
+          {
+            "name": "UnitedHealth Group (Derivatives)",
+            "symbol": "UNH",
+            "crypto_id": 39630,
+            "rwa_id": 33
+          },
+          {
+            "name": "Cisco Systems (Derivatives)",
+            "symbol": "CSCO",
+            "crypto_id": 39631,
+            "rwa_id": 29
+          },
+          {
+            "name": "Reddit (Derivatives)",
+            "symbol": "RDDT",
+            "crypto_id": 39633,
+            "rwa_id": 196
+          },
+          {
+            "name": "IBM (Derivatives)",
+            "symbol": "IBM",
+            "crypto_id": 39634,
+            "rwa_id": 42
+          },
+          {
+            "name": "Ishares Msci South Korea ETF (Derivatives)",
+            "symbol": "EWY",
+            "crypto_id": 39654,
+            "rwa_id": 1062
+          },
+          {
+            "name": "Global X Uranium ETF (Derivatives)",
+            "symbol": "URA",
+            "crypto_id": 39669,
+            "rwa_id": null
+          },
+          {
+            "name": "Bitmine Immersion Technologies (Derivatives)",
+            "symbol": "BMNR",
+            "crypto_id": 39670,
+            "rwa_id": 219
+          },
+          {
+            "name": "Hanmi Semiconductor Co Ltd (Derivatives)",
+            "symbol": "HANMI",
+            "crypto_id": 39672,
+            "rwa_id": null
+          },
+          {
+            "name": "State Street SPDR Dow Jones DIA ETF Trust (Derivatives)",
+            "symbol": "DIA",
+            "crypto_id": 39673,
+            "rwa_id": null
+          },
+          {
+            "name": "ASML Holding NV (Derivatives)",
+            "symbol": "ASML",
+            "crypto_id": 39677,
+            "rwa_id": 26
+          },
+          {
+            "name": "iShares MSCI Japan ETF (Derivatives)",
+            "symbol": "EWJ",
+            "crypto_id": 39685,
+            "rwa_id": null
+          },
+          {
+            "name": "PayPay Corp (Derivatives)",
+            "symbol": "PAYP",
+            "crypto_id": 39725,
+            "rwa_id": null
+          },
+          {
+            "name": "State Street SPDR S&P 500 ETF Trust (Derivatives)",
+            "symbol": "SPY",
+            "crypto_id": 39732,
+            "rwa_id": 86
+          },
+          {
+            "name": "Brent Oil (Derivatives)",
+            "symbol": "BZ",
+            "crypto_id": 39804,
+            "rwa_id": null
+          },
+          {
+            "name": null,
+            "symbol": null,
+            "crypto_id": 39839,
+            "rwa_id": 118
+          },
+          {
+            "name": "iShares Silver Trust (Derivatives)",
+            "symbol": "SLV",
+            "crypto_id": 39845,
+            "rwa_id": 205
+          },
+          {
+            "name": "Nikkei 225 (Derivatives)",
+            "symbol": "NI225",
+            "crypto_id": 39852,
+            "rwa_id": null
+          },
+          {
+            "name": "PDD Holdings Inc (Derivatives)",
+            "symbol": "PDD",
+            "crypto_id": 39861,
+            "rwa_id": 175
+          },
+          {
+            "name": "Allbirds Inc (Derivatives)",
+            "symbol": "BIRD",
+            "crypto_id": 39872,
+            "rwa_id": null
+          },
+          {
+            "name": "GameStop Corp (Derivatives)",
+            "symbol": "GME",
+            "crypto_id": 39928,
+            "rwa_id": 116
+          },
+          {
+            "name": "Xiaomi Corp (Derivatives)",
+            "symbol": "1810",
+            "crypto_id": 39929,
+            "rwa_id": null
+          },
+          {
+            "name": "Cerebras Systems (Derivatives)",
+            "symbol": "CBRS",
+            "crypto_id": 39931,
+            "rwa_id": 251
+          },
+          {
+            "name": "Qualcomm (Derivatives)",
+            "symbol": "QCOM",
+            "crypto_id": 39932,
+            "rwa_id": 103
+          },
+          {
+            "name": "State Street Energy Select Sector SPDR ETF (Derivatives)",
+            "symbol": "XLE",
+            "crypto_id": 39943,
+            "rwa_id": null
+          },
+          {
+            "name": "Lumentum Holdings (Derivatives)",
+            "symbol": "LITE",
+            "crypto_id": 39944,
+            "rwa_id": null
+          },
+          {
+            "name": "Roundhill Memory ETF (Derivatives)",
+            "symbol": "DRAM",
+            "crypto_id": 39945,
+            "rwa_id": null
+          },
+          {
+            "name": "Marvell Technology (Derivatives)",
+            "symbol": "MRVL",
+            "crypto_id": 39946,
+            "rwa_id": null
+          },
+          {
+            "name": "Blackstone (Derivatives)",
+            "symbol": "BX",
+            "crypto_id": 39947,
+            "rwa_id": null
+          },
+          {
+            "name": "Rocket Lab Corp (Derivatives)",
+            "symbol": "RKLB",
+            "crypto_id": 39948,
+            "rwa_id": null
+          },
+          {
+            "name": "Ishares Msci Brazil ETF (Derivatives)",
+            "symbol": "EWZ",
+            "crypto_id": 39949,
+            "rwa_id": null
+          },
+          {
+            "name": "eBay (Derivatives)",
+            "symbol": "EBAY",
+            "crypto_id": 39953,
+            "rwa_id": null
+          },
+          {
+            "name": "Zoom (Derivatives)",
+            "symbol": "ZM",
+            "crypto_id": 39954,
+            "rwa_id": 376
+          },
+          {
+            "name": "Pop Mart International Group Limited (Derivatives)",
+            "symbol": "POPMART",
+            "crypto_id": 39958,
+            "rwa_id": null
+          },
+          {
+            "name": "MiniMax Group (Derivatives)",
+            "symbol": "MINIMAX",
+            "crypto_id": 39960,
+            "rwa_id": null
+          },
+          {
+            "name": "Tencent Holdings Ltd (Derivatives)",
+            "symbol": "TENCENT",
+            "crypto_id": 39961,
+            "rwa_id": null
+          },
+          {
+            "name": "Direxion Daily Semiconductor ETF (Derivatives)",
+            "symbol": "SOXL",
+            "crypto_id": 39964,
+            "rwa_id": null
+          },
+          {
+            "name": null,
+            "symbol": null,
+            "crypto_id": 39980,
+            "rwa_id": null
+          },
+          {
+            "name": "Global X Defense Tech ETF  (Derivatives)",
+            "symbol": "SHLD",
+            "crypto_id": 39989,
+            "rwa_id": null
+          },
+          {
+            "name": "Western Digital Corp (Derivatives)",
+            "symbol": "WDC",
+            "crypto_id": 39990,
+            "rwa_id": null
+          },
+          {
+            "name": "Arm Holdings PLC - ADR (Derivatives)",
+            "symbol": "ARM",
+            "crypto_id": 39994,
+            "rwa_id": null
+          },
+          {
+            "name": "Coherent (Derivatives)",
+            "symbol": "COHR",
+            "crypto_id": 39995,
+            "rwa_id": 188
+          },
+          {
+            "name": "Home Depot Inc (Derivatives)",
+            "symbol": "HD",
+            "crypto_id": 39996,
+            "rwa_id": 36
+          },
+          {
+            "name": "Uber Technologies Inc (Derivatives)",
+            "symbol": "UBER",
+            "crypto_id": 39997,
+            "rwa_id": 128
+          },
+          {
+            "name": "Walt Disney Co (Derivatives)",
+            "symbol": "DIS",
+            "crypto_id": 39998,
+            "rwa_id": 110
+          },
+          {
+            "name": "Hyperliquid Strategies Inc (Derivatives)",
+            "symbol": "PURR",
+            "crypto_id": 40003,
+            "rwa_id": null
+          },
+          {
+            "name": "Fluence Energy, Inc. Class A Common Stock (Derivatives)",
+            "symbol": "FLNC",
+            "crypto_id": 40007,
+            "rwa_id": null
+          },
+          {
+            "name": "Corning Inc (Derivatives)",
+            "symbol": "GLW",
+            "crypto_id": 40010,
+            "rwa_id": null
+          },
+          {
+            "name": "JPmorgan Chase & Co (Derivatives)",
+            "symbol": "JPM",
+            "crypto_id": 40013,
+            "rwa_id": 16
+          }
+        ]
+      }
+    ],
+    "crypto_info": [
+      {
+        "id": 39344,
+        "name": "Gold (Derivatives)",
+        "symbol": "XAU",
+        "slug": "gold-derivatives",
+        "description": "Gold (Derivatives) (XAU) is a cryptocurrency . Gold (Derivatives) has a current supply of 0. The last known price of Gold (Derivatives) is 4,285.89696365 USD and is down -1.58 over the last 24 hours. It is currently trading on 105 active market(s) with $0.00 traded over the last 24 hours.",
+        "category": "token",
+        "platform": null,
+        "contract_address": null,
+        "tags": [
+          "defi",
+          "synthetics",
+          "tokenized-gold",
+          "binance-ecosystem",
+          "binance-listing",
+          "tokenized-assets",
+          "tokenized-commodities",
+          "tradfi-assets-derivatives"
+        ],
+        "website": null
+      },
+      {
+        "id": 4705,
+        "name": "PAX Gold",
+        "symbol": "PAXG",
+        "slug": "pax-gold",
+        "description": "PAX Gold (PAXG) is a cryptocurrency launched in 2019and operates on the Ethereum platform. PAX Gold has a current supply of 432,906.598539. The last known price of PAX Gold is 4,289.74148077 USD and is down -1.46 over the last 24 hours. It is currently trading on 421 active market(s) with $112,526,095.89 traded over the last 24 hours. More information can be found at https://www.paxg.com/.",
+        "category": "token",
+        "platform": {
+          "id": "1027",
+          "name": "Ethereum",
+          "symbol": "ETH",
+          "slug": "ethereum",
+          "token_address": "0x45804880de22913dafe09f4980848ece6ecbaf78"
+        },
+        "contract_address": "0x45804880de22913dafe09f4980848ece6ecbaf78",
+        "tags": [
+          "ethereum-ecosystem",
+          "tokenized-gold",
+          "real-world-assets-protocols",
+          "binance-ecosystem",
+          "binance-listing",
+          "tokenized-assets",
+          "tokenized-commodities"
+        ],
+        "website": "https://www.paxg.com/"
+      },
+      {
+        "id": 34212,
+        "name": "Matrixdock Gold",
+        "symbol": "XAUM",
+        "slug": "matrixdock-gold",
+        "description": "Matrixdock Gold (XAUM) is a cryptocurrency launched in 2024and operates on the Ethereum platform. Matrixdock Gold has a current supply of 10,973.9231992. The last known price of Matrixdock Gold is 4,275.77953306 USD and is down -1.54 over the last 24 hours. It is currently trading on 26 active market(s) with $492,540.51 traded over the last 24 hours. More information can be found at https://www.matrixdock.com/xaum.",
+        "category": "token",
+        "platform": {
+          "id": "1027",
+          "name": "Ethereum",
+          "symbol": "ETH",
+          "slug": "ethereum",
+          "token_address": "0x2103E845C5E135493Bb6c2A4f0B8651956eA8682"
+        },
+        "contract_address": "0x2103E845C5E135493Bb6c2A4f0B8651956eA8682",
+        "tags": [
+          "commodities",
+          "ethereum-ecosystem",
+          "asset-backed-token",
+          "bnb-chain-ecosystem",
+          "tokenized-gold",
+          "sui-ecosystem",
+          "real-world-assets-protocols",
+          "move-vm",
+          "tokenized-assets",
+          "tokenized-commodities"
+        ],
+        "website": "https://www.matrixdock.com/xaum"
+      },
+      {
+        "id": 20245,
+        "name": "Comtech Gold",
+        "symbol": "CGO",
+        "slug": "comtech-gold",
+        "description": "Comtech Gold (CGO) is a cryptocurrency launched in 2022and operates on the XDC Network platform. Comtech Gold has a current supply of 141,000. The last known price of Comtech Gold is 137.47716532 USD and is down -0.83 over the last 24 hours. It is currently trading on 19 active market(s) with $889,062.62 traded over the last 24 hours. More information can be found at https://www.comtechgold.com/.",
+        "category": "token",
+        "platform": {
+          "id": "2634",
+          "name": "XDC Network",
+          "symbol": "XDC",
+          "slug": "xdc-network",
+          "token_address": "0x8f9920283470F52128bF11B0c14E798bE704fD15"
+        },
+        "contract_address": "0x8f9920283470F52128bF11B0c14E798bE704fD15",
+        "tags": [
+          "tokenized-gold",
+          "xdc-ecosystem",
+          "real-world-assets-protocols",
+          "tokenized-assets",
+          "tokenized-commodities"
+        ],
+        "website": "https://www.comtechgold.com/"
+      },
+      {
+        "id": 5176,
+        "name": "Tether Gold",
+        "symbol": "XAUt",
+        "slug": "tether-gold",
+        "description": "Tether Gold (XAUt) is a cryptocurrency launched in 2020and operates on the Ethereum platform. Tether Gold has a current supply of 707,747.089 with 622,823.659532 in circulation. The last known price of Tether Gold is 4,285.05411575 USD and is down -1.42 over the last 24 hours. It is currently trading on 473 active market(s) with $166,705,427.51 traded over the last 24 hours. More information can be found at https://gold.tether.to/.",
+        "category": "token",
+        "platform": {
+          "id": "1027",
+          "name": "Ethereum",
+          "symbol": "ETH",
+          "slug": "ethereum",
+          "token_address": "0x68749665FF8D2d112Fa859AA293F07A622782F38"
+        },
+        "contract_address": "0x68749665FF8D2d112Fa859AA293F07A622782F38",
+        "tags": [
+          "ethereum-ecosystem",
+          "bnb-chain-ecosystem",
+          "tokenized-gold",
+          "real-world-assets-protocols",
+          "binance-ecosystem",
+          "binance-listing",
+          "tokenized-assets",
+          "tokenized-commodities",
+          "binance-liquidity-enhancement-program"
+        ],
+        "website": "https://gold.tether.to/"
+      },
+      {
+        "id": 37082,
+        "name": "Tether Gold Tokens",
+        "symbol": "XAUT0",
+        "slug": "tether-gold-tokens",
+        "description": "Tether Gold Tokens (XAUT0) is a cryptocurrency and operates on the HyperEVM platform. Tether Gold Tokens has a current supply of 4,003.967744. The last known price of Tether Gold Tokens is 4,295.4849982 USD and is down -1.34 over the last 24 hours. It is currently trading on 19 active market(s) with $389,741.85 traded over the last 24 hours. More information can be found at https://gold.usdt0.to/transfer.",
+        "category": "token",
+        "platform": {
+          "id": "32196",
+          "name": "Hyperliquid",
+          "symbol": "HYPE",
+          "slug": "hyperliquid",
+          "token_address": "0xf4d9235269a96aadafc9adae454a0618ebe37949"
+        },
+        "contract_address": "0xf4d9235269a96aadafc9adae454a0618ebe37949",
+        "tags": [
+          "tokenized-gold",
+          "real-world-assets-protocols",
+          "tokenized-assets",
+          "tokenized-commodities",
+          "hyperevm-ecosystem"
+        ],
+        "website": "https://gold.usdt0.to/transfer"
+      },
+      {
+        "id": 22492,
+        "name": "VNX Gold",
+        "symbol": "VNXAU",
+        "slug": "vnx-gold",
+        "description": "VNX Gold (VNXAU) is a cryptocurrency launched in 2021and operates on the Ethereum platform. VNX Gold has a current supply of 44,000 with 42,100 in circulation. The last known price of VNX Gold is 139.76381558 USD and is down -0.18 over the last 24 hours. It is currently trading on 40 active market(s) with $1,901.69 traded over the last 24 hours. More information can be found at https://vnx.li/.",
+        "category": "token",
+        "platform": {
+          "id": "1027",
+          "name": "Ethereum",
+          "symbol": "ETH",
+          "slug": "ethereum",
+          "token_address": "0x6d57B2E05F26C26b549231c866bdd39779e4a488"
+        },
+        "contract_address": "0x6d57B2E05F26C26b549231c866bdd39779e4a488",
+        "tags": [
+          "commodities",
+          "ethereum-ecosystem",
+          "asset-backed-token",
+          "stellar-ecosystem",
+          "solana-ecosystem",
+          "tezos-ecosystem",
+          "tokenized-gold",
+          "real-world-assets-protocols",
+          "base-ecosystem",
+          "q-blockchain-ecosystem",
+          "tokenized-assets",
+          "tokenized-commodities",
+          "etherlink-ecosystem"
+        ],
+        "website": "https://vnx.li/"
+      }
+    ],
+    "dex_evidence": {
+      "schema_version": "bell.rwa.dex.evidence.v1",
+      "tokens": [
+        {
+          "crypto_id": 4705,
+          "symbol": "PAXG",
+          "name": "PAX Gold",
+          "network": "ethereum",
+          "contract_address": "0x45804880de22913dafe09f4980848ece6ecbaf78",
+          "state": "available",
+          "surfaces": [
+            "detail",
+            "price",
+            "pools",
+            "security",
+            "holders",
+            "holder_tags"
+          ],
+          "errors": [],
+          "detail": {
+            "name": "Paxos Gold",
+            "symbol": "PAXG",
+            "address": "0x45804880de22913dafe09f4980848ece6ecbaf78",
+            "platform": "Ethereum",
+            "price": "4295.619338867211806278610331991053",
+            "price_change_24h": "4273.003387589783943488286977851977470000",
+            "volume_24h": null,
+            "market_cap": "1848590791.264969818581042358",
+            "liquidity_usd": "21317375.922291178526291581",
+            "holders": "0",
+            "pool_count": "10",
+            "primary_dex": "Ethereum"
+          },
+          "price": {
+            "price": 4295.619338867212,
+            "price_change_24h": -0.0114,
+            "volume_24h": 1085343.5707947325,
+            "market_cap": 1848590791.2649698,
+            "liquidity_usd": 21317375.92229118,
+            "primary_dex": "Ethereum",
+            "timestamp": "1789379735000"
+          },
+          "pools": [
+            {
+              "address": "0x9c4fe5ffd9a9fc5678cfbd93aa2d4fd684b67c4c",
+              "exchange": "Uniswap v2",
+              "exchange_id": 1069,
+              "factory_address": "0x5c69bee701ef814a2b6a3edd4b1652cb9cc5aa6f",
+              "liquidity_usd": "15779162.148021707887461143",
+              "volume_24h": "268585.975596847679065821",
+              "published_at": "1590017270000",
+              "is_top": true,
+              "is_multichain": false,
+              "base": {
+                "address": "0x45804880de22913dafe09f4980848ece6ecbaf78",
+                "name": "Paxos Gold",
+                "symbol": "PAXG",
+                "liquidity": "1843.425359506466370089",
+                "liquidity_usd": "7876962.80594004612584793"
+              },
+              "quote": {
+                "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+                "name": "Wrapped Ether",
+                "symbol": "WETH",
+                "liquidity": "3134.281667475806827612",
+                "liquidity_usd": "7902199.342081661761613213"
+              }
+            },
+            {
+              "address": "0x5ae13baaef0620fdae1d355495dc51a17adb4082",
+              "exchange": "Uniswap v3 (Ethereum)",
+              "exchange_id": 1348,
+              "factory_address": "0x1f98431c8ad98523631ae4a59f267346ea31f984",
+              "liquidity_usd": "2140765.232469603046859369",
+              "volume_24h": "559564.969228567426673937",
+              "published_at": "1655264999000",
+              "is_top": true,
+              "is_multichain": false,
+              "base": {
+                "address": "0x45804880de22913dafe09f4980848ece6ecbaf78",
+                "name": "Paxos Gold",
+                "symbol": "PAXG",
+                "liquidity": "398.587146780867718346",
+                "liquidity_usd": "1712178.655935799298866289"
+              },
+              "quote": {
+                "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+                "name": "USD Coin",
+                "symbol": "USDC",
+                "liquidity": "428700.869807",
+                "liquidity_usd": "428586.57653380374799308"
+              }
+            },
+            {
+              "address": "0xfd13d9de8164cab18cc85ce981b22b5a4d1b10a90bad4b1bc7cf58469fcffc9c",
+              "exchange": "Uniswap v4 (Ethereum)",
+              "exchange_id": 11955,
+              "factory_address": "0x000000000004444c5dc75cb358380d2e3de08a90",
+              "liquidity_usd": "801957.844581516414738901",
+              "volume_24h": "11951.816147953013514396",
+              "published_at": "1742767223000",
+              "is_top": true,
+              "is_multichain": false,
+              "base": {
+                "address": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+                "name": "Wrapped BTC",
+                "symbol": "WBTC",
+                "liquidity": "4.8214658",
+                "liquidity_usd": "375622.44621577020998392"
+              },
+              "quote": {
+                "address": "0x45804880de22913dafe09f4980848ece6ecbaf78",
+                "name": "Paxos Gold",
+                "symbol": "PAXG",
+                "liquidity": "99.715439990435932619",
+                "liquidity_usd": "426335.398365746204754981"
+              }
+            }
+          ],
+          "security": {
+            "platform": "Ethereum",
+            "address": "0x45804880de22913dafe09f4980848ece6ecbaf78",
+            "security_level": "caution",
+            "category_level": "safe",
+            "buy_tax": "0",
+            "sell_tax": "0",
+            "source": "BINANCE",
+            "tags": [],
+            "security_item_count": 16,
+            "hit_count": 3
+          },
+          "holders": {
+            "count": "87323",
+            "platform_id": 1,
+            "address": "0x45804880de22913dafe09f4980848ece6ecbaf78"
+          },
+          "holder_tags": {
+            "platform_id": 1,
+            "address": "0x45804880de22913dafe09f4980848ece6ecbaf78",
+            "tags": [
+              {
+                "tag": "tag_dev",
+                "holder_count": "1",
+                "token_balance": "0.017419327497090723000000000000000000",
+                "holder_ratio": "0.000001"
+              },
+              {
+                "tag": "tag_sniper",
+                "holder_count": "0",
+                "token_balance": "0",
+                "holder_ratio": "0E-18"
+              },
+              {
+                "tag": "tag_kol",
+                "holder_count": "10",
+                "token_balance": "48.262343025867254987000000000000000000",
+                "holder_ratio": "0.000113"
+              },
+              {
+                "tag": "tag_whale",
+                "holder_count": "829",
+                "token_balance": "102167.615071403399352179000000000000000000",
+                "holder_ratio": "0.237410"
+              },
+              {
+                "tag": "tag_bot",
+                "holder_count": "0",
+                "token_balance": "0",
+                "holder_ratio": "0E-18"
+              },
+              {
+                "tag": "tag_insider",
+                "holder_count": "0",
+                "token_balance": "0",
+                "holder_ratio": "0E-18"
+              },
+              {
+                "tag": "tag_initial_bundler",
+                "holder_count": "0",
+                "token_balance": "0",
+                "holder_ratio": "0E-18"
+              },
+              {
+                "tag": "tag_smart_money",
+                "holder_count": "0",
+                "token_balance": "0",
+                "holder_ratio": "0E-18"
+              }
+            ]
+          }
+        },
+        {
+          "crypto_id": 5176,
+          "symbol": "XAUt",
+          "name": "Tether Gold",
+          "network": "ethereum",
+          "contract_address": "0x68749665FF8D2d112Fa859AA293F07A622782F38",
+          "state": "available",
+          "surfaces": [
+            "detail",
+            "price",
+            "pools",
+            "security",
+            "holders",
+            "holder_tags"
+          ],
+          "errors": [],
+          "detail": {
+            "name": "Tether Gold",
+            "symbol": "XAUt",
+            "address": "0x68749665ff8d2d112fa859aa293f07a622782f38",
+            "platform": "Ethereum",
+            "price": "4291.630528675295818538337417356327",
+            "price_change_24h": "4270.588040902283614959814407488534620000",
+            "volume_24h": null,
+            "market_cap": "3037389013.733471641784380543",
+            "liquidity_usd": "17343603.793666923797647766",
+            "holders": "0",
+            "pool_count": "10",
+            "primary_dex": "Ethereum"
+          },
+          "price": {
+            "price": 4291.630528675296,
+            "price_change_24h": -0.0125,
+            "volume_24h": 1065013.3901263124,
+            "market_cap": 3037389013.733472,
+            "liquidity_usd": 17343603.793666925,
+            "primary_dex": "Ethereum",
+            "timestamp": "1789379711000"
+          },
+          "pools": [
+            {
+              "address": "0x9e78615593e839ca2078141d45044a51935053f3",
+              "exchange": "Ring Exchange (Ethereum)",
+              "exchange_id": 32396,
+              "factory_address": "0xeb2a625b704d73e82946d8d026e1f588eed06416",
+              "liquidity_usd": "7407122.783992240316686775",
+              "volume_24h": "123019.014650803578268702",
+              "published_at": "1743645287000",
+              "is_top": true,
+              "is_multichain": false,
+              "base": {
+                "address": "0x68749665ff8d2d112fa859aa293f07a622782f38",
+                "name": "Tether Gold",
+                "symbol": "XAUt",
+                "liquidity": "866.194109",
+                "liquidity_usd": "3699158.202995409111925416"
+              },
+              "quote": {
+                "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+                "name": "Wrapped Ether",
+                "symbol": "WETH",
+                "liquidity": "1470.705167861086731813",
+                "liquidity_usd": "3707964.580996831204761359"
+              }
+            },
+            {
+              "address": "0xa8dd78582e31791c08187169a3343365a1e3282c67bc7f93c1e585ddd0a4c4e0",
+              "exchange": "Uniswap v4 (Ethereum)",
+              "exchange_id": 11955,
+              "factory_address": "0x000000000004444c5dc75cb358380d2e3de08a90",
+              "liquidity_usd": "3561481.965036271449091164",
+              "volume_24h": "137790.082522895662104705",
+              "published_at": "1742169707000",
+              "is_top": true,
+              "is_multichain": false,
+              "base": {
+                "address": "0x68749665ff8d2d112fa859aa293f07a622782f38",
+                "name": "Tether Gold",
+                "symbol": "XAUt",
+                "liquidity": "658.488872",
+                "liquidity_usd": "2820255.051175781284597952"
+              },
+              "quote": {
+                "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+                "name": "USD Coin",
+                "symbol": "USDC",
+                "liquidity": "741422.285534",
+                "liquidity_usd": "741226.913860490164493213"
+              }
+            },
+            {
+              "address": "0x6546055f46e866a4b9a4a13e81273e3152bae5da",
+              "exchange": "Uniswap v3 (Ethereum)",
+              "exchange_id": 1348,
+              "factory_address": "0x1f98431c8ad98523631ae4a59f267346ea31f984",
+              "liquidity_usd": "2196440.905056006868441546",
+              "volume_24h": "372162.358152902581583437",
+              "published_at": "1637564252000",
+              "is_top": true,
+              "is_multichain": false,
+              "base": {
+                "address": "0x68749665ff8d2d112fa859aa293f07a622782f38",
+                "name": "Tether Gold",
+                "symbol": "XAUt",
+                "liquidity": "427.703803",
+                "liquidity_usd": "1835541.670692724755520088"
+              },
+              "quote": {
+                "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+                "name": "Tether USD",
+                "symbol": "USDT",
+                "liquidity": "361065.325398",
+                "liquidity_usd": "360899.234363282112921458"
+              }
+            }
+          ],
+          "security": {
+            "platform": "Ethereum",
+            "address": "0x68749665FF8D2d112Fa859AA293F07A622782F38",
+            "security_level": "safe",
+            "category_level": "unknown",
+            "buy_tax": "0",
+            "sell_tax": "0",
+            "source": "BINANCE",
+            "tags": [],
+            "security_item_count": 16,
+            "hit_count": 1
+          },
+          "holders": {
+            "count": "60037",
+            "platform_id": 1,
+            "address": "0x68749665ff8d2d112fa859aa293f07a622782f38"
+          },
+          "holder_tags": {
+            "platform_id": 1,
+            "address": "0x68749665ff8d2d112fa859aa293f07a622782f38",
+            "tags": [
+              {
+                "tag": "tag_dev",
+                "holder_count": "0",
+                "token_balance": "0",
+                "holder_ratio": "0E-18"
+              },
+              {
+                "tag": "tag_sniper",
+                "holder_count": "0",
+                "token_balance": "0",
+                "holder_ratio": "0E-18"
+              },
+              {
+                "tag": "tag_kol",
+                "holder_count": "9",
+                "token_balance": "141.760473000000000000000000000000000000",
+                "holder_ratio": "0.000201"
+              },
+              {
+                "tag": "tag_whale",
+                "holder_count": "652",
+                "token_balance": "325910.636203000000000000000000000000000000",
+                "holder_ratio": "0.460491"
+              },
+              {
+                "tag": "tag_bot",
+                "holder_count": "0",
+                "token_balance": "0",
+                "holder_ratio": "0E-18"
+              },
+              {
+                "tag": "tag_insider",
+                "holder_count": "0",
+                "token_balance": "0",
+                "holder_ratio": "0E-18"
+              },
+              {
+                "tag": "tag_initial_bundler",
+                "holder_count": "0",
+                "token_balance": "0",
+                "holder_ratio": "0E-18"
+              },
+              {
+                "tag": "tag_smart_money",
+                "holder_count": "0",
+                "token_balance": "0",
+                "holder_ratio": "0E-18"
+              }
+            ]
+          }
+        },
+        {
+          "crypto_id": 34212,
+          "symbol": "XAUM",
+          "name": "Matrixdock Gold",
+          "network": "ethereum",
+          "contract_address": "0x2103E845C5E135493Bb6c2A4f0B8651956eA8682",
+          "state": "available",
+          "surfaces": [
+            "detail",
+            "price",
+            "pools",
+            "security",
+            "holders",
+            "holder_tags"
+          ],
+          "errors": [],
+          "detail": {
+            "name": "Matrixdock Gold",
+            "symbol": "XAUM",
+            "address": "0x2103e845c5e135493bb6c2a4f0b8651956ea8682",
+            "platform": "Ethereum",
+            "price": "4343.898964304979674189032364532339",
+            "price_change_24h": "4343.898964304979674189032364532339090000",
+            "volume_24h": null,
+            "market_cap": "23508208.538427406911461451",
+            "liquidity_usd": "114534.046203013929102827",
+            "holders": "0",
+            "pool_count": "1",
+            "primary_dex": "Ethereum"
+          },
+          "price": {
+            "price": 4343.89896430498,
+            "price_change_24h": 0,
+            "volume_24h": 7.513976895357987,
+            "market_cap": 23508208.538427405,
+            "liquidity_usd": 114534.04620301393,
+            "primary_dex": "Ethereum",
+            "timestamp": "1789369415000"
+          },
+          "pools": [
+            {
+              "address": "0x1b8045234de7671a02204d12c9b61a40cef4ea83",
+              "exchange": "Uniswap v3 (Ethereum)",
+              "exchange_id": 1348,
+              "factory_address": "0x1f98431c8ad98523631ae4a59f267346ea31f984",
+              "liquidity_usd": "114534.046203013929102827",
+              "volume_24h": "7.513976895357987276",
+              "published_at": "1785385607000",
+              "is_top": true,
+              "is_multichain": false,
+              "base": {
+                "address": "0x2103e845c5e135493bb6c2a4f0b8651956ea8682",
+                "name": "Matrixdock Gold",
+                "symbol": "XAUM",
+                "liquidity": "14.667164697278487278",
+                "liquidity_usd": "63709.63732518003421042"
+              },
+              "quote": {
+                "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+                "name": "Tether USD",
+                "symbol": "USDT",
+                "liquidity": "50844.878512",
+                "liquidity_usd": "50824.408877833894892408"
+              }
+            },
+            {
+              "address": "0x5cc398c51789b697915a09b2093e2dd639e2dc0dd857f9040738625a8bb9cc11",
+              "exchange": "Uniswap v4 (Ethereum)",
+              "exchange_id": 11955,
+              "factory_address": "0x000000000004444c5dc75cb358380d2e3de08a90",
+              "liquidity_usd": "100.531421373978391133",
+              "volume_24h": "0",
+              "published_at": "1761411083000",
+              "is_top": null,
+              "is_multichain": false,
+              "base": {
+                "address": "0x2103e845c5e135493bb6c2a4f0b8651956ea8682",
+                "name": "Matrixdock Gold",
+                "symbol": "XAUM",
+                "liquidity": "0.02257780515091612",
+                "liquidity_usd": "100.531421373978391133"
+              },
+              "quote": {
+                "address": "0x85e93e469fae746ffed87036d9cb3d2cbf7773a7",
+                "name": "XAUX",
+                "symbol": "XAUX",
+                "liquidity": "0.02426891",
+                "liquidity_usd": "0"
+              }
+            },
+            {
+              "address": "0x38e69f1314261ff43797de7f0bb8e9f722a89415364d98c735304021e37d22a6",
+              "exchange": "Uniswap v4 (Ethereum)",
+              "exchange_id": 11955,
+              "factory_address": "0x000000000004444c5dc75cb358380d2e3de08a90",
+              "liquidity_usd": "99.983075305281343055",
+              "volume_24h": null,
+              "published_at": "1783257023000",
+              "is_top": null,
+              "is_multichain": false,
+              "base": {
+                "address": "0x2103e845c5e135493bb6c2a4f0b8651956ea8682",
+                "name": "Matrixdock Gold",
+                "symbol": "XAUM",
+                "liquidity": "0.000000230740582478",
+                "liquidity_usd": "0"
+              },
+              "quote": {
+                "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+                "name": "USD Coin",
+                "symbol": "USDC",
+                "liquidity": "100.000001",
+                "liquidity_usd": "99.983075305281343055"
+              }
+            }
+          ],
+          "security": {
+            "platform": "Ethereum",
+            "address": "0x2103E845C5E135493Bb6c2A4f0B8651956eA8682",
+            "security_level": "safe",
+            "category_level": "unknown",
+            "buy_tax": "0.0",
+            "sell_tax": "0.0",
+            "source": "W3W",
+            "tags": [],
+            "security_item_count": 27,
+            "hit_count": 1
+          },
+          "holders": {
+            "count": "317",
+            "platform_id": 1,
+            "address": "0x2103e845c5e135493bb6c2a4f0b8651956ea8682"
+          },
+          "holder_tags": {
+            "platform_id": 1,
+            "address": "0x2103e845c5e135493bb6c2a4f0b8651956ea8682",
+            "tags": [
+              {
+                "tag": "tag_dev",
+                "holder_count": "0",
+                "token_balance": "0",
+                "holder_ratio": "0E-18"
+              },
+              {
+                "tag": "tag_sniper",
+                "holder_count": "0",
+                "token_balance": "0",
+                "holder_ratio": "0E-18"
+              },
+              {
+                "tag": "tag_kol",
+                "holder_count": "0",
+                "token_balance": "0",
+                "holder_ratio": "0E-18"
+              },
+              {
+                "tag": "tag_whale",
+                "holder_count": "6",
+                "token_balance": "4213.388383469512700643000000000000000000",
+                "holder_ratio": "0.778560"
+              },
+              {
+                "tag": "tag_bot",
+                "holder_count": "0",
+                "token_balance": "0",
+                "holder_ratio": "0E-18"
+              },
+              {
+                "tag": "tag_insider",
+                "holder_count": "0",
+                "token_balance": "0",
+                "holder_ratio": "0E-18"
+              },
+              {
+                "tag": "tag_initial_bundler",
+                "holder_count": "0",
+                "token_balance": "0",
+                "holder_ratio": "0E-18"
+              },
+              {
+                "tag": "tag_smart_money",
+                "holder_count": "0",
+                "token_balance": "0",
+                "holder_ratio": "0E-18"
+              }
+            ]
+          }
+        },
+        {
+          "crypto_id": 20245,
+          "symbol": "CGO",
+          "name": "Comtech Gold",
+          "network": "xdc-network",
+          "contract_address": "0x8f9920283470F52128bF11B0c14E798bE704fD15",
+          "state": "unavailable",
+          "surfaces": [],
+          "errors": [
+            {
+              "surface": "detail",
+              "error": "CMC request failed for /v1/dex/token: HTTP 500"
+            },
+            {
+              "surface": "price",
+              "error": "CMC request failed for /v1/dex/token/price: HTTP 500"
+            },
+            {
+              "surface": "pools",
+              "error": "CMC request failed for /v1/dex/token/pools: HTTP 500"
+            },
+            {
+              "surface": "security",
+              "error": "CMC request failed for /v1/dex/security/detail: HTTP 400"
+            },
+            {
+              "surface": "holders",
+              "error": "CMC request failed for /v1/dex/holders/count: HTTP 400"
+            },
+            {
+              "surface": "holder_tags",
+              "error": "CMC request failed for /v1/dex/holders/tag_count: HTTP 400"
+            }
+          ],
+          "detail": {},
+          "price": {},
+          "pools": [],
+          "security": {},
+          "holders": {},
+          "holder_tags": {}
+        },
+        {
+          "crypto_id": 22492,
+          "symbol": "VNXAU",
+          "name": "VNX Gold",
+          "network": "ethereum",
+          "contract_address": "0x6d57B2E05F26C26b549231c866bdd39779e4a488",
+          "state": "available",
+          "surfaces": [
+            "detail",
+            "price",
+            "pools",
+            "security",
+            "holders",
+            "holder_tags"
+          ],
+          "errors": [],
+          "detail": {
+            "name": "VNX Gold",
+            "symbol": "VNXAU",
+            "address": "0x6d57b2e05f26c26b549231c866bdd39779e4a488",
+            "platform": "Ethereum",
+            "price": "203.3467048924985101158003460080412",
+            "price_change_24h": "0",
+            "volume_24h": null,
+            "market_cap": "92881.26926801573730089",
+            "liquidity_usd": "8.237120764913323398",
+            "holders": "0",
+            "pool_count": "1",
+            "primary_dex": "Ethereum"
+          },
+          "price": {
+            "price": 203.3467048924985,
+            "price_change_24h": 0.0,
+            "volume_24h": 0.0,
+            "market_cap": 92881.26926801573,
+            "liquidity_usd": 8.237120764913323,
+            "primary_dex": "Ethereum",
+            "timestamp": "1788469823000"
+          },
+          "pools": [
+            {
+              "address": "0x66d1b94f81fba13efbd5307db63dde8cc810ffdf",
+              "exchange": "Uniswap v3 (Ethereum)",
+              "exchange_id": 1348,
+              "factory_address": "0x1f98431c8ad98523631ae4a59f267346ea31f984",
+              "liquidity_usd": "8.237120764913323398",
+              "volume_24h": "0",
+              "published_at": "1660921368000",
+              "is_top": true,
+              "is_multichain": false,
+              "base": {
+                "address": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+                "name": "Wrapped BTC",
+                "symbol": "WBTC",
+                "liquidity": "0.00010123",
+                "liquidity_usd": "8.237120764913323398"
+              },
+              "quote": {
+                "address": "0x6d57b2e05f26c26b549231c866bdd39779e4a488",
+                "name": "VNX Gold",
+                "symbol": "VNXAU",
+                "liquidity": "1.843070722776360051",
+                "liquidity_usd": "0"
+              }
+            },
+            {
+              "address": "0xb898c192b1315eb1870d6081f71fa9ec03514ee1d0db4738f279d67df37b6e02",
+              "exchange": "Uniswap v4 (Ethereum)",
+              "exchange_id": 11955,
+              "factory_address": "0x000000000004444c5dc75cb358380d2e3de08a90",
+              "liquidity_usd": "34.052150381886510123",
+              "volume_24h": "0",
+              "published_at": "1758320759000",
+              "is_top": null,
+              "is_multichain": false,
+              "base": {
+                "address": "0x6d57b2e05f26c26b549231c866bdd39779e4a488",
+                "name": "VNX Gold",
+                "symbol": "VNXAU",
+                "liquidity": "0.282176065222919715",
+                "liquidity_usd": "0"
+              },
+              "quote": {
+                "address": "0x85e93e469fae746ffed87036d9cb3d2cbf7773a7",
+                "name": "XAUX",
+                "symbol": "XAUX",
+                "liquidity": "0.00786649",
+                "liquidity_usd": "34.052150381886510123"
+              }
+            },
+            {
+              "address": "0xc26f0b79b2da89d528164ca2e74f9a78457e3c38e0a4781c7cc68cb383844d13",
+              "exchange": "Uniswap v4 (Ethereum)",
+              "exchange_id": 11955,
+              "factory_address": "0x000000000004444c5dc75cb358380d2e3de08a90",
+              "liquidity_usd": "29.996683202922852",
+              "volume_24h": null,
+              "published_at": "1785311531000",
+              "is_top": null,
+              "is_multichain": false,
+              "base": {
+                "address": "0x6d57b2e05f26c26b549231c866bdd39779e4a488",
+                "name": "VNX Gold",
+                "symbol": "VNXAU",
+                "liquidity": "0",
+                "liquidity_usd": "0"
+              },
+              "quote": {
+                "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+                "name": "USD Coin",
+                "symbol": "USDC",
+                "liquidity": "30",
+                "liquidity_usd": "29.996683202922852"
+              }
+            }
+          ],
+          "security": {
+            "platform": "Ethereum",
+            "address": "0x6d57B2E05F26C26b549231c866bdd39779e4a488",
+            "security_level": "unknown",
+            "category_level": "unknown",
+            "buy_tax": null,
+            "sell_tax": null,
+            "source": null,
+            "tags": [],
+            "security_item_count": 0,
+            "hit_count": 0
+          },
+          "holders": {
+            "count": "105",
+            "platform_id": 1,
+            "address": "0x6d57b2e05f26c26b549231c866bdd39779e4a488"
+          },
+          "holder_tags": {
+            "platform_id": 1,
+            "address": "0x6d57b2e05f26c26b549231c866bdd39779e4a488",
+            "tags": [
+              {
+                "tag": "tag_dev",
+                "holder_count": "0",
+                "token_balance": "0",
+                "holder_ratio": "0E-18"
+              },
+              {
+                "tag": "tag_sniper",
+                "holder_count": "0",
+                "token_balance": "0",
+                "holder_ratio": "0E-18"
+              },
+              {
+                "tag": "tag_kol",
+                "holder_count": "0",
+                "token_balance": "0",
+                "holder_ratio": "0E-18"
+              },
+              {
+                "tag": "tag_whale",
+                "holder_count": "1",
+                "token_balance": "0.000017546743343087000000000000000000",
+                "holder_ratio": "0.000001"
+              },
+              {
+                "tag": "tag_bot",
+                "holder_count": "0",
+                "token_balance": "0",
+                "holder_ratio": "0E-18"
+              },
+              {
+                "tag": "tag_insider",
+                "holder_count": "0",
+                "token_balance": "0",
+                "holder_ratio": "0E-18"
+              },
+              {
+                "tag": "tag_initial_bundler",
+                "holder_count": "0",
+                "token_balance": "0",
+                "holder_ratio": "0E-18"
+              },
+              {
+                "tag": "tag_smart_money",
+                "holder_count": "0",
+                "token_balance": "0",
+                "holder_ratio": "0E-18"
+              }
+            ]
+          }
+        },
+        {
+          "crypto_id": 37082,
+          "symbol": "XAUT0",
+          "name": "Tether Gold Tokens",
+          "network": "hyperliquid",
+          "contract_address": "0xf4d9235269a96aadafc9adae454a0618ebe37949",
+          "state": "unavailable",
+          "surfaces": [],
+          "errors": [
+            {
+              "surface": "detail",
+              "error": "CMC request failed for /v1/dex/token: HTTP 500"
+            },
+            {
+              "surface": "price",
+              "error": "CMC request failed for /v1/dex/token/price: HTTP 500"
+            },
+            {
+              "surface": "pools",
+              "error": "CMC request failed for /v1/dex/token/pools: HTTP 500"
+            },
+            {
+              "surface": "security",
+              "error": "CMC request failed for /v1/dex/security/detail: HTTP 400"
+            },
+            {
+              "surface": "holders",
+              "error": "CMC request failed for /v1/dex/holders/count: HTTP 400"
+            },
+            {
+              "surface": "holder_tags",
+              "error": "CMC request failed for /v1/dex/holders/tag_count: HTTP 400"
+            }
+          ],
+          "detail": {},
+          "price": {},
+          "pools": [],
+          "security": {},
+          "holders": {},
+          "holder_tags": {}
+        },
+        {
+          "crypto_id": 39344,
+          "symbol": "XAU",
+          "name": "Gold (Derivatives)",
+          "network": null,
+          "contract_address": null,
+          "state": "no_contract",
+          "surfaces": [],
+          "errors": [],
+          "detail": {},
+          "price": {},
+          "pools": [],
+          "security": {},
+          "holders": {},
+          "holder_tags": {}
+        }
+      ],
+      "requested_token_count": 7,
+      "probed_token_count": 7,
+      "omitted_token_count": 0,
+      "contract_token_count": 6,
+      "covered_token_count": 4,
+      "unavailable_token_count": 2,
+      "no_contract_token_count": 1,
+      "surface_counts": {
+        "detail": 4,
+        "price": 4,
+        "pools": 4,
+        "security": 4,
+        "holders": 4,
+        "holder_tags": 4
+      },
+      "coverage_limited": false
+    },
+    "provenance": {
+      "source": "CoinMarketCap Pro API",
+      "observed_at": "2026-09-14T09:56:04.859894+00:00",
+      "endpoints": [
+        "/v1/dex/holders/count",
+        "/v1/dex/holders/tag_count",
+        "/v1/dex/security/detail",
+        "/v1/dex/token",
+        "/v1/dex/token/pools",
+        "/v1/dex/token/price",
+        "/v2/cryptocurrency/info",
+        "/v5/real-world-assets/info",
+        "/v5/real-world-assets/issuers",
+        "/v5/real-world-assets/market-pairs/list",
+        "/v5/real-world-assets/quotes/latest"
+      ],
+      "calls": [
+        {
+          "endpoint": "/v5/real-world-assets/quotes/latest",
+          "params": {
+            "rwa_slug": "gold",
+            "convert": "USD"
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:04.860225+00:00"
+        },
+        {
+          "endpoint": "/v5/real-world-assets/info",
+          "params": {
+            "rwa_slug": "gold"
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:05.329323+00:00"
+        },
+        {
+          "endpoint": "/v5/real-world-assets/market-pairs/list",
+          "params": {
+            "rwa_slug": "gold",
+            "convert": "USD"
+          },
+          "status": 403,
+          "error": "HTTPError",
+          "observed_at": "2026-09-14T09:56:05.610405+00:00"
+        },
+        {
+          "endpoint": "/v5/real-world-assets/issuers",
+          "params": {
+            "issuer_id": "68904c24abae9b5b9fb35815"
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:05.825241+00:00"
+        },
+        {
+          "endpoint": "/v5/real-world-assets/issuers",
+          "params": {
+            "issuer_id": "68904e9cabae9b5b9fb358ac"
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:05.979689+00:00"
+        },
+        {
+          "endpoint": "/v5/real-world-assets/issuers",
+          "params": {
+            "issuer_id": "68905a7babae9b5b9fb35a8d"
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:06.144294+00:00"
+        },
+        {
+          "endpoint": "/v5/real-world-assets/issuers",
+          "params": {
+            "issuer_id": "68904cceabae9b5b9fb35839"
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:06.350667+00:00"
+        },
+        {
+          "endpoint": "/v5/real-world-assets/issuers",
+          "params": {
+            "issuer_id": "68905b43abae9b5b9fb35a95"
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:06.737675+00:00"
+        },
+        {
+          "endpoint": "/v5/real-world-assets/issuers",
+          "params": {
+            "issuer_id": "695e11f774b54210f3b95dc3"
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:06.895066+00:00"
+        },
+        {
+          "endpoint": "/v2/cryptocurrency/info",
+          "params": {
+            "id": "4705,5176,34212,20245,22492,37082,39344"
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:07.055223+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/token",
+          "params": {
+            "platform": "ethereum",
+            "address": "0x45804880de22913dafe09f4980848ece6ecbaf78"
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:07.397467+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/token/price",
+          "params": {
+            "platform": "ethereum",
+            "address": "0x45804880de22913dafe09f4980848ece6ecbaf78"
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:08.068238+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/token/pools",
+          "params": {
+            "platform": "ethereum",
+            "address": "0x45804880de22913dafe09f4980848ece6ecbaf78",
+            "size": 3
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:08.644708+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/security/detail",
+          "params": {
+            "platformName": "ethereum",
+            "address": "0x45804880de22913dafe09f4980848ece6ecbaf78"
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:09.096582+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/holders/count",
+          "params": {
+            "platform": "ethereum",
+            "tokenAddress": "0x45804880de22913dafe09f4980848ece6ecbaf78"
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:09.494749+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/holders/tag_count",
+          "params": {
+            "platform": "ethereum",
+            "tokenAddress": "0x45804880de22913dafe09f4980848ece6ecbaf78"
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:10.050248+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/token",
+          "params": {
+            "platform": "ethereum",
+            "address": "0x68749665FF8D2d112Fa859AA293F07A622782F38"
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:10.379858+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/token/price",
+          "params": {
+            "platform": "ethereum",
+            "address": "0x68749665FF8D2d112Fa859AA293F07A622782F38"
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:10.837047+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/token/pools",
+          "params": {
+            "platform": "ethereum",
+            "address": "0x68749665FF8D2d112Fa859AA293F07A622782F38",
+            "size": 3
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:11.165350+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/security/detail",
+          "params": {
+            "platformName": "ethereum",
+            "address": "0x68749665FF8D2d112Fa859AA293F07A622782F38"
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:11.604090+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/holders/count",
+          "params": {
+            "platform": "ethereum",
+            "tokenAddress": "0x68749665FF8D2d112Fa859AA293F07A622782F38"
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:11.934787+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/holders/tag_count",
+          "params": {
+            "platform": "ethereum",
+            "tokenAddress": "0x68749665FF8D2d112Fa859AA293F07A622782F38"
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:12.270316+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/token",
+          "params": {
+            "platform": "ethereum",
+            "address": "0x2103E845C5E135493Bb6c2A4f0B8651956eA8682"
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:12.641436+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/token/price",
+          "params": {
+            "platform": "ethereum",
+            "address": "0x2103E845C5E135493Bb6c2A4f0B8651956eA8682"
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:12.979846+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/token/pools",
+          "params": {
+            "platform": "ethereum",
+            "address": "0x2103E845C5E135493Bb6c2A4f0B8651956eA8682",
+            "size": 3
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:13.308053+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/security/detail",
+          "params": {
+            "platformName": "ethereum",
+            "address": "0x2103E845C5E135493Bb6c2A4f0B8651956eA8682"
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:13.691710+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/holders/count",
+          "params": {
+            "platform": "ethereum",
+            "tokenAddress": "0x2103E845C5E135493Bb6c2A4f0B8651956eA8682"
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:14.025257+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/holders/tag_count",
+          "params": {
+            "platform": "ethereum",
+            "tokenAddress": "0x2103E845C5E135493Bb6c2A4f0B8651956eA8682"
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:14.404547+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/token",
+          "params": {
+            "platform": "xdc-network",
+            "address": "0x8f9920283470F52128bF11B0c14E798bE704fD15"
+          },
+          "status": 500,
+          "error": "HTTPError",
+          "observed_at": "2026-09-14T09:56:14.777412+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/token/price",
+          "params": {
+            "platform": "xdc-network",
+            "address": "0x8f9920283470F52128bF11B0c14E798bE704fD15"
+          },
+          "status": 500,
+          "error": "HTTPError",
+          "observed_at": "2026-09-14T09:56:15.105118+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/token/pools",
+          "params": {
+            "platform": "xdc-network",
+            "address": "0x8f9920283470F52128bF11B0c14E798bE704fD15",
+            "size": 3
+          },
+          "status": 500,
+          "error": "HTTPError",
+          "observed_at": "2026-09-14T09:56:15.439586+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/security/detail",
+          "params": {
+            "platformName": "xdc-network",
+            "address": "0x8f9920283470F52128bF11B0c14E798bE704fD15"
+          },
+          "status": 400,
+          "error": "HTTPError",
+          "observed_at": "2026-09-14T09:56:15.787385+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/holders/count",
+          "params": {
+            "platform": "xdc-network",
+            "tokenAddress": "0x8f9920283470F52128bF11B0c14E798bE704fD15"
+          },
+          "status": 400,
+          "error": "HTTPError",
+          "observed_at": "2026-09-14T09:56:16.157960+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/holders/tag_count",
+          "params": {
+            "platform": "xdc-network",
+            "tokenAddress": "0x8f9920283470F52128bF11B0c14E798bE704fD15"
+          },
+          "status": 400,
+          "error": "HTTPError",
+          "observed_at": "2026-09-14T09:56:16.484500+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/token",
+          "params": {
+            "platform": "ethereum",
+            "address": "0x6d57B2E05F26C26b549231c866bdd39779e4a488"
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:16.836635+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/token/price",
+          "params": {
+            "platform": "ethereum",
+            "address": "0x6d57B2E05F26C26b549231c866bdd39779e4a488"
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:17.387500+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/token/pools",
+          "params": {
+            "platform": "ethereum",
+            "address": "0x6d57B2E05F26C26b549231c866bdd39779e4a488",
+            "size": 3
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:17.717766+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/security/detail",
+          "params": {
+            "platformName": "ethereum",
+            "address": "0x6d57B2E05F26C26b549231c866bdd39779e4a488"
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:18.087634+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/holders/count",
+          "params": {
+            "platform": "ethereum",
+            "tokenAddress": "0x6d57B2E05F26C26b549231c866bdd39779e4a488"
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:18.421294+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/holders/tag_count",
+          "params": {
+            "platform": "ethereum",
+            "tokenAddress": "0x6d57B2E05F26C26b549231c866bdd39779e4a488"
+          },
+          "status": 200,
+          "observed_at": "2026-09-14T09:56:18.778898+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/token",
+          "params": {
+            "platform": "hyperliquid",
+            "address": "0xf4d9235269a96aadafc9adae454a0618ebe37949"
+          },
+          "status": 500,
+          "error": "HTTPError",
+          "observed_at": "2026-09-14T09:56:19.113400+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/token/price",
+          "params": {
+            "platform": "hyperliquid",
+            "address": "0xf4d9235269a96aadafc9adae454a0618ebe37949"
+          },
+          "status": 500,
+          "error": "HTTPError",
+          "observed_at": "2026-09-14T09:56:19.459089+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/token/pools",
+          "params": {
+            "platform": "hyperliquid",
+            "address": "0xf4d9235269a96aadafc9adae454a0618ebe37949",
+            "size": 3
+          },
+          "status": 500,
+          "error": "HTTPError",
+          "observed_at": "2026-09-14T09:56:19.781819+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/security/detail",
+          "params": {
+            "platformName": "hyperliquid",
+            "address": "0xf4d9235269a96aadafc9adae454a0618ebe37949"
+          },
+          "status": 400,
+          "error": "HTTPError",
+          "observed_at": "2026-09-14T09:56:20.110135+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/holders/count",
+          "params": {
+            "platform": "hyperliquid",
+            "tokenAddress": "0xf4d9235269a96aadafc9adae454a0618ebe37949"
+          },
+          "status": 400,
+          "error": "HTTPError",
+          "observed_at": "2026-09-14T09:56:20.506335+00:00"
+        },
+        {
+          "endpoint": "/v1/dex/holders/tag_count",
+          "params": {
+            "platform": "hyperliquid",
+            "tokenAddress": "0xf4d9235269a96aadafc9adae454a0618ebe37949"
+          },
+          "status": 400,
+          "error": "HTTPError",
+          "observed_at": "2026-09-14T09:56:20.826067+00:00"
+        }
+      ],
+      "optional_errors": [
+        {
+          "surface": "market_pairs",
+          "error": "CMC request failed for /v5/real-world-assets/market-pairs/list: HTTP 403"
+        },
+        {
+          "surface": "dex",
+          "error": "12 optional DEX request(s) failed; see dex_evidence.tokens[].errors"
+        }
+      ],
+      "raw_responses_included": false
+    }
+  }
+}

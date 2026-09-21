@@ -1,0 +1,316 @@
+{
+  "schema_version": "bell.rwa_surface_integrity.history.v1",
+  "purpose": "Public dated summaries of the population integrity scan. The latest observation also has a credential-free normalized input package for deterministic replay; raw authenticated responses and transport headers are intentionally excluded.",
+  "observations": [
+    {
+      "observed_at": "2026-09-15T22:22:00Z",
+      "tokenised_references_scanned": 790,
+      "tokens_scanned": 1428,
+      "states": {
+        "do_not_compare": 34,
+        "investigate": 662,
+        "no_flags": 94
+      },
+      "signals": {
+        "PRICE_DENOMINATION_BREAK": 4,
+        "DERIVATIVE_MIX": 114,
+        "ZERO_MCAP_POSITIVE_VOLUME": 31,
+        "MARKET_FIELDS_MISSING": 647,
+        "SYMBOL_COLLISION": 60,
+        "PRICE_DISPERSION": 5,
+        "NO_TRADFI_MARKET": 13
+      },
+      "source_hashes": {
+        "map": "5f0592eed1278a80beda91024db0553476ba3d55651484136347493df7c275b5",
+        "asset_list": "9eec9e2249589c019260ae6e88aa9570625b8ae84927936c299cb889ca4ddb0b",
+        "quotes": "746806b8e9c100fb2fec7900835bca02ba1b4916c0b7ab8fc826693ab11cc3e7",
+        "info": "ac6cf878fb549f1252e6beec8bedfe602e1ae64499b0ef76409ce93a19223bc5",
+        "issuers": "38d1fbcbc2d005351cf66161107f10ce79234040b05ba8648dd6463b9a750b2f"
+      }
+    },
+    {
+      "observed_at": "2026-09-16T20:56:55Z",
+      "tokenised_references_scanned": 790,
+      "tokens_scanned": 1428,
+      "states": {
+        "do_not_compare": 39,
+        "investigate": 658,
+        "no_flags": 93
+      },
+      "signals": {
+        "PRICE_DENOMINATION_BREAK": 3,
+        "DERIVATIVE_MIX": 114,
+        "ZERO_MCAP_POSITIVE_VOLUME": 37,
+        "MARKET_FIELDS_MISSING": 645,
+        "SYMBOL_COLLISION": 60,
+        "TOKEN_INFO_MISSING": 3,
+        "PRICE_DISPERSION": 6,
+        "NO_TRADFI_MARKET": 13
+      },
+      "source_hashes": {
+        "map": "3bb07615a78196aa5346ce5c4309be80d9293e1ae45eeff0149fa1d846a4b37d",
+        "asset_list": "b18e1036ffce78a549a64e7dd7d840f25578ba672645888c1478fa3f83863254",
+        "quotes": "c5801357338ddc531c1a1c025559262c4c71548731353a81e5ed88800567b8e4",
+        "info": "9e587f40e9b3412878180dddb78dae80abe3063a18cea02bb9a285e1665e2ef5",
+        "issuers": "38d1fbcbc2d005351cf66161107f10ce79234040b05ba8648dd6463b9a750b2f"
+      }
+    },
+    {
+      "observed_at": "2026-09-21T15:29:46Z",
+      "tokenised_references_scanned": 791,
+      "tokens_scanned": 1435,
+      "states": {
+        "do_not_compare": 37,
+        "investigate": 662,
+        "no_flags": 92
+      },
+      "signals": {
+        "PRICE_DENOMINATION_BREAK": 4,
+        "DERIVATIVE_MIX": 119,
+        "NO_TRADFI_MARKET": 13,
+        "ZERO_MCAP_POSITIVE_VOLUME": 34,
+        "SYMBOL_COLLISION": 60,
+        "MARKET_FIELDS_MISSING": 646,
+        "TOKEN_INFO_MISSING": 4,
+        "PRICE_DISPERSION": 4
+      },
+      "source_hashes": {
+        "map": "78e316ebf7eb3754003fc1a86aed769db331b6c418bd3aa761f82775a35fd730",
+        "asset_list": "bae0fa9cd30dfe7fe6ce52fe101d6ad756f1d7cb6d42bfd0e5667fbf2713161b",
+        "quotes": "b9d8f2ee467817e250ff7c7c12aab33c86de80f2c380235b274030e6f6d31927",
+        "info": "6bf5e3edeeada1f19b8598b590d7b5827c167d41f434a778aa7b6315e430e172",
+        "issuers": "5f7d087ed42ea139e9e01d4d6d71b62c54a946a4ed5dbcc73f60270992434db3",
+        "crypto_info": "f4766ba2f9f52c05a7511b556bd6c40e56c54e8880233aaf3d1d375e46dc2dab"
+      }
+    },
+    {
+      "observed_at": "2026-09-21T15:45:08Z",
+      "tokenised_references_scanned": 791,
+      "tokens_scanned": 1435,
+      "states": {
+        "do_not_compare": 36,
+        "investigate": 663,
+        "no_flags": 92
+      },
+      "signals": {
+        "PRICE_DENOMINATION_BREAK": 3,
+        "DERIVATIVE_MIX": 119,
+        "NO_TRADFI_MARKET": 13,
+        "ZERO_MCAP_POSITIVE_VOLUME": 34,
+        "SYMBOL_COLLISION": 60,
+        "MARKET_FIELDS_MISSING": 646,
+        "TOKEN_INFO_MISSING": 4,
+        "PRICE_DISPERSION": 5
+      },
+      "source_hashes": {
+        "map": "76bde672b54f4b6f6e5a188ed1361ffee03d3a33f78d4d81ea2f5c8517015624",
+        "asset_list": "93e93b60e62d0935d44ad4f87e685c25d9dcfa808e58ce154d627355ef7569af",
+        "quotes": "5c6197536ebfc00e6f59cf52c73273a1655f27f6d6789a9f4f6c17e22e0c67b7",
+        "info": "5d782449ebb4f188b164adf791bd77ed63845b16087797ab671c63f19b3ed0a4",
+        "issuers": "5f7d087ed42ea139e9e01d4d6d71b62c54a946a4ed5dbcc73f60270992434db3",
+        "crypto_info": "980ad31557f0c9521fb3197d4df1b8efd0f1b5fb054e66cd1c8f173781b41306"
+      }
+    },
+    {
+      "observed_at": "2026-09-21T16:16:48Z",
+      "tokenised_references_scanned": 791,
+      "tokens_scanned": 1435,
+      "states": {
+        "do_not_compare": 35,
+        "investigate": 662,
+        "no_flags": 94
+      },
+      "signals": {
+        "PRICE_DENOMINATION_BREAK": 4,
+        "DERIVATIVE_MIX": 119,
+        "NO_TRADFI_MARKET": 13,
+        "ZERO_MCAP_POSITIVE_VOLUME": 32,
+        "SYMBOL_COLLISION": 60,
+        "MARKET_FIELDS_MISSING": 646,
+        "TOKEN_INFO_MISSING": 4,
+        "PRICE_DISPERSION": 4
+      },
+      "source_hashes": {
+        "map": "f75b19ac51bd2573c8b6a7d29dba782d87ae5c918fcc5081d51681665b6c9edb",
+        "asset_list": "53ee2c5c9dcdd846eab9eb83172f248b92c4904869764e676f532d8ac7f3592a",
+        "quotes": "cdc34cb734048b2e07c02f85e6069066a384d311719b988593c0a58ab9fb3f8f",
+        "info": "64f65b6c50039e931bab86d0ddea049947a2e12b04b288b23bc2336779f5c828",
+        "issuers": "5f7d087ed42ea139e9e01d4d6d71b62c54a946a4ed5dbcc73f60270992434db3",
+        "crypto_info": "5442dc26338533e502acc21666d5a135fabf8ed7a700f29dccac5623954f3939"
+      }
+    },
+    {
+      "observed_at": "2026-09-21T17:01:00Z",
+      "tokenised_references_scanned": 791,
+      "tokens_scanned": 1435,
+      "states": {
+        "do_not_compare": 39,
+        "investigate": 661,
+        "no_flags": 91
+      },
+      "signals": {
+        "PRICE_DENOMINATION_BREAK": 4,
+        "DERIVATIVE_MIX": 119,
+        "NO_TRADFI_MARKET": 13,
+        "ZERO_MCAP_POSITIVE_VOLUME": 36,
+        "SYMBOL_COLLISION": 60,
+        "MARKET_FIELDS_MISSING": 646,
+        "TOKEN_INFO_MISSING": 4,
+        "PRICE_DISPERSION": 4
+      },
+      "source_hashes": {
+        "map": "6a7379ecc46ac854078b4315d5d84d96f5b612d0c67341124ca156b343e4f74b",
+        "asset_list": "5e08488a015a92e4cf3908dd45f3b9a76b60dd80fabbceed0def9b77f62995ed",
+        "quotes": "3acbe37fd4b691453689fef5d8fcf62fc15553d1afbd9a00b3719d9f8e11abb8",
+        "info": "f8ee0bacfaa796704106ad51f1b4836bc007402892ec87f31143657cc1ec9630",
+        "issuers": "5f7d087ed42ea139e9e01d4d6d71b62c54a946a4ed5dbcc73f60270992434db3",
+        "crypto_info": "a8af4c6c503c4aeebf4c4344a6fb2a21652e455ce56121f915ece2b136b20464"
+      }
+    },
+    {
+      "observed_at": "2026-09-21T17:06:21Z",
+      "tokenised_references_scanned": 791,
+      "tokens_scanned": 1435,
+      "states": {
+        "do_not_compare": 39,
+        "investigate": 661,
+        "no_flags": 91
+      },
+      "signals": {
+        "PRICE_DENOMINATION_BREAK": 4,
+        "DERIVATIVE_MIX": 119,
+        "NO_TRADFI_MARKET": 13,
+        "ZERO_MCAP_POSITIVE_VOLUME": 36,
+        "SYMBOL_COLLISION": 60,
+        "MARKET_FIELDS_MISSING": 646,
+        "TOKEN_INFO_MISSING": 4,
+        "PRICE_DISPERSION": 4
+      },
+      "source_hashes": {
+        "map": "7d2db90cfbab84432dd5ba38b57b25824cba35e4f8c7dfd3ab8ed4bb2d4a5b1c",
+        "asset_list": "f10033d4200aea51db043ddadbc41b219e1478bb589bcd8830e3f997923a6a95",
+        "quotes": "dc27f95433ad824556f0c71f1b42cd0f07c2ea088951b22395a71552e5cc99d5",
+        "info": "633af1a997ee3891ac73019753d01b989965694f61f397a8979f7655db21b71a",
+        "issuers": "5f7d087ed42ea139e9e01d4d6d71b62c54a946a4ed5dbcc73f60270992434db3",
+        "crypto_info": "48da715b309949be9860370ef37300bd90bf63e84494087f203d3ced7b05a6e6"
+      }
+    },
+    {
+      "observed_at": "2026-09-21T17:42:51Z",
+      "tokenised_references_scanned": 791,
+      "tokens_scanned": 1435,
+      "states": {
+        "do_not_compare": 36,
+        "investigate": 663,
+        "no_flags": 92
+      },
+      "signals": {
+        "PRICE_DENOMINATION_BREAK": 3,
+        "DERIVATIVE_MIX": 119,
+        "NO_TRADFI_MARKET": 13,
+        "ZERO_MCAP_POSITIVE_VOLUME": 34,
+        "SYMBOL_COLLISION": 60,
+        "MARKET_FIELDS_MISSING": 646,
+        "TOKEN_INFO_MISSING": 4,
+        "PRICE_DISPERSION": 4
+      },
+      "source_hashes": {
+        "map": "3288c2b151f416ddf8dcf8e7c068db5d635800aa5612ffdceb8292ac72e0fffa",
+        "asset_list": "b779c970b72ab9e5b968e0350c2bc9c421f38be1bc4baea322d38aa5888572ed",
+        "quotes": "4b0e0f2acfaa9bc30b0ad208922fd9d23d9893c82621a9d13416c02e00de302d",
+        "info": "d8e7cc36eec506e3d601366fccd42c386eb7a0473770df4c99044aa7cbdd13e1",
+        "issuers": "5f7d087ed42ea139e9e01d4d6d71b62c54a946a4ed5dbcc73f60270992434db3",
+        "crypto_info": "0ccd4ee50b25113dad96645932b9077eca7bfcbcf7fc790fdbb0e3d548d35ee2"
+      }
+    },
+    {
+      "observed_at": "2026-09-21T18:28:48Z",
+      "tokenised_references_scanned": 791,
+      "tokens_scanned": 1435,
+      "states": {
+        "do_not_compare": 37,
+        "investigate": 661,
+        "no_flags": 93
+      },
+      "signals": {
+        "PRICE_DENOMINATION_BREAK": 3,
+        "DERIVATIVE_MIX": 119,
+        "NO_TRADFI_MARKET": 13,
+        "ZERO_MCAP_POSITIVE_VOLUME": 35,
+        "SYMBOL_COLLISION": 60,
+        "MARKET_FIELDS_MISSING": 646,
+        "TOKEN_INFO_MISSING": 4,
+        "PRICE_DISPERSION": 5
+      },
+      "source_hashes": {
+        "map": "eaa74bf1c48e36e4165cce7f34a13b63eb6a2ceb256cce0360ac034e4f33ec1d",
+        "asset_list": "cff51f3890d1216a278f01d9b8a98a1c9b31ab0ac3d77c2af065624cce313cfe",
+        "quotes": "72996bc6ebe146fbdd335dd1277bdaa0b9442e53a0b28b05eee94d81be8caaa5",
+        "info": "764e06c2948274e1b1a79566f260daffdd1e6ea9b68f7a50af18a3f9a351c713",
+        "issuers": "5f7d087ed42ea139e9e01d4d6d71b62c54a946a4ed5dbcc73f60270992434db3",
+        "crypto_info": "db5061d888c2f00706e068ee426c11115e2af675539b6fcb04f0f8a93e1b4d78"
+      }
+    },
+    {
+      "observed_at": "2026-09-21T19:19:31Z",
+      "tokenised_references_scanned": 791,
+      "tokens_scanned": 1435,
+      "states": {
+        "do_not_compare": 37,
+        "investigate": 661,
+        "no_flags": 93
+      },
+      "signals": {
+        "PRICE_DENOMINATION_BREAK": 4,
+        "DERIVATIVE_MIX": 119,
+        "NO_TRADFI_MARKET": 13,
+        "ZERO_MCAP_POSITIVE_VOLUME": 34,
+        "SYMBOL_COLLISION": 60,
+        "MARKET_FIELDS_MISSING": 646,
+        "TOKEN_INFO_MISSING": 4,
+        "PRICE_DISPERSION": 4
+      },
+      "source_hashes": {
+        "map": "69febe64f31ae3f6ceaad3a20b2fb538639bc927a905db0e9756d8bc9387d885",
+        "asset_list": "511e56f0bad1a47d4f6c052b97057a8f753b5404f7a2d14566bd0ecf61a2c63e",
+        "quotes": "89ca07a5ff09d3550b667abf978fa08515c450858e86927bc86f4235b03b1cb3",
+        "info": "425361b882f6a9e4f6c8e7c1e3d84811ee1918b4834c5e663518a02c5ad0c48c",
+        "issuers": "5f7d087ed42ea139e9e01d4d6d71b62c54a946a4ed5dbcc73f60270992434db3",
+        "crypto_info": "5228c35c6e0d16a529a8b6ce0707bfed2e3af96ed7954e1d969a1a1445155b4f"
+      }
+    },
+    {
+      "observed_at": "2026-09-21T21:25:01Z",
+      "tokenised_references_scanned": 791,
+      "tokens_scanned": 1435,
+      "states": {
+        "do_not_compare": 35,
+        "investigate": 662,
+        "no_flags": 94
+      },
+      "signals": {
+        "PRICE_DENOMINATION_BREAK": 4,
+        "DERIVATIVE_MIX": 119,
+        "NO_TRADFI_MARKET": 13,
+        "ZERO_MCAP_POSITIVE_VOLUME": 32,
+        "SYMBOL_COLLISION": 60,
+        "MARKET_FIELDS_MISSING": 646,
+        "TOKEN_INFO_MISSING": 4,
+        "PRICE_DISPERSION": 4
+      },
+      "source_hashes": {
+        "map": "48d6cd1bf2f8a40fad7fb815173e20c13789f90711d11c4ce0df626a83cf2b3c",
+        "asset_list": "9efcdfd65ba6ae89f49896c4870c1b046bade779a0ab95d667f3e3fc18dbe3f1",
+        "quotes": "1afc711c6da9bfe1a9a4363e0c78d275c32faf4f8d9198832d7c72e917d9624f",
+        "info": "ed15deef81076f458de4a88c2421e31b39db087290a7a25bdce0497f3f8d8222",
+        "issuers": "5f7d087ed42ea139e9e01d4d6d71b62c54a946a4ed5dbcc73f60270992434db3",
+        "crypto_info": "7075ab8e12cdb2ff040c32d6848080befc71aaeb524e6ba52908c6a196933a62"
+      }
+    }
+  ],
+  "limits": [
+    "The latest receipt includes credential-free normalized inputs; authenticated HTTP headers and transport metadata are not included",
+    "A changed count is a changed observation, not proof of cause or market impact",
+    "The current public page may use a newer live receipt when the publication service is available"
+  ]
+}

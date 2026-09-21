@@ -1,11 +1,13 @@
 import sys
+import random
+from datetime import datetime, timezone
 from pathlib import Path
 import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from bell import fetch_live_asset, fetch_live_catalog, fetch_live_dataset
-from engine import BellDataError, analyse_dataset, analyse_wrapper, classify_session, normalise_bar
+from engine import BellDataError, analyse_dataset, analyse_wrapper, boundary_metadata, classify_session, normalise_bar
 
 
 def bar(timestamp, opened=100, high=101, low=99):
@@ -13,12 +15,46 @@ def bar(timestamp, opened=100, high=101, low=99):
 
 
 class SessionEngineTests(unittest.TestCase):
+    def test_range_invariants_over_two_thousand_generated_bars(self):
+        """Deterministic property-style fuzzing for the core OHLC normaliser."""
+        rng = random.Random(20260915)
+        for index in range(2000):
+            opened = 0.01 + rng.random() * 100000
+            low = rng.random() * opened
+            high = opened + rng.random() * opened * 3
+            result = normalise_bar({
+                "time_open": f"2026-01-06T14:{index % 60:02d}:00Z",
+                "open": opened,
+                "high": high,
+                "low": low,
+                "close": low + rng.random() * (high - low),
+            })
+            expected = (high - low) / opened * 100
+            self.assertGreaterEqual(result["range_pct"], 0)
+            self.assertAlmostEqual(result["range_pct"], expected, places=10)
     def test_session_boundaries_and_dst(self):
         self.assertEqual(classify_session("2026-01-06T14:30:00Z"), "cash")
         self.assertEqual(classify_session("2026-01-06T21:00:00Z"), "after_hours")
         self.assertEqual(classify_session("2026-01-10T15:00:00Z"), "weekend")
         self.assertEqual(classify_session("2026-07-06T13:30:00Z"), "cash")
         self.assertEqual(classify_session("2026-11-02T14:30:00Z"), "cash")
+
+    def test_boundary_flags_and_receipt_hash_bind_the_input(self):
+        self.assertEqual(boundary_metadata("2026-01-06T14:00:00Z")["boundaries"], ["cash_start"])
+        payload = {
+            "window_start": "2026-01-06T14:00:00Z",
+            "window_end": "2026-01-06T22:00:00Z",
+            "wrappers": [{"symbol": "A", "bars": [
+                bar("2026-01-06T14:00:00Z"),
+                bar("2026-01-06T20:00:00Z"),
+                bar("2026-01-06T21:00:00Z"),
+            ]}],
+        }
+        receipt = analyse_dataset(payload)
+        self.assertEqual(receipt["dataset_hash_version"], "bell.dataset.sha256-canonical-json.v1")
+        self.assertEqual(len(receipt["dataset_hash"]), 64)
+        self.assertEqual(len(receipt["receipt_hash"]), 64)
+        self.assertEqual(receipt["wrappers"][0]["boundary_flags"]["bars_adjacent"], 3)
 
     def test_range_formula_and_normalisation(self):
         result = normalise_bar(bar("2026-01-06T14:30:00Z", high=102, low=99))
@@ -87,7 +123,12 @@ class SessionEngineTests(unittest.TestCase):
                     return {"data": {"quotes": [{"time_open": "2026-01-06T14:30:00Z", "quote": {"USD": {"open": 100, "high": 101, "low": 99, "close": 100}}}]}}
                 return {"data": {"1": {"quote": {"USD": {"cex_volume_24h": 80, "dex_volume_24h": 20}}}}}
 
-        payload = fetch_live_dataset(FakeCMC(), "tesla", 1)
+        payload = fetch_live_dataset(
+            FakeCMC(),
+            "tesla",
+            1,
+            end=datetime(2026, 1, 7, 14, 30, tzinfo=timezone.utc),
+        )
         self.assertEqual(payload["asset"]["name"], "Tesla")
         self.assertEqual(payload["wrappers"][0]["bars"][0]["open"], 100)
         self.assertEqual(payload["wrappers"][0]["venue"]["cex_volume_24h"], 80)

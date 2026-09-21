@@ -13,10 +13,10 @@
   let audience = 'normal';
   let latest = null;
   const byId = id => document.getElementById(id);
-  const esc = value => String(value ?? '—').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
+  const esc = value => String(value ?? 'N/A').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
   const label = value => String(value || 'other').replace(/[_-]+/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
   const compact = value => {
-    if (value === null || value === undefined || value === '') return '—';
+    if (value === null || value === undefined || value === '') return 'N/A';
     const n = Number(value);
     if (!Number.isFinite(n)) return esc(value);
     return new Intl.NumberFormat('en-US', { notation: 'compact', maximumFractionDigits: 2 }).format(n);
@@ -36,7 +36,7 @@
     const state = asset?.has_tokens === false ? 'underlying-only' : dossier && Array.isArray(dossier.tokens) && count === 0 ? 'coverage-pending' : count === 0 ? 'underlying-only' : count === 1 ? 'single-token' : count > 1 ? 'multi-token' : 'coverage-pending';
     const tokenLabel = state === 'underlying-only' ? 'NO TOKEN MAPPED' : state === 'single-token' ? '1 TOKEN / DOSSIER' : state === 'multi-token' ? `${count} TOKENS / COMPARE` : 'TOKEN COVERAGE PENDING';
     const dexPoint = dex ? `DEX evidence: ${dex.covered_token_count || 0}/${dex.contract_token_count || 0} contract token(s) covered` : null;
-    const livePoints = dossier ? [`${count} token representation(s) returned`, `${issuerRows.length || new Set(tokens.map(token => token.issuer_name).filter(Boolean)).size || '—'} issuer record(s) returned`, `${pairs.length} market pair(s) returned`, `${cryptoInfo.length} token metadata record(s); ${networks.size} network(s) resolved`, ...(dexPoint ? [dexPoint] : []), ...findings.slice(0, 2).map(item => `finding: ${item.code}`)] : null;
+    const livePoints = dossier ? [`${count} token representation(s) returned`, `${issuerRows.length || new Set(tokens.map(token => token.issuer_name).filter(Boolean)).size || 'N/A'} issuer record(s) returned`, `${pairs.length} market pair(s) returned`, `${cryptoInfo.length} token metadata record(s); ${networks.size} network(s) resolved`, ...(dexPoint ? [dexPoint] : []), ...findings.slice(0, 2).map(item => `finding: ${item.code}`)] : null;
     const basePoints = livePoints || known.points || (state === 'underlying-only' ? ['no token representation in the CMC map', 'underlying research mode is active', 'token comparison is not applicable'] : ['live token count is not available in the offline map', 'load the CMC dossier for issuer and market evidence', 'do not infer absence from missing offline fields']);
     return { ...known, count, state, tokenLabel, tokens, pairs, issuerRows, findings, cryptoInfo, networks, dex, dexRows, points: basePoints, asset, dossier };
   }
@@ -70,7 +70,7 @@
     const points = profile.points || [];
     latest.briefText = observation;
     byId('terminal-asset-name').textContent = name;
-    byId('terminal-asset-meta').textContent = `${String(asset.symbol || '—').toUpperCase()} · ${category.toUpperCase()}`;
+    byId('terminal-asset-meta').textContent = `${String(asset.symbol || 'N/A').toUpperCase()} · ${category.toUpperCase()}`;
     byId('terminal-state').textContent = tokenLabel;
     byId('terminal-state').className = `audit-state terminal-state-${state}`;
     const liveAsset = dossier?.asset || {};
@@ -85,7 +85,7 @@
     byId('terminal-brief-limit').textContent = dossier ? `Live dossier attached: ${tokens.length} token rows, ${latest.pairs.length} CMC market pairs and ${latest.dex ? `${latest.dex.covered_token_count || 0}/${latest.dex.contract_token_count || 0} DEX-covered contract tokens` : 'no DEX evidence'}. CMC fields are evidence; they do not prove backing, redemption or suitability.` : 'This brief is generated from the CMC map snapshot. Load a live dossier to add token, issuer, DEX and market evidence.';
     byId('terminal-flow-underlying').textContent = name;
     byId('terminal-flow-tokens').textContent = state === 'underlying-only' ? 'No token' : state === 'single-token' ? 'One token' : state === 'multi-token' ? `${count} tokens` : 'Pending';
-    byId('terminal-flow-issuers').textContent = latest.issuerRows.length ? `${latest.issuerRows.length} issuer set` : tokens.length ? `${new Set(tokens.map(token => token.issuer_name).filter(Boolean)).size || '—'} issuer set` : 'Issuer set';
+    byId('terminal-flow-issuers').textContent = latest.issuerRows.length ? `${latest.issuerRows.length} issuer set` : tokens.length ? `${new Set(tokens.map(token => token.issuer_name).filter(Boolean)).size || 'N/A'} issuer set` : 'Issuer set';
     byId('terminal-flow-output').textContent = state === 'multi-token' ? 'Compare' : state === 'single-token' ? 'Dossier' : state === 'underlying-only' ? 'Monitor' : 'Investigate';
     byId('terminal-source').textContent = dossier ? 'LIVE CMC DOSSIER' : 'OFFLINE MAP / DETERMINISTIC';
     document.querySelectorAll('[data-terminal-audience]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.terminalAudience === audience)));

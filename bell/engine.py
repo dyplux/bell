@@ -8,6 +8,8 @@ serialisable report/receipt.  The live adapter lives in bell.py so these rules r
 from __future__ import annotations
 
 from datetime import date, datetime, time, timedelta, timezone
+import hashlib
+import json
 import math
 from statistics import median
 from typing import Any, Iterable
@@ -15,12 +17,25 @@ from zoneinfo import ZoneInfo
 
 
 SCHEMA_VERSION = "bell.receipt.v1"
+DATASET_HASH_VERSION = "bell.dataset.sha256-canonical-json.v1"
+RECEIPT_HASH_VERSION = "bell.receipt.sha256-canonical-json.v1"
 DEFAULT_TIMEZONE = "America/New_York"
 SESSION_NAMES = ("cash", "after_hours", "weekend")
 
 
 class BellDataError(ValueError):
     """Raised when a record cannot be interpreted without inventing data."""
+
+
+def canonical_digest(value: Any) -> str:
+    """Hash a JSON-compatible value independently of whitespace and key order."""
+    encoded = json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
+
+
+def _receipt_digest(receipt: dict[str, Any]) -> str:
+    unsigned = {key: value for key, value in receipt.items() if key != "receipt_hash"}
+    return canonical_digest(unsigned)
 
 
 def parse_timestamp(value: Any) -> datetime:
@@ -88,7 +103,7 @@ def normalise_bar(record: dict[str, Any]) -> dict[str, Any]:
         raise BellDataError("OHLC values are inconsistent")
     if close is not None and close < 0:
         raise BellDataError("close must not be negative")
-    return {
+    receipt = {
         "time_open": opened_at.isoformat().replace("+00:00", "Z"),
         "open": opened_price,
         "high": high,
@@ -96,6 +111,7 @@ def normalise_bar(record: dict[str, Any]) -> dict[str, Any]:
         "close": close,
         "range_pct": (high - low) / opened_price * 100,
     }
+    return receipt
 
 
 def _expected_session_counts(start: datetime, end: datetime, timezone_name: str) -> dict[str, int]:
@@ -105,6 +121,26 @@ def _expected_session_counts(start: datetime, end: datetime, timezone_name: str)
         counts[classify_session(cursor, timezone_name)] += 1
         cursor += timedelta(hours=1)
     return counts
+
+
+def boundary_metadata(timestamp: Any, timezone_name: str = DEFAULT_TIMEZONE) -> dict[str, Any]:
+    """Flag hourly intervals touching 09:30 or 16:00 local time.
+
+    Hourly OHLCV does not expose exact intrabar trade times. This is therefore a
+    transparency marker, not evidence that an exchange or venue was open.
+    """
+    local = parse_timestamp(timestamp).astimezone(ZoneInfo(timezone_name))
+    interval_end = local + timedelta(hours=1)
+    flags: list[str] = []
+    for name, hour, minute in (("cash_start", 9, 30), ("cash_end", 16, 0)):
+        boundary = local.replace(hour=hour, minute=minute, second=0, microsecond=0)
+        if local <= boundary <= interval_end:
+            flags.append(name)
+    return {
+        "boundary_adjacent": bool(flags),
+        "boundaries": flags,
+        "assignment": classify_session(timestamp, timezone_name),
+    }
 
 
 def _session_stats(bars: Iterable[dict[str, Any]], timezone_name: str) -> dict[str, dict[str, Any]]:
@@ -195,6 +231,14 @@ def analyse_wrapper(
     if gaps:
         warnings.append(f"{sum(gap['missing_hours'] for gap in gaps)} hourly gap(s) detected")
 
+    boundary_rows = [boundary_metadata(bar["time_open"], timezone_name) for bar in valid]
+    boundary_flags = {
+        "bars_adjacent": sum(1 for row in boundary_rows if row["boundary_adjacent"]),
+        "cash_start": sum("cash_start" in row["boundaries"] for row in boundary_rows),
+        "cash_end": sum("cash_end" in row["boundaries"] for row in boundary_rows),
+        "policy": "flag hourly intervals touching 09:30 or 16:00 local; classify by time_open",
+    }
+
     venue = _venue_context(wrapper, warnings)
     enough = all(actual[name]["count"] >= min_bars_per_session for name in SESSION_NAMES)
     coverage_values = [actual[name]["coverage_pct"] for name in SESSION_NAMES if actual[name]["coverage_pct"] is not None]
@@ -209,6 +253,7 @@ def analyse_wrapper(
         "bars_valid": len(valid),
         "sessions": actual,
         "gaps": gaps,
+        "boundary_flags": boundary_flags,
         "venue": venue,
         "warnings": warnings,
     }
@@ -248,7 +293,7 @@ def analyse_dataset(payload: dict[str, Any], *, min_bars_per_session: int = 1) -
         state = "insufficient-data"
     else:
         state = "partial"
-    return {
+    receipt = {
         "schema_version": SCHEMA_VERSION,
         "mode": payload.get("mode", "offline_fixture"),
         "state": state,
@@ -261,6 +306,8 @@ def analyse_dataset(payload: dict[str, Any], *, min_bars_per_session: int = 1) -
         },
         "methodology": {
             "session_assignment": "time_open converted to timezone; no holiday calendar",
+            "calendar_policy": "weekday_clock_only; holidays_not_removed",
+            "boundary_policy": "hourly intervals touching 09:30 or 16:00 are flagged; assignment remains by time_open",
             "cash": "weekdays 09:30 <= local time < 16:00",
             "after_hours": "remaining weekday hours",
             "weekend": "Saturday and Sunday",
@@ -272,8 +319,11 @@ def analyse_dataset(payload: dict[str, Any], *, min_bars_per_session: int = 1) -
         "warnings": top_warnings,
         "provenance": payload.get("provenance", {}),
     }
-
-
+    receipt["dataset_hash"] = canonical_digest(payload)
+    receipt["dataset_hash_version"] = DATASET_HASH_VERSION
+    receipt["receipt_hash_version"] = RECEIPT_HASH_VERSION
+    receipt["receipt_hash"] = _receipt_digest(receipt)
+    return receipt
 def load_payload(path: str) -> dict[str, Any]:
     import json
     from pathlib import Path
@@ -287,4 +337,8 @@ def save_receipt(receipt: dict[str, Any], path: str) -> None:
 
     destination = Path(path)
     destination.parent.mkdir(parents=True, exist_ok=True)
-    destination.write_text(json.dumps(receipt, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    to_save = dict(receipt)
+    if "receipt_hash" not in to_save:
+        to_save["receipt_hash_version"] = RECEIPT_HASH_VERSION
+        to_save["receipt_hash"] = _receipt_digest(to_save)
+    destination.write_text(json.dumps(to_save, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")

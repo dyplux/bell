@@ -12,7 +12,7 @@
     ? live.assets.filter(asset => asset.slug || asset.rwa_id).map(asset => ({
       id: String(asset.slug || asset.rwa_id),
       name: asset.name || String(asset.slug || asset.rwa_id),
-      symbol: asset.symbol || '—',
+      symbol: asset.symbol || 'N/A',
       category: categoryLabel(asset.asset_type),
       analysis_id: asset.slug === 'tesla' ? 'tesla' : asset.slug === 'gold' ? 'gold' : null,
       rwa_id: asset.rwa_id,
