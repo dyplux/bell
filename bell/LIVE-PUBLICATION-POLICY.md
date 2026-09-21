@@ -12,6 +12,9 @@ cached dossier as a current quote.
   useful during a temporary API outage.
 - Publication records include `published_at`, `observed_at`, cache policy and
   the CMC request metadata. Raw responses and API keys are never published.
+- A queued dossier that CMC rejects is marked `failed` with a bounded error
+  message and can be requested again; it is never reported as a successful
+  publication.
 - On-demand `/api/rwa`, `/api/audit`, `/api/terminal` and `/api/session` calls
   are `no-store`; operators must rate-limit them at the edge or reverse proxy.
 
@@ -20,4 +23,3 @@ cached dossier as a current quote.
 Before public launch, configure a reverse-proxy/API budget for the CMC plan,
 monitor request credits and test stale/error states. The static site remains the
 fallback. Bell does not promise that every CMC RWA map entry has a fresh dossier.
-

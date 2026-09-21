@@ -11,24 +11,24 @@ It is not a token leaderboard, safety score or investment recommendation.
 
 ## The public user journey
 
-1. Open the [Integrity Monitor](https://bell.dyplux.com/integrity).
+1. Open the [Bell public page](https://bell.dyplux.com/).
 2. Read the observation time, freshness state and population totals.
 3. Open the current case, normally the highest-priority contradiction.
 4. Search the main queue or the [neutral review queue](https://rwa-surface-review.pages.dev/)
    for an RWA such as Silver, Gold, Tesla or SPY.
-5. Inspect the decision, next action and representation rows. Compare two rows
-   only when Bell leaves the factual route open; otherwise keep them separate
-   and save the handoff.
+5. Inspect the decision, next action and representation rows. Bell changes the
+   route for a no-token reference, a single representation or a multi-token
+   comparison. It never ranks a single wrapper.
 6. Open the live JSON receipt or the dated replay and verify the timestamps,
    source hashes and stable-ID join coverage.
 
 The output is explicit:
 
-- `COMPARISON WITHHELD`: a critical identity, denomination or market contradiction
+- `DO NOT SHORTLIST`: a critical identity, denomination or market contradiction
   fired; stop ranking the wrapper;
-- `INVESTIGATE BEFORE SHORTLIST`: a warning requires classification before
+- `INVESTIGATE`: a warning requires classification before
   treating rows as equivalent;
-- `FACTUAL COMPARISON OPEN`: no published Bell rule fired, so observed fields
+- `FACTS OPEN`: no published Bell rule fired, so observed fields
   may be inspected without creating a winner;
 - `SINGLE REPRESENTATION`: one wrapper exists, so there is no wrapper ranking.
 
@@ -59,6 +59,9 @@ raw authenticated CMC response bodies.
 The browser never receives a CMC key. A Mac mini publisher reads the credential
 from a private process environment, runs the deterministic scan and publishes
 only normalized evidence through an authenticated Cloudflare Worker route.
+
+Run `python3 bell/verify_public_surface.py` to check the public page, health
+endpoint, live receipt and a published dossier without a CMC credential.
 
 ## Boundaries
 

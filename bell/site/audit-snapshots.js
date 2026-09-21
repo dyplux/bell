@@ -12,6 +12,7 @@ window.BELL_AUDIT_SNAPSHOTS = {
       'Derivative representation is present and must not be mixed with spot wrappers.',
       'The evidence does not establish physical backing, redemption or units per token.'
     ],
+    next_action: 'Resolve token units and claim type, separate the derivative entry, then rerun the comparison across independent windows.',
     source: 'CMC Gold RWA page · dated browser surface audit'
   },
   silver: {
@@ -25,6 +26,7 @@ window.BELL_AUDIT_SNAPSHOTS = {
       'Positive volume with zero market cap makes the aggregate unsafe to interpret.',
       'A derivative entry is mixed with spot-like representations.'
     ],
+    next_action: 'Resolve GRAMS, KAG and XAGX units, identify the derivative, and explain the zero-market-cap/positive-volume contradiction before comparing prices.',
     source: 'CMC Silver RWA page · dated browser surface audit'
   },
   tesla: {
@@ -38,6 +40,7 @@ window.BELL_AUDIT_SNAPSHOTS = {
       'Hyperliquid TSLA is far below the cluster and reports no 24h volume.',
       'A derivative reports volume with zero market cap; TSLA.D has missing values.'
     ],
+    next_action: 'Separate issuer, ticker, derivative and venue evidence, then inspect the missing market fields before ranking wrappers.',
     source: 'CMC Tesla RWA page · dated browser surface audit'
   }
 };

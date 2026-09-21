@@ -17,7 +17,7 @@
     },
     "surface_drift_note": "The endpoints have separate update and caching cadences. A row without rwa_id is unjoinable in this run; it is not, by itself, proof of a CMC defect.",
     "rules": [
-      "10x price spread is a critical denomination break",
+      "price spread above the 10x threshold is a critical denomination break",
       "positive volume with zero market cap is a critical market contradiction",
       "derivative mixing, symbol collision and missing fields require investigation",
       "never join by ticker when crypto_id or issuer_id exists"

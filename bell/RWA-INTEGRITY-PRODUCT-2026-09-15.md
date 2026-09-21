@@ -1,5 +1,9 @@
 # RWA Surface Integrity Monitor
 
+> Historical product specification based on the 15 September 2026 receipt. The
+> current public release is described in `README.md` and `QA-RESULTS.md`; live
+> counts may differ as the publisher refreshes the receipt.
+
 ## The new product decision
 
 Bell's original promise was too broad: search an RWA, inspect tokens, compare
@@ -23,10 +27,11 @@ surfaces and notice when the inputs do not line up.
 
 The public table itself shows the gap: it exposes columns such as `RWA / Avg.
 Token Price`, market cap and volume, but it does not expose a deterministic
-state saying that the underlying representations should not be compared. In a
-captured Silver case, the detailed receipt resolves the individual
-representations, units, issuers and missing market fields. That is the
-distinction Bell owns: not more rows, but a decision boundary around the rows.
+state saying that the underlying representations should not be compared. In the
+current page capture, Silver is shown with an RWA price and an average token
+price while the detailed receipt resolves the individual representations,
+units, issuers and missing market fields. That is the distinction Bell owns:
+not more rows, but a decision boundary around the rows.
 
 The live Startup scan captured at `2026-09-15T22:22:00Z` found:
 
@@ -119,11 +124,12 @@ The accompanying [sanitized input manifest](docs/proof/rwa-surface-integrity-inp
 records endpoint shapes, row counts, stable-ID coverage and SHA-256 fingerprints
 without publishing authenticated CMC response bodies.
 
-## Why this product is useful
+## Why this can beat the current Bell
 
-The monitor starts with a claim a CMC data user can verify immediately: **the
-RWA catalogue contains join and comparability conditions that a normal page
-does not surface as a decision.** It scans the population, chooses cases by a
+The current Bell asks a user to choose an asset and explore a terminal. The new
+monitor starts with a claim a CMC judge can verify immediately: **the RWA
+catalogue contains join and comparability conditions that a normal page does
+not surface as a decision.** It scans the population, chooses cases by a
 published rule and shows raw evidence for Gold, Silver, Tesla and the next
 highest-severity alerts.
 
@@ -147,10 +153,10 @@ The dated receipt is a replay artifact. The public page labels whether it is
 showing a live Worker receipt or this fallback. A public claim about current
 market conditions requires a fresh receipt.
 
-## What the release demonstrates
+## What a 99-point version must prove
 
-The product loop is more important than the existence of a large JSON file. A
-live walkthrough should show the same sequence every time:
+The build is judged on the product loop, not on the existence of a large JSON
+file. A live presentation must show the same sequence every time:
 
 1. start with the full RWA population, not a hand-picked token;
 2. show the stable `rwa_id` join and the separate endpoint cadences;

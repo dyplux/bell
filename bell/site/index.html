@@ -3,218 +3,98 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#0A0E14">
-  <meta name="description" content="Bell is a universal real-world asset terminal for stocks, ETFs, commodities and tokenized representations.">
-  <link rel="canonical" href="https://bell.dyplux.com/">
-  <meta property="og:title" content="Bell - RWA Decision Desk">
-  <meta property="og:description" content="One terminal for every real-world asset, from underlying reference to token representation.">
+  <meta name="description" content="Bell checks whether tokenised real-world-asset representations deserve a fair comparison.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Before you compare, check the wrapper | Bell">
+  <meta property="og:description" content="An evidence gate for comparing tokenised stocks, ETFs and commodities.">
   <meta property="og:url" content="https://bell.dyplux.com/">
-  <meta name="robots" content="index, follow, max-image-preview:large">
-  <title>Bell | RWA Decision Desk | Dyplux</title>
+  <meta property="og:site_name" content="Bell by Dyplux">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Before you compare, check the wrapper | Bell">
+  <meta name="twitter:description" content="An evidence gate for comparing tokenised stocks, ETFs and commodities.">
+  <link rel="canonical" href="https://bell.dyplux.com/">
+  <title>RWA Surface Integrity Monitor | Bell</title>
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="overrides.css">
-  <script>window.BELL_LIVE_PUBLIC = true;</script>
-  <script src="snapshot.js" defer></script>
-  <script src="catalogue-live.js" defer></script>
-  <script src="audit-snapshots.js" defer></script>
-  <script src="catalogue.js" defer></script>
-  <script src="research-brief.js" defer></script>
-  <script src="terminal.js" defer></script>
-  <script src="app.js" defer></script>
+  <link rel="stylesheet" href="integrity.css">
+  <link rel="stylesheet" href="visual-overrides.css?v=20260921-5">
 </head>
 <body>
-  <a class="skip-link" href="#main">Skip to research</a>
-  <header class="site-header">
-    <div class="wrap header-inner">
-      <a class="bell-wordmark" href="#" aria-label="Bell home">bell<span class="wordmark-period">.</span></a>
-      <span class="brand-divider" aria-hidden="true"></span>
-      <a class="parent-brand" href="https://dyplux.com" aria-label="Built by Dyplux"><img src="assets/dyplux-logo-ivory.svg" width="112" height="22" alt="Dyplux"></a>
-      <nav aria-label="Main navigation">
-        <a href="#catalogue">RWA catalogue</a>
-        <a href="#asset=silver">Featured audit</a>
-      </nav>
-      <span class="header-live-status"><i aria-hidden="true"></i> LIVE PUBLICATION</span>
-      <a class="header-github" href="https://github.com/dyplux/bell" target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span></a>
-      <button class="button button-outline header-evidence" data-evidence>View evidence <span aria-hidden="true">↗</span></button>
-    </div>
+  <header class="topbar">
+    <a class="wordmark" href="/">bell<span>.</span></a>
+    <div class="topbar-divider"></div>
+    <img src="assets/dyplux-logo-ivory.svg" alt="Dyplux" width="104" height="21">
+    <nav aria-label="Page navigation">
+      <a class="active" href="#start">Start</a>
+      <a href="#how-it-works">How it works</a>
+      <a href="#decision">Your result</a>
+      <a href="#explorer">Explore RWA</a>
+      <a href="#monitor">References</a>
+      <a href="#evidence">Receipt</a>
+    </nav>
+    <span class="receipt-status"><i></i> <b id="receipt-status-label">LOADING RECEIPT</b></span><button id="refresh-receipt" class="refresh-receipt" type="button">Refresh receipt ↻</button>
   </header>
 
-  <main id="main">
-    <section class="hero wrap" aria-labelledby="hero-title">
-      <div class="hero-copy">
-        <p class="eyebrow"><span class="gold-rule" aria-hidden="true"></span> RWA DECISION DESK / TERMINAL</p>
-        <h1 id="hero-title">Every reference.<br>Every representation.<br><span>One clear brief.</span></h1>
-        <p class="hero-description">Bell maps stocks, ETFs, commodities and every other CMC real-world asset into one research terminal. When tokens exist, it explains the representation. When they do not, it keeps the analysis on the underlying.</p>
-        <div class="hero-actions">
-          <a class="button button-gold" href="#terminal">Open the terminal <span aria-hidden="true">↓</span></a>
-          <a class="text-button" href="#asset=silver">Open the Silver audit <span aria-hidden="true">↗</span></a>
-        </div>
-        <p class="hero-footnote">For research, risk and market operations. Built by Dyplux, Lisbon.</p>
+  <main>
+    <section id="start" class="hero">
+      <div>
+        <p class="eyebrow"><span></span> FOR INVESTORS / ANALYSTS / RWA TEAMS</p>
+        <h1>Before you compare<br><em>check the wrapper</em></h1>
+        <p class="lede">Search a tokenised stock, ETF or commodity. Bell checks whether its representations share a comparable identity, unit and market state before you shortlist one.</p>
+        <p class="lede lede-contrast"><strong>CMC finds the candidates</strong> Bell checks the match</p>
+        <form id="hero-search-form" class="hero-search" role="search">
+          <label for="hero-search">SEARCH AN ASSET</label>
+          <div><input id="hero-search" type="search" placeholder="Silver, Gold, Tesla or SPY" autocomplete="off"><button type="submit">Check comparability ↗</button></div>
+          <small>Search a reference to see its decision and next check</small>
+          <div class="quick-search" aria-label="Example references"><span>TRY AN EXAMPLE</span><button type="button" data-example-search="Silver">Silver <em>blocked</em></button><button type="button" data-example-search="Marvell">Marvell <em>facts open</em></button><button type="button" data-example-search="SPY">SPY <em>blocked</em></button></div>
+          <div class="outcome-key" aria-label="Bell outcome key"><span>OUTCOME KEY</span><div><b>DO NOT SHORTLIST = BLOCKED</b><small>critical contradiction found; stop comparison</small></div><div><b>FACTS OPEN = DESCRIPTIVE ONLY</b><small>no critical rule fired; inspect, then diligence</small></div><div><b>SINGLE REPRESENTATION</b><small>one wrapper only; no ranking</small></div></div>
+        </form>
+        <div class="hero-meta"><span>CMC API / MAP + ASSET LIST + QUOTES</span><span>LIVE WHEN FRESH · DATED REPLAY IF NEEDED</span><span id="observed-at">LOADING RECEIPT</span></div>
+        <p id="hero-example" class="hero-example">Live example: loading the current decision path.</p>
+        <section class="investor-task" aria-label="Three minute investor task">
+          <div class="investor-task-head"><span>3-MINUTE INVESTOR TASK</span><b>Turn one reference into a defensible next step</b></div>
+          <ol><li data-task-step="1">Search the stock, ETF or commodity you are researching</li><li data-task-step="2">Open the evidence and inspect the representation rows</li><li data-task-step="3">Use the right route: compare two factual rows, or keep wrappers separate and record the next check</li><li data-task-step="4">Save the brief or local worksheet for the next diligence step</li></ol>
+          <div class="investor-task-footer"><span id="task-progress">0/4 complete · saved only in this browser</span><button id="task-reset" type="button">Reset task</button></div>
+        </section>
+        <div id="search-result" class="search-result" aria-live="polite" hidden></div>
       </div>
-
-      <aside class="hero-instrument" aria-label="Tesla secondary session evidence snapshot">
-        <div class="instrument-heading"><span class="eyebrow">TERMINAL / 001</span><span class="snapshot-tag">DEMO SNAPSHOT</span></div>
-        <div class="instrument-title"><span>Underlying first.<br>Tokens when present.</span><span class="instrument-ticker">RWA<span>Universal map</span></span></div>
-        <div class="instrument-legend"><span><i class="legend-mark cash-mark"></i> Cash range</span><span><i class="legend-mark weekend-mark"></i> Weekend range</span></div>
-        <div id="hero-bars" class="hero-bars"></div>
-        <p class="instrument-scale">Median hourly range · 0–0.60% · same scale for every wrapper</p>
-        <div class="instrument-finding"><span class="finding-mark" aria-hidden="true">↳</span><p>One token is a dossier.<br><strong>Many tokens become a comparison.</strong></p></div>
-        <div class="instrument-footer"><span>STOCKS / ETFs / COMMODITIES</span><span>CMC MAP / 7,811 REFERENCES</span></div>
-      </aside>
+      <aside class="hero-proof"><div class="proof-top"><span class="eyebrow">CURRENT RESULT</span><span class="proof-id">LIVE RECEIPT</span></div><p id="hero-case">Reading the current case</p><div id="hero-case-fact" class="proof-fact">Loading the latest measured contradiction.</div><div id="hero-proof-reason" class="proof-reason">Loading the supporting signals.</div><div id="hero-signal-list" class="hero-signal-list" aria-label="Visible supporting signals"></div><div id="hero-quote-contrast" class="hero-quote-contrast" hidden><span>OBSERVED QUOTE ENDPOINTS</span><div><strong id="hero-low-quote">—</strong><small id="hero-low-symbol">LOW</small><i>→</i><strong id="hero-high-quote">—</strong><small id="hero-high-symbol">HIGH</small></div><div class="hero-quote-issuers"><span id="hero-low-issuer">Lowest row</span><span id="hero-high-issuer">Highest row</span></div><em>quote endpoints in this receipt, not an execution or parity test</em></div><div class="hero-proof-metrics" aria-label="Current case evidence"><div><strong id="hero-token-count">—</strong><span>representations</span></div><div><strong id="hero-issuer-count">—</strong><span>issuers</span></div><div><strong id="hero-signal-count">—</strong><span>signals</span></div></div><div class="hero-checks" aria-label="Evidence profile"><div><span>IDENTITY</span><b id="hero-identity-check">—</b></div><div><span>UNIT</span><b id="hero-unit-check">—</b></div><div><span>MARKET</span><b id="hero-market-check">—</b></div></div><div class="proof-rule"><strong id="hero-proof-output">NO SCORE</strong><span id="hero-proof-hint">read the current evidence</span></div><a class="hero-proof-cta" id="hero-proof-cta" href="#monitor"><span id="hero-proof-cta-label">Open evidence</span> <span>↗</span></a></aside>
     </section>
 
-    <div class="snapshot-band">
-      <div class="wrap snapshot-band-inner">
-        <p><span class="live-dot" aria-hidden="true"></span><strong>LIVE PUBLICATION</strong><span class="band-note">bell.dyplux.com · CMC evidence refreshes on demand</span></p>
-        <p>DETERMINISTIC BRIEF <span class="separator">/</span> LAST OBSERVED + RECEIPT</p>
-      </div>
-    </div>
+    <section id="how-it-works" class="investor-output" aria-label="How Bell works"><div class="investor-output-intro"><p class="eyebrow"><span></span> HOW BELL WORKS</p><h2>Search, check, know<br><em>what to verify</em></h2><p>Bell adds a pre-comparison check to the CMC discovery layer. It does not approve an asset or tell you what to buy.</p></div><div class="output-grid"><article><span>01</span><strong>Find the reference</strong><p>Search the stock, ETF or commodity you are researching</p></article><article><span>02</span><strong>Check the match</strong><p>See whether identity, unit and quote fields support comparison</p></article><article><span>03</span><strong>Follow the handoff</strong><p>Know which issuer, redemption or execution question comes next</p></article></div></section>
 
-    <section id="terminal" class="terminal-section wrap" aria-labelledby="terminal-title">
-      <div class="section-heading"><div><p class="eyebrow">BELL / RWA DECISION DESK</p><h2 id="terminal-title">Start with an exposure, not a ticker</h2></div><span id="terminal-source" class="snapshot-tag">OFFLINE MAP</span></div>
-      <p class="section-intro">The terminal changes its job based on the asset: no token means underlying research, one token means a representation dossier, and multiple tokens unlock comparison and concentration analysis.</p>
-      <div class="terminal-toolbar"><div class="terminal-audience" role="group" aria-label="Choose terminal audience"><span class="eyebrow">VIEW AS</span><button type="button" data-terminal-audience="normal" aria-pressed="true">NORMAL USER</button><button type="button" data-terminal-audience="desk" aria-pressed="false">INSTITUTIONAL DESK</button></div><a class="text-button" href="#catalogue">Search the full CMC map ↗</a></div>
-      <div class="terminal-grid">
-        <aside class="terminal-asset-card"><div class="terminal-asset-top"><span class="eyebrow">SELECTED EXPOSURE</span><span id="terminal-state" class="audit-state">READY</span></div><h3 id="terminal-asset-name">Gold</h3><p id="terminal-asset-meta">GOLD · COMMODITY</p><div id="terminal-asset-stats" class="terminal-stats"></div></aside>
-        <article class="terminal-brief-card"><div class="terminal-brief-head"><div><span id="terminal-brief-kicker" class="eyebrow">AUTO BRIEF / DETERMINISTIC</span><h3 id="terminal-brief-title">Select a reference to generate the desk brief</h3></div><span id="terminal-brief-type" class="snapshot-tag">RESEARCH NOTE</span></div><p id="terminal-brief-body" class="terminal-brief-body"></p><ul id="terminal-brief-points" class="terminal-brief-points"></ul><p id="terminal-brief-limit" class="terminal-brief-limit"></p><button id="terminal-download-brief" class="text-button terminal-download" type="button">Save this brief ↓</button></article>
+    <section class="metric-strip" aria-label="Scan totals"><div><small>Tokenised references</small><strong id="metric-references">N/A</strong><span>population scanned</span></div><div><small>Representations</small><strong id="metric-tokens">N/A</strong><span>token rows inspected</span></div><div class="critical"><small>Blocked comparisons</small><strong id="metric-blocked">N/A</strong><span>do not compare</span></div><div class="surface"><small>Rows without stable ID</small><strong id="metric-unaddressable">N/A</strong><span>needs identity follow-up</span></div></section>
+
+    <section id="thesis-strip" class="thesis-strip" aria-label="Signature population finding"><div class="thesis-strip-head"><p class="eyebrow"><span></span> THE FIRST CHECK</p><h2>Before a shortlist, check whether the reference is comparable</h2><p id="thesis-copy">Loading the current population finding</p><p id="thesis-proof" class="thesis-proof"></p></div><div id="thesis-metrics" class="thesis-metrics" aria-live="polite"></div></section>
+
+    <section id="population-visual" class="population-visual" aria-label="Population composition and observed quote spread"><div class="population-visual-head"><div><p class="eyebrow"><span></span> POPULATION SHAPE</p><h2>One scan, two useful questions</h2></div><span class="receipt-chip">CURRENT RECEIPT</span></div><div id="population-visual-grid" class="population-visual-grid"></div><p class="population-visual-foot">The first view shows how many references need a different research route. The second shows observed quote spread bands only for references with at least two priced representations. Neither is a quality score or an execution estimate.</p></section>
+
+    <section id="concentration-visual" class="concentration-visual" aria-label="Observed issuer concentration and data coverage"><div class="concentration-visual-head"><div><p class="eyebrow"><span></span> VALUE AND COVERAGE</p><h2>What the catalogue is made of</h2></div><span class="receipt-chip">TOKEN ROWS · DERIVED</span></div><div id="concentration-visual-grid" class="concentration-visual-grid"></div><p class="concentration-visual-foot">This lens attributes only the reported market-cap fields returned on token rows. It does not identify legal liability, reserves, redemption or investability. Missing market cap stays missing.</p></section>
+
+    <section id="differentiation" class="differentiation" aria-label="Product difference"></section>
+
+    <section id="explorer" class="explorer-section" aria-label="RWA explorer">
+      <div class="explorer-intro">
+        <div><p class="eyebrow"><span></span> EXPLORE THE CMC RWA MAP</p><h2>From one reference<br><em>to the evidence</em></h2><p>Search the full map, then open the published dossier when Bell has investigated that reference. Single-token cases stay descriptive. Multi-token cases show the observed rows and the route before comparison.</p></div>
+        <div class="explorer-count"><strong id="explorer-count">7,811 mapped references</strong><span>credential-free map snapshot · separate from live receipt</span></div>
       </div>
-      <div class="terminal-flow" aria-label="Bell exposure map"><div><span>01</span><strong id="terminal-flow-underlying">Underlying</strong><small>reference asset</small></div><i aria-hidden="true">→</i><div><span>02</span><strong id="terminal-flow-tokens">Token layer</strong><small>zero / one / many</small></div><i aria-hidden="true">→</i><div><span>03</span><strong id="terminal-flow-issuers">Issuer & network</strong><small>identity and concentration</small></div><i aria-hidden="true">→</i><div><span>04</span><strong id="terminal-flow-output">Decision brief</strong><small>facts, gaps, next checks</small></div></div>
+      <form id="explorer-form" class="explorer-form" role="search">
+        <label for="explorer-search">SEARCH ALL REFERENCES</label>
+        <div><input id="explorer-search" type="search" placeholder="Gold, Nvidia, SPY, ETF or RWA ID" autocomplete="off"><button type="submit">Open dossier ↗</button></div>
+        <div class="explorer-examples"><span>TRY A ROUTE</span><button type="button" data-explorer-example="Gold">Gold</button><button type="button" data-explorer-example="Nvidia">Nvidia</button><button type="button" data-explorer-example="SPY">SPY</button><button type="button" data-explorer-example="Palladium">Palladium</button></div>
+      </form>
+      <div id="explorer-matches" class="explorer-matches" aria-live="polite"></div>
+      <div id="explorer-dossier" class="explorer-dossier" aria-live="polite"><p class="explorer-hint">Choose a reference to see whether it has a published dossier, a single representation or a map-only route</p></div>
     </section>
 
-    <section id="catalogue" class="catalogue-section wrap" aria-labelledby="catalogue-title">
-      <div class="section-heading"><div><p class="eyebrow">02 / UNIVERSAL RWA MAP</p><h2 id="catalogue-title">Search every reference CMC tracks</h2></div><span class="snapshot-tag">7,811 ASSETS</span></div>
-      <p class="section-intro">Stocks, ETFs, commodities, currencies, government securities and real estate use the same discovery layer. Open any asset to see whether Bell should explain an underlying, a single token or a set of representations.</p>
-      <div class="catalogue-toolbar">
-        <div class="catalogue-search"><label for="rwa-search">Search assets, tickers or categories</label><div class="search-field"><span aria-hidden="true">⌕</span><input id="rwa-search" type="search" placeholder="Try Tesla, gold or funds" autocomplete="off" aria-controls="catalogue-body"><button id="clear-search" class="text-button" type="button" hidden>Clear</button></div></div>
-        <div id="category-filters" class="category-filters" role="group" aria-label="Filter by asset category"></div>
-      </div>
-      <p id="catalogue-count" class="catalogue-count" role="status" aria-live="polite"></p>
-      <div class="table-scroll catalogue-table-scroll" role="region" aria-label="RWA asset catalogue" tabindex="0"><table class="catalogue-table"><caption class="visually-hidden">Dated CMC RWA map with comparability audits, session evidence or explicit map-only entries.</caption><thead><tr><th scope="col">Reference asset</th><th scope="col">Category</th><th scope="col">Bell evidence</th><th scope="col">Explore</th></tr></thead><tbody id="catalogue-body"></tbody></table></div>
-      <div id="catalogue-pagination" class="catalogue-pagination" role="navigation" aria-label="RWA catalogue pages"></div>
-      <div id="catalogue-empty" class="catalogue-empty" hidden><h3>No matching assets</h3><p>Try a different name or ticker, or reset the filters.</p><button id="reset-catalogue" class="button button-outline" type="button">Reset search & filters</button></div>
-    </section>
+    <section id="decision" class="decision-story" aria-label="Why the result matters"><div class="decision-story-copy"><p class="eyebrow"><span></span> WHY THE RESULT MATTERS</p><h2>Do not shortlist a wrapper<br><em>on a ticker alone</em></h2><p>CMC gives you the candidates. Bell checks whether they are comparable, shows the contradiction when they are not and records the diligence step that follows.</p><div class="decision-steps"><div><b>01</b><span>Scan the population</span></div><div><b>02</b><span>Join by stable IDs</span></div><div><b>03</b><span>Block the wrapper choice</span></div><div><b>04</b><span>Route to diligence</span></div></div></div><aside id="decision-hero" class="decision-hero"><p class="eyebrow">LIVE CASE</p><h3>Reading the current receipt</h3></aside></section>
 
-    <section id="asset-detail" class="asset-detail wrap" aria-labelledby="detail-title" hidden>
-      <a class="text-button" href="#catalogue">← Back to catalogue</a>
-      <div class="section-heading"><div><p id="detail-category" class="eyebrow"></p><h2 id="detail-title" tabindex="-1"></h2></div><span id="detail-status" class="snapshot-tag"></span></div>
-      <p id="detail-description" class="section-intro"></p>
-      <div id="detail-availability" class="detail-availability"></div>
-      <div id="detail-audit" class="detail-audit" hidden></div>
-      <div id="detail-live-dossier" class="detail-live-dossier" hidden></div>
-    </section>
+    <section id="monitor" class="monitor-grid"><div class="alerts-panel"><div class="section-head"><div><p class="eyebrow"><span></span> REFERENCE INDEX</p><h2>Search the population</h2></div><div class="filters" role="group" aria-label="Filter references"><button class="selected" data-filter="all">ALL</button><button data-filter="do_not_compare">BLOCKED</button><button data-filter="investigate">INVESTIGATE</button><button data-filter="no_flags">FACTS OPEN</button></div></div><label class="queue-search"><span>FIND ANOTHER REFERENCE</span><input id="alert-search" type="search" placeholder="Silver, Gold, Tesla, SPY or reference ID" autocomplete="off"></label><p id="alert-count" class="section-note">Use the index when you want to inspect the wider CMC RWA population</p><div id="alert-list" class="alert-list"></div><div id="alert-pagination" class="alert-pagination" role="navigation" aria-label="Population queue pages"></div></div><aside class="method-card"><p class="eyebrow">THE CHECK</p><h2>What Bell looks for</h2><p class="method-intro">Identity, units, derivative labels, quote coherence and issuer joins</p><p class="method-plain"><b>Common breaks:</b> one ticker hides different units, a derivative is mixed with a spot-like wrapper, or volume appears while market identity is incomplete</p><div class="plain-words" aria-label="Plain language glossary"><p class="eyebrow">PLAIN WORDS</p><dl><div><dt>Representation</dt><dd>A token row grouped under the same reference asset</dd></div><div><dt>Reference ID</dt><dd>The stable key used to join that asset across CMC surfaces</dd></div><div><dt>Receipt</dt><dd>A dated record of what the deterministic check observed</dd></div></dl></div><div class="rule-row"><b>10× REVIEW</b><span>quote-ratio threshold<br><small>an observed case can be higher than 10×</small></span></div><div class="rule-row"><b>$0 RULE</b><span>market cap + volume<br><small>market contradiction</small></span></div><div class="rule-row"><b>ID JOIN</b><span>crypto_id + issuer_id<br><small>stable identity</small></span></div><p class="method-limit">A clean result is descriptive only. It does not prove backing, redemption, eligibility, liquidity or executable size</p><a class="source-link" href="https://coinmarketcap.com/real-world-assets/?type=rwa" target="_blank" rel="noopener">Open CMC reference ↗</a></aside></section>
 
-    <section id="investor-brief" class="investor-brief wrap" aria-labelledby="investor-brief-title" hidden>
-      <div class="section-heading"><div><p class="eyebrow">RESEARCH TRIAGE / APPROVAL PENDING</p><h2 id="investor-brief-title">Investor research brief</h2></div><div class="brief-actions"><button id="download-research-memo" class="button button-gold" type="button">Save research memo <span aria-hidden="true">↓</span></button><a id="research-memo-link" class="text-button" href="#" download hidden>Download again ↗</a></div></div>
-      <p id="brief-date" class="brief-date"></p>
-      <div class="brief-question"><h3>The investor question</h3><p id="brief-question"></p><small>Illustrative USD 100,000 scenario. No size-specific quote, client mandate or actual trade.</small></div>
-      <div class="brief-grid"><article><h3>What Bell observed</h3><p id="brief-finding"></p></article><article><h3>What it does not measure</h3><p id="brief-limits"></p></article></div>
-      <p id="brief-clock" class="brief-note"></p>
-      <p id="brief-provenance" class="brief-note"></p>
-      <div id="brief-evidence" class="brief-evidence"></div>
-      <div class="brief-diligence"><h3>Next diligence</h3><p>All checks pending. Use this list as a research queue; none is verified by Bell.</p><ul id="brief-diligence-list"></ul></div>
-      <p id="brief-decision" class="brief-decision"></p>
-    </section>
-
-    <section id="gold-analysis" class="audit-section wrap" aria-labelledby="gold-audit-title" hidden>
-      <div class="section-heading">
-        <div><p class="eyebrow">SECONDARY EVIDENCE / SESSION REVIEW</p><h2 id="gold-audit-title">One reference. Seven wrappers</h2></div>
-        <a class="text-button" href="#catalogue">Choose another asset ↗</a>
-      </div>
-      <p class="section-intro">A dated seven-day Gold review from a live CMC run, published here as a static snapshot. Every wrapper has 168 hourly bars and complete coverage across cash, after-hours and weekend.</p>
-      <div class="comparison-panel">
-        <div class="comparison-header">
-          <div><p class="eyebrow">SESSION FINGERPRINT</p><h3>Weekend movement is not uniform</h3></div>
-          <div class="metric-switch gold-metric-switch" role="group" aria-label="Gold comparison metric"><button data-gold-metric="range" aria-pressed="true">Hourly range</button><button data-gold-metric="relative" aria-pressed="false">Relative to comparison</button></div>
-        </div>
-        <div class="session-strip" aria-label="Gold session definitions">
-          <div><span class="session-number">01</span><span><strong>Weekday comparison</strong><small>New York · 09:30–16:00 · 30 bars</small></span></div>
-          <div><span class="session-number">02</span><span><strong>Other weekday hours</strong><small>Comparison convention · 90 bars</small></span></div>
-          <div><span class="session-number">03</span><span><strong>Weekend</strong><small>Saturday & Sunday · 48 bars</small></span></div>
-        </div>
-        <div class="table-scroll" role="region" aria-label="Gold wrapper session comparison" tabindex="0">
-          <table class="comparison-table"><caption id="gold-table-caption">Median hourly range, as a percentage of each bar’s opening price.</caption><thead><tr><th scope="col">Wrapper / issuer</th><th scope="col">Weekday comparison</th><th scope="col">Other weekday hours</th><th scope="col">Weekend</th><th scope="col">Weekend / comparison</th></tr></thead><tbody id="gold-comparison-body"></tbody></table>
-        </div>
-        <div class="table-footnotes"><p id="gold-metric-note">Range = (high − low) / open. A median of hourly ranges, not a return or a liquidity measure.</p><p>Window: 06–13 September 2026 · 168 hours per wrapper · live receipt preserved in the workspace.</p></div>
-        <div class="comparison-bottom"><span>NEW YORK CLOCK / America/New_York</span><a class="text-button" href="proof/gold-live-2026-09-13.json" target="_blank" rel="noopener noreferrer">Open Gold receipt <span aria-hidden="true">↗</span></a></div>
-      </div>
-      <aside class="editorial-finding" aria-label="Gold snapshot observation">
-        <div><p class="eyebrow">THE OBSERVATION</p><h3>Gold wrappers<br>keep different clocks</h3></div>
-        <div><p>In this window, the weekend median range retained approximately <strong>12%</strong> to <strong>93%</strong> of the weekday comparison median across the seven wrappers.</p><p class="muted">This is observed movement in CMC hourly bars under a New York comparison convention, not verified gold-market hours. It does not rank backing, quality or liquidity.</p><a class="text-button" href="proof/gold-live-2026-09-13.payload.json" target="_blank" rel="noopener noreferrer">Trace the Gold payload <span aria-hidden="true">↗</span></a></div>
-      </aside>
-    </section>
-
-    <div id="tesla-analysis" hidden>
-    <section id="session-audit" class="audit-section wrap" aria-labelledby="audit-title">
-      <div class="section-heading">
-        <div><p class="eyebrow">SECONDARY EVIDENCE / SESSION REVIEW</p><h2 id="audit-title">Same asset. Different clocks</h2></div>
-        <a class="text-button" href="#catalogue">Choose another asset ↗</a>
-      </div>
-      <p class="section-intro" id="asset-note">Four wrappers from CoinMarketCap’s Tesla grouping. Selecting a wrapper highlights its evidence across this page.</p>
-      <div class="wrapper-toolbar"><span class="eyebrow">WRAPPERS / ISSUERS</span><button id="reset-focus" class="text-button" hidden>Show all wrappers <span aria-hidden="true">×</span></button></div>
-      <div id="wrapper-cards" class="wrapper-grid" role="group" aria-label="Focus a Tesla wrapper"></div>
-
-      <div class="comparison-panel">
-        <div class="comparison-header">
-          <div><p class="eyebrow">SESSION FINGERPRINT</p><h3>How much of the movement remains?</h3></div>
-          <div class="metric-switch" role="group" aria-label="Comparison metric"><button data-metric="range" aria-pressed="true">Hourly range</button><button data-metric="relative" aria-pressed="false">Relative to cash</button></div>
-        </div>
-        <div class="session-strip" aria-label="Session definitions">
-          <div><span class="session-number">01</span><span><strong>Cash session</strong><small>Weekdays · 09:30–16:00 ET · 30 bars</small></span></div>
-          <div><span class="session-number">02</span><span><strong>After-hours*</strong><small>Remaining weekday hours · 90 bars</small></span></div>
-          <div><span class="session-number">03</span><span><strong>Weekend</strong><small>Saturday & Sunday · 48 bars</small></span></div>
-        </div>
-        <div class="table-scroll" role="region" aria-label="Wrapper session comparison, scroll horizontally on small screens" tabindex="0">
-          <table class="comparison-table">
-            <caption id="table-caption">Median hourly range, as a percentage of each bar’s opening price.</caption>
-            <thead><tr><th scope="col">Wrapper / issuer</th><th scope="col">Cash session</th><th scope="col">After-hours*</th><th scope="col">Weekend</th><th scope="col">Weekend / cash</th></tr></thead>
-            <tbody id="comparison-body"></tbody>
-          </table>
-        </div>
-        <div class="table-footnotes"><p>*After-hours includes all weekday hours outside cash: pre-market, post-market and overnight. This is a time bucket, not a claim of venue opening hours.</p><p id="metric-note">Range = (high − low) / open. A median of hourly ranges, not a return or a liquidity measure.</p></div>
-        <div class="comparison-bottom"><span>NEW YORK CLOCK / America/New_York</span><button class="text-button" data-evidence>Inspect the calculation <span aria-hidden="true">↗</span></button></div>
-      </div>
-
-      <aside class="editorial-finding" aria-label="Snapshot observation">
-        <div><p class="eyebrow">THE OBSERVATION</p><h3>Tokenised does not<br>mean synchronised</h3></div>
-        <div><p>In this snapshot, Robinhood’s Tesla wrapper retains approximately <strong>84%</strong> of its cash-session median range at the weekend. Backed’s retains approximately <strong>20%</strong>.</p><p class="muted">That is a difference in observed movement. It does not establish depth, executable liquidity or price discovery.</p><button class="text-button" data-evidence>Trace the observation <span aria-hidden="true">↗</span></button></div>
-      </aside>
-    </section>
-
-    <section id="venues" class="venues-section" aria-labelledby="venues-title">
-      <div class="wrap">
-        <div class="section-heading"><div><p class="eyebrow">02 / THE VENUE CONTEXT</p><h2 id="venues-title">Where the reported volume sits</h2></div><span class="data-stamp">24H QUOTE SNAPSHOT / 11 SEP 2026</span></div>
-        <p class="section-intro">A second lens on the wrappers. Reported CEX and DEX volume is context, not an explanation of the session contrast.</p>
-        <div class="venue-layout"><div class="venue-data"><div class="venue-legend"><span><i class="legend-mark cex-mark"></i> Centralised exchanges</span><span><i class="legend-mark dex-mark"></i> Decentralised exchanges</span></div><div id="venue-rows"></div></div><aside class="venue-note"><span class="eyebrow">A BOUNDARY, NOT A RANKING</span><h3>Venue mix is<br>not venue depth</h3><p>These are rounded 24-hour quote totals documented in the research notes. They do not tell us which trades occurred after the bell.</p><p>Ondo and bStocks have no venue figures in this summary. Their values are left unfilled.</p><button class="text-button" data-evidence>See source boundaries <span aria-hidden="true">↗</span></button></aside></div>
-      </div>
-    </section>
-
-    <section id="methodology" class="methodology-section wrap" aria-labelledby="method-title">
-      <div class="section-heading"><div><p class="eyebrow">03 / EVIDENCE BEFORE INTERPRETATION</p><h2 id="method-title">A comparison you can defend</h2></div><button class="button button-outline" data-evidence>Open evidence <span aria-hidden="true">↗</span></button></div>
-      <div class="method-grid"><article><span class="method-index">01</span><h3>Join the CMC surfaces</h3><p>Start with the RWA grouping, then connect token, issuer, contract, market-pair and historical evidence. A single price call is not enough.</p></article><article><span class="method-index">02</span><h3>Run explicit integrity tests</h3><p>Flag unit or denomination signals, ticker collisions, derivatives mixed with spot, missing data and positive volume with zero market cap.</p></article><article><span class="method-index">03</span><h3>Ship the decision with limits</h3><p>Return provisionally comparable, investigate, do not compare or insufficient evidence. Every state carries the observations and unresolved questions behind it.</p></article></div>
-      <details class="limits" open><summary>What this snapshot can — and cannot — tell you <span aria-hidden="true">+</span></summary><div class="limits-grid"><div><h4>Observed</h4><p>Four wrappers, one seven-day window, three session buckets. Median hourly range and selected 24-hour venue totals from the workspace’s dated CMC research summary.</p></div><div><h4>Not measured</h4><p>The underlying Tesla stock price, bid–ask spreads, order-book depth, redemption rights, trade count or executable liquidity. A wide hour can be a single print.</p></div><div><h4>Clock limitation</h4><p>Bars crossing 09:30 ET are assigned by their opening timestamp. The source uses a weekday clock, not an exchange holiday calendar; weekday holidays remain in the cash bucket.</p></div></div></details>
-      <div class="disclosure"><span class="eyebrow">DISCLOSURE</span><p>Built by Dyplux, Lisbon. One of the builders works at CoinMarketCap. The source research was conducted outside that role using a personal hackathon key. Nothing here is written on behalf of CoinMarketCap. This site loads its catalogue offline and contains no keys; the optional dossier button calls only the local server runtime.</p></div>
-    </section>
-
-    <section class="receipt-section" aria-labelledby="receipt-title"><div class="wrap receipt-inner"><div><p class="eyebrow">KEEP THE RECORD / NO CONNECTION REQUIRED</p><h2 id="receipt-title">The evidence travels<br>with the observation</h2><p>Save a self-contained HTML receipt with the snapshot, tables,<br class="desktop-break"> method and limits. Or take the same record as JSON.</p></div><div class="receipt-actions"><button class="button button-gold" id="download-html">Save offline receipt <span aria-hidden="true">↓</span></button><button class="text-button" id="download-json">Download JSON <span aria-hidden="true">↓</span></button><span>SUMMARY RECEIPT / NOT A RAW-DATA EXPORT</span></div></div></section>
-    </div>
+    <section id="evidence" class="evidence-section"><div class="section-head"><div><p class="eyebrow">POPULATION RECEIPT</p><h2>Not one hand-picked screenshot</h2></div><span class="receipt-chip">LIVE / DATED RECEIPT / DATASET HASH</span></div><div id="signal-grid" class="signal-grid"></div><div id="signal-chart" class="signal-chart" aria-label="Observed signal counts"></div><div id="receipt-delta" class="receipt-delta" aria-live="polite"></div><div id="publication-history" class="publication-history" aria-live="polite"></div><div id="identity-proof" class="identity-proof"></div><div class="evidence-foot"><p><strong>What this changes:</strong> an analyst can see which RWA groups require identity or market-data diligence before comparing issuers</p><span class="evidence-links"><a href="/api/integrity" target="_blank" rel="noopener">Inspect live receipt ↗</a><a href="proof/rwa-surface-integrity-latest-replay-2026-09-21.json" target="_blank" rel="noopener">Open latest replay receipt ↗</a><a href="proof/rwa-surface-integrity-2026-09-15.json" target="_blank" rel="noopener">Open dated evidence receipt ↗</a><a href="proof/rwa-surface-integrity-inputs-2026-09-21.json" target="_blank" rel="noopener">Open replay inputs ↗</a><a href="proof/rwa-surface-integrity-verification-2026-09-21.md" target="_blank" rel="noopener">Open verification note ↗</a><a href="proof/rwa-surface-integrity-history.json" target="_blank" rel="noopener">Open receipt history ↗</a></span></div></section>
+    <p class="evidence-collection-link"><a href="proof/rwa-surface-integrity-live-collection-2026-09-21.md" target="_blank" rel="noopener">Open live collection receipt ↗</a></p>
   </main>
 
-  <footer class="wrap footer"><div class="footer-brand"><a class="bell-wordmark" href="#">bell<span class="wordmark-period">.</span></a><span>An instrument by <a href="https://dyplux.com">Dyplux</a></span></div><p>Research, not a trading signal.</p><div class="footer-actions"><a href="https://github.com/dyplux/bell" target="_blank" rel="noopener noreferrer">GitHub ↗</a><a href="https://github.com/dyplux/bell/blob/main/docs/PRODUCT.md" target="_blank" rel="noopener noreferrer">Why Bell ↗</a><a href="#main">Back to top ↑</a></div></footer>
-  <p id="download-status" class="status-toast" role="status" aria-live="polite"></p>
-  <noscript><div class="noscript-note">This demonstration needs JavaScript to display the snapshot tables and export receipts. It runs locally without keys or an internet connection.</div></noscript>
-
-  <dialog id="evidence-dialog" aria-labelledby="evidence-title" class="evidence-drawer">
-    <div class="drawer-heading"><div><p class="eyebrow">THE AUDIT TRAIL / 001</p><h2 id="evidence-title">Evidence & boundaries</h2></div><button id="close-evidence" class="icon-button" aria-label="Close evidence">×</button></div>
-    <div class="drawer-content"><span class="snapshot-tag">TESLA DEMO SNAPSHOT · SUMMARY ONLY</span><p>This drawer and its downloads describe the four-wrapper Tesla summary. Gold has separate receipt and replay-payload links in its review. The public site searches the dated CMC map and shows published reviews without calling CMC. Other assets show map-only entries. Current dossiers and coverage checks require the optional local server.</p><dl class="evidence-metadata"><div><dt>Reference</dt><dd>Tesla · four wrappers</dd></div><div><dt>OHLCV window end</dt><dd>2026-09-11 19:00 UTC</dd></div><div><dt>Window / bars</dt><dd>168 hours per wrapper · 30 cash / 90 weekday closed / 48 weekend</dd></div><div><dt>Clock</dt><dd>America/New_York · bar opening timestamp</dd></div><div><dt>Cash bucket</dt><dd>Weekdays 09:30–16:00 ET · no holiday calendar</dd></div><div><dt>Venue quote date</dt><dd>2026-09-11 · exact fetch timestamp not supplied</dd></div><div><dt>Summary provenance</dt><dd>bell/JUDGE.md<br>research/rwa-session/notes.md<br>Source documents in the Dyplux workspace; not bundled raw responses.</dd></div></dl>
-      <h3>The calculation</h3><pre>hourly_range_pct = ((high - low) / open) × 100
-session_range = median(hourly_range_pct)
-relative_to_cash = session_range / cash_range × 100
-cex_share = cex_24h / (cex_24h + dex_24h) × 100</pre><p class="drawer-small">Relative figures are calculated from the rounded published medians. Venue shares are approximate because the source totals are rounded. No hourly volume is summed: the documented CMC hourly volume field is rolling 24-hour volume.</p>
-      <h3>Documented source endpoints</h3><div class="endpoint"><span>01 / WRAPPER GROUPING</span><code>/v5/real-world-assets/quotes/latest</code></div><div class="endpoint"><span>02 / HOURLY BARS</span><code>/v2/cryptocurrency/ohlcv/historical</code></div><div class="endpoint"><span>03 / VENUE TOTALS</span><code>/v2/cryptocurrency/quotes/latest</code></div><p class="drawer-small">These endpoints describe the source research workflow. They are not called by this website. Request IDs, raw bars and response hashes are not supplied in this demo.</p>
-      <h3 id="focused-evidence-title">Wrapper evidence</h3><div id="focused-evidence"></div>
-      <h3>Unavailable in this receipt</h3><ul class="boundary-list"><li>Raw OHLCV and independently verifiable API receipts.</li><li>Venue mix for Ondo and bStocks.</li><li>Cash Tesla reference price, depth and trade counts.</li><li>Evidence of causality or a market-quality ranking.</li></ul><a class="source-link" href="https://coinmarketcap.com/api/" target="_blank" rel="noopener noreferrer">CoinMarketCap API documentation ↗</a>
-    </div><div class="drawer-footer"><button class="button button-gold" id="drawer-download">Save offline receipt <span aria-hidden="true">↓</span></button><button class="text-button" id="drawer-done">Return to audit</button></div>
-  </dialog>
+  <footer><span>Bell · RWA integrity evidence</span><span>Built by Dyplux · Lisbon</span><span>Research, not a trading signal</span></footer>
+  <script src="capital-impact.js" defer></script><script src="integrity.js" defer></script><script src="explorer.js" defer></script>
 </body>
 </html>

@@ -62,11 +62,10 @@ endpoint identities, join coverage and fingerprints for the captured run.
 
 ## Local and public surfaces
 
-- Product: <https://bell.dyplux.com/integrity>
-- Audit Pack: <https://bell.dyplux.com/guide.html>
+- Product: <https://bell.dyplux.com/>
 - Public receipt: <https://bell.dyplux.com/api/integrity>
 - Neutral queue: <https://rwa-surface-review.pages.dev/>
 - Source: <https://github.com/dyplux/bell>
 
-The public release contains only the product runtime, reproducible checks and
-sanitized evidence needed to inspect the public contract.
+The public release is intentionally separate from Dyplux's private research
+desk, jury ballots and competitor dossiers.
