@@ -38,10 +38,10 @@
       : 'The New York weekday 09:30-16:00 bucket is a comparison convention without an exchange holiday calendar. It does not establish that a stock market or token route was open.';
     const evidence = gold
       ? [{ label: 'Gold receipt', path: 'proof/gold-live-2026-09-13.json' }, { label: 'Gold replay inputs', path: 'proof/gold-live-2026-09-13.payload.json' }]
-      : [{ label: 'Four-wrapper Tesla summary source', path: 'snapshot.js' }];
+      : [{ label: 'Tesla replayable receipt', path: 'proof/tesla-live-2026-09-13.json' }, { label: 'Tesla replay inputs', path: 'proof/tesla-live-2026-09-13.payload.json' }];
     const provenance = gold
       ? 'Dated summary of the saved Gold CMC run. Display and memo ratios use rounded published medians; receipt medians retain greater precision. The linked Gold receipt and normalised payload support offline replay of that run.'
-      : 'Four-wrapper workspace research summary ending 11 September 2026. Rounded medians are the same inputs as the displayed comparison. Raw bars and exact first-bar and collection timestamps are absent, so these medians cannot be independently recomputed. The separate nine-wrapper Tesla receipt dated 13 September is a different dataset and does not reproduce this visual.';
+      : 'Nine-entry CMC receipt ending 13 September 2026. The linked normalised payload contains the hourly bars and the receipt carries a canonical dataset hash, so the displayed medians can be replayed offline. One Dinari entry is explicitly insufficient-data; this is not a general conclusion about tokenised equities.';
     return {
       reviewId, asset: snapshot.asset.name, question, finding, clock, rows,
       date: snapshot.window.end_utc ? snapshot.window.end_utc.slice(0, 10) : 'undated',
@@ -50,12 +50,12 @@
       counts: snapshot.window.session_counts, method: snapshot.methodology?.hourly_range_pct ? `${method} Relative ratios use rounded published medians.` : method,
       limits, decision, diligence: [...diligence], provenance, evidence,
       collectionTime: 'Not supplied in the published summary; observation end and export time are not collection timestamps.',
-      disclosure: snapshot.disclosure,
       snapshotLimits: snapshot.limitations || []
     };
   }
   function memo(brief, exportedAt = new Date().toISOString()) {
-    const table = brief.rows.map(row => `| ${cell(row.symbol)} | ${cell(row.issuer)} | ${row.cash.toFixed(4)}% | ${row.after_hours.toFixed(4)}% | ${row.weekend.toFixed(4)}% | ${row.ratio === null ? 'Unavailable' : `~${row.ratio.toFixed(0)}%`} |`).join('\n');
+    const number = value => Number.isFinite(Number(value)) ? `${Number(value).toFixed(4)}%` : 'Unavailable';
+    const table = brief.rows.map(row => `| ${cell(row.symbol)} | ${cell(row.issuer)} | ${number(row.cash)} | ${number(row.after_hours)} | ${number(row.weekend)} | ${row.ratio === null ? 'Unavailable' : `~${row.ratio.toFixed(0)}%`} |`).join('\n');
     return `# Bell investor research memo: ${brief.asset}
 
 Observation date: ${brief.date} (UTC window end, not a current quote).
@@ -114,10 +114,6 @@ The memo is generated locally from the same bundled snapshot as the displayed re
 ## Snapshot limitations
 
 ${brief.snapshotLimits.map(item => `- ${item}`).join('\n')}
-
-## Disclosure
-
-${brief.disclosure}
 
 Historical observations in one saved window do not establish persistence, causality, future performance or investment suitability. This research brief is not an investment recommendation.
 `;

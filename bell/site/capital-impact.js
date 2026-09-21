@@ -54,7 +54,7 @@
         metrics,
         headline: `Keep ${value.toLocaleString(undefined, { maximumFractionDigits: 0 })} uncommitted`,
         copy: range
-          ? `Bell observed a ${range.ratio.toFixed(2)}× quote range across ${range.count} rows. That is a capital-preservation gate, not a discount or a proven saving.`
+          ? `Bell observed a ${range.ratio.toFixed(2)}× quote range across ${range.count} rows. That is a capital-preservation gate, not a discount or a proven saving`
           : 'Bell found a critical integrity break. Keep the amount outside a wrapper decision until the evidence is resolved.',
         note: 'Resolve identity, unit, issuer terms and execution evidence before selecting a wrapper.',
       };

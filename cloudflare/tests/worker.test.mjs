@@ -16,10 +16,42 @@ test('publisher endpoints require the publisher token', async () => {
   assert.equal(response.status, 401);
 });
 
+test('failed refresh jobs require the publisher token and valid job data', async () => {
+  const unauthorized = await worker.fetch(new Request('https://example.test/internal/fail', {
+    method: 'POST',
+    body: JSON.stringify({ id: 7, slug: 'marvell', error: 'upstream rejected the request' }),
+  }), { ASSETS: assets, PUBLISHER_TOKEN: 'secret' });
+  assert.equal(unauthorized.status, 401);
+  const invalid = await worker.fetch(new Request('https://example.test/internal/fail', {
+    method: 'POST',
+    headers: { authorization: 'Bearer secret' },
+    body: JSON.stringify({ id: 'bad', slug: 'marvell', error: 'upstream rejected the request' }),
+  }), { ASSETS: assets, PUBLISHER_TOKEN: 'secret', DB: { prepare() { return { bind() { return { run: async () => ({ meta: { changes: 0 } }) }; } }; } } });
+  assert.equal(invalid.status, 400);
+});
+
 test('unknown routes are delegated to static assets', async () => {
   const response = await worker.fetch(new Request('https://example.test/index.html'), { ASSETS: assets });
   assert.equal(response.status, 200);
   assert.equal(await response.text(), 'asset');
+});
+
+test('the root serves the single public product page', async () => {
+  let requestedPath = null;
+  const rootAssets = { fetch: async request => {
+    requestedPath = new URL(request.url).pathname;
+    return new Response('integrity page', { status: 200 });
+  } };
+  const response = await worker.fetch(new Request('https://example.test/'), { ASSETS: rootAssets });
+  assert.equal(response.status, 200);
+  assert.equal(await response.text(), 'integrity page');
+  assert.equal(requestedPath, '/');
+});
+
+test('legacy page paths redirect to the single public product page', async () => {
+  const response = await worker.fetch(new Request('https://example.test/guide.html'), { ASSETS: assets });
+  assert.equal(response.status, 301);
+  assert.equal(response.headers.get('location'), 'https://example.test/');
 });
 
 function fakeDb(row = null) {
@@ -87,6 +119,7 @@ test('integrity endpoint returns a published receipt with freshness metadata', a
   const response = await worker.fetch(new Request('https://example.test/api/integrity'), { ASSETS: assets, DB: db });
   const body = await response.json();
   assert.equal(response.status, 200);
+  assert.equal(response.headers.get('cache-control'), 'no-store');
   assert.equal(body.schema_version, 'rwa_surface_integrity.v1');
   assert.equal(body._publication.status, 'fresh');
 });

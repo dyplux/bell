@@ -2,6 +2,10 @@
 
 Date: 16 September 2026
 
+This is a dated value ledger, not a current count. The live public map now has
+7,811 searchable references and the current population receipt is reported in
+`QA-RESULTS.md`.
+
 This ledger records what Bell adds to the CMC RWA discovery surfaces. It does
 not claim that Bell owns RWA discovery, issuer lookup, contract display or
 structural comparison. Those already exist elsewhere.
@@ -12,6 +16,7 @@ structural comparison. Those already exist elsewhere.
 | Identity handoff | Stable `rwa_id`, `crypto_id`, issuer and token metadata | The join path is printed beside the selected rows so the user knows exactly which wrapper and issuer require diligence | Browser comparison output and exported decision brief |
 | Contradiction evidence | CMC can display the underlying fields | Fired rules, affected rows, observed values, timestamp and next action are kept together | Credential-free JSON receipt and queue evidence |
 | Facts-only pair view | Quote fields and aggregate values | Selected wrappers receive descriptive price, market-cap and volume gaps without a winner or approval claim | Marvell live pair test; Silver blocked pair test |
+| Population-wide decision queue | CMC exposes RWA listings and metrics, but listing coverage is not a Bell decision workflow | The full Bell population is navigable in place with a state, evidence route and next action for each reference; this is a completeness improvement, not a claim that Bell discovered the assets | Historical 790-reference queue, 66-page Chrome check, search and state-filter acceptance |
 | Reproducibility | Public page presentation | Dated receipt, publication freshness, source hashes and an offline replay path | `/api/integrity`, verifier and replay receipt |
 | Investor handoff | No Bell-specific diligence workflow | Markdown decision brief and local worksheet carrying unresolved backing, redemption, eligibility, custody and execution questions | Browser download acceptance and `USER-GUIDE.md` |
 
@@ -20,7 +25,7 @@ structural comparison. Those already exist elsewhere.
 CMC's public RWA page and API documentation remain the discovery and quote
 layer. Bell uses their available surfaces and cannot establish backing,
 redemption, custody, legal eligibility, solvency or executable liquidity from
-CMC Startup fields alone. A `FACTUAL COMPARISON OPEN` result therefore means
+CMC Startup fields alone. A `FACTS OPEN` result therefore means
 only that Bell's published contradiction rules did not fire in that receipt.
 
 The competitive boundary was checked against the [CMC RWA surface](https://coinmarketcap.com/real-world-assets/?type=rwa),

@@ -18,7 +18,7 @@ stable identifiers, and turns contradictions into a visible next action.
 
 ## A normal user's journey
 
-1. Open the [integrity monitor](https://bell.dyplux.com/integrity).
+1. Open the [integrity monitor](https://bell.dyplux.com/).
 2. Follow the small `3-MINUTE INVESTOR TASK` in the hero. It is a local browser
    checklist, not an account or a telemetry feature: search the asset, inspect
    the evidence, compare two wrappers only when Bell leaves that route open, or
@@ -28,6 +28,16 @@ stable identifiers, and turns contradictions into a visible next action.
    When a match exists, use `Open first evidence` above the queue to open the
    first representation disclosure and continue without guessing where to
    click.
+   If you want to browse beyond the published integrity receipt, use
+   `Explore RWA` in the top navigation. That search covers the complete
+   credential-free CMC map snapshot, including stocks, ETFs, commodities and
+   references with no mapped wrapper. Select a result to open its route:
+   `PUBLISHED RWA DOSSIER` when Bell has investigated it, `SINGLE
+   REPRESENTATION` when there is one wrapper, or `REFERENCE ONLY` / `DOSSIER
+   PENDING` when comparison evidence is not available. A map entry is not
+   silently treated as a clean comparison. If a single wrapper still has a
+   critical contradiction or unresolved warning, that evidence state takes
+   priority over the single-token label.
 4. Check the receipt badge. `LIVE RECEIPT · FRESH` means the current publication
    is inside its 15-minute freshness contract. `STALE` means the last observed
    run is visible but should not be read as current. `DATED REPLAY` means the
@@ -48,22 +58,44 @@ stable identifiers, and turns contradictions into a visible next action.
    and 24h-volume differences. Bell shows the gap without ranking a wrapper;
    those fields are not normalized for unit, backing, eligibility, liquidity or
    execution.
+   When positive market-cap fields are available, the selected case also shows
+   issuer concentration for that reference: top-issuer share, HHI, effective
+   issuer count and coverage. Use the `NEXT CHECK` line to decide whether the
+   issuer terms deserve priority. This is reported token-row value, not legal
+   issuer concentration or proof of backing.
+   The selected case also shows an observed activity check: positive 24h-volume
+   coverage, the top representation's share and rows with zero or missing
+   volume. Use it to ask whether an apparent quote difference depends on one
+   reported route. CMC token-row volume is a rolling field, not order-book depth
+   or executable liquidity.
 8. Use the filters to distinguish the operational states:
 
    | State | Meaning | What the user may do |
    |---|---|---|
-   | `COMPARISON WITHHELD` | A critical contradiction fired, such as a 10x price spread or positive volume with zero market cap. | Stop ranking or substituting a wrapper until the identity, unit or quote issue is resolved. |
-   | `INVESTIGATE BEFORE SHORTLIST` | A warning fired, such as derivative mixing, symbol collision or missing fields. | Continue research, but do not present the rows as equivalent exposure. |
-   | `FACTUAL COMPARISON OPEN` | No published Bell rule fired for a reference with multiple representations. | Inspect the observed rows and compare facts, then complete external diligence. This is not approval. |
+   | `DO NOT SHORTLIST` | A critical contradiction fired, such as an observed quote ratio above the 10x review threshold or positive volume with zero market cap. | Stop ranking or substituting a wrapper until the identity, unit or quote issue is resolved. |
+   | `INVESTIGATE` | A warning fired, such as derivative mixing, symbol collision or missing fields. | Continue research, but do not present the rows as equivalent exposure. |
+   | `FACTS OPEN` | No published Bell rule fired for a reference with multiple representations. | Inspect the observed rows and compare facts, then complete external diligence. This is not approval. |
    | `SINGLE REPRESENTATION` | CMC returned one representation for the reference. | There is no wrapper ranking to perform. Verify the instrument and issuer externally. |
 
-   Use `Save decision brief` on a queue row to export a Markdown handoff with
+   Use `Save decision brief` on the selected decision card or a queue row to export a Markdown handoff with
    the state, evidence, timestamps, next action and the investment questions
    Bell did not answer. It is a research memo, not a recommendation.
 
    Open `Open research worksheet` to record the five external checks and one
    research note locally in the browser. The worksheet is a personal handoff,
    not evidence supplied by Bell; the saved decision brief includes its state.
+
+   Use `Watch reference` on a queue row when you want to revisit it. Bell saves
+   the reference and the receipt state in this browser only. When a later
+   receipt reports a different state, the watchlist shows `STATE CHANGED`.
+   This is a local review aid, not a server-side alert or a promise of
+   continuous monitoring.
+
+   The first-check strip near the top summarizes the current population route:
+   blocked references, references that need investigation and references with
+   no published Bell rule hit. It also shows concentration among positive
+   market-cap fields by issuer label. These are research observations, not a
+   safety score, legal issuer concentration or an approval label.
 
    Each row also shows a resolution handoff. For a blocked case, resolve the
    Match the RWA ID to the token ID and issuer ID, resolve the identity and unit
@@ -77,7 +109,14 @@ stable identifiers, and turns contradictions into a visible next action.
    remains available as an independent mirror with search, state filters and
    pagination.
 10. Open the credential-free JSON receipt to verify the observed time, published
-   time, freshness state, endpoint method, source hashes and exact evidence.
+    time, freshness state, endpoint method, source hashes and exact evidence.
+
+The explorer and the integrity monitor are two views of the same product. The
+monitor answers whether a grouped set should enter a comparison shortlist. The
+explorer answers what CMC currently maps for a specific stock, ETF, commodity or
+other RWA reference and whether Bell has a published dossier for it. When no
+dossier exists, the public edge queues a server-side refresh and shows the
+map-only state instead of pretending that missing evidence is a negative result.
 
 ## What the product does not claim
 
@@ -95,12 +134,13 @@ receipt, never the CMC key.
 Each receipt records:
 
 - `observed_at`: when the CMC surfaces were collected;
+- the public input manifest also records each surface's first request and last response window, making refresh skew visible instead of hiding it behind one global timestamp;
 - `published_at`: when the receipt reached the public edge;
 - `status`: `fresh`, `stale` or `dated`;
 - `stale_after_seconds`: the current freshness contract;
 - `source_hashes`: deterministic hashes of the credential-free input surfaces;
-- `alert_index`: the compact population queue;
-- `alerts`: detailed evidence for the highest-priority cases.
+- `alert_index`: the population queue with the representation observations for every indexed reference;
+- `alerts`: expanded signal narratives for the highest-priority cases.
 
 The installed launch agents run the asset publisher and the integrity publisher
 every 15 minutes. A failed run must remain visible as stale; it must never be
@@ -134,7 +174,7 @@ Do not put keys in this repository, in the browser or in a receipt.
 1. Show the hero: “Before the comparison, test the surface.”
 2. Point to the population count and the live receipt timestamp.
 3. Open Silver and show the 31x price spread across representations.
-4. Show `COMPARISON WITHHELD` and the concrete next action.
+4. Show `DO NOT SHORTLIST` and the concrete next action.
 5. Open the population queue and filter `INVESTIGATE`.
 6. Show the JSON receipt, observed/published times and the market-pairs plan
    boundary.
@@ -143,7 +183,7 @@ Do not put keys in this repository, in the browser or in a receipt.
 
 ## Submission readiness
 
-The product path and receipts are live and this repository contains the source,
-tests, setup guide, receipt verifier and public integrity evidence. It does not
-contain credentials, private operational configuration or internal evaluation
-material.
+The product path and receipts are live and the repository contains the source,
+tests, setup guide, receipt verifier and public integrity evidence. The public
+source package contains no credentials, jury material, competitor dossiers or
+private research artefacts.

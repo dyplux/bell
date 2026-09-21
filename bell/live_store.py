@@ -51,6 +51,11 @@ class LiveStore:
             "published_at": utc_now(),
             "observed_at": payload.get("observed_at") or payload.get("provenance", {}).get("observed_at"),
             "credential_free": True,
+            "cache_policy": {
+                "public_max_age_seconds": int(os.environ.get("BELL_PUBLIC_MAX_AGE_SECONDS", "30")),
+                "stale_after_seconds": int(os.environ.get("BELL_FRESHNESS_SECONDS", "3600")),
+                "stale_serving": True,
+            },
             "payload": payload,
         }
         with tempfile.NamedTemporaryFile("w", encoding="utf-8", dir=path.parent, delete=False) as handle:

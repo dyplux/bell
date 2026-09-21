@@ -18,7 +18,7 @@ from urllib.error import HTTPError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
-from engine import BellDataError, analyse_dataset, load_payload, save_receipt
+from engine import BellDataError, analyse_dataset, load_payload, parse_timestamp, save_receipt
 
 
 ROOT = Path(__file__).resolve().parent
@@ -47,7 +47,17 @@ class CMCClient:
         except Exception as exc:
             self.calls.append({"endpoint": endpoint, "params": params, "status": "error", "error": type(exc).__name__, "observed_at": observed_at})
             raise BellDataError(f"CMC request failed for {endpoint}: {type(exc).__name__}") from exc
-        self.calls.append({"endpoint": endpoint, "params": params, "status": status, "observed_at": observed_at})
+        api_status = body.get("status") if isinstance(body.get("status"), dict) else {}
+        self.calls.append({
+            "endpoint": endpoint,
+            "params": params,
+            "status": status,
+            "observed_at": observed_at,
+            "api_timestamp": api_status.get("timestamp"),
+            "credit_count": api_status.get("credit_count"),
+            "elapsed_ms": api_status.get("elapsed"),
+            "error_code": api_status.get("error_code"),
+        })
         if status >= 400:
             raise BellDataError(f"CMC returned HTTP {status} for {endpoint}")
         return body
@@ -231,6 +241,12 @@ def fetch_live_dataset(client: CMCClient, asset_slug: str, days: int, end: datet
         )
         bars_data = _payload_data(bars_response)
         bars = [_normalise_ohlcv_record(record) for record in _records(bars_data, "quotes", "data")]
+        # The preceding candle protects the exclusive CMC time_start boundary, but it is
+        # outside the declared research window and must never enter the session statistics.
+        bars = [
+            bar for bar in bars
+            if start <= parse_timestamp(bar["time_open"]) < end
+        ]
         quote_response = client.get("/v2/cryptocurrency/quotes/latest", {"id": crypto_id})
         quote_data = _payload_data(quote_response)
         quote_records = _records(quote_data)
