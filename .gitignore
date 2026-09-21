@@ -3,6 +3,10 @@ __pycache__/
 .pytest_cache/
 .checks/
 bell/runtime/
+bell/jury/
+bell/AI-INVESTOR-ACCEPTANCE-*.md
+bell/HUMAN-PILOT-*.md
+bell/INVESTOR-SIMULATION-*.md
 cloudflare/node_modules/
 cloudflare/.wrangler/
 cloudflare/.dev.vars

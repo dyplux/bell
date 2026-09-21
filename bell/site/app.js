@@ -8,8 +8,9 @@
   let lastEvidenceTrigger = null;
   let toastTimer;
   const byId = id => document.getElementById(id);
-  const percent = n => `${n.toFixed(2)}%`;
-  const relative = (w, session) => w.range_pct[session] / w.range_pct.cash * 100;
+  const percent = n => Number.isFinite(Number(n)) ? `${Number(n).toFixed(2)}%` : 'N/A';
+  const relative = (w, session) => Number.isFinite(Number(w.range_pct[session])) && Number(w.range_pct.cash) > 0 ? Number(w.range_pct[session]) / Number(w.range_pct.cash) * 100 : null;
+  const ratioLabel = value => Number.isFinite(Number(value)) ? `≈${Number(value).toFixed(0)}%` : 'Unavailable';
   const millions = n => `$${(n / 1e6).toFixed(1)}M`;
   const escapeHTML = value => String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
 
@@ -65,7 +66,26 @@
   const cataloguePageSize = 50;
   const normaliseSearch = value => value.normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
 
+  function renderMapInsight() {
+    const target = byId('map-insight');
+    if (!target) return;
+    const total = assets.length;
+    const tokenised = assets.filter(asset => asset.has_tokens === true).length;
+    const underlyingOnly = total - tokenised;
+    const percent = value => total ? (value / total * 100).toFixed(1) : '0.0';
+    const category = type => {
+      const rows = assets.filter(asset => String(asset.category || '').toLowerCase() === type);
+      const mapped = rows.filter(asset => asset.has_tokens === true).length;
+      return { total: rows.length, mapped, rate: rows.length ? (mapped / rows.length * 100).toFixed(1) : '0.0' };
+    };
+    const stocks = category('stock');
+    const etfs = category('etf');
+    const commodities = category('commodity');
+    target.innerHTML = `<div class="map-insight-lead"><small>MAP RESEARCH / DATED CMC INDEX</small><strong>Tokenisation is concentrated, not universal</strong><p>${tokenised.toLocaleString()} of ${total.toLocaleString()} references have a mapped token layer. Bell keeps the remaining ${underlyingOnly.toLocaleString()} in underlying-only mode.</p></div><div><small>Mapped references</small><strong>${percent(tokenised)}%</strong><p>${tokenised.toLocaleString()} assets with one or more token representations.</p></div><div><small>Stocks</small><strong>${stocks.rate}%</strong><p>${stocks.mapped} of ${stocks.total.toLocaleString()} mapped. The largest tokenised category in this snapshot.</p></div><div><small>ETFs / commodities</small><strong>${etfs.rate}% / ${commodities.rate}%</strong><p>${etfs.mapped} of ${etfs.total.toLocaleString()} ETFs and ${commodities.mapped} of ${commodities.total} commodities mapped.</p></div>`;
+  }
+
   function renderCatalogue() {
+    renderMapInsight();
     const query = normaliseSearch(byId('rwa-search').value);
     const matches = assets.filter(asset => (category === 'All assets' || asset.category === category) && normaliseSearch(`${asset.name} ${asset.symbol} ${asset.id} ${asset.category}`).includes(query));
     const pageCount = Math.max(1, Math.ceil(matches.length / cataloguePageSize));
@@ -101,9 +121,9 @@
   byId('reset-catalogue').addEventListener('click', () => { category = 'All assets'; byId('rwa-search').value = ''; cataloguePage = 1; renderCatalogue(); byId('rwa-search').focus(); });
 
   function formatMoney(value) {
-    if (value === null || value === undefined) return '—';
+    if (value === null || value === undefined) return 'N/A';
     const number = Number(value);
-    if (!Number.isFinite(number)) return '—';
+    if (!Number.isFinite(number)) return 'N/A';
     return new Intl.NumberFormat('en-US', { notation: 'compact', maximumFractionDigits: 2 }).format(number);
   }
   function liveFingerprint(source) {
@@ -164,7 +184,7 @@
       if (row.state === 'unavailable') return 'NOT RESOLVED';
       const surfaces = Array.isArray(row.surfaces) ? row.surfaces.length : 0;
       const pools = Array.isArray(row.pools) ? row.pools.length : 0;
-      const holders = row.holders?.count == null ? '—' : formatMoney(row.holders.count);
+      const holders = row.holders?.count == null ? 'N/A' : formatMoney(row.holders.count);
       return `LIVE · ${surfaces}/6 surfaces · ${pools} pools · ${holders} holders`;
     };
     const dexCell = token => {
@@ -188,7 +208,11 @@
     const dexLabel = dex ? `${dex.covered_token_count || 0}/${dex.contract_token_count || 0}` : 'NOT REQUESTED';
     const observedAt = source.observed_at || source.provenance?.observed_at || 'timestamp unavailable';
     const changeNote = liveChangeNote(asset, source);
-    byId('detail-live-dossier').innerHTML = `<div class="dossier-heading"><div><span class="eyebrow">LIVE CMC TERMINAL DOSSIER</span><h3>${escapeHTML(asset.name || 'Selected RWA')}</h3><p class="dossier-asof">OBSERVED ${escapeHTML(observedAt)}</p></div><span class="snapshot-tag">${tokens.length} TOKENS</span></div><div class="dossier-stats"><span><small>Tokenized market cap</small><strong>$${formatMoney(asset.tokenized_market_cap)}</strong></span><span><small>24h tokenized volume</small><strong>$${formatMoney(asset.tokenized_volume_24h)}</strong></span><span><small>DEX coverage</small><strong>${escapeHTML(dexLabel)}</strong></span><span><small>CMC market pairs</small><strong>${escapeHTML(marketPairLabel)}</strong></span></div>${changeNote}${tokens.length ? `<div class="table-scroll"><table class="dossier-table"><thead><tr><th>Token</th><th>Issuer</th><th>Network / contract</th><th>DEX evidence</th><th>Price</th><th>Market cap</th><th>24h volume</th></tr></thead><tbody>${tokens.map(token => `<tr><th>${escapeHTML(token.symbol || token.name || '—')}<small>${escapeHTML(token.name || '')}</small></th><td>${escapeHTML(token.issuer_name || 'Unknown')}</td><td>${escapeHTML(tokenNetwork(token))}</td><td>${dexCell(token)}</td><td>${token.price == null ? '—' : `$${formatMoney(token.price)}`}</td><td>${token.market_cap == null ? '—' : `$${formatMoney(token.market_cap)}`}</td><td>${token.volume_24h == null ? '—' : `$${formatMoney(token.volume_24h)}`}</td></tr>`).join('')}</tbody></table></div>` : '<p class="dossier-empty">CMC returned no token wrappers for this reference.</p>'}${coverageMatrix}<div id="live-dex-inspector" class="live-dex-inspector" hidden></div><div class="live-dossier-actions"><button class="button button-outline live-receipt-button" type="button" data-live-receipt${tokens.length ? '' : ' disabled'}>Save evidence receipt ↓</button>${audit ? '' : `<button class="text-button live-audit-button" type="button" data-live-audit="${escapeHTML(asset.slug || '')}"${tokens.length ? '' : ' disabled'}>Run live terminal audit ↗</button>`}<button class="text-button live-session-button" type="button" data-live-session="${escapeHTML(asset.slug || '')}"${tokens.length ? '' : ' disabled'}>Run 7-day session review ↗</button></div>${findingMarkup}<div id="live-session-result"></div><p class="dossier-note">The terminal joins RWA identity, issuers, token metadata and DEX evidence. CMC market pairs may be unavailable on this API plan; that is separate from DEX coverage. It reports evidence and contradictions; it does not infer backing, rights, suitability or executable liquidity.</p>`;
+    const calls = Array.isArray(source.provenance?.calls) ? source.provenance.calls : [];
+    const provenanceMarkup = `<details class="live-provenance"><summary><span><span class="eyebrow">LIVE API EVIDENCE</span><strong>${calls.length} recorded CMC request(s)</strong></span><span>↕</span></summary>${calls.length ? `<div class="table-scroll"><table class="dossier-table"><thead><tr><th>Endpoint</th><th>Status</th><th>Observed</th><th>CMC timestamp</th><th>Credits</th><th>Parameters</th></tr></thead><tbody>${calls.map(call => `<tr><th><code>${escapeHTML(call.endpoint || 'unknown')}</code></th><td>${escapeHTML(call.status ?? '—')}</td><td><code>${escapeHTML(call.observed_at || '—')}</code></td><td><code>${escapeHTML(call.api_timestamp || '—')}</code></td><td>${escapeHTML(call.credit_count ?? '—')}</td><td><code>${escapeHTML(JSON.stringify(call.params || {}))}</code></td></tr>`).join('')}</tbody></table></div>` : '<p class="dossier-note">No request log was returned by this publication.</p>'}<p class="dossier-note">The request log contains endpoint, status, timestamps, credits and parameters only. It does not include an API key or raw response body.</p></details>`;
+    byId('detail-live-dossier').innerHTML = `<div class="dossier-heading"><div><span class="eyebrow">LIVE CMC TERMINAL DOSSIER</span><h3>${escapeHTML(asset.name || 'Selected RWA')}</h3><p class="dossier-asof">OBSERVED ${escapeHTML(observedAt)}</p></div><span class="snapshot-tag">${tokens.length} TOKENS</span></div><div class="dossier-stats"><span><small>Tokenized market cap</small><strong>$${formatMoney(asset.tokenized_market_cap)}</strong></span><span><small>24h tokenized volume</small><strong>$${formatMoney(asset.tokenized_volume_24h)}</strong></span><span><small>DEX coverage</small><strong>${escapeHTML(dexLabel)}</strong></span><span><small>CMC market pairs</small><strong>${escapeHTML(marketPairLabel)}</strong></span></div>${provenanceMarkup}${changeNote}${tokens.length ? `<div class="table-scroll"><table class="dossier-table"><thead><tr><th>Token</th><th>Issuer</th><th>Network / contract</th><th>DEX evidence</th><th>Price</th><th>Market cap</th><th>24h volume</th></tr></thead><tbody>${tokens.map(token => `<tr><th>${escapeHTML(token.symbol || token.name || '—')}<small>${escapeHTML(token.name || '')}</small></th><td>${escapeHTML(token.issuer_name || 'Unknown')}</td><td>${escapeHTML(tokenNetwork(token))}</td><td>${dexCell(token)}</td><td>${token.price == null ? '—' : `$${formatMoney(token.price)}`}</td><td>${token.market_cap == null ? '—' : `$${formatMoney(token.market_cap)}`}</td><td>${token.volume_24h == null ? '—' : `$${formatMoney(token.volume_24h)}`}</td></tr>`).join('')}</tbody></table></div>` : '<p class="dossier-empty">CMC returned no token wrappers for this reference.</p>'}${coverageMatrix}<div id="live-dex-inspector" class="live-dex-inspector" hidden></div><div class="live-dossier-actions"><button class="button button-outline live-receipt-button" type="button" data-live-receipt${tokens.length ? '' : ' disabled'}>Save evidence receipt ↓</button>${audit ? '' : `<button class="text-button live-audit-button" type="button" data-live-audit="${escapeHTML(asset.slug || '')}"${tokens.length ? '' : ' disabled'}>Run live terminal audit ↗</button>`}<button class="text-button live-session-button" type="button" data-live-session="${escapeHTML(asset.slug || '')}"${tokens.length ? '' : ' disabled'}>Run 7-day session review ↗</button></div>${findingMarkup}<div id="live-session-result"></div><p class="dossier-note">The terminal joins RWA identity, issuers, token metadata and DEX evidence. CMC market pairs may be unavailable on this API plan; that is separate from DEX coverage. It reports evidence and contradictions; it does not infer backing, rights, suitability or executable liquidity.</p>`;
+    const liveProvenance = byId('detail-live-dossier').querySelector('.live-provenance');
+    if (liveProvenance) liveProvenance.open = true;
     const publication = dossier._publication;
     if (publication) {
       const heading = byId('detail-live-dossier').querySelector('.dossier-heading .eyebrow');
@@ -248,7 +272,7 @@
     const security = row.security || {};
     const holders = row.holders || {};
     const pools = Array.isArray(row.pools) ? row.pools : [];
-    const value = item => item == null || item === '' ? '—' : `$${formatMoney(item)}`;
+    const value = item => item == null || item === '' ? 'N/A' : `$${formatMoney(item)}`;
     const pair = pool => `${pool.base?.symbol || '?'} / ${pool.quote?.symbol || '?'}`;
     const state = row.state === 'available' ? 'DEX EVIDENCE AVAILABLE' : row.state === 'no_contract' ? 'NO CONTRACT / NO DEX LOOKUP' : 'DEX LOOKUP NOT RESOLVED';
     const errorNote = Array.isArray(row.errors) && row.errors.length ? `<p class="dossier-note">${row.errors.length} DEX request(s) failed for this wrapper. Bell keeps that as unavailable evidence, not zero activity.</p>` : '';
@@ -295,7 +319,7 @@
       return;
     }
     const stateClass = audit.state.replaceAll('_', '-');
-    target.innerHTML = `<div class="audit-snapshot-heading"><div><span class="eyebrow">CMC SURFACE AUDIT / ${escapeHTML(audit.observed_at)}</span><h3>${escapeHTML(audit.headline)}</h3></div><span class="audit-state audit-state-${escapeHTML(stateClass)}">${escapeHTML(audit.label)}</span></div><p class="audit-snapshot-summary">${escapeHTML(audit.summary)}</p><ul class="audit-findings">${audit.findings.map(finding => `<li>${escapeHTML(finding)}</li>`).join('')}</ul><p class="dossier-note">${escapeHTML(audit.source)}. Snapshot evidence is not a live quote and does not establish backing, redemption, eligibility or executable liquidity.</p>`;
+    target.innerHTML = `<div class="audit-snapshot-heading"><div><span class="eyebrow">CMC SURFACE AUDIT / ${escapeHTML(audit.observed_at)}</span><h3>${escapeHTML(audit.headline)}</h3></div><span class="audit-state audit-state-${escapeHTML(stateClass)}">${escapeHTML(audit.label)}</span></div><p class="audit-snapshot-summary">${escapeHTML(audit.summary)}</p><ul class="audit-findings">${audit.findings.map(finding => `<li>${escapeHTML(finding)}</li>`).join('')}</ul><div class="audit-next-action"><span class="eyebrow">NEXT EVIDENCE REQUIRED</span><p>${escapeHTML(audit.next_action || 'Collect more evidence before making a comparison.')}</p></div><p class="dossier-note">${escapeHTML(audit.source)}. Snapshot evidence is not a live quote and does not establish backing, redemption, eligibility or executable liquidity.</p>`;
   }
   byId('detail-availability').addEventListener('click', async event => {
     const button = event.target.closest('[data-live-asset]');
@@ -327,7 +351,7 @@
   });
   function renderLiveSession(receipt) {
     const wrappers = Array.isArray(receipt.wrappers) ? receipt.wrappers : [];
-    const value = (wrapper, session) => wrapper.sessions?.[session]?.median_range_pct == null ? '—' : `${Number(wrapper.sessions[session].median_range_pct).toFixed(2)}%`;
+    const value = (wrapper, session) => wrapper.sessions?.[session]?.median_range_pct == null ? 'N/A' : `${Number(wrapper.sessions[session].median_range_pct).toFixed(2)}%`;
     const warnings = Array.isArray(receipt.warnings) && receipt.warnings.length ? `<ul class="dossier-warnings">${receipt.warnings.map(warning => `<li>${escapeHTML(warning)}</li>`).join('')}</ul>` : '<p class="dossier-note">No coverage warnings returned for this run.</p>';
     byId('live-session-result').innerHTML = `<div class="session-result-heading"><div><span class="eyebrow">LIVE SESSION REVIEW COMPLETE</span><p class="dossier-note">${escapeHTML(receipt.window?.start_utc || 'Start not supplied')} to ${escapeHTML(receipt.window?.end_utc || 'end not supplied')} · ${escapeHTML(receipt.window?.duration_hours || 0)} hours · ${wrappers.length} wrappers</p></div><span class="snapshot-tag">${escapeHTML(receipt.state || 'unknown').toUpperCase()}</span></div><div class="table-scroll"><table class="dossier-table session-result-table"><thead><tr><th>Wrapper</th><th>Cash</th><th>After-hours</th><th>Weekend</th><th>Coverage</th></tr></thead><tbody>${wrappers.map(wrapper => `<tr><th>${escapeHTML(wrapper.symbol)}<small>${escapeHTML(wrapper.issuer || '')}</small></th><td>${value(wrapper, 'cash')}</td><td>${value(wrapper, 'after_hours')}</td><td>${value(wrapper, 'weekend')}</td><td>${escapeHTML(wrapper.state || 'unknown')}</td></tr>`).join('')}</tbody></table></div>${warnings}<p class="dossier-note">This is a new server-side CMC observation. It is not the dated public snapshot and does not measure liquidity, price discovery, eligibility or execution.</p>`;
   }
@@ -387,15 +411,15 @@
   });
 
   function goldRelative(wrapper, session) {
-    return wrapper.range_pct[session] / wrapper.range_pct.cash * 100;
+    return Number.isFinite(Number(wrapper.range_pct[session])) && Number(wrapper.range_pct.cash) > 0 ? Number(wrapper.range_pct[session]) / Number(wrapper.range_pct.cash) * 100 : null;
   }
   function renderGoldAnalysis() {
     const gold = window.BELL_GOLD_SNAPSHOT;
     if (!gold) return;
     byId('gold-comparison-body').innerHTML = gold.wrappers.map(wrapper => {
       const cells = ['cash', 'after_hours', 'weekend'].map(session => {
-        const value = goldMetric === 'range' ? percent(wrapper.range_pct[session]) : `${goldRelative(wrapper, session).toFixed(0)}%`;
-        const width = goldMetric === 'range' ? wrapper.range_pct[session] / 0.6 * 100 : goldRelative(wrapper, session);
+        const value = goldMetric === 'range' ? percent(wrapper.range_pct[session]) : ratioLabel(goldRelative(wrapper, session));
+        const width = goldMetric === 'range' ? (Number(wrapper.range_pct[session]) || 0) / 0.6 * 100 : (goldRelative(wrapper, session) || 0);
         return `<td${session === 'weekend' ? ' class="weekend-cell"' : ''}><span class="cell-value">${value}</span><span class="mini-track" aria-hidden="true"><span style="width:${Math.min(width, 100)}%"></span></span></td>`;
       }).join('');
       return `<tr><td><strong>${escapeHTML(wrapper.symbol)}</strong><span>${escapeHTML(wrapper.issuer)}</span></td>${cells}<td class="ratio-cell"><strong>≈${goldRelative(wrapper, 'weekend').toFixed(0)}%</strong><small>of comparison median range</small></td></tr>`;
@@ -415,7 +439,7 @@
     byId('gold-analysis').hidden = !review || asset.analysis_id !== 'gold';
     byId('tesla-analysis').hidden = !review || asset.analysis_id !== 'tesla';
     if (!asset) {
-      document.title = 'Bell | RWA Decision Desk | Dyplux';
+      document.title = 'Bell | RWA Comparability Evidence | Dyplux';
       if (terminal) terminal.render(assets.find(item => item.id === 'gold') || assets[0]);
       loadHomepageDossier();
       if (match) {
@@ -479,11 +503,11 @@
   function renderComparison() {
     byId('comparison-body').innerHTML = wrappers.map(w => {
       const cells = ['cash', 'after_hours', 'weekend'].map(session => {
-        const value = metric === 'range' ? percent(w.range_pct[session]) : `${relative(w, session).toFixed(0)}%`;
-        const width = metric === 'range' ? w.range_pct[session] / 0.6 * 100 : relative(w, session);
+        const value = metric === 'range' ? percent(w.range_pct[session]) : ratioLabel(relative(w, session));
+        const width = metric === 'range' ? (Number(w.range_pct[session]) || 0) / 0.6 * 100 : (relative(w, session) || 0);
         return `<td${session === 'weekend' ? ' class="weekend-cell"' : ''}><span class="cell-value">${value}</span><span class="mini-track" aria-hidden="true"><span style="width:${width}%"></span></span></td>`;
       }).join('');
-      return `<tr class="${focused === w.symbol ? 'is-focused' : focused ? 'is-dimmed' : ''}"><td><strong>${escapeHTML(w.symbol)}</strong><span>${escapeHTML(w.issuer)}</span></td>${cells}<td class="ratio-cell"><strong>≈${relative(w, 'weekend').toFixed(0)}%</strong><small>of cash median range</small></td></tr>`;
+      return `<tr class="${focused === w.symbol ? 'is-focused' : focused ? 'is-dimmed' : ''}"><td><strong>${escapeHTML(w.symbol)}</strong><span>${escapeHTML(w.issuer)}</span></td>${cells}<td class="ratio-cell"><strong>${ratioLabel(relative(w, 'weekend'))}</strong><small>of cash median range</small></td></tr>`;
     }).join('');
     byId('table-caption').textContent = metric === 'range' ? 'Median hourly range, as a percentage of each bar’s opening price.' : 'Session median range relative to the cash-session median. Cash = 100%; approximate ratios from rounded inputs.';
     byId('metric-note').textContent = metric === 'range' ? 'Range = (high − low) / open. A median of hourly ranges, not a return or a liquidity measure.' : 'Relative = session median / cash median × 100. These ratios describe movement; they do not measure market quality.';
@@ -504,7 +528,7 @@
   function renderEvidence() {
     const selected = focused ? wrappers.filter(w => w.symbol === focused) : wrappers;
     byId('focused-evidence-title').textContent = focused ? `Focused wrapper / ${focused}` : 'Wrapper evidence / all four';
-    byId('focused-evidence').innerHTML = selected.map(w => `<div class="wrapper-evidence"><strong>${escapeHTML(w.symbol)} / ${escapeHTML(w.issuer)}</strong><p>Cash ${percent(w.range_pct.cash)} · After-hours ${percent(w.range_pct.after_hours)} · Weekend ${percent(w.range_pct.weekend)}<br>Weekend / cash ≈${relative(w, 'weekend').toFixed(0)}% · 168 bars<br>${w.venue_usd_24h ? `24h venue totals: CEX ${millions(w.venue_usd_24h.cex)} / DEX ${millions(w.venue_usd_24h.dex)} (rounded)` : 'Venue totals: not supplied'}</p></div>`).join('');
+    byId('focused-evidence').innerHTML = selected.map(w => `<div class="wrapper-evidence"><strong>${escapeHTML(w.symbol)} / ${escapeHTML(w.issuer)}</strong><p>Cash ${percent(w.range_pct.cash)} · After-hours ${percent(w.range_pct.after_hours)} · Weekend ${percent(w.range_pct.weekend)}<br>Weekend / cash ${ratioLabel(relative(w, 'weekend'))} · 168 bars<br>${w.venue_usd_24h ? `24h venue totals: CEX ${millions(w.venue_usd_24h.cex)} / DEX ${millions(w.venue_usd_24h.dex)} (receipt context)` : 'Venue totals: not supplied'}</p></div>`).join('');
   }
 
   function setFocus(symbol) {
@@ -547,12 +571,17 @@
 
   function receipt() {
     // Export the complete snapshot even when the interface focuses one wrapper.
-    return { ...snapshot, export_kind: 'offline_summary_receipt', export_scope: 'all_four_wrappers', derived: wrappers.map(w => ({ symbol: w.symbol, relative_to_cash_pct: { cash: 100, after_hours: relative(w, 'after_hours'), weekend: relative(w, 'weekend') }, cex_share_pct: w.venue_usd_24h ? w.venue_usd_24h.cex / (w.venue_usd_24h.cex + w.venue_usd_24h.dex) * 100 : null })), exported_at: new Date().toISOString(), export_note: 'Export timestamp is the local save time, not a market fetch timestamp. No raw bars; medians are reproduced from the cited summary.' };
+    return { ...snapshot, export_kind: 'offline_replayable_summary_receipt', export_scope: 'all_nine_entries', derived: wrappers.map(w => ({ symbol: w.symbol, relative_to_cash_pct: { cash: 100, after_hours: relative(w, 'after_hours'), weekend: relative(w, 'weekend') }, cex_share_pct: w.venue_usd_24h && (w.venue_usd_24h.cex + w.venue_usd_24h.dex) > 0 ? w.venue_usd_24h.cex / (w.venue_usd_24h.cex + w.venue_usd_24h.dex) * 100 : null })), exported_at: new Date().toISOString(), export_note: 'Export timestamp is the local save time, not a market fetch timestamp. Raw-normalised replay inputs are linked separately and the CMC receipt carries a dataset hash.' };
+  }
+
+  function legacyOfflineHTML(record) {
+    const rows = wrappers.map(w => `<tr><th>${escapeHTML(w.symbol)}<small>${escapeHTML(w.issuer)}</small></th><td>${percent(w.range_pct.cash)}</td><td>${percent(w.range_pct.after_hours)}</td><td>${percent(w.range_pct.weekend)}</td><td>${ratioLabel(relative(w, 'weekend'))}</td><td>${w.venue_usd_24h ? `CEX ${millions(w.venue_usd_24h.cex)} / DEX ${millions(w.venue_usd_24h.dex)}` : 'Not supplied'}</td></tr>`).join('');
+    return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Bell · Tesla offline summary receipt</title><style>body{margin:0;background:#f4f1ea;color:#0a0e14;font:15px/1.7 Arial,sans-serif}main{max-width:1000px;margin:auto;padding:38px 24px}header{border-bottom:2px solid #0a0e14;padding-bottom:22px}h1{font-size:38px;line-height:1.1;letter-spacing:-1px;margin:12px 0}h2{font-size:22px;margin-top:32px}.tag{display:inline-block;background:#0a0e14;color:#ffcc00;padding:5px 10px;font-size:11px}p,li{max-width:850px}small{display:block;font-size:11px;font-weight:normal}.scroll{overflow-x:auto}table{width:100%;border-collapse:collapse;white-space:nowrap;font-variant-numeric:tabular-nums}th,td{text-align:left;padding:13px 10px;border-bottom:1px solid #ccc;font-size:12px}thead{background:#e8e3d7}code,pre{font-size:11px}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#e8e3d7;padding:18px}footer{border-top:1px solid #ccc;margin-top:30px;padding-top:16px;font-size:11px}@media print{main{padding:0}.scroll{overflow:visible}pre{font-size:9px}table{white-space:normal}}</style></head><body><main><header><span class="tag">BELL / DEMONSTRATION SNAPSHOT / SUMMARY RECEIPT</span><h1>What is still a market<br>after the bell?</h1><p>Tesla · Four wrappers · 168 hours ending 11 September 2026, 19:00 UTC.</p><small>Saved ${escapeHTML(record.exported_at)}. This is the local export time, not a market fetch timestamp.</small></header><h2>The observation</h2><p>Robinhood’s Tesla wrapper retains approximately 84% of its cash-session median hourly range at the weekend. Backed’s retains approximately 20%. This describes movement, not liquidity or price discovery.</p><div class="scroll"><table><caption>Median hourly ranges · dated summary · not live data</caption><thead><tr><th>Wrapper / issuer</th><th>Cash</th><th>After-hours*</th><th>Weekend</th><th>Weekend / cash</th><th>24h venue context</th></tr></thead><tbody>${rows}</tbody></table></div><p><small>*After-hours means all remaining weekday hours, including pre-market, post-market and overnight. Cash: 30 bars; weekday closed: 90; weekend: 48, per wrapper. Venue totals are rounded and dated 11 September 2026; exact fetch timestamp not supplied.</small></p><h2>Method</h2><p>Hourly range = ((high − low) / open) × 100. Aggregate = median by session. Assign bars by opening timestamp in America/New_York: weekdays 09:30–16:00 cash, remaining weekdays after-hours, Saturday/Sunday weekend. No exchange holiday calendar. Relative-to-cash and venue shares are derived from rounded summary values.</p><p>Hourly volume is not summed because the documented CMC field is rolling 24-hour volume.</p><h2>Provenance</h2><p>Summary documents: bell/JUDGE.md and research/rwa-session/notes.md in the Dyplux workspace. These documents and raw API responses are not bundled here.</p><ul>${snapshot.provenance.endpoints.map(endpoint => `<li><code>${escapeHTML(endpoint)}</code></li>`).join('')}</ul><p>No API requests, keys or external assets are required to open this receipt. Raw OHLCV bars, request IDs and response hashes are absent. The median ranges cannot be independently recalculated from this summary.</p><h2>Limits</h2><ul>${snapshot.limitations.map(limit => `<li>${escapeHTML(limit)}</li>`).join('')}</ul><h2>Disclosure</h2><p>${escapeHTML(snapshot.disclosure)}</p><details><summary>Complete machine-readable record</summary><pre>${escapeHTML(JSON.stringify(record, null, 2))}</pre></details><footer>Bell · An instrument by Dyplux, Lisbon. Research, not a trading signal.</footer></main></body></html>`;
   }
 
   function offlineHTML(record) {
-    const rows = wrappers.map(w => `<tr><th>${escapeHTML(w.symbol)}<small>${escapeHTML(w.issuer)}</small></th><td>${percent(w.range_pct.cash)}</td><td>${percent(w.range_pct.after_hours)}</td><td>${percent(w.range_pct.weekend)}</td><td>≈${relative(w, 'weekend').toFixed(0)}%</td><td>${w.venue_usd_24h ? `CEX ${millions(w.venue_usd_24h.cex)} / DEX ${millions(w.venue_usd_24h.dex)}` : 'Not supplied'}</td></tr>`).join('');
-    return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Bell · Tesla offline summary receipt</title><style>body{margin:0;background:#f4f1ea;color:#0a0e14;font:15px/1.7 Arial,sans-serif}main{max-width:1000px;margin:auto;padding:38px 24px}header{border-bottom:2px solid #0a0e14;padding-bottom:22px}h1{font-size:38px;line-height:1.1;letter-spacing:-1px;margin:12px 0}h2{font-size:22px;margin-top:32px}.tag{display:inline-block;background:#0a0e14;color:#ffcc00;padding:5px 10px;font-size:11px}p,li{max-width:850px}small{display:block;font-size:11px;font-weight:normal}.scroll{overflow-x:auto}table{width:100%;border-collapse:collapse;white-space:nowrap;font-variant-numeric:tabular-nums}th,td{text-align:left;padding:13px 10px;border-bottom:1px solid #ccc;font-size:12px}thead{background:#e8e3d7}code,pre{font-size:11px}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#e8e3d7;padding:18px}footer{border-top:1px solid #ccc;margin-top:30px;padding-top:16px;font-size:11px}@media print{main{padding:0}.scroll{overflow:visible}pre{font-size:9px}table{white-space:normal}}</style></head><body><main><header><span class="tag">BELL / DEMONSTRATION SNAPSHOT / SUMMARY RECEIPT</span><h1>What is still a market<br>after the bell?</h1><p>Tesla · Four wrappers · 168 hours ending 11 September 2026, 19:00 UTC.</p><small>Saved ${escapeHTML(record.exported_at)}. This is the local export time, not a market fetch timestamp.</small></header><h2>The observation</h2><p>Robinhood’s Tesla wrapper retains approximately 84% of its cash-session median hourly range at the weekend. Backed’s retains approximately 20%. This describes movement, not liquidity or price discovery.</p><div class="scroll"><table><caption>Median hourly ranges · dated summary · not live data</caption><thead><tr><th>Wrapper / issuer</th><th>Cash</th><th>After-hours*</th><th>Weekend</th><th>Weekend / cash</th><th>24h venue context</th></tr></thead><tbody>${rows}</tbody></table></div><p><small>*After-hours means all remaining weekday hours, including pre-market, post-market and overnight. Cash: 30 bars; weekday closed: 90; weekend: 48, per wrapper. Venue totals are rounded and dated 11 September 2026; exact fetch timestamp not supplied.</small></p><h2>Method</h2><p>Hourly range = ((high − low) / open) × 100. Aggregate = median by session. Assign bars by opening timestamp in America/New_York: weekdays 09:30–16:00 cash, remaining weekdays after-hours, Saturday/Sunday weekend. No exchange holiday calendar. Relative-to-cash and venue shares are derived from rounded summary values.</p><p>Hourly volume is not summed because the documented CMC field is rolling 24-hour volume.</p><h2>Provenance</h2><p>Summary documents: bell/JUDGE.md and research/rwa-session/notes.md in the Dyplux workspace. These documents and raw API responses are not bundled here.</p><ul>${snapshot.provenance.endpoints.map(endpoint => `<li><code>${escapeHTML(endpoint)}</code></li>`).join('')}</ul><p>No API requests, keys or external assets are required to open this receipt. Raw OHLCV bars, request IDs and response hashes are absent. The median ranges cannot be independently recalculated from this summary.</p><h2>Limits</h2><ul>${snapshot.limitations.map(limit => `<li>${escapeHTML(limit)}</li>`).join('')}</ul><h2>Disclosure</h2><p>${escapeHTML(snapshot.disclosure)}</p><details><summary>Complete machine-readable record</summary><pre>${escapeHTML(JSON.stringify(record, null, 2))}</pre></details><footer>Bell · An instrument by Dyplux, Lisbon. Research, not a trading signal.</footer></main></body></html>`;
+    const rows = wrappers.map(wrapper => `<tr><th>${escapeHTML(wrapper.symbol)}<small>${escapeHTML(wrapper.issuer)}</small></th><td>${percent(wrapper.range_pct.cash)}</td><td>${percent(wrapper.range_pct.after_hours)}</td><td>${percent(wrapper.range_pct.weekend)}</td><td>${ratioLabel(relative(wrapper, 'weekend'))}</td><td>${wrapper.venue_usd_24h ? `CEX ${millions(wrapper.venue_usd_24h.cex)} / DEX ${millions(wrapper.venue_usd_24h.dex)}` : 'Not supplied'}</td></tr>`).join('');
+    return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Bell · Tesla evidence receipt</title><style>body{margin:0;background:#f4f1ea;color:#0a0e14;font:15px/1.7 Arial,sans-serif}main{max-width:1000px;margin:auto;padding:38px 24px}header{border-bottom:2px solid #0a0e14;padding-bottom:22px}h1{font-size:38px;line-height:1.1;letter-spacing:-1px;margin:12px 0}h2{font-size:22px;margin-top:32px}.tag{display:inline-block;background:#0a0e14;color:#ffcc00;padding:5px 10px;font-size:11px}p,li{max-width:850px}small{display:block;font-size:11px;font-weight:normal}.scroll{overflow-x:auto}table{width:100%;border-collapse:collapse;white-space:nowrap;font-variant-numeric:tabular-nums}th,td{text-align:left;padding:13px 10px;border-bottom:1px solid #ccc;font-size:12px}thead{background:#e8e3d7}code,pre{font-size:11px}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#e8e3d7;padding:18px}footer{border-top:1px solid #ccc;margin-top:30px;padding-top:16px;font-size:11px}@media print{main{padding:0}.scroll{overflow:visible}pre{font-size:9px}table{white-space:normal}}</style></head><body><main><header><span class="tag">BELL / REPLAYABLE EVIDENCE RECEIPT</span><h1>Same asset.<br>Different clocks.</h1><p>Tesla · ${wrappers.length} entries · dated session summary.</p><small>Saved ${escapeHTML(record.exported_at)}. This is the local export time, not a market fetch timestamp.</small></header><h2>The observation</h2><p>The table preserves the nine-entry Tesla session snapshot and keeps any insufficient-data wrapper in the record. A session contrast describes observed movement; it does not establish liquidity, backing or price discovery.</p><div class="scroll"><table><caption>Median hourly ranges · dated summary</caption><thead><tr><th>Wrapper / issuer</th><th>Cash</th><th>After-hours</th><th>Weekend</th><th>Weekend / cash</th><th>24h venue context</th></tr></thead><tbody>${rows}</tbody></table></div><h2>Method and limits</h2><p>Hourly range = ((high − low) / open) × 100. Values are medians assigned by opening timestamp in America/New_York. The companion normalised payload is the replay input; no API key is included.</p><p>CMC fields do not prove denomination, legal claim, redemption, liquidity, executable size or suitability. Repeat the observation before treating a contrast as persistent.</p><h2>Provenance</h2><p>Export kind: ${escapeHTML(record.export_kind || 'offline_replayable_summary_receipt')}. The record binds the displayed values to the dated public snapshot and its evidence links.</p><details><summary>Complete machine-readable record</summary><pre>${escapeHTML(JSON.stringify(record, null, 2))}</pre></details><footer>Bell · RWA comparability evidence. Research, not a trading signal.</footer></main></body></html>`;
   }
 
   function download(kind) {

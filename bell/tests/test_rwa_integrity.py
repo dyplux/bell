@@ -93,6 +93,33 @@ class RwaIntegrityTests(unittest.TestCase):
         self.assertIn("MARKET_FIELDS_MISSING", codes)
         self.assertEqual(result["alerts"][0]["decision"]["state"], "hold")
 
+    def test_malformed_numeric_fields_are_missing_not_zero(self):
+        base = {"data": {"rwa_assets": [{"rwa_id": 4, "has_tokens": True}]}}
+        quotes = {"data": {"rwa_assets": [{
+            "rwa_id": 4,
+            "name": "Malformed fields",
+            "tokens": [{"crypto_id": 40, "symbol": "BAD", "issuer_id": "issuer-a", "price": "n/a", "market_cap": "0", "volume_24h": "n/a"}],
+            "tradfi_markets": [],
+        }]}}
+        result = scan(base, base, quotes)
+        signals = {signal["code"]: signal for signal in result["alerts"][0]["signals"]}
+        self.assertIn("MARKET_FIELDS_MISSING", signals)
+        self.assertNotIn("ZERO_MCAP_POSITIVE_VOLUME", signals)
+        self.assertEqual(signals["MARKET_FIELDS_MISSING"]["evidence"]["count"], 1)
+
+    def test_non_finite_numeric_fields_are_missing_without_crashing(self):
+        base = {"data": {"rwa_assets": [{"rwa_id": 5, "has_tokens": True}]}}
+        quotes = {"data": {"rwa_assets": [{
+            "rwa_id": 5,
+            "name": "Non finite fields",
+            "tokens": [{"crypto_id": 50, "symbol": "NAN", "issuer_id": "issuer-a", "price": "NaN", "market_cap": "Infinity", "volume_24h": "-Infinity"}],
+            "tradfi_markets": [],
+        }]}}
+        result = scan(base, base, quotes)
+        codes = {signal["code"] for signal in result["alerts"][0]["signals"]}
+        self.assertIn("MARKET_FIELDS_MISSING", codes)
+        self.assertNotIn("ZERO_MCAP_POSITIVE_VOLUME", codes)
+
     def test_clean_reference_is_not_called_safe(self):
         base = {"data": {"rwa_assets": [{"rwa_id": 1, "has_tokens": True}]}}
         quotes = {"data": {"rwa_assets": [{

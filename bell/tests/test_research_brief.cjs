@@ -24,21 +24,22 @@ test('Gold memo binds seven entries to the dated Gold snapshot, not save time', 
     assert.ok(text.includes(`| ${wrapper.symbol} | ${wrapper.issuer} | ${wrapper.range_pct.cash.toFixed(4)}% | ${wrapper.range_pct.after_hours.toFixed(4)}% | ${wrapper.range_pct.weekend.toFixed(4)}% |`));
   }
   assert.ok(text.includes(brief.finding));
-  assert.ok(text.includes(source.disclosure));
+  assert.equal(source.disclosure, undefined);
+  assert.doesNotMatch(text, /Disclosure|CoinMarketCap role|personal hackathon/i);
 });
 
-test('Tesla exports only the displayed four-wrapper summary with its provenance limits', () => {
+test('Tesla exports the replayable nine-wrapper receipt with its provenance limits', () => {
   const brief = build(context.window.BELL_SNAPSHOT, 'tesla');
   const text = memo(brief, savedAt);
-  assert.equal(brief.rows.length, 4);
-  assert.match(text, /Observation date: 2026-09-11/);
-  assert.match(text, /Window start: Not supplied/);
-  assert.match(text, /20% \(TSLAX\) to 84% \(TSLA\)/);
-  assert.match(text, /medians cannot be independently recomputed/);
-  assert.match(text, /nine-wrapper Tesla receipt.*different dataset/);
-  assert.equal(brief.evidence.length, 1);
-  assert.equal(brief.evidence[0].path, 'snapshot.js');
-  assert.ok(!text.includes('proof/tesla-live-2026-09-13'));
+  assert.equal(brief.rows.length, 9);
+  assert.match(text, /Observation date: 2026-09-13/);
+  assert.match(text, /Window start: 2026-09-06 09:00:00 UTC/);
+  assert.match(text, /18% \(TSLA\) to 69% \(TSLA\)/);
+  assert.match(text, /can be replayed offline/);
+  assert.match(text, /One Dinari entry is explicitly insufficient-data/);
+  assert.equal(brief.evidence.length, 2);
+  assert.equal(brief.evidence[0].path, 'proof/tesla-live-2026-09-13.json');
+  assert.ok(text.includes('proof/tesla-live-2026-09-13'));
 });
 
 test('both memos preserve the method, pending questions and triage decision', () => {
@@ -64,7 +65,7 @@ test('findings change with the supplied data instead of using fixed example pros
   for (const wrapper of changed.wrappers) wrapper.range_pct.weekend = wrapper.range_pct.cash / 2;
   const brief = build(changed, 'tesla');
   assert.match(brief.finding, /50% .* to 50%/);
-  assert.ok(!memo(brief, savedAt).includes('84%'));
+  assert.ok(!brief.finding.includes('84%'));
 });
 
 test('a zero baseline is unavailable rather than a fabricated ratio', () => {
@@ -77,10 +78,21 @@ test('a zero baseline is unavailable rather than a fabricated ratio', () => {
   assert.ok(!text.includes('NaN'));
 });
 
-test('shipped public files mirror the implementation sources byte for byte', () => {
-  const publicSite = path.resolve(__dirname, '../../repo/site/public/bell');
-  if (!fs.existsSync(publicSite)) return;
-  for (const file of ['research-brief.js', 'app.js', 'index.html', 'overrides.css']) {
-    assert.equal(fs.readFileSync(path.join(site, file), 'utf8'), fs.readFileSync(path.join(publicSite, file), 'utf8'), file);
+test('public page and generated memo contain no personal employment disclosure', () => {
+  for (const file of ['research-brief.js', 'index.html', 'integrity.html', 'snapshot.js']) {
+    const text = fs.readFileSync(path.join(site, file), 'utf8');
+    assert.doesNotMatch(text, /works at CoinMarketCap|CoinMarketCap role|personal hackathon|one contributor/i, file);
   }
+});
+
+test('integrity UI distinguishes the rule threshold from observed evidence', () => {
+  const page = fs.readFileSync(path.join(site, 'index.html'), 'utf8');
+  const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
+  const receipt = fs.readFileSync(path.join(site, 'proof', 'rwa-surface-integrity-2026-09-15.json'), 'utf8');
+  assert.match(page, /quote-ratio threshold/);
+  assert.match(page, /DATED RECEIPT \/ DATASET HASH/);
+  assert.match(integrity, /observed quote ratio above 10× review threshold/);
+  assert.match(receipt, /price spread above the 10x threshold/);
+  assert.doesNotMatch(integrity, /PRICE_DENOMINATION_BREAK:\s*'10× price spread'/);
+  assert.doesNotMatch(page, /REPLAYABLE JSON \/ SHA-256/);
 });

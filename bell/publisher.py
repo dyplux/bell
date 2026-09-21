@@ -98,6 +98,38 @@ def pull_remote_jobs(limit: int) -> list[dict]:
     return [item for item in payload.get("jobs", []) if isinstance(item, dict) and item.get("slug")]
 
 
+def failure_endpoint() -> str | None:
+    explicit = os.environ.get("BELL_FAILURE_URL")
+    if explicit:
+        return explicit
+    jobs_url = os.environ.get("BELL_JOBS_URL")
+    if jobs_url and "/internal/jobs" in jobs_url:
+        return jobs_url.replace("/internal/jobs", "/internal/fail")
+    return None
+
+
+def mark_remote_job_failed(job: dict, error: str) -> dict:
+    endpoint = failure_endpoint()
+    token = os.environ.get("PUBLISHER_TOKEN")
+    if not endpoint or not token:
+        return {"remote_failure_recorded": False, "failure_remote": "not_configured"}
+    body = json.dumps({"id": job.get("id"), "slug": job.get("slug"), "error": error}).encode("utf-8")
+    request = Request(endpoint, data=body, method="POST", headers={
+        "Accept": "application/json",
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json",
+        "User-Agent": PUBLISHER_USER_AGENT,
+    })
+    try:
+        with urlopen(request, timeout=30) as response:
+            if response.status < 200 or response.status >= 300:
+                return {"remote_failure_recorded": False, "failure_remote": f"HTTP {response.status}"}
+    except (HTTPError, URLError) as exc:
+        status = getattr(exc, "code", getattr(exc, "reason", type(exc).__name__))
+        return {"remote_failure_recorded": False, "failure_remote": str(status)}
+    return {"remote_failure_recorded": True, "failure_remote": endpoint}
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Publish current CMC RWA dossiers into Bell's live store")
     parser.add_argument("slugs", nargs="*", help="CMC RWA slugs to refresh")
@@ -125,7 +157,12 @@ def main() -> int:
                 result["job_id"] = matching_job.get("id")
             results.append(result)
         except BellDataError as exc:
-            results.append({"slug": slug, "error": str(exc)})
+            result = {"slug": slug, "error": str(exc)}
+            matching_job = next((job for job in queued if job["slug"] == slug), None)
+            if matching_job:
+                result["job_id"] = matching_job.get("id")
+                result.update(mark_remote_job_failed(matching_job, str(exc)))
+            results.append(result)
     print(json.dumps({"schema_version": "bell.publisher.run.v1", "results": results}, indent=2))
     return 1 if any("error" in result for result in results) else 0
 

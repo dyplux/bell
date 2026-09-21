@@ -27,6 +27,10 @@ from urllib.request import Request, urlopen
 API_ROOT = "https://pro-api.coinmarketcap.com"
 
 
+def utc_now() -> str:
+    return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+
+
 def records(payload: dict) -> list[dict]:
     data = payload.get("data", payload)
     if isinstance(data, dict) and isinstance(data.get("rwa_assets"), list):
@@ -43,7 +47,8 @@ def number(value):
     if value is None or isinstance(value, bool):
         return None
     try:
-        return Decimal(str(value))
+        parsed = Decimal(str(value))
+        return parsed if parsed.is_finite() else None
     except (InvalidOperation, TypeError, ValueError):
         return None
 
@@ -53,35 +58,53 @@ def digest(value: object) -> str:
     return hashlib.sha256(encoded).hexdigest()
 
 
-def api_get(path: str, params: dict[str, object], key: str) -> dict:
+def api_get(path: str, params: dict[str, object], key: str, surface: str | None = None, surface_times: dict | None = None) -> dict:
+    if surface and surface_times is not None:
+        surface_times.setdefault(surface, {})
+        surface_times[surface].setdefault("first_request_at", utc_now())
+        surface_times[surface]["request_count"] = surface_times[surface].get("request_count", 0) + 1
+        surface_times[surface].setdefault("status_codes", [])
+        surface_times[surface].setdefault("response_sha256", [])
     query = urlencode({key_: str(value) for key_, value in params.items() if value is not None})
     request = Request(f"{API_ROOT}{path}?{query}", headers={"X-CMC_PRO_API_KEY": key, "Accept": "application/json"})
     last_error = None
     for attempt in range(3):
         try:
             with urlopen(request, timeout=90) as response:
-                return json.load(response)
+                raw_body = response.read()
+                payload = json.loads(raw_body)
+                if surface and surface_times is not None:
+                    surface_times[surface]["last_response_at"] = utc_now()
+                    surface_times[surface]["successful_response_count"] = surface_times[surface].get("successful_response_count", 0) + 1
+                    surface_times[surface]["status_codes"].append(int(response.status))
+                    surface_times[surface]["response_sha256"].append(hashlib.sha256(raw_body).hexdigest())
+                return payload
         except HTTPError as exc:
             last_error = exc
+            if surface and surface_times is not None:
+                surface_times[surface]["status_codes"].append(int(exc.code))
             if exc.code not in (408, 425, 429) and exc.code < 500:
                 raise
         except URLError as exc:
             last_error = exc
+            if surface and surface_times is not None:
+                surface_times[surface]["status_codes"].append(0)
         if attempt < 2:
             time.sleep(2 ** attempt)
     raise RuntimeError(f"CMC request failed after retries: {path}") from last_error
 
 
-def collect_live(key: str) -> tuple[dict, dict, dict, dict, dict, dict]:
+def collect_live(key: str, surface_times: dict | None = None) -> tuple[dict, dict, dict, dict, dict, dict]:
+    surface_times = surface_times if surface_times is not None else {}
     map_pages = []
     list_pages = []
     for start in range(1, 10001, 250):
-        page = api_get("/v5/real-world-assets/map", {"start": start, "limit": 250}, key)
+        page = api_get("/v5/real-world-assets/map", {"start": start, "limit": 250}, key, "map", surface_times)
         map_pages.append(page)
         if not page.get("data", {}).get("has_more"):
             break
     for start in range(1, 10001, 250):
-        page = api_get("/v5/real-world-assets/assets/list", {"start": start, "limit": 250, "convert": "USD"}, key)
+        page = api_get("/v5/real-world-assets/assets/list", {"start": start, "limit": 250, "convert": "USD"}, key, "asset_list", surface_times)
         list_pages.append(page)
         if not page.get("data", {}).get("has_more"):
             break
@@ -92,14 +115,14 @@ def collect_live(key: str) -> tuple[dict, dict, dict, dict, dict, dict]:
     quote_pages = []
     crypto_info_pages = []
     for index in range(0, len(token_ids), 250):
-        info_pages.append(api_get("/v5/real-world-assets/info", {"rwa_id": ",".join(token_ids[index:index + 250])}, key))
-        quote_pages.append(api_get("/v5/real-world-assets/quotes/latest", {"rwa_id": ",".join(token_ids[index:index + 250]), "convert": "USD", "skip_invalid": "true"}, key))
+        info_pages.append(api_get("/v5/real-world-assets/info", {"rwa_id": ",".join(token_ids[index:index + 250])}, key, "info", surface_times))
+        quote_pages.append(api_get("/v5/real-world-assets/quotes/latest", {"rwa_id": ",".join(token_ids[index:index + 250]), "convert": "USD", "skip_invalid": "true"}, key, "quotes", surface_times))
     crypto_ids = sorted({str(token.get("crypto_id")) for page in quote_pages for asset in records(page) for token in asset.get("tokens", []) if isinstance(token, dict) and token.get("crypto_id") is not None})
     crypto_info_invalid_ids = []
     for index in range(0, len(crypto_ids), 100):
         batch = crypto_ids[index:index + 100]
         try:
-            crypto_info_pages.append(api_get("/v2/cryptocurrency/info", {"id": ",".join(batch), "skip_invalid": "true"}, key))
+            crypto_info_pages.append(api_get("/v2/cryptocurrency/info", {"id": ",".join(batch), "skip_invalid": "true"}, key, "crypto_info", surface_times))
         except HTTPError as exc:
             if exc.code != 400:
                 raise
@@ -108,14 +131,14 @@ def collect_live(key: str) -> tuple[dict, dict, dict, dict, dict, dict]:
             # unresolved IDs in the receipt instead of hiding the gap.
             for crypto_id in batch:
                 try:
-                    crypto_info_pages.append(api_get("/v2/cryptocurrency/info", {"id": crypto_id, "skip_invalid": "true"}, key))
+                    crypto_info_pages.append(api_get("/v2/cryptocurrency/info", {"id": crypto_id, "skip_invalid": "true"}, key, "crypto_info", surface_times))
                 except HTTPError as item_error:
                     if item_error.code != 400:
                         raise
                     crypto_info_invalid_ids.append(crypto_id)
     issuer_pages = []
     for start in range(1, 10001, 250):
-        page = api_get("/v5/real-world-assets/issuers/list", {"start": start, "limit": 250}, key)
+        page = api_get("/v5/real-world-assets/issuers/list", {"start": start, "limit": 250}, key, "issuers", surface_times)
         issuer_pages.append(page)
         if not page.get("data", {}).get("has_more"):
             break
@@ -181,8 +204,8 @@ def asset_scan(asset: dict, issuer_lookup: dict | None = None, crypto_lookup: di
     symbols = [token.get("symbol") for token in tokens if token.get("symbol")]
     symbol_counts = Counter(symbols)
     repeated_symbols = sorted(symbol for symbol, count in symbol_counts.items() if count > 1)
-    zero_mcap_volume = [token for token in tokens if number(token.get("market_cap")) == 0 and (number(token.get("volume_24h")) or 0) > 0]
-    missing_fields = [token.get("symbol") or token.get("crypto_id") for token in tokens if any(token.get(key) is None for key in ("price", "market_cap", "volume_24h"))]
+    zero_mcap_volume = [token for token in tokens if number(token.get("market_cap")) == 0 and (number(token.get("volume_24h")) is not None and number(token.get("volume_24h")) > 0)]
+    missing_fields = [token.get("symbol") or token.get("crypto_id") for token in tokens if any(number(token.get(key)) is None or number(token.get(key)) < 0 for key in ("price", "market_cap", "volume_24h"))]
     missing_crypto_info = [token.get("crypto_id") for token in tokens if crypto_info_checked and token.get("crypto_id") is not None and token.get("crypto_info_resolved") is not True]
     derivative_tokens = [token for token in tokens if token.get("is_derivative") is True or any("derivative" in str(token.get(key) or "").lower() for key in ("name", "asset_type", "token_type", "category"))]
     non_derivative_tokens = [token for token in tokens if token not in derivative_tokens]
