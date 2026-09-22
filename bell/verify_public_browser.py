@@ -211,6 +211,19 @@ def main() -> int:
             require("DO NOT SHORTLIST" in mobile_decision.inner_text(), "mobile decision preview does not mirror the current blocked case")
             mobile.close()
 
+            narrow_mobile = {}
+            for width, height in ((320, 800), (375, 812)):
+                narrow_page = browser.new_page(viewport={"width": width, "height": height})
+                narrow_page.goto(args.base.rstrip("/") + "/", wait_until="domcontentloaded", timeout=30_000)
+                narrow_page.locator("#receipt-status-label").wait_for(state="attached", timeout=30_000)
+                narrow_page.wait_for_function("document.querySelector('#receipt-status-label')?.textContent?.includes('LOADING') === false", timeout=30_000)
+                narrow_overflow = narrow_page.evaluate("document.documentElement.scrollWidth > window.innerWidth + 1")
+                require(not narrow_overflow, f"{width}px mobile page has horizontal overflow")
+                require(narrow_page.locator("#hero-search").is_visible(), f"{width}px mobile hides the primary search")
+                require(narrow_page.locator("#hero-mobile-decision").is_visible(), f"{width}px mobile hides the decision preview")
+                narrow_mobile[str(width)] = "no overflow; search and decision visible"
+                narrow_page.close()
+
             tablet = browser.new_context(viewport={"width": 834, "height": 1112})
             tablet_page = tablet.new_page()
             tablet_page.goto(args.base.rstrip("/") + "/", wait_until="domcontentloaded", timeout=30_000)
@@ -254,6 +267,7 @@ def main() -> int:
                 "dossier_context": "Gold live dossier shows DEX coverage, surfaces and market-pair boundary",
                 "map_only": f"Colgate routed to complete RWA map as {map_route}",
                 "mobile_horizontal_overflow": False,
+                "narrow_mobile": narrow_mobile,
                 "tablet_horizontal_overflow": False,
                 "population_concentration": "HHI and effective issuer count visible",
                 "population_attribution_export": attribution_download.suggested_filename,

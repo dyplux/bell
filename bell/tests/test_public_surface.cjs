@@ -170,6 +170,8 @@ test('browser verifier checks a second multi-wrapper reference', () => {
   const verifier = fs.readFileSync(path.resolve(__dirname, '../verify_public_browser.py'), 'utf8');
   assert.match(verifier, /tesla_state = search_and_check\("Tesla"\)/);
   assert.match(verifier, /tesla_state == "INVESTIGATE"/);
+  assert.match(verifier, /\(320, 800\)/);
+  assert.match(verifier, /\(375, 812\)/);
 });
 
 test('hero search lands on the result it just generated', () => {
