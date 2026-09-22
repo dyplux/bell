@@ -28,6 +28,35 @@
     };
   }
 
+  function quoteBand(tokens) {
+    const rows = (tokens || [])
+      .map((token, index) => ({
+        token,
+        index,
+        price: finitePositive(token && token.price),
+        volume: token && token.volume_24h == null ? null : Number(token.volume_24h),
+      }))
+      .filter(row => row.price !== null);
+    if (rows.length < 2) return null;
+    const ordered = [...rows].sort((a, b) => a.price - b.price);
+    const middle = Math.floor(ordered.length / 2);
+    const median = ordered.length % 2 ? ordered[middle].price : (ordered[middle - 1].price + ordered[middle].price) / 2;
+    const low = ordered[0].price;
+    const high = ordered[ordered.length - 1].price;
+    return {
+      median,
+      low,
+      high,
+      ratio: high / low,
+      gapPercent: ((high - low) / low) * 100,
+      rows: rows.map(row => ({
+        ...row,
+        deltaPercent: ((row.price / median) - 1) * 100,
+        volumeState: row.volume === null || !Number.isFinite(row.volume) ? 'missing' : row.volume === 0 ? 'zero' : 'positive',
+      })),
+    };
+  }
+
   function capitalMetrics(range, amount) {
     if (!range) return null;
     const value = budget(amount);
@@ -94,5 +123,5 @@
     };
   }
 
-  return { budget, quoteRange, capitalMetrics, assess };
+  return { budget, quoteRange, quoteBand, capitalMetrics, assess };
 });

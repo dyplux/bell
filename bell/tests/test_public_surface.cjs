@@ -59,9 +59,10 @@ test('search result exposes the observed quote endpoints before the evidence tab
   const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
   const visual = fs.readFileSync(path.join(site, 'visual-overrides.css'), 'utf8');
   assert.match(integrity, /function observedQuoteEndpoints/);
-  assert.match(integrity, /OBSERVED QUOTE ENDPOINTS/);
-  assert.match(integrity, /not a discount, backing, liquidity or executable spread/);
-  assert.match(visual, /\.search-evidence-grid/);
+  assert.match(integrity, /OBSERVED QUOTE BAND/);
+  assert.match(integrity, /relative to the observed median/);
+  assert.match(integrity, /not a ranking, discount, backing, liquidity or executable spread/);
+  assert.match(visual, /\.quote-band-table/);
 });
 
 test('hero search lands on the result it just generated', () => {

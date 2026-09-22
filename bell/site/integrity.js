@@ -463,18 +463,14 @@
   }
 
   function observedQuoteEndpoints(item) {
-    const tokens = (item?.tokens || item?.representations || [])
-      .map(token => ({
-        ...token,
-        numericPrice: numericValue(token?.price),
-      }))
-      .filter(token => token.numericPrice !== null && token.numericPrice > 0);
-    if (tokens.length < 2) return '';
-    const low = tokens.reduce((current, token) => token.numericPrice < current.numericPrice ? token : current);
-    const high = tokens.reduce((current, token) => token.numericPrice > current.numericPrice ? token : current);
-    const ratio = high.numericPrice / low.numericPrice;
-    const row = (label, token) => `<div><span>${label} · ${escapeHTML(token.symbol || token.name || 'unlabelled')}</span><small>${escapeHTML(token.issuer_name || token.issuer_catalogue_name || 'issuer not resolved')}</small><strong>${formatNumber(token.numericPrice)}</strong></div>`;
-    return `<section class="search-evidence" data-search-evidence><div class="search-evidence-head"><span>OBSERVED QUOTE ENDPOINTS</span><b>${formatNumber(ratio)}×</b></div><div class="search-evidence-grid">${row('LOW', low)}${row('HIGH', high)}</div><small>CMC quote rows in this receipt · not a discount, backing, liquidity or executable spread</small></section>`;
+    const tokens = item?.tokens || item?.representations || [];
+    const band = window.BellCapitalImpact.quoteBand(tokens);
+    if (!band) return '';
+    const volume = row => row.volumeState === 'positive'
+      ? formatNumber(row.volume)
+      : row.volumeState === 'zero' ? '0 reported' : 'missing';
+    const rows = band.rows.map(row => `<tr><th>${escapeHTML(row.token.symbol || row.token.name || 'unlabelled')}<small>${escapeHTML(row.token.name || '')}</small></th><td>${escapeHTML(row.token.issuer_name || row.token.issuer_catalogue_name || 'issuer not resolved')}</td><td>${formatNumber(row.price)}</td><td class="quote-band-delta">${row.deltaPercent >= 0 ? '+' : ''}${row.deltaPercent.toFixed(2)}%</td><td>${volume(row)}</td></tr>`).join('');
+    return `<section class="search-evidence" data-search-evidence><div class="search-evidence-head"><span>OBSERVED QUOTE BAND</span><b>${formatNumber(band.ratio)}×</b></div><p class="search-evidence-lede">${band.rows.length} priced representations around a ${formatNumber(band.median)} median quote</p><div class="quote-band-scroll"><table class="quote-band-table"><thead><tr><th>Representation</th><th>Issuer</th><th>Quote</th><th>Vs median</th><th>24h volume</th></tr></thead><tbody>${rows}</tbody></table></div><small>CMC quote rows in this receipt · relative to the observed median only · not a ranking, discount, backing, liquidity or executable spread</small></section>`;
   }
 
   function referenceConcentrationPanel(alert) {

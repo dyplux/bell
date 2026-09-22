@@ -1,6 +1,6 @@
 const assert = require('node:assert/strict');
 const test = require('node:test');
-const { budget, quoteRange, capitalMetrics, assess } = require('../site/capital-impact.js');
+const { budget, quoteRange, quoteBand, capitalMetrics, assess } = require('../site/capital-impact.js');
 
 test('quote range ignores missing, zero and negative prices', () => {
   const result = quoteRange([{ price: 0 }, { price: -2 }, { price: null }, { price: 10 }, { price: 20 }]);
@@ -9,6 +9,21 @@ test('quote range ignores missing, zero and negative prices', () => {
 
 test('quote range stays unavailable with fewer than two valid observations', () => {
   assert.equal(quoteRange([{ price: 10 }, { price: null }, { price: 0 }]), null);
+});
+
+test('quote band compares each row with the observed median and preserves volume state', () => {
+  const result = quoteBand([
+    { symbol: 'LOW', price: 90, volume_24h: 0 },
+    { symbol: 'MID', price: 100, volume_24h: 12 },
+    { symbol: 'HIGH', price: 110, volume_24h: null },
+  ]);
+  assert.equal(result.median, 100);
+  assert.equal(result.ratio, 110 / 90);
+  assert.deepEqual(result.rows.map(row => [row.token.symbol, Number(row.deltaPercent.toFixed(2)), row.volumeState]), [
+    ['LOW', -10, 'zero'],
+    ['MID', 0, 'positive'],
+    ['HIGH', 10, 'missing'],
+  ]);
 });
 
 test('capital metrics make the same budget consequence visible without claiming savings', () => {
