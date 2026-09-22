@@ -81,6 +81,13 @@ def main() -> int:
             copy_button.click()
             page.wait_for_function("document.querySelector('#decision-hero [data-copy-case]')?.textContent?.includes('Case link copied')", timeout=5_000)
 
+            watch_button = page.locator("[data-watch-id]").first
+            require(watch_button.count() == 1, "Silver evidence queue does not expose a watch action")
+            watch_button.click()
+            watchlist = page.locator("#watchlist-panel")
+            watchlist.wait_for(state="visible", timeout=5_000)
+            require("Silver" in watchlist.inner_text(), "saved Silver reference is not visible in the local watchlist")
+
             marvell_state = search_and_check("Marvell")
 
             if args.screenshot:
@@ -103,6 +110,7 @@ def main() -> int:
                 "silver_evidence": "observed quote evidence visible",
                 "decision_brief": brief_download.suggested_filename,
                 "shareable_case_link": "Case link copied",
+                "watchlist": "Silver saved locally",
                 "mobile_horizontal_overflow": False,
                 "screenshot": args.screenshot,
             }, ensure_ascii=False, indent=2))

@@ -64,8 +64,9 @@ python3 bell/verify_public_browser.py --channel chrome
 The check opens the public page, waits for the receipt, searches Silver and Marvell, confirms
 that both UI states mirror the published receipt (`DO NOT SHORTLIST` and `FACTS OPEN`),
 downloads the Silver decision brief, verifies the shareable case-link action, and checks
-that the 390px mobile layout has no horizontal overflow. The command is a browser smoke
-check, not a replacement for the receipt verifier or the test suite.
+that the reference can be saved to the local watchlist, and checks that the 390px mobile
+layout has no horizontal overflow. The command is a browser smoke check, not a replacement
+for the receipt verifier or the test suite.
 
 For a local credential-free replay, run:
 
