@@ -377,3 +377,21 @@ The same Gold submission was checked at both ends of the responsive layout:
 
 This avoids showing a narrow result card beside an empty desktop column while
 preserving the shorter first-click path on mobile and tablet.
+
+## Quote-band mobile acceptance: 22 September 2026 · final21
+
+The deployed Silver route was checked after the observed quote-band addition:
+
+- desktop, tablet and 390px mobile all returned the same four priced rows;
+- the band shows the observed median, each row's distance from that median and
+  the reported 24-hour volume state;
+- mobile adds `SWIPE FOR QUOTE · MEDIAN GAP · VOLUME →` above the horizontal
+  table and keeps the representation column sticky while the remaining fields
+  are revealed;
+- all three viewports kept `documentWidth = viewportWidth` and produced no
+  browser console errors;
+- the route continued to state that the band is not a ranking, discount,
+  backing, liquidity or executable-spread claim.
+
+This is a presentation and navigation improvement. It does not change the
+underlying receipt or claim that the observed rows are executable quotes.
