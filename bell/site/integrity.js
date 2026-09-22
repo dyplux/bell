@@ -1239,6 +1239,7 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
       ? significantSignals.slice(0, 3).map(signal => `<div><span class="hero-signal-severity ${signal.severity === 'critical' ? 'critical' : 'warning'}">${escapeHTML(String(signal.severity || 'signal').toUpperCase())}</span><strong>${escapeHTML(signalLabels[signal.code] || signal.code)}</strong><small>${escapeHTML(signalEvidenceSummary(signal))} · ${escapeHTML(signalSourceLabel(signal.code))}</small></div>`).join('')
       : '<div><span class="hero-signal-severity checked">CLEAR</span><strong>No published rule hit</strong><small>Observed fields remain descriptive and require external diligence</small></div>';
     const quoteContrast = byId('hero-quote-contrast');
+    const capitalSignal = byId('hero-capital-signal');
     const pricedTokens = (alert.tokens || []).filter(token => typeof token.price === 'number').sort((a, b) => a.price - b.price);
     if (quoteContrast) {
       const hasRange = pricedTokens.length >= 2 && pricedTokens[0].price !== pricedTokens[pricedTokens.length - 1].price;
@@ -1253,6 +1254,15 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
         byId('hero-low-issuer').textContent = low.issuer_name || 'Issuer not resolved';
         byId('hero-high-issuer').textContent = high.issuer_name || 'Issuer not resolved';
       }
+    }
+    if (capitalSignal) {
+      const capital = window.BellCapitalImpact.assess(alert, 10000);
+      capitalSignal.hidden = false;
+      capitalSignal.className = `hero-capital-signal hero-capital-${capital.mode}`;
+      const capitalHeadline = byId('hero-capital-headline');
+      const capitalCopy = byId('hero-capital-copy');
+      if (capitalHeadline) capitalHeadline.textContent = capital.headline;
+      if (capitalCopy) capitalCopy.textContent = capital.note;
     }
     const tokenCount = byId('hero-token-count');
     const issuerCount = byId('hero-issuer-count');
