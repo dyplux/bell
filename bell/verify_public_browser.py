@@ -67,6 +67,14 @@ def main() -> int:
                 return expected
 
             silver_state = search_and_check("Silver")
+            brief_button = page.locator("#decision-hero [data-brief-id]").first
+            require(brief_button.count() == 1, "Silver result does not expose a decision-brief action")
+            with page.expect_download(timeout=30_000) as download_info:
+                brief_button.click()
+            brief_download = download_info.value
+            require(brief_download.suggested_filename.endswith("-decision-brief.md"), f"unexpected brief filename: {brief_download.suggested_filename!r}")
+            require(page.locator("[data-copy-case]").count() > 0, "searched case does not expose a shareable case-link action")
+
             marvell_state = search_and_check("Marvell")
 
             if args.screenshot:
@@ -87,6 +95,8 @@ def main() -> int:
                 "silver_decision": silver_state,
                 "marvell_decision": marvell_state,
                 "silver_evidence": "observed quote evidence visible",
+                "decision_brief": brief_download.suggested_filename,
+                "shareable_case_link": True,
                 "mobile_horizontal_overflow": False,
                 "screenshot": args.screenshot,
             }, ensure_ascii=False, indent=2))
