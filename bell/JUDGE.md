@@ -80,6 +80,16 @@ To reproduce the critical browser path without a CMC credential, install Playwri
 python3 bell/verify_public_browser.py --channel chrome
 ```
 
+The decision boundaries can also be checked without a browser, network or API key:
+
+```sh
+python3 bell/verify_rule_boundaries.py
+```
+
+This executable specification covers the inclusive 10x denomination stop, the
+9.99x warning boundary, the single-representation no-ranking route, and the
+resolved versus unresolved `crypto_id` and chain-contract identity join.
+
 Before recording the final demo, run `python3 bell/prepare_demo.py --reference
 Silver`. It reads the current public receipt and prints the timestamp, route,
 observed ratio and endpoint labels used in the narration, so the recording does

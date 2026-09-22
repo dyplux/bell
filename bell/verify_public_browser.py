@@ -151,6 +151,9 @@ def main() -> int:
             require("72H OVERLAP" in temporal_text, "temporal check did not disclose the overlap")
             require("not independent validation" in temporal_text.lower(), "temporal check did not preserve its repeat-observation boundary")
 
+            tesla_state = search_and_check("Tesla")
+            require(tesla_state == "INVESTIGATE", f"Tesla integrity case did not preserve its investigation state: {tesla_state!r}")
+
             marvell_state = search_and_check("Marvell")
             marvell_details = page.locator("#alert-list .alert-details").first
             marvell_details.locator("summary").click()
@@ -229,6 +232,7 @@ def main() -> int:
                 "silver_decision": silver_state,
                 "gold_decision": gold_state,
                 "gold_temporal_check": "two dated weekend versus cash-session windows visible; overlap disclosed",
+                "tesla_decision": tesla_state,
                 "marvell_decision": marvell_state,
                 "silver_evidence": "observed quote evidence visible",
                 "capital_check": "25,000 routed to keep uncommitted",

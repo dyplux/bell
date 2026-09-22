@@ -50,6 +50,7 @@ From the repository root:
 python3 bell/verify_integrity_receipt.py
 python3 bell/verify_catalogue_receipt.py
 python3 bell/verify_case_receipt.py /path/to/downloaded-case-receipt.json
+python3 bell/verify_rule_boundaries.py
 PYTHONPATH=bell python3 -m unittest discover -s bell/tests -p 'test_*.py' -q
 ```
 
@@ -61,6 +62,12 @@ deterministic population calculation.
 The case verifier checks the receipt contract, stable join keys, token-row count,
 source fingerprints and explicit limits. It does not certify backing, liquidity,
 redemption, custody, eligibility or execution.
+
+`verify_rule_boundaries.py` is a credential-free executable specification of the
+critical decision edges. It proves that 9.99x remains an investigation warning,
+that 10x is an inclusive comparison stop, that a single representation does not
+produce a wrapper ranking, and that unresolved versus resolved `crypto_id` joins
+remain visible, including chain and contract fields.
 
 ## What is evidence and what is not
 

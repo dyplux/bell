@@ -32,6 +32,7 @@ REQUIRED_FILES = (
     "bell/site/proof/rwa-surface-integrity-inputs-2026-09-21.json",
     "bell/verify_integrity_receipt.py",
     "bell/verify_public_surface.py",
+    "bell/verify_rule_boundaries.py",
     "cloudflare/src/index.js",
     "cloudflare/wrangler.toml",
 )

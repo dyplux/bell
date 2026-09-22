@@ -19,6 +19,14 @@ test('public page exposes the single-URL RWA discovery and evidence path', () =>
   assert.match(page, /data-filter="no_flags">FACTS OPEN<\/button>/);
 });
 
+test('public release includes a credential-free executable rule specification', () => {
+  const verifier = fs.readFileSync(path.resolve(__dirname, '../verify_rule_boundaries.py'), 'utf8');
+  assert.match(verifier, /bell\.rule_boundary_verifier\.v1/);
+  assert.match(verifier, /9\.99x stays a warning/);
+  assert.match(verifier, /10x is an inclusive critical stop/);
+  assert.match(verifier, /resolved crypto identity exposes chain and contract/);
+});
+
 test('public page carries a shareable social preview', () => {
   assert.match(page, /property="og:title"/);
   assert.match(page, /property="og:description"/);
@@ -119,6 +127,12 @@ test('flagged Gold and Tesla cases expose dated temporal proof without turning i
   assert.equal(fs.existsSync(path.join(site, 'proof/gold-live-2026-09-17.payload.json')), true);
   assert.equal(fs.existsSync(path.join(site, 'proof/tesla-live-2026-09-17.json')), true);
   assert.equal(fs.existsSync(path.join(site, 'proof/tesla-live-2026-09-17.payload.json')), true);
+});
+
+test('browser verifier checks a second multi-wrapper reference', () => {
+  const verifier = fs.readFileSync(path.resolve(__dirname, '../verify_public_browser.py'), 'utf8');
+  assert.match(verifier, /tesla_state = search_and_check\("Tesla"\)/);
+  assert.match(verifier, /tesla_state == "INVESTIGATE"/);
 });
 
 test('hero search lands on the result it just generated', () => {
