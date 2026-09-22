@@ -30,6 +30,8 @@ python3 bell/integrity_publisher.py
 
 The product thesis and current scan are documented in
 [RWA-INTEGRITY-PRODUCT-2026-09-15.md](RWA-INTEGRITY-PRODUCT-2026-09-15.md).
+The dated CMC surface composition and its user consequences are in
+[API-FEEDBACK.md](API-FEEDBACK.md).
 The complete visitor journey, receipt lifecycle and demo script are in
 [USER-GUIDE.md](USER-GUIDE.md).
 The investor job-to-be-done, demand hypothesis and differentiation boundary are
