@@ -34,8 +34,19 @@
   const matches = byId('explorer-matches');
   const dossier = byId('explorer-dossier');
   const count = byId('explorer-count');
+  const freshness = byId('explorer-map-freshness');
   const form = byId('explorer-form');
   const queryFields = asset => [asset.name, asset.symbol, asset.slug, asset.asset_type, asset.rwa_id].map(normalize);
+  const mapDate = value => {
+    const date = new Date(value || '');
+    if (Number.isNaN(date.getTime())) return 'dated snapshot';
+    const month = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'][date.getUTCMonth()];
+    return `${String(date.getUTCDate()).padStart(2, '0')} ${month} ${date.getUTCFullYear()}`;
+  };
+  const applyCatalogueMeta = catalogue => {
+    count.textContent = `${number(catalogue.total_size || assets.length)} mapped references`;
+    if (freshness) freshness.textContent = `credential-free map · observed ${mapDate(catalogue.observed_at)} UTC · separate from live receipt`;
+  };
 
   function find(query) {
     const normalized = normalize(query);
@@ -142,7 +153,7 @@
       const items = find(input.value);
       renderMatches(items, input.value);
       if (items.length) load(items[0]);
-      count.textContent = `${number(catalogue.total_size || assets.length)} mapped references`;
+      applyCatalogueMeta(catalogue);
     }).catch(error => {
       matches.innerHTML = `<p class="explorer-hint">The reference map could not be loaded (${escapeHTML(error.message)})</p>`;
     });
@@ -162,7 +173,7 @@
     form.requestSubmit();
   }));
   catalogueReady.then(catalogue => {
-    count.textContent = `${number(catalogue.total_size || assets.length)} mapped references`;
+    applyCatalogueMeta(catalogue);
     renderMatches([], '');
     if (initialMapQuery) {
       input.value = initialMapQuery;

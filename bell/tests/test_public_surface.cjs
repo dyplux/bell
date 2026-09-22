@@ -15,6 +15,7 @@ test('public page exposes the single-URL RWA discovery and evidence path', () =>
   assert.match(page, /src="explorer\.js"/);
   assert.match(page, /href="\/api\/integrity"/);
   assert.match(page, /separate from live receipt/);
+  assert.match(page, /id="explorer-map-freshness"/);
   assert.match(page, /data-filter="no_flags">FACTS OPEN<\/button>/);
 });
 
@@ -32,6 +33,8 @@ test('explorer keeps all four RWA routes and the freshness boundary visible', ()
   }
   assert.match(explorer, /publication\.status/);
   assert.match(explorer, /catalog\.json/);
+  assert.match(explorer, /observed \$\{mapDate\(/);
+  assert.match(explorer, /separate from live receipt/);
   assert.match(explorer, /dex_covered_token_count/);
   assert.match(explorer, /market_pair_count/);
   assert.match(explorer, /does not infer backing/);
@@ -98,6 +101,7 @@ test('public decision vocabulary stays canonical', () => {
 
 test('public catalogue is a complete credential-free map snapshot', () => {
   assert.equal(catalogue.schema_version, 'bell.catalog.v1');
+  assert.match(catalogue.observed_at, /^2026-09-22T/);
   assert.equal(catalogue.total_size, catalogue.assets.length);
   assert.ok(catalogue.total_size >= 7000);
   assert.ok(catalogue.assets.some(asset => asset.slug === 'gold' && asset.has_tokens));
