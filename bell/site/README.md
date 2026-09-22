@@ -24,8 +24,14 @@ credentials. It uses the committed map snapshot and published evidence files.
 1. Search a published reference such as Silver, Gold, Tesla or SPY
 2. Read the route: `DO NOT SHORTLIST`, `INVESTIGATE`, `FACTS OPEN`,
    `SINGLE REPRESENTATION` or `REFERENCE ONLY`
-3. Open the representation rows, issuer and market evidence
-4. Follow the next diligence step and inspect the dated receipt
+3. Read the observed quote endpoints, ratio and boundary note before opening deeper evidence
+4. Open the representation rows, issuer and market evidence
+5. Follow the next diligence step and inspect the dated receipt
+
+After a search, the page keeps the first useful evidence in view: mobile and tablet show the
+compact searched-reference result, while desktop opens the wider decision card with capital and
+issuer context. The endpoint values are derived from the current receipt rows; they are not
+hardcoded examples.
 
 The result can be shared with a stable URL. The page accepts
 `?reference=<CMC RWA ID>` and the decision card includes a copy-link action,

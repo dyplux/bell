@@ -47,9 +47,10 @@ dossier without exposing the CMC key. The deployment and refresh boundary are do
 
 Bell is a universal real-world asset terminal with a comparability evidence gate and a population-wide RWA Surface Integrity Monitor. It searches the full CMC RWA map and changes its workflow
 according to the token layer: underlying-only, one-token dossier or multi-token comparison. The
-current credential-free map snapshot contains 4,686 stocks, 3,121 ETFs and 4 commodities; the
-explorer preserves the asset type returned by CMC so future RWA categories can use the same route
-without being presented as covered before they appear in a receipt.
+current credential-free map snapshot contains 7,811 references, including stocks, ETFs,
+commodities and other categories returned by CMC. The explorer preserves the asset type returned
+by CMC so future RWA categories can use the same route without being presented as covered before
+they appear in a receipt.
 Comparability and session review are evidence modules inside the terminal, not the whole product.
 Bell is a research instrument, not a trading signal.
 
