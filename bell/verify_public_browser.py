@@ -113,6 +113,15 @@ def main() -> int:
             watchlist.wait_for(state="visible", timeout=5_000)
             require("Silver" in watchlist.inner_text(), "saved Silver reference is not visible in the local watchlist")
 
+            gold_state = search_and_check("Gold")
+            temporal = page.locator("#decision-hero [data-temporal-evidence]")
+            temporal.wait_for(state="visible", timeout=30_000)
+            page.wait_for_function("document.querySelector('#decision-hero [data-temporal-evidence]')?.textContent?.includes('cash-session')", timeout=30_000)
+            temporal_text = temporal.inner_text()
+            require("PUBLISHED TEMPORAL CHECK" in temporal_text, "Gold case did not expose the published temporal check")
+            require("weekend" in temporal_text.lower() and "cash-session" in temporal_text.lower(), "temporal check did not explain the comparison clock")
+            require("not a ranking" in temporal_text.lower(), "temporal check did not preserve its no-ranking boundary")
+
             marvell_state = search_and_check("Marvell")
             marvell_details = page.locator("#alert-list .alert-details").first
             marvell_details.locator("summary").click()
@@ -185,6 +194,8 @@ def main() -> int:
                 "receipt_status": status,
                 "presentation_accessibility": "landmarks, h1, named controls and image alt text pass",
                 "silver_decision": silver_state,
+                "gold_decision": gold_state,
+                "gold_temporal_check": "dated weekend versus cash-session evidence visible",
                 "marvell_decision": marvell_state,
                 "silver_evidence": "observed quote evidence visible",
                 "capital_check": "25,000 routed to keep uncommitted",

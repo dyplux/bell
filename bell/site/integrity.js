@@ -46,6 +46,72 @@
     const parsed = numericValue(value);
     return parsed === null ? 'N/A' : parsed.toLocaleString(undefined, { maximumFractionDigits: 2 });
   };
+  const temporalReceiptPaths = new Map([
+    ['1', 'proof/gold-live-2026-09-13.json'],
+    ['14', 'proof/tesla-live-2026-09-13.json'],
+  ]);
+  const temporalReceiptPromises = new Map();
+
+  function temporalReceiptPath(alert) {
+    return temporalReceiptPaths.get(String(alert?.rwa_id || '')) || '';
+  }
+
+  function temporalPanel(alert) {
+    const path = temporalReceiptPath(alert);
+    if (!path) return '';
+    return `<section class="temporal-evidence" data-temporal-evidence="${escapeHTML(alert.rwa_id)}"><div class="temporal-evidence-head"><span>PUBLISHED TEMPORAL CHECK</span><b>LOADING DATED WINDOW</b></div><p class="temporal-evidence-loading">Reading the credential-free hourly receipt linked to this reference.</p></section>`;
+  }
+
+  function temporalReceipt(path) {
+    if (!temporalReceiptPromises.has(path)) {
+      temporalReceiptPromises.set(path, fetch(path, { headers: { Accept: 'application/json' } }).then(response => {
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        return response.json();
+      }));
+    }
+    return temporalReceiptPromises.get(path);
+  }
+
+  function temporalDate(value) {
+    return value ? new Date(value).toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'UTC' }) : 'dated window';
+  }
+
+  function temporalMarkup(receipt) {
+    const rows = (receipt.wrappers || []).map(wrapper => {
+      const cash = numericValue(wrapper.sessions?.cash?.median_range_pct);
+      const weekend = numericValue(wrapper.sessions?.weekend?.median_range_pct);
+      return {
+        symbol: wrapper.symbol || 'unlabelled',
+        issuer: wrapper.issuer || 'issuer not supplied',
+        state: wrapper.state || 'unknown',
+        cash,
+        weekend,
+        ratio: cash && weekend !== null ? weekend / cash * 100 : null,
+      };
+    });
+    const usable = rows.filter(row => Number.isFinite(row.ratio)).sort((a, b) => a.ratio - b.ratio);
+    const low = usable[0];
+    const high = usable[usable.length - 1];
+    if (!low || !high) {
+      return `<div class="temporal-evidence-head"><span>PUBLISHED TEMPORAL CHECK</span><b>INSUFFICIENT HISTORY</b></div><p>No wrapper supplied enough valid session medians for a dated comparison.</p><small>Receipt window ended ${escapeHTML(temporalDate(receipt.window?.end_utc))}. No ranking is inferred.</small>`;
+    }
+    const contrast = high.ratio / low.ratio;
+    const bars = usable.slice(0, 4).map(row => `<div class="temporal-row"><div><strong>${escapeHTML(row.symbol)}</strong><small>${escapeHTML(row.issuer)}</small></div><span class="temporal-track"><i style="width:${Math.min(Math.max(row.ratio, 4), 100)}%"></i></span><b>${row.ratio.toFixed(0)}%</b></div>`).join('');
+    const omitted = usable.length > 4 ? `<small class="temporal-more">${usable.length - 4} more usable wrapper${usable.length - 4 === 1 ? '' : 's'} remain in the receipt</small>` : '';
+    const table = usable.map(row => `<tr><th>${escapeHTML(row.symbol)}<small>${escapeHTML(row.issuer)}</small></th><td>${row.cash.toFixed(2)}%</td><td>${row.weekend.toFixed(2)}%</td><td>${row.ratio.toFixed(0)}%</td></tr>`).join('');
+    return `<div class="temporal-evidence-head"><span>PUBLISHED TEMPORAL CHECK</span><b>${escapeHTML(temporalDate(receipt.window?.end_utc))} · ${usable.length}/${rows.length} USABLE</b></div><h4>Weekend movement was not uniform across the group</h4><p class="temporal-evidence-lede"><strong>${escapeHTML(low.symbol)} ${low.ratio.toFixed(0)}%</strong> of its cash-session range versus <strong>${escapeHTML(high.symbol)} ${high.ratio.toFixed(0)}%</strong> for ${escapeHTML(high.issuer)} · ${contrast.toFixed(1)}× between the observed endpoints</p><div class="temporal-rows">${bars}</div>${omitted}<details><summary>Open all dated wrapper readings</summary><div class="temporal-table-scroll"><table><thead><tr><th>Wrapper</th><th>Cash</th><th>Weekend</th><th>Weekend / cash</th></tr></thead><tbody>${table}</tbody></table></div></details><p class="temporal-evidence-note">CMC OHLCV receipt · ${escapeHTML(receipt.window?.duration_hours || 0)} hours · hourly range medians. This is a dated movement comparison, not a ranking, fair-value, liquidity or execution test.</p><div class="temporal-evidence-links"><a href="${escapeHTML(temporalReceiptPath({ rwa_id: receipt.asset?.rwa_id }))}" target="_blank" rel="noopener">Open dated receipt ↗</a><a href="${escapeHTML(receipt.asset?.rwa_id === 1 ? 'proof/gold-live-2026-09-13.payload.json' : 'proof/tesla-live-2026-09-13.payload.json')}" target="_blank" rel="noopener">Open replay inputs ↗</a></div>`;
+  }
+
+  function loadTemporalEvidence(alert) {
+    const path = temporalReceiptPath(alert);
+    const target = document.querySelector(`[data-temporal-evidence="${CSS.escape(String(alert?.rwa_id || ''))}"]`);
+    if (!path || !target) return;
+    temporalReceipt(path).then(data => {
+      if (target.isConnected) target.innerHTML = temporalMarkup(data);
+    }).catch(() => {
+      if (target.isConnected) target.innerHTML = '<div class="temporal-evidence-head"><span>PUBLISHED TEMPORAL CHECK</span><b>RECEIPT UNAVAILABLE</b></div><p>The dated companion receipt could not be loaded. The current integrity case remains available.</p>';
+    });
+  }
   function searchMatches(normalizedQuery) {
     if (!receipt || !normalizedQuery) return [];
     return (receipt.alert_index || []).filter(item => [item.name, item.symbol, item.asset_type, item.rwa_id].join(' ').toLowerCase().includes(normalizedQuery));
@@ -1144,7 +1210,8 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     if (proofHint) proofHint.textContent = hint;
     const decisionHeading = query.trim() ? 'SEARCHED REFERENCE' : (isClean ? 'CURRENT REFERENCE' : 'FLAGGED REFERENCE');
     const signalLabel = signals || (isClean ? 'no published rule hit' : 'published rule hit');
-      byId('decision-hero').innerHTML = `<div class="decision-hero-top"><span class="eyebrow">${decisionHeading}</span><span class="decision-case">${escapeHTML(alert.symbol || 'RWA')}</span></div><h3>${escapeHTML(alert.name)}</h3><p class="decision-signal">${escapeHTML(signalLabel)}</p><div class="decision-outcome"><span>OUTPUT</span><strong>${escapeHTML(displayDecisionLabel(alert, 'HOLD COMPARISON'))}</strong><p>${escapeHTML(decision.consequence || alert.next_action || '')}</p><b class="allocation-gate">${escapeHTML(decision.allocation_effect || 'No allocation status is produced by this monitor')}</b></div><div class="decision-actions"><button class="brief-button" type="button" data-brief-id="${escapeHTML(alert.rwa_id)}">Save decision brief ↓</button><button class="brief-button" type="button" data-copy-case="${escapeHTML(alert.rwa_id)}">Copy case link ↗</button>${watchButton(alert)}<a class="decision-action-link" href="#monitor">Inspect representation rows ↘</a></div>${capitalPanel(alert)}${referenceConcentrationPanel(alert)}${referenceActivityPanel(alert)}${resolutionRoute(alert)}<div class="decision-receipt"><span>${escapeHTML(publication.status ? String(publication.status).toUpperCase() : 'DATED')} · ${escapeHTML(publication.observed_at || receipt.observed_at || 'N/A')}</span><a href="/api/integrity" target="_blank" rel="noopener">Open credential-free receipt ↗</a></div>`;
+      byId('decision-hero').innerHTML = `<div class="decision-hero-top"><span class="eyebrow">${decisionHeading}</span><span class="decision-case">${escapeHTML(alert.symbol || 'RWA')}</span></div><h3>${escapeHTML(alert.name)}</h3><p class="decision-signal">${escapeHTML(signalLabel)}</p><div class="decision-outcome"><span>OUTPUT</span><strong>${escapeHTML(displayDecisionLabel(alert, 'HOLD COMPARISON'))}</strong><p>${escapeHTML(decision.consequence || alert.next_action || '')}</p><b class="allocation-gate">${escapeHTML(decision.allocation_effect || 'No allocation status is produced by this monitor')}</b></div><div class="decision-actions"><button class="brief-button" type="button" data-brief-id="${escapeHTML(alert.rwa_id)}">Save decision brief ↓</button><button class="brief-button" type="button" data-copy-case="${escapeHTML(alert.rwa_id)}">Copy case link ↗</button>${watchButton(alert)}<a class="decision-action-link" href="#monitor">Inspect representation rows ↘</a></div>${capitalPanel(alert)}${temporalPanel(alert)}${referenceConcentrationPanel(alert)}${referenceActivityPanel(alert)}${resolutionRoute(alert)}<div class="decision-receipt"><span>${escapeHTML(publication.status ? String(publication.status).toUpperCase() : 'DATED')} · ${escapeHTML(publication.observed_at || receipt.observed_at || 'N/A')}</span><a href="/api/integrity" target="_blank" rel="noopener">Open credential-free receipt ↗</a></div>`;
+      loadTemporalEvidence(alert);
   }
 
   async function boot() {

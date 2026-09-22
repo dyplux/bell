@@ -403,3 +403,11 @@ the user changes the amount under consideration. The metric sums only positive
 token-row `volume_24h` fields and labels the result as rolling reported volume
 rather than depth or executable exit capacity. The no-volume case remains
 explicit and does not render a zero as if it were evidence.
+
+## Temporal evidence acceptance: 22 September 2026 · final23
+
+The live Gold case now loads its published 168-hour CMC OHLCV receipt into the
+same decision path. The browser check confirmed the dated window, the
+weekend-versus-cash-session explanation, the no-ranking boundary and links to
+the receipt and replay inputs. Desktop, tablet and 390px mobile all kept the
+panel inside the viewport with no console errors.

@@ -70,6 +70,18 @@ test('search result exposes the observed quote endpoints before the evidence tab
   assert.match(visual, /\.quote-band-table/);
 });
 
+test('flagged Gold and Tesla cases expose dated temporal proof without turning it into a ranking', () => {
+  const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
+  const visual = fs.readFileSync(path.join(site, 'visual-overrides.css'), 'utf8');
+  assert.match(integrity, /PUBLISHED TEMPORAL CHECK/);
+  assert.match(integrity, /gold-live-2026-09-13\.json/);
+  assert.match(integrity, /tesla-live-2026-09-13\.json/);
+  assert.match(integrity, /not a ranking, fair-value, liquidity or execution test/);
+  assert.match(visual, /\.temporal-evidence/);
+  assert.equal(fs.existsSync(path.join(site, 'proof/gold-live-2026-09-13.json')), true);
+  assert.equal(fs.existsSync(path.join(site, 'proof/tesla-live-2026-09-13.json')), true);
+});
+
 test('hero search lands on the result it just generated', () => {
   const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
   assert.match(integrity, /const target = window\.matchMedia/);

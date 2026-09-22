@@ -25,7 +25,10 @@ It is not a token leaderboard, safety score or investment recommendation.
    capital check also shows the proposed amount as a share of reported token
    row volume when positive 24-hour volume is available. That is context, not
    depth or exit capacity.
-7. Open the live JSON receipt or the dated replay and verify the timestamps,
+7. For Gold or Tesla, inspect the published temporal check when present. It
+   compares dated movement across the reference group and keeps the result
+   descriptive rather than selecting a wrapper.
+8. Open the live JSON receipt or the dated replay and verify the timestamps,
    source hashes and stable-ID join coverage.
 
 The output is explicit:
@@ -56,6 +59,8 @@ Bell adds the decision protocol around those surfaces:
   references with multiple positive quote rows;
 - an amount-to-reported-volume context metric that makes the size question
   visible without presenting rolling volume as executable liquidity;
+- a dated temporal check for published Gold and Tesla windows, with the
+  underlying receipt and replay inputs linked from the same case;
 - a credential-free, timestamped receipt that can be replayed offline.
 
 ## Public evidence contract

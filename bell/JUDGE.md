@@ -44,11 +44,13 @@ current submission and does not require an API key.
    and the low/high quote endpoints with their issuer labels.
 3. Read the boundary below the endpoints: these are CMC quote rows, not a discount, backing,
    liquidity or executable spread.
-4. Read `RECEIPT TRAIL` in the live case, then open the publication-history chart lower on
+4. In the Gold case, read `PUBLISHED TEMPORAL CHECK` to see the dated 168-hour
+   weekend-versus-cash-session evidence. It is movement context, not a wrapper ranking.
+5. Read `RECEIPT TRAIL` in the live case, then open the publication-history chart lower on
    the page to see how the population state changed across dated summaries.
-5. Open `Inspect this evidence` to see the published receipt, rule evidence, identity/unit/
+6. Open `Inspect this evidence` to see the published receipt, rule evidence, identity/unit/
    market checks, token rows and the resolution route.
-6. Open `Explore RWA` and search a reference without a published case. Bell routes it to the
+7. Open `Explore RWA` and search a reference without a published case. Bell routes it to the
    complete map instead of inventing a clean result.
 
 On desktop the search lands on the full decision card, including the capital check and issuer
