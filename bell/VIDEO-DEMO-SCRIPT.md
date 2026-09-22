@@ -16,7 +16,7 @@ fair comparison at all.
 |---|---|---|
 | 0 to 5s | Dark hero, Bell mark, `Before you compare, check the wrapper` | “CMC can show you the candidates. Bell checks whether the grouping is safe to compare.” |
 | 5 to 14s | Hero search with `Silver` entered | “Start with the asset you are researching. No account and no trading signal.” |
-| 14 to 28s | Silver result: `5 representations · 4 issuers · [current observed ratio]` | “Silver has five representations from four issuers. The observed quote endpoints do not form a clean comparison.” |
+| 14 to 28s | Silver result: `5 representations · 4 issuers · [current observed ratio]`, then the endpoint panel | “Silver has five representations from four issuers. Bell shows the lowest and highest observed quote rows, their issuers and the ratio that changes the research route.” |
 | 28 to 42s | Outcome key and evidence drawer | “Bell changes the route to `DO NOT SHORTLIST`. It shows the affected rows, identity path, timestamp and contradiction.” |
 | 42 to 54s | Next-action handoff | “The next step is explicit: resolve unit, wrapper claim and quote identity, then verify issuer, redemption and execution.” |
 | 54 to 68s | Search `Marvell`, open factual rows | “When no critical Bell rule fires, the route is different. Marvell opens a facts-only comparison without declaring a winner.” |
@@ -28,6 +28,8 @@ fair comparison at all.
 
 - Show the live `FRESH` badge and observed timestamp
 - Show the exact Silver state and the current observed ratio from the receipt
+- Keep the `OBSERVED QUOTE ENDPOINTS` panel on screen long enough to read the low
+  and high symbols, issuer labels and values
 - Open an evidence drawer so the video proves this is not a static slogan
 - Show Marvell as the contrasting `FACTS OPEN` route
 - Show the exported brief or worksheet
@@ -40,6 +42,8 @@ fair comparison at all.
 - `FACTS OPEN` is not approval and does not rank a wrapper
 - The public monitor does not expose the CMC API key or promise arbitrary live queries for every asset
 - Read the Silver ratio from the live receipt immediately before recording; never hardcode a value from an earlier capture
+- Read the endpoint symbols and issuer labels from the live receipt immediately
+  before recording; the values can change between publications
 - The ratio is an observed surface contradiction, not proof of fraud or an investment loss
 
 ## Hyperframe production notes

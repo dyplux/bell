@@ -173,7 +173,7 @@ Do not put keys in this repository, in the browser or in a receipt.
 
 1. Show the hero: “Before the comparison, test the surface.”
 2. Point to the population count and the live receipt timestamp.
-3. Open Silver and show the 31x price spread across representations.
+3. Open Silver and show the current observed quote endpoints across representations.
 4. Show `DO NOT SHORTLIST` and the concrete next action.
 5. Open the population queue and filter `INVESTIGATE`.
 6. Show the JSON receipt, observed/published times and the market-pairs plan
