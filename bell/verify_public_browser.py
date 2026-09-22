@@ -41,6 +41,14 @@ def main() -> int:
             page.wait_for_function("document.querySelector('#receipt-status-label')?.textContent?.includes('LOADING') === false", timeout=30_000)
             status = page.locator("#receipt-status-label").inner_text()
             require("RECEIPT" in status, f"receipt status did not load: {status!r}")
+            refresh_requests = []
+            page.on("request", lambda request: refresh_requests.append(request.url) if "/api/integrity" in request.url else None)
+            with page.expect_navigation(wait_until="domcontentloaded", timeout=30_000):
+                page.locator("#refresh-receipt").click()
+            page.wait_for_function("document.querySelector('#receipt-status-label')?.textContent?.includes('LOADING') === false", timeout=30_000)
+            refreshed_status = page.locator("#receipt-status-label").inner_text()
+            require("RECEIPT" in refreshed_status, f"receipt status did not survive refresh: {refreshed_status!r}")
+            require(refresh_requests, "refresh action did not request the live integrity receipt")
             require("CMC API / MAP + ASSET LIST + QUOTES" in page.locator("body").inner_text(), "CMC source boundary is not visible")
             require(page.locator("h1").count() == 1, "public page must expose exactly one h1")
             require(page.locator("main").count() == 1 and page.locator("nav").count() >= 1, "public page landmarks are incomplete")
@@ -227,6 +235,7 @@ def main() -> int:
             print(json.dumps({
                 "base": args.base.rstrip("/"),
                 "receipt_status": status,
+                "receipt_refresh": "live integrity request repeated",
                 "history_includes_current_receipt": True,
                 "presentation_accessibility": "landmarks, h1, named controls and image alt text pass",
                 "silver_decision": silver_state,
