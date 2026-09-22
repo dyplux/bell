@@ -89,10 +89,10 @@ test('integrity UI distinguishes the rule threshold from observed evidence', () 
   const page = fs.readFileSync(path.join(site, 'index.html'), 'utf8');
   const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
   const receipt = fs.readFileSync(path.join(site, 'proof', 'rwa-surface-integrity-2026-09-15.json'), 'utf8');
-  assert.match(page, /quote-ratio threshold/);
+  assert.match(page, /inclusive quote-ratio floor/);
   assert.match(page, /DATED RECEIPT \/ SOURCE FINGERPRINTS/);
   assert.match(page, /complete credential-free replay inputs are linked separately/);
-  assert.match(integrity, /observed quote ratio above 10× review threshold/);
+  assert.match(integrity, /observed quote ratio ≥10× block floor/);
   assert.match(integrity, /Open live dossier context/);
   assert.match(receipt, /price spread above the 10x threshold/);
   assert.doesNotMatch(integrity, /PRICE_DENOMINATION_BREAK:\s*'10× price spread'/);

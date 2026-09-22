@@ -47,9 +47,9 @@ slug>` links, so the full-map dossier survives a refresh.
 
 `DO NOT SHORTLIST` means that a critical contradiction was observed. `FACTS
 OPEN` is descriptive only and is not approval, ranking or a trading signal.
-The 10× value shown in the method panel is a review threshold. A case can show
-a higher observed quote ratio, which remains labelled as an observation rather
-than a discount, parity claim or execution estimate.
+The ≥10× value shown in the method panel is an inclusive block floor. A case
+can show a higher observed quote ratio, which remains labelled as an
+observation rather than a discount, parity claim or execution estimate.
 
 ## Public evidence
 

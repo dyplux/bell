@@ -25,7 +25,7 @@
   labelDatedReplayLinks();
 
   const signalLabels = {
-    PRICE_DENOMINATION_BREAK: 'observed quote ratio above 10× review threshold',
+    PRICE_DENOMINATION_BREAK: 'observed quote ratio ≥10× block floor',
     PRICE_DISPERSION: 'price dispersion',
     ZERO_MCAP_POSITIVE_VOLUME: 'volume with $0 mcap',
     DERIVATIVE_MIX: 'derivative mix',
