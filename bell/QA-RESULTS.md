@@ -319,3 +319,19 @@ issuer labels.
 The public contract suite for this release passed `28/28`, including a source
 test that requires the endpoint panel and its boundary language to remain
 present.
+
+## Normal-user mobile acceptance: 22 September 2026 · final16
+
+Starting from the deployed public page with no prior context, a Chromium run at
+390px searched three routes:
+
+| Search | Result shown | Handoff observed |
+|---|---|---|
+| Gold | `DO NOT SHORTLIST` | endpoint panel with low/high representation and issuer rows |
+| Marvell | `FACTS OPEN` | factual side-by-side route and external diligence handoff |
+| Royal Bank of Canada | no live case | explicit full RWA map handoff |
+
+All three routes retained `LIVE RECEIPT · FRESH`, reported
+`documentWidth = viewportWidth`, and produced no browser console errors. The
+first two routes exposed their quote evidence before the deeper representation
+table; the third did not fabricate a result outside the published receipt.
