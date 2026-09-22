@@ -63,8 +63,10 @@ test('search result exposes the observed quote endpoints before the evidence tab
 
 test('hero search lands on the result it just generated', () => {
   const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
-  assert.match(integrity, /byId\('search-result'\)\.scrollIntoView/);
-  assert.doesNotMatch(integrity, /byId\('decision'\)\.scrollIntoView/);
+  assert.match(integrity, /const target = window\.matchMedia/);
+  assert.match(integrity, /target\?\.scrollIntoView/);
+  assert.match(integrity, /matchMedia\('\(max-width: 900px\)'\)/);
+  assert.match(integrity, /byId\('decision'\)/);
 });
 
 test('a query outside the live receipt is routed to the complete RWA map', () => {
