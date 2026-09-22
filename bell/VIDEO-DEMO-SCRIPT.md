@@ -1,6 +1,6 @@
 # Bell demo video
 
-Target length: 90 to 100 seconds. This is a product demonstration, not a
+Target length: 100 to 110 seconds. This is a product demonstration, not a
 promise that the browser can make arbitrary authenticated CMC calls. Show the
 live integrity monitor, its freshness badge and the receipt link.
 
@@ -21,8 +21,9 @@ fair comparison at all.
 | 42 to 54s | Next-action handoff | “The next step is explicit: resolve unit, wrapper claim and quote identity, then verify issuer, redemption and execution.” |
 | 54 to 68s | Search `Marvell`, open factual rows | “When no critical Bell rule fires, the route is different. Marvell opens a facts-only comparison without declaring a winner.” |
 | 68 to 78s | Decision brief and local worksheet | “The investor exports a brief containing the state, evidence, unresolved questions and next diligence step.” |
-| 78 to 86s | Search `Royal Bank of Canada` and click `Search the full RWA map` | “A reference without a published token case is not treated as a failure. Bell routes it to the complete RWA map and keeps the underlying-only result explicit.” |
-| 86 to 95s | Receipt JSON, freshness badge and public URL | “Every result is tied to a dated receipt. Bell is an integrity gate around CMC data, not a replacement for CMC or a buy recommendation.” |
+| 78 to 91s | Explore RWA, search `Gold`, open the published dossier | “The dossier makes the data boundary visible. It shows network identity, DEX contract coverage, resolved pools, security and holder surfaces, and whether CMC market pairs were available.” |
+| 91 to 101s | Search `Colgate` and open the reference-only map route | “A reference without a published token case is not treated as a failure. Bell routes it to the complete RWA map and keeps the reference-only result explicit.” |
+| 101 to 110s | Receipt JSON, freshness badge and public URL | “Every result is tied to a dated receipt. Bell is an integrity gate around CMC data, not a replacement for CMC or a buy recommendation.” |
 
 ## Proof frames
 
@@ -33,6 +34,7 @@ fair comparison at all.
 - Open an evidence drawer so the video proves this is not a static slogan
 - Show Marvell as the contrasting `FACTS OPEN` route
 - Show the exported brief or worksheet
+- Show the Gold dossier's `EVIDENCE CONTEXT` panel and its market-pair boundary
 - Show the map-only handoff and its reloadable `map_reference` URL
 - End on the public monitor and `/api/integrity` receipt
 
