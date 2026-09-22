@@ -61,6 +61,12 @@ test('search result exposes the observed quote endpoints before the evidence tab
   assert.match(visual, /\.search-evidence-grid/);
 });
 
+test('hero search lands on the result it just generated', () => {
+  const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
+  assert.match(integrity, /byId\('search-result'\)\.scrollIntoView/);
+  assert.doesNotMatch(integrity, /byId\('decision'\)\.scrollIntoView/);
+});
+
 test('a query outside the live receipt is routed to the complete RWA map', () => {
   const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
   const explorer = fs.readFileSync(path.join(site, 'explorer.js'), 'utf8');

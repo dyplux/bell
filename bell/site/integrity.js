@@ -821,7 +821,7 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
       byId('hero-search').focus();
       return;
     }
-    byId('decision').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    byId('search-result').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   function renderSignals() {
