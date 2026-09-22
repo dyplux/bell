@@ -11,7 +11,7 @@ separate competing claim.
 | Check | Result | Evidence |
 |---|---|---|
 | Integrity rule suite | PASS | `31 passed, 1 skipped` in `bell/tests` |
-| Public surface contract suite | PASS | `27 passed` in `bell/tests/*.cjs` |
+| Public surface contract suite | PASS | `28 passed` in `bell/tests/*.cjs` |
 | Cloudflare Worker | PASS | `10 passed` in `cloudflare/tests/worker.test.mjs` |
 | JavaScript syntax | PASS | `node --check bell/site/integrity.js` and `node --check bell/site/explorer.js` |
 | Public receipt verifier | PASS | HTTP 200, schema `rwa_surface_integrity.v1`, complete required surfaces |
@@ -21,7 +21,7 @@ separate competing claim.
 
 ## Current public runtime check
 
-The credential-free API was verified at `2026-09-22T00:28:03Z`:
+The credential-free API was verified at `2026-09-22T00:43:25Z`:
 
 - 791 tokenised references;
 - 1,435 representations;
@@ -296,3 +296,26 @@ The release is published as Git commit `16d44c3` and tag
 `hackathon-submission-2026-09-22-final11`. These are presentation and
 navigation checks; they do not claim that a clean result proves backing,
 liquidity, redemption or investment suitability.
+
+## Evidence-first search verification: 22 September 2026 · final14
+
+The public Gold route was checked after the evidence-first search update. A
+user who searches the visible form now receives, before opening the deeper
+evidence table:
+
+- the human-readable decision state
+- the observed quote ratio used by the route
+- the lowest and highest priced representation symbols
+- the corresponding issuer labels and observed quote values
+- an explicit boundary stating that the rows are not a discount, backing,
+  liquidity or executable spread
+
+The endpoint panel is derived from the current published receipt at runtime; no
+asset-specific values are hardcoded into the interface. The live browser check
+returned `LIVE RECEIPT · FRESH`, kept `documentWidth = viewportWidth` at 390px
+and returned Gold as `DO NOT SHORTLIST` with seven representations and six
+issuer labels.
+
+The public contract suite for this release passed `28/28`, including a source
+test that requires the endpoint panel and its boundary language to remain
+present.
