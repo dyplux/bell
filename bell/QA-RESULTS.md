@@ -264,3 +264,15 @@ dossier from that URL at the same mobile width.
 Numeric deep links now prefer exact RWA IDs over substring matches. The live
 `?reference=5` route shows `Silver`, `1 MATCH · EXACT MATCH` and a one-row
 queue, rather than presenting unrelated IDs that merely contain the digit 5.
+
+## Runtime alignment and fresh publication: 22 September 2026
+
+The Mac mini publisher runtime was aligned with the current integrity collector
+and then exercised through its scheduled launchd entry. The run exited cleanly,
+published remotely and produced a fresh receipt observed at `2026-09-22T00:28:03Z`.
+The public smoke check reported 791 tokenised references and 1,435 representation
+rows with 37 `do_not_compare`, 661 `investigate` and 93 `no_flags` groups.
+
+This check confirms that the live publication path and the public replay method
+use the same current collector boundary. It does not claim that every optional
+asset dossier is available or that CMC data proves backing, liquidity or execution.
