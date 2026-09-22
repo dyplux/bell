@@ -1,0 +1,551 @@
+{
+  "schema_version": "bell.receipt.v1",
+  "mode": "live_cmc",
+  "state": "ready",
+  "asset": {
+    "name": "Gold",
+    "slug": "gold",
+    "rwa_id": 1
+  },
+  "window": {
+    "start_utc": "2026-09-10T10:00:00Z",
+    "end_utc": "2026-09-17T10:00:00Z",
+    "timezone": "America/New_York",
+    "duration_hours": 168
+  },
+  "methodology": {
+    "session_assignment": "time_open converted to timezone; no holiday calendar",
+    "calendar_policy": "weekday_clock_only; holidays_not_removed",
+    "boundary_policy": "hourly intervals touching 09:30 or 16:00 are flagged; assignment remains by time_open",
+    "cash": "weekdays 09:30 <= local time < 16:00",
+    "after_hours": "remaining weekday hours",
+    "weekend": "Saturday and Sunday",
+    "hourly_range_pct": "((high - low) / open) * 100",
+    "aggregate": "median of hourly ranges by session",
+    "hourly_volume": "not used; documented CMC hourly volume is rolling 24h"
+  },
+  "wrappers": [
+    {
+      "symbol": "PAXG",
+      "issuer": "Paxos",
+      "state": "ready",
+      "bars_received": 168,
+      "bars_valid": 168,
+      "sessions": {
+        "cash": {
+          "count": 30,
+          "median_range_pct": 0.32523207,
+          "expected_count": 30,
+          "coverage_pct": 100.0
+        },
+        "after_hours": {
+          "count": 90,
+          "median_range_pct": 0.22676859,
+          "expected_count": 90,
+          "coverage_pct": 100.0
+        },
+        "weekend": {
+          "count": 48,
+          "median_range_pct": 0.03558039,
+          "expected_count": 48,
+          "coverage_pct": 100.0
+        }
+      },
+      "gaps": [],
+      "boundary_flags": {
+        "bars_adjacent": 21,
+        "cash_start": 7,
+        "cash_end": 14,
+        "policy": "flag hourly intervals touching 09:30 or 16:00 local; classify by time_open"
+      },
+      "venue": {
+        "status": "available",
+        "cex_volume_24h": 290910484.444448,
+        "dex_volume_24h": 6200356.96432516,
+        "cex_share_pct": 97.91311655
+      },
+      "warnings": []
+    },
+    {
+      "symbol": "XAUt",
+      "issuer": "Tether Holdings",
+      "state": "ready",
+      "bars_received": 168,
+      "bars_valid": 168,
+      "sessions": {
+        "cash": {
+          "count": 30,
+          "median_range_pct": 0.30563352,
+          "expected_count": 30,
+          "coverage_pct": 100.0
+        },
+        "after_hours": {
+          "count": 90,
+          "median_range_pct": 0.22708983,
+          "expected_count": 90,
+          "coverage_pct": 100.0
+        },
+        "weekend": {
+          "count": 48,
+          "median_range_pct": 0.03192687,
+          "expected_count": 48,
+          "coverage_pct": 100.0
+        }
+      },
+      "gaps": [],
+      "boundary_flags": {
+        "bars_adjacent": 21,
+        "cash_start": 7,
+        "cash_end": 14,
+        "policy": "flag hourly intervals touching 09:30 or 16:00 local; classify by time_open"
+      },
+      "venue": {
+        "status": "available",
+        "cex_volume_24h": 361174631.2218306,
+        "dex_volume_24h": 10941051.22573747,
+        "cex_share_pct": 97.05977153
+      },
+      "warnings": []
+    },
+    {
+      "symbol": "XAUM",
+      "issuer": "Matrixdock",
+      "state": "ready",
+      "bars_received": 168,
+      "bars_valid": 168,
+      "sessions": {
+        "cash": {
+          "count": 30,
+          "median_range_pct": 0.44547274,
+          "expected_count": 30,
+          "coverage_pct": 100.0
+        },
+        "after_hours": {
+          "count": 90,
+          "median_range_pct": 0.29897963,
+          "expected_count": 90,
+          "coverage_pct": 100.0
+        },
+        "weekend": {
+          "count": 48,
+          "median_range_pct": 0.1562319,
+          "expected_count": 48,
+          "coverage_pct": 100.0
+        }
+      },
+      "gaps": [],
+      "boundary_flags": {
+        "bars_adjacent": 21,
+        "cash_start": 7,
+        "cash_end": 14,
+        "policy": "flag hourly intervals touching 09:30 or 16:00 local; classify by time_open"
+      },
+      "venue": {
+        "status": "available",
+        "cex_volume_24h": 465405.85432713,
+        "dex_volume_24h": 178027.70860375,
+        "cex_share_pct": 72.33160984
+      },
+      "warnings": []
+    },
+    {
+      "symbol": "CGO",
+      "issuer": "Comtech Gold",
+      "state": "ready",
+      "bars_received": 168,
+      "bars_valid": 168,
+      "sessions": {
+        "cash": {
+          "count": 30,
+          "median_range_pct": 0.54075895,
+          "expected_count": 30,
+          "coverage_pct": 100.0
+        },
+        "after_hours": {
+          "count": 90,
+          "median_range_pct": 0.53432156,
+          "expected_count": 90,
+          "coverage_pct": 100.0
+        },
+        "weekend": {
+          "count": 48,
+          "median_range_pct": 0.46117931,
+          "expected_count": 48,
+          "coverage_pct": 100.0
+        }
+      },
+      "gaps": [],
+      "boundary_flags": {
+        "bars_adjacent": 21,
+        "cash_start": 7,
+        "cash_end": 14,
+        "policy": "flag hourly intervals touching 09:30 or 16:00 local; classify by time_open"
+      },
+      "venue": {
+        "status": "available",
+        "cex_volume_24h": 868416.06494481,
+        "dex_volume_24h": 0.0,
+        "cex_share_pct": 100.0
+      },
+      "warnings": []
+    },
+    {
+      "symbol": "VNXAU",
+      "issuer": "VNX",
+      "state": "ready",
+      "bars_received": 168,
+      "bars_valid": 168,
+      "sessions": {
+        "cash": {
+          "count": 30,
+          "median_range_pct": 0.21137973,
+          "expected_count": 30,
+          "coverage_pct": 100.0
+        },
+        "after_hours": {
+          "count": 90,
+          "median_range_pct": 0.22575651,
+          "expected_count": 90,
+          "coverage_pct": 100.0
+        },
+        "weekend": {
+          "count": 48,
+          "median_range_pct": 0.09513525,
+          "expected_count": 48,
+          "coverage_pct": 100.0
+        }
+      },
+      "gaps": [],
+      "boundary_flags": {
+        "bars_adjacent": 21,
+        "cash_start": 7,
+        "cash_end": 14,
+        "policy": "flag hourly intervals touching 09:30 or 16:00 local; classify by time_open"
+      },
+      "venue": {
+        "status": "available",
+        "cex_volume_24h": 0.0,
+        "dex_volume_24h": 23488.30628466,
+        "cex_share_pct": 0.0
+      },
+      "warnings": []
+    },
+    {
+      "symbol": "XAUT0",
+      "issuer": "Tether Holdings",
+      "state": "ready",
+      "bars_received": 168,
+      "bars_valid": 168,
+      "sessions": {
+        "cash": {
+          "count": 30,
+          "median_range_pct": 0.34800878,
+          "expected_count": 30,
+          "coverage_pct": 100.0
+        },
+        "after_hours": {
+          "count": 90,
+          "median_range_pct": 0.28726039,
+          "expected_count": 90,
+          "coverage_pct": 100.0
+        },
+        "weekend": {
+          "count": 48,
+          "median_range_pct": 0.12663237,
+          "expected_count": 48,
+          "coverage_pct": 100.0
+        }
+      },
+      "gaps": [],
+      "boundary_flags": {
+        "bars_adjacent": 21,
+        "cash_start": 7,
+        "cash_end": 14,
+        "policy": "flag hourly intervals touching 09:30 or 16:00 local; classify by time_open"
+      },
+      "venue": {
+        "status": "available",
+        "cex_volume_24h": 0.0,
+        "dex_volume_24h": 1003332.39270269,
+        "cex_share_pct": 0.0
+      },
+      "warnings": []
+    },
+    {
+      "symbol": "XAU",
+      "issuer": "NA (Derivatives)",
+      "state": "ready",
+      "bars_received": 168,
+      "bars_valid": 168,
+      "sessions": {
+        "cash": {
+          "count": 30,
+          "median_range_pct": 0.36693151,
+          "expected_count": 30,
+          "coverage_pct": 100.0
+        },
+        "after_hours": {
+          "count": 90,
+          "median_range_pct": 0.26191642,
+          "expected_count": 90,
+          "coverage_pct": 100.0
+        },
+        "weekend": {
+          "count": 48,
+          "median_range_pct": 0.03819782,
+          "expected_count": 48,
+          "coverage_pct": 100.0
+        }
+      },
+      "gaps": [],
+      "boundary_flags": {
+        "bars_adjacent": 21,
+        "cash_start": 7,
+        "cash_end": 14,
+        "policy": "flag hourly intervals touching 09:30 or 16:00 local; classify by time_open"
+      },
+      "venue": {
+        "status": "unavailable",
+        "cex_volume_24h": 0.0,
+        "dex_volume_24h": 0.0,
+        "cex_share_pct": null
+      },
+      "warnings": [
+        "venue totals have no positive denominator"
+      ]
+    }
+  ],
+  "warnings": [
+    "XAU: venue totals have no positive denominator"
+  ],
+  "provenance": {
+    "source": "CoinMarketCap Pro API",
+    "endpoints": [
+      "/v2/cryptocurrency/ohlcv/historical",
+      "/v2/cryptocurrency/quotes/latest",
+      "/v5/real-world-assets/quotes/latest"
+    ],
+    "calls": [
+      {
+        "endpoint": "/v5/real-world-assets/quotes/latest",
+        "params": {
+          "rwa_slug": "gold"
+        },
+        "status": 200,
+        "observed_at": "2026-09-17T11:31:17.919623+00:00",
+        "api_timestamp": "2026-09-17T11:31:18.257Z",
+        "credit_count": 1,
+        "elapsed_ms": 4,
+        "error_code": "0"
+      },
+      {
+        "endpoint": "/v2/cryptocurrency/ohlcv/historical",
+        "params": {
+          "id": 4705,
+          "time_start": "2026-09-10T09:00:00+00:00",
+          "time_end": "2026-09-17T10:00:00+00:00",
+          "time_period": "hourly",
+          "interval": "hourly",
+          "count": 169
+        },
+        "status": 200,
+        "observed_at": "2026-09-17T11:31:18.186845+00:00",
+        "api_timestamp": "2026-09-17T11:31:18.547Z",
+        "credit_count": 2,
+        "elapsed_ms": 46,
+        "error_code": 0
+      },
+      {
+        "endpoint": "/v2/cryptocurrency/quotes/latest",
+        "params": {
+          "id": 4705
+        },
+        "status": 200,
+        "observed_at": "2026-09-17T11:31:18.702169+00:00",
+        "api_timestamp": "2026-09-17T11:31:19.022Z",
+        "credit_count": 1,
+        "elapsed_ms": 4,
+        "error_code": 0
+      },
+      {
+        "endpoint": "/v2/cryptocurrency/ohlcv/historical",
+        "params": {
+          "id": 5176,
+          "time_start": "2026-09-10T09:00:00+00:00",
+          "time_end": "2026-09-17T10:00:00+00:00",
+          "time_period": "hourly",
+          "interval": "hourly",
+          "count": 169
+        },
+        "status": 200,
+        "observed_at": "2026-09-17T11:31:18.948179+00:00",
+        "api_timestamp": "2026-09-17T11:31:19.245Z",
+        "credit_count": 2,
+        "elapsed_ms": 71,
+        "error_code": 0
+      },
+      {
+        "endpoint": "/v2/cryptocurrency/quotes/latest",
+        "params": {
+          "id": 5176
+        },
+        "status": 200,
+        "observed_at": "2026-09-17T11:31:19.181253+00:00",
+        "api_timestamp": "2026-09-17T11:31:19.409Z",
+        "credit_count": 1,
+        "elapsed_ms": 4,
+        "error_code": 0
+      },
+      {
+        "endpoint": "/v2/cryptocurrency/ohlcv/historical",
+        "params": {
+          "id": 34212,
+          "time_start": "2026-09-10T09:00:00+00:00",
+          "time_end": "2026-09-17T10:00:00+00:00",
+          "time_period": "hourly",
+          "interval": "hourly",
+          "count": 169
+        },
+        "status": 200,
+        "observed_at": "2026-09-17T11:31:19.335906+00:00",
+        "api_timestamp": "2026-09-17T11:31:19.613Z",
+        "credit_count": 2,
+        "elapsed_ms": 50,
+        "error_code": 0
+      },
+      {
+        "endpoint": "/v2/cryptocurrency/quotes/latest",
+        "params": {
+          "id": 34212
+        },
+        "status": 200,
+        "observed_at": "2026-09-17T11:31:19.754343+00:00",
+        "api_timestamp": "2026-09-17T11:31:20.079Z",
+        "credit_count": 1,
+        "elapsed_ms": 4,
+        "error_code": 0
+      },
+      {
+        "endpoint": "/v2/cryptocurrency/ohlcv/historical",
+        "params": {
+          "id": 20245,
+          "time_start": "2026-09-10T09:00:00+00:00",
+          "time_end": "2026-09-17T10:00:00+00:00",
+          "time_period": "hourly",
+          "interval": "hourly",
+          "count": 169
+        },
+        "status": 200,
+        "observed_at": "2026-09-17T11:31:20.008589+00:00",
+        "api_timestamp": "2026-09-17T11:31:20.289Z",
+        "credit_count": 2,
+        "elapsed_ms": 49,
+        "error_code": 0
+      },
+      {
+        "endpoint": "/v2/cryptocurrency/quotes/latest",
+        "params": {
+          "id": 20245
+        },
+        "status": 200,
+        "observed_at": "2026-09-17T11:31:20.449570+00:00",
+        "api_timestamp": "2026-09-17T11:31:20.679Z",
+        "credit_count": 1,
+        "elapsed_ms": 3,
+        "error_code": 0
+      },
+      {
+        "endpoint": "/v2/cryptocurrency/ohlcv/historical",
+        "params": {
+          "id": 22492,
+          "time_start": "2026-09-10T09:00:00+00:00",
+          "time_end": "2026-09-17T10:00:00+00:00",
+          "time_period": "hourly",
+          "interval": "hourly",
+          "count": 169
+        },
+        "status": 200,
+        "observed_at": "2026-09-17T11:31:20.607281+00:00",
+        "api_timestamp": "2026-09-17T11:31:20.888Z",
+        "credit_count": 2,
+        "elapsed_ms": 56,
+        "error_code": 0
+      },
+      {
+        "endpoint": "/v2/cryptocurrency/quotes/latest",
+        "params": {
+          "id": 22492
+        },
+        "status": 200,
+        "observed_at": "2026-09-17T11:31:20.911576+00:00",
+        "api_timestamp": "2026-09-17T11:31:21.141Z",
+        "credit_count": 1,
+        "elapsed_ms": 4,
+        "error_code": 0
+      },
+      {
+        "endpoint": "/v2/cryptocurrency/ohlcv/historical",
+        "params": {
+          "id": 37082,
+          "time_start": "2026-09-10T09:00:00+00:00",
+          "time_end": "2026-09-17T10:00:00+00:00",
+          "time_period": "hourly",
+          "interval": "hourly",
+          "count": 169
+        },
+        "status": 200,
+        "observed_at": "2026-09-17T11:31:21.068088+00:00",
+        "api_timestamp": "2026-09-17T11:31:21.352Z",
+        "credit_count": 2,
+        "elapsed_ms": 58,
+        "error_code": 0
+      },
+      {
+        "endpoint": "/v2/cryptocurrency/quotes/latest",
+        "params": {
+          "id": 37082
+        },
+        "status": 200,
+        "observed_at": "2026-09-17T11:31:21.285630+00:00",
+        "api_timestamp": "2026-09-17T11:31:21.516Z",
+        "credit_count": 1,
+        "elapsed_ms": 4,
+        "error_code": 0
+      },
+      {
+        "endpoint": "/v2/cryptocurrency/ohlcv/historical",
+        "params": {
+          "id": 39344,
+          "time_start": "2026-09-10T09:00:00+00:00",
+          "time_end": "2026-09-17T10:00:00+00:00",
+          "time_period": "hourly",
+          "interval": "hourly",
+          "count": 169
+        },
+        "status": 200,
+        "observed_at": "2026-09-17T11:31:21.443880+00:00",
+        "api_timestamp": "2026-09-17T11:31:21.698Z",
+        "credit_count": 2,
+        "elapsed_ms": 30,
+        "error_code": 0
+      },
+      {
+        "endpoint": "/v2/cryptocurrency/quotes/latest",
+        "params": {
+          "id": 39344
+        },
+        "status": 200,
+        "observed_at": "2026-09-17T11:31:21.847312+00:00",
+        "api_timestamp": "2026-09-17T11:31:22.164Z",
+        "credit_count": 1,
+        "elapsed_ms": 4,
+        "error_code": 0
+      }
+    ],
+    "raw_responses_included": false
+  },
+  "dataset_hash": "ffdc4e394d68e9da8711046ce06749189058b463da1f7cd7d8c0d8834102f30b",
+  "dataset_hash_version": "bell.dataset.sha256-canonical-json.v1",
+  "receipt_hash_version": "bell.receipt.sha256-canonical-json.v1",
+  "receipt_hash": "4a21a0b30d17485e2f7b443908bed9429532119e51b551944985d3ed21db6923"
+}

@@ -25,9 +25,11 @@ It is not a token leaderboard, safety score or investment recommendation.
    capital check also shows the proposed amount as a share of reported token
    row volume when positive 24-hour volume is available. That is context, not
    depth or exit capacity.
-7. For Gold or Tesla, inspect the published temporal check when present. It
+7. For Gold or Tesla, inspect the published repeat-window check when present. It
    compares dated movement across the reference group and keeps the result
-   descriptive rather than selecting a wrapper.
+   descriptive rather than selecting a wrapper. Any overlap between windows is
+   disclosed, so a repeat observation is not presented as independent validation
+   or a trend claim.
 8. Open the live JSON receipt or the dated replay and verify the timestamps,
    source hashes and stable-ID join coverage.
 
@@ -59,8 +61,9 @@ Bell adds the decision protocol around those surfaces:
   references with multiple positive quote rows;
 - an amount-to-reported-volume context metric that makes the size question
   visible without presenting rolling volume as executable liquidity;
-- a dated temporal check for published Gold and Tesla windows, with the
-  underlying receipt and replay inputs linked from the same case;
+- a dated repeat-window check for published Gold and Tesla windows, with each
+  underlying receipt and replay input linked from the same case and overlap
+  disclosed rather than hidden;
 - a credential-free, timestamped receipt that can be replayed offline.
 
 ## Public evidence contract

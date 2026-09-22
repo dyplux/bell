@@ -411,3 +411,13 @@ same decision path. The browser check confirmed the dated window, the
 weekend-versus-cash-session explanation, the no-ranking boundary and links to
 the receipt and replay inputs. Desktop, tablet and 390px mobile all kept the
 panel inside the viewport with no console errors.
+
+## Repeat-window evidence acceptance: 22 September 2026 · final24
+
+The Gold and Tesla cases now expose two dated 168-hour CMC OHLCV windows, with
+the receipt and normalised replay payload for each window linked from the case.
+The browser check confirmed the paired wrapper readings, the weekend-versus-
+cash-session explanation and the explicit `72H OVERLAP` boundary. The panel
+states that this is a repeat observation, not independent validation or a trend
+claim. The overlap is visible in the product and the four new proof files are
+included in the public submission clone.

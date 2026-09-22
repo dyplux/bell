@@ -44,8 +44,10 @@ current submission and does not require an API key.
    and the low/high quote endpoints with their issuer labels.
 3. Read the boundary below the endpoints: these are CMC quote rows, not a discount, backing,
    liquidity or executable spread.
-4. In the Gold case, read `PUBLISHED TEMPORAL CHECK` to see the dated 168-hour
-   weekend-versus-cash-session evidence. It is movement context, not a wrapper ranking.
+4. In the Gold case, read `REPEAT-WINDOW CHECK` to see the two dated 168-hour
+   weekend-versus-cash-session windows. The 72-hour overlap is disclosed, so
+   this is movement context and a repeat observation, not independent validation
+   or a wrapper ranking.
 5. Read `RECEIPT TRAIL` in the live case, then open the publication-history chart lower on
    the page to see how the population state changed across dated summaries.
 6. Open `Inspect this evidence` to see the published receipt, rule evidence, identity/unit/
@@ -142,8 +144,12 @@ does not infer liquidity, solvency, ownership rights, causality or an action.
 
 - [Gold live receipt](docs/proof/gold-live-2026-09-13.json)
 - [Gold normalised replay payload](docs/proof/gold-live-2026-09-13.payload.json)
+- [Gold repeat-window receipt](docs/proof/gold-live-2026-09-17.json)
+- [Gold repeat-window replay payload](docs/proof/gold-live-2026-09-17.payload.json)
 - [Tesla live receipt](docs/proof/tesla-live-2026-09-13.json)
 - [Tesla normalised replay payload](docs/proof/tesla-live-2026-09-13.payload.json)
+- [Tesla repeat-window receipt](docs/proof/tesla-live-2026-09-17.json)
+- [Tesla repeat-window replay payload](docs/proof/tesla-live-2026-09-17.payload.json)
 - [Population integrity history](site/proof/rwa-surface-integrity-history.json)
 - [Latest normalized population inputs](site/proof/rwa-surface-integrity-inputs-2026-09-21.json)
 - [Population receipt verifier](verify_integrity_receipt.py)

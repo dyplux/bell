@@ -47,19 +47,19 @@
     return parsed === null ? 'N/A' : parsed.toLocaleString(undefined, { maximumFractionDigits: 2 });
   };
   const temporalReceiptPaths = new Map([
-    ['1', 'proof/gold-live-2026-09-13.json'],
-    ['14', 'proof/tesla-live-2026-09-13.json'],
+    ['1', ['proof/gold-live-2026-09-13.json', 'proof/gold-live-2026-09-17.json']],
+    ['14', ['proof/tesla-live-2026-09-13.json', 'proof/tesla-live-2026-09-17.json']],
   ]);
   const temporalReceiptPromises = new Map();
 
-  function temporalReceiptPath(alert) {
-    return temporalReceiptPaths.get(String(alert?.rwa_id || '')) || '';
+  function temporalReceiptPathsFor(alert) {
+    return temporalReceiptPaths.get(String(alert?.rwa_id || '')) || [];
   }
 
   function temporalPanel(alert) {
-    const path = temporalReceiptPath(alert);
-    if (!path) return '';
-    return `<section class="temporal-evidence" data-temporal-evidence="${escapeHTML(alert.rwa_id)}"><div class="temporal-evidence-head"><span>PUBLISHED TEMPORAL CHECK</span><b>LOADING DATED WINDOW</b></div><p class="temporal-evidence-loading">Reading the credential-free hourly receipt linked to this reference.</p></section>`;
+    const paths = temporalReceiptPathsFor(alert);
+    if (!paths.length) return '';
+    return `<section class="temporal-evidence" data-temporal-evidence="${escapeHTML(alert.rwa_id)}"><div class="temporal-evidence-head"><span>REPEAT-WINDOW CHECK</span><b>LOADING ${paths.length} DATED WINDOWS</b></div><p class="temporal-evidence-loading">Reading the credential-free hourly receipts linked to this reference.</p></section>`;
   }
 
   function temporalReceipt(path) {
@@ -72,12 +72,16 @@
     return temporalReceiptPromises.get(path);
   }
 
+  function temporalReceipts(paths) {
+    return Promise.all(paths.map(path => temporalReceipt(path)));
+  }
+
   function temporalDate(value) {
     return value ? new Date(value).toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'UTC' }) : 'dated window';
   }
 
-  function temporalMarkup(receipt) {
-    const rows = (receipt.wrappers || []).map(wrapper => {
+  function temporalRows(receipt) {
+    return (receipt.wrappers || []).map(wrapper => {
       const cash = numericValue(wrapper.sessions?.cash?.median_range_pct);
       const weekend = numericValue(wrapper.sessions?.weekend?.median_range_pct);
       return {
@@ -89,25 +93,37 @@
         ratio: cash && weekend !== null ? weekend / cash * 100 : null,
       };
     });
-    const usable = rows.filter(row => Number.isFinite(row.ratio)).sort((a, b) => a.ratio - b.ratio);
-    const low = usable[0];
-    const high = usable[usable.length - 1];
-    if (!low || !high) {
-      return `<div class="temporal-evidence-head"><span>PUBLISHED TEMPORAL CHECK</span><b>INSUFFICIENT HISTORY</b></div><p>No wrapper supplied enough valid session medians for a dated comparison.</p><small>Receipt window ended ${escapeHTML(temporalDate(receipt.window?.end_utc))}. No ranking is inferred.</small>`;
+  }
+
+  function temporalMarkup(receipts, paths) {
+    const windows = receipts.map((receipt, index) => ({ receipt, path: paths[index], rows: temporalRows(receipt) })).sort((a, b) => String(a.receipt.window?.end_utc || '').localeCompare(String(b.receipt.window?.end_utc || '')));
+    const latest = windows.at(-1);
+    const first = windows[0];
+    const latestUsable = (latest?.rows || []).filter(row => Number.isFinite(row.ratio)).sort((a, b) => a.ratio - b.ratio);
+    const firstUsable = (first?.rows || []).filter(row => Number.isFinite(row.ratio)).sort((a, b) => a.ratio - b.ratio);
+    const low = latestUsable[0];
+    const high = latestUsable[latestUsable.length - 1];
+    if (!latest || !low || !high) {
+      return `<div class="temporal-evidence-head"><span>REPEAT-WINDOW CHECK</span><b>INSUFFICIENT HISTORY</b></div><p>No wrapper supplied enough valid session medians for a dated comparison.</p><small>No ranking is inferred.</small>`;
     }
     const contrast = high.ratio / low.ratio;
-    const bars = usable.slice(0, 4).map(row => `<div class="temporal-row"><div><strong>${escapeHTML(row.symbol)}</strong><small>${escapeHTML(row.issuer)}</small></div><span class="temporal-track"><i style="width:${Math.min(Math.max(row.ratio, 4), 100)}%"></i></span><b>${row.ratio.toFixed(0)}%</b></div>`).join('');
-    const omitted = usable.length > 4 ? `<small class="temporal-more">${usable.length - 4} more usable wrapper${usable.length - 4 === 1 ? '' : 's'} remain in the receipt</small>` : '';
-    const table = usable.map(row => `<tr><th>${escapeHTML(row.symbol)}<small>${escapeHTML(row.issuer)}</small></th><td>${row.cash.toFixed(2)}%</td><td>${row.weekend.toFixed(2)}%</td><td>${row.ratio.toFixed(0)}%</td></tr>`).join('');
-    return `<div class="temporal-evidence-head"><span>PUBLISHED TEMPORAL CHECK</span><b>${escapeHTML(temporalDate(receipt.window?.end_utc))} · ${usable.length}/${rows.length} USABLE</b></div><h4>Weekend movement was not uniform across the group</h4><p class="temporal-evidence-lede"><strong>${escapeHTML(low.symbol)} ${low.ratio.toFixed(0)}%</strong> of its cash-session range versus <strong>${escapeHTML(high.symbol)} ${high.ratio.toFixed(0)}%</strong> for ${escapeHTML(high.issuer)} · ${contrast.toFixed(1)}× between the observed endpoints</p><div class="temporal-rows">${bars}</div>${omitted}<details><summary>Open all dated wrapper readings</summary><div class="temporal-table-scroll"><table><thead><tr><th>Wrapper</th><th>Cash</th><th>Weekend</th><th>Weekend / cash</th></tr></thead><tbody>${table}</tbody></table></div></details><p class="temporal-evidence-note">CMC OHLCV receipt · ${escapeHTML(receipt.window?.duration_hours || 0)} hours · hourly range medians. This is a dated movement comparison, not a ranking, fair-value, liquidity or execution test.</p><div class="temporal-evidence-links"><a href="${escapeHTML(temporalReceiptPath({ rwa_id: receipt.asset?.rwa_id }))}" target="_blank" rel="noopener">Open dated receipt ↗</a><a href="${escapeHTML(receipt.asset?.rwa_id === 1 ? 'proof/gold-live-2026-09-13.payload.json' : 'proof/tesla-live-2026-09-13.payload.json')}" target="_blank" rel="noopener">Open replay inputs ↗</a></div>`;
+    const firstBySymbol = new Map(firstUsable.map(row => [row.symbol, row]));
+    const paired = latestUsable.map(row => ({ latest: row, first: firstBySymbol.get(row.symbol) })).filter(row => row.first);
+    const bars = paired.slice().sort((a, b) => a.latest.ratio - b.latest.ratio).slice(0, 4).map(({ first: earlier, latest: current }) => `<div class="temporal-window-row"><div><strong>${escapeHTML(current.symbol)}</strong><small>${escapeHTML(current.issuer)}</small></div><span class="temporal-dual-track"><i class="first" style="width:${Math.min(Math.max(earlier.ratio, 4), 100)}%"></i><i class="latest" style="width:${Math.min(Math.max(current.ratio, 4), 100)}%"></i></span><b>${earlier.ratio.toFixed(0)}% → ${current.ratio.toFixed(0)}%</b></div>`).join('');
+    const omitted = paired.length > 4 ? `<small class="temporal-more">${paired.length - 4} more wrappers remain in the repeat-window check</small>` : '';
+    const table = paired.map(({ first: earlier, latest: current }) => `<tr><th>${escapeHTML(current.symbol)}<small>${escapeHTML(current.issuer)}</small></th><td>${earlier.ratio.toFixed(0)}%</td><td>${current.ratio.toFixed(0)}%</td><td>${(current.ratio - earlier.ratio >= 0 ? '+' : '')}${(current.ratio - earlier.ratio).toFixed(0)}pp</td></tr>`).join('');
+    const overlapHours = first?.receipt?.window?.end_utc && latest?.receipt?.window?.start_utc ? Math.max(0, (Date.parse(first.receipt.window.end_utc) - Date.parse(latest.receipt.window.start_utc)) / 3600000) : 0;
+    const repeatLabel = windows.length > 1 ? `${windows.length} WINDOWS · ${paired.length} PAIRED · ${overlapHours > 0 ? `${overlapHours.toFixed(0)}H OVERLAP` : 'NO OVERLAP'}` : `${escapeHTML(temporalDate(latest.receipt.window?.end_utc))} · ${latestUsable.length}/${latest.rows.length} USABLE`;
+    const links = windows.map(({ path }, index) => `<a href="${escapeHTML(path || '')}" target="_blank" rel="noopener">Open window ${index + 1} receipt ↗</a><a href="${escapeHTML((path || '').replace(/\.json$/, '.payload.json'))}" target="_blank" rel="noopener">Open window ${index + 1} replay ↗</a>`).join('');
+    return `<div class="temporal-evidence-head"><span>${windows.length > 1 ? 'REPEAT-WINDOW CHECK' : 'PUBLISHED TEMPORAL CHECK'}</span><b>${repeatLabel}</b></div><h4>${windows.length > 1 ? 'The weekend contrast appeared in both captured windows' : 'Weekend movement was not uniform across the group'}</h4><p class="temporal-evidence-lede"><strong>${escapeHTML(low.symbol)} ${low.ratio.toFixed(0)}%</strong> of its cash-session range versus <strong>${escapeHTML(high.symbol)} ${high.ratio.toFixed(0)}%</strong> for ${escapeHTML(high.issuer)} in the latest window · ${contrast.toFixed(1)}× between the observed endpoints</p><div class="temporal-legend"><span><i class="first"></i> earlier window</span><span><i class="latest"></i> latest window</span></div><div class="temporal-rows">${bars}</div>${omitted}<details><summary>Open paired wrapper readings</summary><div class="temporal-table-scroll"><table><thead><tr><th>Wrapper</th><th>Earlier</th><th>Latest</th><th>Change</th></tr></thead><tbody>${table}</tbody></table></div></details><p class="temporal-evidence-note">CMC OHLCV receipts · ${windows.length} captured 168-hour windows · hourly range medians. The windows overlap by ${overlapHours.toFixed(0)} hours, so this is a repeat observation, not independent validation or a trend claim. This is not a ranking, fair-value, liquidity or execution test.</p><div class="temporal-evidence-links">${links}</div>`;
   }
 
   function loadTemporalEvidence(alert) {
-    const path = temporalReceiptPath(alert);
+    const paths = temporalReceiptPathsFor(alert);
     const target = document.querySelector(`[data-temporal-evidence="${CSS.escape(String(alert?.rwa_id || ''))}"]`);
-    if (!path || !target) return;
-    temporalReceipt(path).then(data => {
-      if (target.isConnected) target.innerHTML = temporalMarkup(data);
+    if (!paths.length || !target) return;
+    temporalReceipts(paths).then(data => {
+      if (target.isConnected) target.innerHTML = temporalMarkup(data, paths);
     }).catch(() => {
       if (target.isConnected) target.innerHTML = '<div class="temporal-evidence-head"><span>PUBLISHED TEMPORAL CHECK</span><b>RECEIPT UNAVAILABLE</b></div><p>The dated companion receipt could not be loaded. The current integrity case remains available.</p>';
     });
