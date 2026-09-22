@@ -138,7 +138,7 @@ Run the public-surface contract checks as well:
 
 ```sh
 node --test bell/tests/*.cjs
-python3 -m unittest discover -s bell/tests -p 'test_*.py' -q
+PYTHONPATH=bell python3 -m unittest discover -s bell/tests -p 'test_*.py' -q
 python3 bell/verify_integrity_receipt.py
 python3 bell/verify_catalogue_receipt.py
 python3 bell/verify_public_surface.py
@@ -210,7 +210,7 @@ The live terminal shows DEX coverage separately, wrapper by wrapper.
 ## Run tests
 
 ```sh
-python3 -m unittest discover -s bell/tests -p 'test_*.py' -v
+PYTHONPATH=bell python3 -m unittest discover -s bell/tests -p 'test_*.py' -v
 python3 -m py_compile bell/engine.py bell/bell.py bell/rwa_audit.py bell/server.py
 ```
 

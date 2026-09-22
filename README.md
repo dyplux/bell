@@ -69,12 +69,22 @@ The key remains in the server process and is never sent to the browser.
 
 ```bash
 node --test bell/tests/*.cjs
-python3 -m unittest discover -s bell/tests -p 'test_*.py' -q
+PYTHONPATH=bell python3 -m unittest discover -s bell/tests -p 'test_*.py' -q
 python3 bell/verify_integrity_receipt.py
 python3 bell/verify_public_surface.py
 python3 bell/verify_public_browser.py --channel chrome --screenshot /tmp/bell-live-proof.png
 node --test cloudflare/tests/worker.test.mjs
 ```
+
+Before recording the demo, refresh the values used in the narration from the
+public receipt:
+
+```bash
+python3 bell/prepare_demo.py --reference Silver > /tmp/bell-demo-values.md
+```
+
+This command uses no credential and prevents a screen recording from carrying
+an older quote, issuer or timestamp.
 
 `verify_public_surface.py` checks the public page, health endpoint, live
 receipt and a published dossier without credentials.

@@ -4,6 +4,12 @@ Target length: 100 to 110 seconds. This is a product demonstration, not a
 promise that the browser can make arbitrary authenticated CMC calls. Show the
 live integrity monitor, its freshness badge and the receipt link.
 
+## Before capture
+
+Run `python3 bell/prepare_demo.py --reference Silver` immediately before
+recording. Use its observed timestamp, route, ratio and endpoint labels in the
+shots below. Never carry values forward from an earlier receipt.
+
 ## Story
 
 An investor finds several tokens under the same stock, ETF or commodity. The

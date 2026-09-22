@@ -69,6 +69,11 @@ To reproduce the critical browser path without a CMC credential, install Playwri
 python3 bell/verify_public_browser.py --channel chrome
 ```
 
+Before recording the final demo, run `python3 bell/prepare_demo.py --reference
+Silver`. It reads the current public receipt and prints the timestamp, route,
+observed ratio and endpoint labels used in the narration, so the recording does
+not rely on stale market values.
+
 The check opens the public page, waits for the receipt, searches Silver and Marvell, confirms
 that both UI states mirror the published receipt (`DO NOT SHORTLIST` and `FACTS OPEN`),
 updates the Silver capital check with a $25,000 scenario, verifies the amount-to-reported-volume context, downloads both the decision brief and the compact JSON case receipt, verifies the shareable case-link action, and checks

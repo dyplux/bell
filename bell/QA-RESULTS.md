@@ -136,7 +136,7 @@ map entry into a failed analysis or a clean rule result into an approval.
 The release checks currently pass:
 
 - `node --test bell/tests/*.cjs` — 23 passed
-- `python3 -m unittest discover -s bell/tests -p 'test_*.py' -q` — 31 passed, 1 skipped
+- `PYTHONPATH=bell python3 -m unittest discover -s bell/tests -p 'test_*.py' -q` — 33 passed, 1 skipped, from the repository root without module-resolution ambiguity
 - `python3 bell/verify_integrity_receipt.py` — receipt verification passed
 - `python3 bell/verify_public_surface.py` — public page, receipt and Gold dossier passed
 - live `https://bell.dyplux.com/` — freshness label, explorer route and receipt chip served
@@ -429,3 +429,12 @@ the selected public receipt. The browser check verified the canonical schema,
 five exact representation rows, six source fingerprints and the `rwa_id` join
 method, with no console errors. The export is a compact snapshot for review,
 not a second source or an investment approval.
+
+## Demo freshness acceptance: 22 September 2026 · final26
+
+`bell/prepare_demo.py --reference Silver` was run against the public
+credential-free receipt immediately before capture preparation. It returned the
+current observation timestamp, route, five representations, four issuers, the
+31.02x observed spread and the current low/high endpoint labels. The script has
+no CMC credential path and its pure extraction helpers are covered by two unit
+tests.
