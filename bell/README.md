@@ -145,8 +145,8 @@ python3 bell/verify_submission.py
 Offline mode reads `tests/fixtures/offline.json`, emits a versioned receipt and demonstrates how
 partial coverage and venue context are reported. It is not a market snapshot.
 
-The local/static website at <https://bell.dyplux.com/> searches all 7,811 RWAs included in the dated,
-credential-free CMC map snapshot by name, symbol, slug or asset type through the `Explore RWA`
+The local/static website at <https://bell.dyplux.com/> searches all 7,811 RWAs included in the
+dated 22 September 2026, credential-free CMC map snapshot by name, symbol, slug or asset type through the `Explore RWA`
 route. The live publication edge is
 currently <https://bell.dyplux.com/>; it serves the same site and adds the published-dossier API.
 The technical `workers.dev` hostname is only an infrastructure fallback, not the product URL. Bell
@@ -176,7 +176,7 @@ export CMC_API_KEY='your-hackathon-key'
 python3 bell/bell.py --catalog --output bell/site/catalog.json
 ```
 
-The dated map snapshot used for catalogue replay contained 7,811 records. The current integrity
+The 22 September map snapshot used for catalogue replay contained 7,811 records. The current integrity
 monitor is a separate live receipt over 791 tokenised references and 1,435 representation rows.
 CMC's map is used for discovery; the selected asset's
 `quotes/latest` response supplies wrapper details, and the session review only runs when historical

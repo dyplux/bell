@@ -52,7 +52,7 @@ than a discount, parity claim or execution estimate.
 - `index.html` is the single public product page
 - `integrity.js` renders search, filters, routes, evidence and exports
 - `integrity.css` and `visual-overrides.css` define the responsive interface
-- `catalogue-live.js` contains the dated, credential-free map snapshot
+- `catalogue-live.js` contains the credential-free map snapshot regenerated from CMC on 22 September 2026
 - `proof/rwa-surface-integrity-history.json` contains the public receipt history
 - `proof/rwa-surface-integrity-latest-replay-2026-09-21.json` contains the last replay record captured on 21 September
 - `proof/rwa-surface-integrity-inputs-2026-09-21.json` contains the normalized public inputs for that 21 September replay
@@ -73,7 +73,7 @@ python3 bell/verify_public_surface.py
 node --test bell/tests/*.cjs
 ```
 
-The current public release covers a map snapshot of 7,811 references and a
+The current public release covers a 22 September 2026 map snapshot of 7,811 references and a
 separate live integrity receipt over 791 tokenised references and 1,435
 representation rows. These are different datasets with different timestamps.
 
