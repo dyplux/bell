@@ -37,12 +37,24 @@ def main() -> int:
             require("RECEIPT" in status, f"receipt status did not load: {status!r}")
             require("CMC API / MAP + ASSET LIST + QUOTES" in page.locator("body").inner_text(), "CMC source boundary is not visible")
 
+            receipt_response = page.request.get(args.base.rstrip("/") + "/api/integrity", timeout=30_000)
+            require(receipt_response.ok, f"integrity receipt request failed: {receipt_response.status}")
+            receipt = receipt_response.json()
+            silver = next((item for item in receipt.get("alert_index", []) if str(item.get("name", "")).lower() == "silver"), None)
+            require(silver is not None, "Silver is not present in the current published receipt")
+            expected_state = {
+                "do_not_compare": "DO NOT SHORTLIST",
+                "investigate": "INVESTIGATE",
+                "no_flags": "FACTS OPEN",
+                "single_representation": "SINGLE REPRESENTATION",
+            }.get(silver.get("state"), "REFERENCE ONLY")
+
             page.locator("#hero-search").fill("Silver")
             page.locator("#hero-search-form button[type=submit]").click()
             result = page.locator("#search-result")
             result.wait_for(state="visible", timeout=30_000)
             result_text = result.inner_text()
-            require("DO NOT SHORTLIST" in result_text, f"Silver did not produce the expected decision state: {result_text[:500]!r}")
+            require(expected_state in result_text, f"Silver did not mirror the receipt state {expected_state!r}: {result_text[:500]!r}")
             require("observed quote" in result_text.lower(), f"search result did not expose observed evidence: {result_text[:500]!r}")
 
             if args.screenshot:
@@ -60,7 +72,7 @@ def main() -> int:
             print(json.dumps({
                 "base": args.base.rstrip("/"),
                 "receipt_status": status,
-                "silver_decision": "DO NOT SHORTLIST",
+                "silver_decision": expected_state,
                 "silver_evidence": "observed quote evidence visible",
                 "mobile_horizontal_overflow": False,
                 "screenshot": args.screenshot,
