@@ -28,7 +28,10 @@ def main() -> int:
     with sync_playwright() as playwright:
         browser = playwright.chromium.launch(headless=True, **({"channel": args.channel} if args.channel else {}))
         try:
-            desktop = browser.new_context(viewport={"width": 1440, "height": 1100})
+            desktop = browser.new_context(
+                viewport={"width": 1440, "height": 1100},
+                permissions=["clipboard-read", "clipboard-write"],
+            )
             page = desktop.new_page()
             page.goto(args.base.rstrip("/") + "/", wait_until="domcontentloaded", timeout=30_000)
             page.locator("#receipt-status-label").wait_for(state="visible", timeout=30_000)
@@ -73,7 +76,10 @@ def main() -> int:
                 brief_button.click()
             brief_download = download_info.value
             require(brief_download.suggested_filename.endswith("-decision-brief.md"), f"unexpected brief filename: {brief_download.suggested_filename!r}")
-            require(page.locator("[data-copy-case]").count() > 0, "searched case does not expose a shareable case-link action")
+            copy_button = page.locator("#decision-hero [data-copy-case]").first
+            require(copy_button.count() == 1, "searched case does not expose a shareable case-link action")
+            copy_button.click()
+            page.wait_for_function("document.querySelector('#decision-hero [data-copy-case]')?.textContent?.includes('Case link copied')", timeout=5_000)
 
             marvell_state = search_and_check("Marvell")
 
@@ -96,7 +102,7 @@ def main() -> int:
                 "marvell_decision": marvell_state,
                 "silver_evidence": "observed quote evidence visible",
                 "decision_brief": brief_download.suggested_filename,
-                "shareable_case_link": True,
+                "shareable_case_link": "Case link copied",
                 "mobile_horizontal_overflow": False,
                 "screenshot": args.screenshot,
             }, ensure_ascii=False, indent=2))
