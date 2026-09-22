@@ -48,6 +48,9 @@ def main() -> int:
             require(not unnamed, f"visible controls without an accessible name: {unnamed[:3]!r}")
             missing_alt = page.locator("img").evaluate_all("elements => elements.filter(element => !element.getAttribute('alt')).map(element => element.outerHTML.slice(0, 120))")
             require(not missing_alt, f"images without alt text: {missing_alt[:3]!r}")
+            concentration_text = page.locator("#concentration-visual").inner_text()
+            require("HHI" in concentration_text, "population concentration visual does not expose HHI")
+            require("effective issuer count" in concentration_text.lower(), "population concentration visual does not expose effective issuer count")
 
             receipt_response = page.request.get(args.base.rstrip("/") + "/api/integrity", timeout=30_000)
             require(receipt_response.ok, f"integrity receipt request failed: {receipt_response.status}")
@@ -156,6 +159,16 @@ def main() -> int:
             require(not overflow, "mobile page has horizontal overflow")
             mobile.close()
 
+            tablet = browser.new_context(viewport={"width": 834, "height": 1112})
+            tablet_page = tablet.new_page()
+            tablet_page.goto(args.base.rstrip("/") + "/", wait_until="domcontentloaded", timeout=30_000)
+            tablet_page.locator("#receipt-status-label").wait_for(state="attached", timeout=30_000)
+            tablet_page.wait_for_function("document.querySelector('#receipt-status-label')?.textContent?.includes('LOADING') === false", timeout=30_000)
+            tablet_overflow = tablet_page.evaluate("document.documentElement.scrollWidth > window.innerWidth + 1")
+            require(not tablet_overflow, "tablet page has horizontal overflow")
+            require(tablet_page.locator("#hero-search").is_visible(), "tablet first viewport hides the primary search")
+            tablet.close()
+
             fallback = browser.new_context(viewport={"width": 1440, "height": 1100})
             fallback_page = fallback.new_page()
             fallback_page.route("**/api/integrity", lambda route: route.abort())
@@ -183,6 +196,8 @@ def main() -> int:
                 "dossier_context": "Gold live dossier shows DEX coverage, surfaces and market-pair boundary",
                 "map_only": f"Colgate routed to complete RWA map as {map_route}",
                 "mobile_horizontal_overflow": False,
+                "tablet_horizontal_overflow": False,
+                "population_concentration": "HHI and effective issuer count visible",
                 "failure_fallback": fallback_status,
                 "screenshot": args.screenshot,
             }, ensure_ascii=False, indent=2))
