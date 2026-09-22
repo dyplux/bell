@@ -36,7 +36,26 @@ mispricing or investment conclusions.
 
 ## The 30-second path
 
-From the workspace root, run the flagship comparability gate:
+Start with the public demo at <https://bell.dyplux.com/>. This is the judge path for the
+current submission and does not require an API key.
+
+1. Enter `Gold` in the visible search and press `Check comparability`.
+2. Read `DO NOT SHORTLIST`, the representation and issuer counts, the observed quote ratio,
+   and the low/high quote endpoints with their issuer labels.
+3. Read the boundary below the endpoints: these are CMC quote rows, not a discount, backing,
+   liquidity or executable spread.
+4. Open `Inspect this evidence` to see the published receipt, rule evidence, identity/unit/
+   market checks, token rows and the resolution route.
+5. Open `Explore RWA` and search a reference without a published case. Bell routes it to the
+   complete map instead of inventing a clean result.
+
+On desktop the search lands on the full decision card, including the capital check and issuer
+concentration view. On mobile and tablet it lands on the compact searched-reference result so
+the first evidence is visible without a long scroll. The public page reads the current
+credential-free `/api/integrity` receipt, shows the publication time and freshness, and falls
+back to the latest replay receipt only when the live publication is unavailable.
+
+For a local credential-free replay, run:
 
 ```sh
 python3 bell/quick_review.py
@@ -44,27 +63,10 @@ python3 bell/integrity_review.py
 cd bell/site && python3 -m http.server 8080
 ```
 
-The command reads the latest bundled credential-free CMC replay and answers one question:
-can the representations grouped under this reference be compared as the same exposure? It
-returns `DO NOT SHORTLIST`, `INVESTIGATE` or a provisional comparison, then names the next
-missing evidence. For the population-wide flagship, open
-<http://localhost:8080/> or the public demo at
-<https://bell.dyplux.com/>. It shows the full tokenised-reference scan,
-surface drift between the CMC map and asset list, and the deterministic alert queue.
-The public page first reads the current credential-free `/api/integrity` receipt,
-shows observed/publication times and freshness, and falls back to the latest replay receipt
-only when the live publication is unavailable.
-Search `gold`, open the published seven-wrapper review and inspect its receipt and replay
-payload. Search `tesla` for the nine-entry receipt and replay payload.
-Search `IBKR` to verify the explicit `Map entry only` state and links to published examples.
-On Gold or Tesla, read the `Investor research brief` and select `Save research memo`.
-Check that the Markdown finding matches that asset's displayed medians, includes the saved
-observation window and pending diligence, and explicitly leaves approval unresolved. Gold's
-New York buckets are a comparison convention, not verified gold-market hours.
-IBKR has no published research brief or memo; it never borrows another asset's results.
-Use local live buttons only with `bell/server.py`; the plain static server above has no live API.
+The optional session-review receipts for Gold and Tesla are supporting evidence for the same
+boundary. They are not required to judge the flagship monitor.
 
-For a live browser session, use a server-side environment variable:
+For an optional local live dossier, use a server-side environment variable:
 
 ```sh
 export CMC_API_KEY='your-hackathon-key'
