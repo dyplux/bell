@@ -4,7 +4,7 @@ This page separates the current publication from the credential-free replay pack
 
 ## Current observation
 
-The live receipt at [`/api/integrity`](../../api/integrity) is produced by a server-side authenticated collection from the documented CMC RWA surfaces. The API key and transport headers stay on the publisher. The public payload contains the observation timestamp, endpoint method, join rules, source fingerprints, normalized findings and the publication freshness state.
+The live receipt at [`/api/integrity`](https://bell.dyplux.com/api/integrity) is produced by a server-side authenticated collection from the documented CMC RWA surfaces. The API key and transport headers stay on the publisher. The public payload contains the observation timestamp, endpoint method, join rules, source fingerprints, normalized findings and the publication freshness state.
 
 The live receipt is allowed to change when the scheduled publisher observes a new source window. It is the current observation, not a permanent dataset.
 

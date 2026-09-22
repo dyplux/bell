@@ -51,6 +51,13 @@ test('public page carries a shareable social preview', () => {
   assert.match(page, /name="twitter:card" content="summary_large_image"/);
 });
 
+test('public documentation points to receipts that exist in the export', () => {
+  const judge = fs.readFileSync(path.resolve(__dirname, '../JUDGE.md'), 'utf8');
+  assert.match(judge, /site\/proof\/gold-live-2026-09-17\.json/);
+  assert.match(judge, /site\/proof\/tesla-live-2026-09-17\.json/);
+  assert.doesNotMatch(judge, /docs\/proof\/(gold|tesla)-live-2026-09-17/);
+});
+
 test('explorer keeps all four RWA routes and the freshness boundary visible', () => {
   for (const label of ['DO NOT SHORTLIST', 'INVESTIGATE', 'SINGLE REPRESENTATION', 'REFERENCE ONLY', 'DOSSIER PENDING']) {
     assert.match(explorer, new RegExp(label.replaceAll(' ', '\\s+')));
