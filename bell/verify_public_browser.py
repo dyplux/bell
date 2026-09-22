@@ -40,22 +40,34 @@ def main() -> int:
             receipt_response = page.request.get(args.base.rstrip("/") + "/api/integrity", timeout=30_000)
             require(receipt_response.ok, f"integrity receipt request failed: {receipt_response.status}")
             receipt = receipt_response.json()
-            silver = next((item for item in receipt.get("alert_index", []) if str(item.get("name", "")).lower() == "silver"), None)
-            require(silver is not None, "Silver is not present in the current published receipt")
-            expected_state = {
+            expected_states = {
                 "do_not_compare": "DO NOT SHORTLIST",
                 "investigate": "INVESTIGATE",
                 "no_flags": "FACTS OPEN",
                 "single_representation": "SINGLE REPRESENTATION",
-            }.get(silver.get("state"), "REFERENCE ONLY")
+            }
 
-            page.locator("#hero-search").fill("Silver")
-            page.locator("#hero-search-form button[type=submit]").click()
-            result = page.locator("#search-result")
-            result.wait_for(state="visible", timeout=30_000)
-            result_text = result.inner_text()
-            require(expected_state in result_text, f"Silver did not mirror the receipt state {expected_state!r}: {result_text[:500]!r}")
-            require("observed quote" in result_text.lower(), f"search result did not expose observed evidence: {result_text[:500]!r}")
+            def expected_for(name: str) -> str:
+                needle = name.lower()
+                candidates = receipt.get("alert_index", [])
+                item = next((candidate for candidate in candidates if str(candidate.get("name", "")).lower() == needle), None)
+                item = item or next((candidate for candidate in candidates if needle in str(candidate.get("name", "")).lower()), None)
+                require(item is not None, f"{name} is not present in the current published receipt")
+                return expected_states.get(item.get("state"), "REFERENCE ONLY")
+
+            def search_and_check(name: str) -> str:
+                page.locator("#hero-search").fill(name)
+                page.locator("#hero-search-form button[type=submit]").click()
+                result = page.locator("#search-result")
+                result.wait_for(state="visible", timeout=30_000)
+                result_text = result.inner_text()
+                expected = expected_for(name)
+                require(expected in result_text, f"{name} did not mirror receipt state {expected!r}: {result_text[:500]!r}")
+                require("observed quote" in result_text.lower(), f"{name} did not expose observed evidence: {result_text[:500]!r}")
+                return expected
+
+            silver_state = search_and_check("Silver")
+            marvell_state = search_and_check("Marvell")
 
             if args.screenshot:
                 page.screenshot(path=args.screenshot, full_page=True)
@@ -72,7 +84,8 @@ def main() -> int:
             print(json.dumps({
                 "base": args.base.rstrip("/"),
                 "receipt_status": status,
-                "silver_decision": expected_state,
+                "silver_decision": silver_state,
+                "marvell_decision": marvell_state,
                 "silver_evidence": "observed quote evidence visible",
                 "mobile_horizontal_overflow": False,
                 "screenshot": args.screenshot,

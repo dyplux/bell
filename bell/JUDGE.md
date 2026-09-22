@@ -61,10 +61,10 @@ To reproduce the critical browser path without a CMC credential, install Playwri
 python3 bell/verify_public_browser.py --channel chrome
 ```
 
-The check opens the public page, waits for the receipt, searches Silver, confirms the
-`DO NOT SHORTLIST` state and observed quote evidence, and checks that the 390px mobile
-layout has no horizontal overflow. The command is a browser smoke check, not a replacement
-for the receipt verifier or the test suite.
+The check opens the public page, waits for the receipt, searches Silver and Marvell, confirms
+that both UI states mirror the published receipt (`DO NOT SHORTLIST` and `FACTS OPEN`), and
+checks that the 390px mobile layout has no horizontal overflow. The command is a browser
+smoke check, not a replacement for the receipt verifier or the test suite.
 
 For a local credential-free replay, run:
 
