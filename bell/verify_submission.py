@@ -66,6 +66,7 @@ FORBIDDEN_PUBLIC_TEXT = (
     re.compile(r"works\s+at\s+coinmarketcap", re.IGNORECASE),
     re.compile(r"coinmarketcap\s+employee", re.IGNORECASE),
     re.compile(r"personal\s+hackathon", re.IGNORECASE),
+    re.compile(r"rwa-surface-review\.pages\.dev", re.IGNORECASE),
     re.compile(r"xai-[A-Za-z0-9_-]{16,}"),
     re.compile(r"CMC_DYPLUX_API_KEY\s*=", re.IGNORECASE),
 )
