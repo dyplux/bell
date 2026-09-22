@@ -71,6 +71,7 @@ From the repository root:
 
 ```sh
 python3 bell/verify_integrity_receipt.py
+python3 bell/verify_catalogue_receipt.py
 python3 bell/verify_public_surface.py
 node --test bell/tests/*.cjs
 ```
