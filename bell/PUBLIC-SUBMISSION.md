@@ -26,3 +26,35 @@ It also checks that the public interface uses one decision vocabulary:
 This gate is complementary to the test suite and the live smoke check. It does
 not claim that the product is an investment recommendation or that a public
 receipt proves backing, liquidity, redemption or execution.
+
+## Hackathon submission checklist
+
+The public submission surface is the Real World Assets track and uses one
+product URL:
+
+- Demo: <https://bell.dyplux.com/>
+- Repository: <https://github.com/dyplux/bell>
+- Track: Real World Assets
+- Video: upload the credential-free walkthrough produced by `bell/record_demo.py`
+- X post: publish the submission link with `#BuildwithCMC`
+
+The build names the CoinMarketCap surfaces it uses in [JUDGE.md](JUDGE.md):
+
+- `/v5/real-world-assets/map`
+- `/v5/real-world-assets/assets/list`
+- `/v5/real-world-assets/quotes/latest`
+- `/v5/real-world-assets/info`
+- `/v5/real-world-assets/issuers/list`
+- `/v2/cryptocurrency/info`
+- `/v2/cryptocurrency/ohlcv/historical`
+- `/v2/cryptocurrency/quotes/latest`
+
+The public page exposes the result of a real server-side CMC collection through
+the live receipt, source fingerprints, collection note and credential-free
+replay inputs. The API makes the RWA map, wrapper grouping, issuer joins and
+quote fields available; its limits are preserved as visible unresolved states
+when coverage, market pairs or legal and execution evidence are unavailable.
+
+Suggested X copy:
+
+> Before comparing a tokenised stock, ETF or commodity, Bell checks whether the wrappers share a comparable identity, unit and market state. It turns CMC RWA data into a visible decision and a dated receipt. Try it: https://bell.dyplux.com/ #BuildwithCMC
