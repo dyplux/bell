@@ -60,6 +60,7 @@ node --test bell/tests/*.cjs
 python3 -m unittest discover -s bell/tests -p 'test_*.py' -q
 python3 bell/verify_integrity_receipt.py
 python3 bell/verify_public_surface.py
+python3 bell/verify_public_browser.py --channel chrome --screenshot /tmp/bell-live-proof.png
 node --test cloudflare/tests/worker.test.mjs
 ```
 
