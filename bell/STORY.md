@@ -53,7 +53,7 @@ The investor test is documented separately in [USE-CASE-INVESTOR.md](USE-CASE-IN
 is deliberately stricter than the hackathon demo: Bell must change what an analyst investigates,
 without pretending to approve an investment.
 
-1. Open [Bell](https://dyplux.com/bell/) and search by name, ticker, slug or category. The bundled CMC map contains 7,811 observed reference entries. Catalogue presence does not guarantee available tokens or analysable history.
+1. Open [Bell](https://bell.dyplux.com/) and search by name, ticker, slug or category. The bundled CMC map contains 7,811 observed reference entries. Catalogue presence does not guarantee available tokens or analysable history.
 2. Run the selected RWA through the audit path. The collector composes quotes, RWA metadata, market pairs, issuers and crypto metadata while retaining endpoint provenance.
 3. Inspect the token table and findings. Silver is the strongest unit/aggregation case; Tesla is the strongest identity/market outlier case; Gold is a useful multi-issuer and denomination case.
 4. Open the evidence drawer/receipt to inspect the method, calls, timestamps, findings and limitations. Session-review receipts link to a normalised payload when the published bars are available; the population integrity receipt is a dated summary with source fingerprints, not a raw-response replay bundle.

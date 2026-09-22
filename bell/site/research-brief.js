@@ -107,7 +107,7 @@ ${brief.decision}
 
 ## Evidence
 
-${brief.evidence.map(item => `- [${item.label}](https://dyplux.com/bell/${item.path}) (local copy: ${item.path})`).join('\n')}
+${brief.evidence.map(item => `- [${item.label}](https://bell.dyplux.com/${item.path}) (local copy: ${item.path})`).join('\n')}
 
 The memo is generated locally from the same bundled snapshot as the displayed review. It requires no credentials or API calls. Online evidence links need connectivity; use bundled copies for offline review.
 

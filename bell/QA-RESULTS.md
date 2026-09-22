@@ -166,10 +166,11 @@ those routes distinct instead of presenting all search results as equivalent
 analysis.
 
 The documentation was also reconciled with the actual map composition. The
-current snapshot contains 4,686 stocks, 3,121 ETFs and 4 commodities. It does
-not claim that currencies, government securities or real estate were observed
-in this receipt; those categories remain schema-compatible future routes rather
-than fabricated coverage.
+the 7,811-entry dated map snapshot had 4,686 stocks, 3,121 ETFs and 4
+commodities. This is the historical map composition, not the current live
+integrity receipt; it does not claim that currencies, government securities or
+real estate were observed in that snapshot. Those categories remain
+schema-compatible future routes rather than fabricated coverage.
 
 ## Responsive decision-flow verification: 22 September 2026
 
