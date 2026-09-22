@@ -11,7 +11,7 @@ separate competing claim.
 | Check | Result | Evidence |
 |---|---|---|
 | Integrity rule suite | PASS | `31 passed, 1 skipped` in `bell/tests` |
-| Public surface contract suite | PASS | `28 passed` in `bell/tests/*.cjs` |
+| Public surface contract suite | PASS | `29 passed` in `bell/tests/*.cjs` |
 | Cloudflare Worker | PASS | `10 passed` in `cloudflare/tests/worker.test.mjs` |
 | JavaScript syntax | PASS | `node --check bell/site/integrity.js` and `node --check bell/site/explorer.js` |
 | Public receipt verifier | PASS | HTTP 200, schema `rwa_surface_integrity.v1`, complete required surfaces |
@@ -335,3 +335,16 @@ All three routes retained `LIVE RECEIPT · FRESH`, reported
 `documentWidth = viewportWidth`, and produced no browser console errors. The
 first two routes exposed their quote evidence before the deeper representation
 table; the third did not fabricate a result outside the published receipt.
+
+## Search interaction handoff: 22 September 2026 · final18
+
+The mobile acceptance was repeated as an actual form submission rather than a
+deep-link load. After entering `Gold` and pressing the visible action button,
+the result card landed at the top of the viewport, with the endpoint panel
+visible immediately. The deeper live decision card remained in the same page
+flow below it. The run reported `searchTop = 104px`,
+`LIVE RECEIPT · FRESH`, endpoint evidence present and
+`documentWidth = innerWidth = 390px`.
+
+This closes the first-click gap where a submitted search previously jumped over
+its own result and sent the user to a much later section of the page.
