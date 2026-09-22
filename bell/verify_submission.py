@@ -34,6 +34,7 @@ REQUIRED_FILES = (
     "bell/verify_integrity_receipt.py",
     "bell/verify_public_surface.py",
     "bell/verify_rule_boundaries.py",
+    "bell/verify_demo_manifest.py",
     "cloudflare/src/index.js",
     "cloudflare/wrangler.toml",
 )
@@ -128,8 +129,6 @@ def main() -> int:
     for marker in ('property="og:title"', 'property="og:description"', 'property="og:image"', 'name="twitter:card"'):
         if marker not in index_text:
             failures.append(f"share preview metadata is missing: {marker}")
-    if 'name="twitter:card" content="summary_large_image"' not in index_text:
-        failures.append("share preview must use the large Twitter card")
     if 'name="twitter:card" content="summary_large_image"' not in index_text:
         failures.append("share preview must use the large Twitter card")
 
