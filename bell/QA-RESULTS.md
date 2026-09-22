@@ -435,7 +435,7 @@ not a second source or an investment approval.
 `bell/prepare_demo.py --reference Silver` was run against the public
 credential-free receipt immediately before capture preparation. It returned the
 current observation timestamp, route, five representations, four issuers, the
-31.01x observed spread and the current low/high endpoint labels. The script has
+31.01× observed spread and the current low/high endpoint labels. The script has
 no CMC credential path and its pure extraction helpers are covered by two unit
 tests.
 
@@ -444,8 +444,9 @@ tests.
 The public capture now opens `?reference=5` with the human-readable `Silver`
 label in the search field while retaining the numeric RWA ID in the URL. The
 live capture produced six labelled frames for the hero, Silver desktop and
-mobile, Marvell facts-open, Gold repeat-window and population-shape paths. It recorded zero
-console errors and retained the current receipt timestamp in its manifest.
+mobile, Marvell facts-open, Gold repeat-window and population-shape paths. It
+recorded zero console errors and retained the current receipt timestamp in its
+manifest.
 The Gold frame scrolls to the temporal panel itself, so its label corresponds
 to visible evidence rather than merely the route that was opened.
 
@@ -475,7 +476,7 @@ submission gate inspected 132 tracked files and found no private paths or
 identity disclosures in the release surface.
 
 The credential-free demo preparation immediately before recording produced the
-following current Silver values:
+following Silver values used by the paced capture:
 
 | Field | Published value |
 |---|---|
@@ -491,3 +492,26 @@ The paced raw browser walkthrough is retained privately with its manifest. It
 runs for approximately 107 seconds and records the public credential-free
 surface only. It is an editing source, not an authenticated CMC session or
 proof that every reference can be queried on demand.
+
+## Live receipt recheck after demo capture: 22 September 2026 · final30
+
+The public publisher advanced after the demo was recorded. A fresh
+credential-free browser run and `prepare_demo.py --reference Silver` confirmed
+that the live surface reads the newer receipt rather than the video snapshot:
+
+| Field | Latest live value |
+|---|---|
+| Observed | `2026-09-22T07:23:49Z` |
+| Published | `2026-09-22T07:24:11.059Z` |
+| Population | `791` references · `1,435` representation rows |
+| States | `35` blocked · `662` investigate · `94` facts open |
+| Silver route | `DO NOT SHORTLIST` · `5` representations · `4` issuers |
+| Silver quote range | `31.03×` |
+| Low / high endpoint | `GRAMS · 2.11 · Token` / `XAGX · 65.37 · XAGx` |
+
+The browser check again passed the Gold temporal route, Tesla investigation,
+Marvell facts-open route, map-only handoff, single-representation route,
+population attribution, mobile decision preview and dated replay fallback. It
+reported no console errors or horizontal overflow. The video remains tied to
+its own capture receipt; the voiceover must use the newest `prepare_demo.py`
+output if it is recorded again.
