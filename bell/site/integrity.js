@@ -1385,7 +1385,7 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
       let lastError;
       for (const source of sources) {
         try {
-          const response = await fetch(source, { headers: { Accept: 'application/json' } });
+          const response = await fetch(source, { cache: 'no-store', headers: { Accept: 'application/json' } });
           if (!response.ok) throw new Error(`HTTP ${response.status}`);
           const candidate = await response.json();
           if (candidate.schema_version === 'rwa_surface_integrity.v1') {

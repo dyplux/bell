@@ -84,6 +84,7 @@ test('explorer keeps all four RWA routes and the freshness boundary visible', ()
 
 test('hero receipt label preserves the live freshness state', () => {
   const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
+  assert.match(integrity, /fetch\(source, \{ cache: 'no-store'/);
   assert.match(integrity, /LIVE RECEIPT.*String\(status\)\.toUpperCase\(\)/s);
   assert.match(integrity, /publication\?\.source === 'dated_static'/);
   const index = fs.readFileSync(path.join(site, 'index.html'), 'utf8');
