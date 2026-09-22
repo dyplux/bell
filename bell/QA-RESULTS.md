@@ -396,6 +396,37 @@ The deployed Silver route was checked after the observed quote-band addition:
 This is a presentation and navigation improvement. It does not change the
 underlying receipt or claim that the observed rows are executable quotes.
 
+## Final public release verification: 22 September 2026 · final29
+
+The public submission was rechecked after the final browser and demo pass. The
+credential-free browser run returned `LIVE RECEIPT · FRESH`, passed the Silver,
+Gold, Tesla and Marvell decision routes, exposed the Gold repeat-window panel,
+confirmed the mobile decision preview, and reported no horizontal overflow or
+browser console errors at desktop, tablet or 390px mobile widths.
+
+The same run verified the map-only reference handoff, the single-representation
+route, population concentration and attribution export, the decision brief,
+case receipt, shareable case link and dated replay fallback. The public
+submission gate inspected 132 tracked files and found no private paths or
+identity disclosures in the release surface.
+
+The credential-free demo preparation immediately before recording produced the
+following current Silver values:
+
+| Field | Published value |
+|---|---|
+| Observed | `2026-09-22T07:08:27Z` |
+| Published | `2026-09-22T07:08:48.414Z` |
+| Route | `DO NOT SHORTLIST` |
+| Representations / issuers | `5 / 4` |
+| Observed quote range | `31.01×` |
+| Low endpoint | `GRAMS · 2.11 · Token` |
+| High endpoint | `XAG · 65.31 · NA (Derivatives)` |
+
+The raw browser walkthrough is retained privately with its manifest. It is a
+demo capture of the public credential-free surface, not an authenticated CMC
+session or proof that every reference can be queried on demand.
+
 ## Reported-volume context acceptance: 22 September 2026 · final22
 
 The capital check now recalculates an amount-to-reported-volume percentage as
