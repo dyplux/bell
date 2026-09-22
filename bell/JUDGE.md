@@ -74,6 +74,10 @@ Silver`. It reads the current public receipt and prints the timestamp, route,
 observed ratio and endpoint labels used in the narration, so the recording does
 not rely on stale market values.
 
+For repeatable visual capture, run `PYTHONPATH=bell python3
+bell/capture_demo.py --output /tmp/bell-demo-capture`. The manifest records the
+receipt timestamp and the browser fails on console errors.
+
 The check opens the public page, waits for the receipt, searches Silver and Marvell, confirms
 that both UI states mirror the published receipt (`DO NOT SHORTLIST` and `FACTS OPEN`),
 updates the Silver capital check with a $25,000 scenario, verifies the amount-to-reported-volume context, downloads both the decision brief and the compact JSON case receipt, verifies the shareable case-link action, and checks

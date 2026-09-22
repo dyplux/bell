@@ -86,6 +86,15 @@ python3 bell/prepare_demo.py --reference Silver > /tmp/bell-demo-values.md
 This command uses no credential and prevents a screen recording from carrying
 an older quote, issuer or timestamp.
 
+For current visual frames, use the credential-free browser capture:
+
+```bash
+PYTHONPATH=bell python3 bell/capture_demo.py --output /tmp/bell-demo-capture
+```
+
+It records the live hero, blocked Silver case, mobile case, facts-open Marvell
+case and Gold repeat-window panel without committing generated screenshots.
+
 `verify_public_surface.py` checks the public page, health endpoint, live
 receipt and a published dossier without credentials.
 

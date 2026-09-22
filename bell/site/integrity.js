@@ -1216,6 +1216,8 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
       byId('decision-hero').innerHTML = `<p class="eyebrow">SEARCH RESULT</p><h3>${normalizedQuery ? 'No matching reference' : 'Search a reference'}</h3><p>${normalizedQuery ? `Try the asset name, ticker or RWA ID again` : 'Try Silver, Gold, Tesla, SPY or an RWA ID'}</p>`;
       return;
     }
+    const heroSearchInput = byId('hero-search');
+    if (heroSearchInput) heroSearchInput.value = alert.name || alert.symbol || query;
     const decision = alert.decision || {};
     const significantSignals = alert.signals
       ? alert.signals.filter(signal => signal.severity !== 'info')

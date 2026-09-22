@@ -438,3 +438,11 @@ current observation timestamp, route, five representations, four issuers, the
 31.02x observed spread and the current low/high endpoint labels. The script has
 no CMC credential path and its pure extraction helpers are covered by two unit
 tests.
+
+## Deep-link capture acceptance: 22 September 2026 · final27
+
+The public capture now opens `?reference=5` with the human-readable `Silver`
+label in the search field while retaining the numeric RWA ID in the URL. The
+live capture produced five labelled frames for the hero, Silver desktop and
+mobile, Marvell facts-open and Gold repeat-window paths. It recorded zero
+console errors and retained the current receipt timestamp in its manifest.

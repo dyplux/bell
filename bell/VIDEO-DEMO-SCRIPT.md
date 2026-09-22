@@ -10,6 +10,15 @@ Run `python3 bell/prepare_demo.py --reference Silver` immediately before
 recording. Use its observed timestamp, route, ratio and endpoint labels in the
 shots below. Never carry values forward from an earlier receipt.
 
+To create current visual frames for Hyperframe, run:
+
+```bash
+PYTHONPATH=bell python3 bell/capture_demo.py --output /tmp/bell-demo-capture
+```
+
+The output contains a `manifest.json` with the receipt timestamp and frame
+labels. The capture fails if the browser emits console errors.
+
 ## Story
 
 An investor finds several tokens under the same stock, ETF or commodity. The
