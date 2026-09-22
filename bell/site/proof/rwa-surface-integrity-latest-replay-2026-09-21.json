@@ -307,6 +307,29 @@
       "note": "This is a surface reconciliation, not proof of backing, reserves, redemption or execution."
     }
   },
+  "rule_calibration": {
+    "schema_version": "bell.rule_calibration.v1",
+    "reference_count": 791,
+    "references_with_two_positive_prices": 162,
+    "references_with_insufficient_positive_prices": 629,
+    "observed_ratio_bands": {
+      "below_2x": 154,
+      "2x_to_below_5x": 3,
+      "5x_to_below_10x": 1,
+      "10x_or_more": 4
+    },
+    "thresholds": {
+      "price_dispersion": {
+        "lower_bound": 2,
+        "inclusive": true
+      },
+      "price_denomination_break": {
+        "lower_bound": 10,
+        "inclusive": true
+      }
+    },
+    "note": "Observed population counts around the deterministic rules; not threshold calibration, fair value or an execution measure."
+  },
   "alert_index": [
     {
       "rwa_id": 5,
