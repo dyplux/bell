@@ -5,7 +5,7 @@ can support a trustworthy wrapper comparison before showing a user a ranking.
 
 For this submission, judge the **RWA Surface Integrity Monitor** first. The older
 terminal and session-review workflow is supporting evidence, not the headline
-claim. The monitor is the public path at `/` and the dated
+claim. The monitor is the public path at `/` and the credential-free replay
 CLI is `python3 bell/integrity_review.py`.
 
 Build with CMC API Hackathon, Real World Assets track. Bell is a research instrument,
@@ -44,7 +44,7 @@ python3 bell/integrity_review.py
 cd bell/site && python3 -m http.server 8080
 ```
 
-The command reads a dated credential-free CMC audit and answers one question:
+The command reads the latest bundled credential-free CMC replay and answers one question:
 can the representations grouped under this reference be compared as the same exposure? It
 returns `DO NOT SHORTLIST`, `INVESTIGATE` or a provisional comparison, then names the next
 missing evidence. For the population-wide flagship, open
@@ -52,7 +52,7 @@ missing evidence. For the population-wide flagship, open
 <https://bell.dyplux.com/>. It shows the full tokenised-reference scan,
 surface drift between the CMC map and asset list, and the deterministic alert queue.
 The public page first reads the current credential-free `/api/integrity` receipt,
-shows observed/publication times and freshness, and falls back to the dated receipt
+shows observed/publication times and freshness, and falls back to the latest replay receipt
 only when the live publication is unavailable.
 Search `gold`, open the published seven-wrapper review and inspect its receipt and replay
 payload. Search `tesla` for the nine-entry receipt and replay payload.
