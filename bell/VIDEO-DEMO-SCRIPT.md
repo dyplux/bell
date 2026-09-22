@@ -19,6 +19,15 @@ PYTHONPATH=bell python3 bell/capture_demo.py --output /tmp/bell-demo-capture
 The output contains a `manifest.json` with the receipt timestamp and frame
 labels. The capture fails if the browser emits console errors.
 
+The current capture order is:
+
+1. `01-hero-live.png` for the first viewport and live freshness state
+2. `02-silver-blocked.png` for the observed contradiction and capital route
+3. `03-silver-mobile.png` for the mobile decision preview
+4. `04-marvell-facts-open.png` for the facts-only contrast route
+5. `05-gold-repeat-window.png` for the dated temporal evidence
+6. `06-population-shape.png` for the full-scan route counts and observed spread bands
+
 ## Story
 
 An investor finds several tokens under the same stock, ETF or commodity. The
