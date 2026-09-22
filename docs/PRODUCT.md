@@ -19,7 +19,10 @@ It is not a token leaderboard, safety score or investment recommendation.
 5. Inspect the decision, next action and representation rows. Bell changes the
    route for a no-token reference, a single representation or a multi-token
    comparison. It never ranks a single wrapper.
-6. Open the live JSON receipt or the dated replay and verify the timestamps,
+6. For a multi-row reference, inspect the observed quote band and the
+   illustrative capital consequence. The band compares rows with the observed
+   median only; it is not a fair-value or executable-spread calculation.
+7. Open the live JSON receipt or the dated replay and verify the timestamps,
    source hashes and stable-ID join coverage.
 
 The output is explicit:
@@ -46,6 +49,8 @@ Bell adds the decision protocol around those surfaces:
 - numerical contradiction evidence such as price spread and positive volume with
   zero market cap;
 - a next action and allocation boundary for every published decision;
+- an observed quote band and explicit capital-preservation handoff for
+  references with multiple positive quote rows;
 - a credential-free, timestamped receipt that can be replayed offline.
 
 ## Public evidence contract

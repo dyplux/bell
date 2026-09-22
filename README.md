@@ -18,6 +18,13 @@ stable identifiers, then routes each reference into the honest workflow:
 The product is not a safety score, investment recommendation or proof of
 backing, redemption, custody, solvency or executable liquidity.
 
+For a selected reference, the public page also makes the immediate review
+consequence visible: an illustrative amount can be kept uncommitted, held for
+verification or routed to descriptive diligence. Where at least two positive
+quote rows exist, Bell shows the observed quote band, each row's distance from
+the observed median and the reported 24-hour volume state. These are evidence
+fields, not a discount, fair-value, liquidity or execution claim.
+
 ## The public surface
 
 The single public page combines the monitor, the RWA explorer and published
@@ -31,6 +38,8 @@ rule evidence and source fingerprints without exposing the CMC credential.
 
 CMC provides the discovery surfaces. Bell adds the join logic, contradiction
 checks, missing-versus-zero handling, next action and replayable evidence path.
+The result is a research handoff rather than another RWA leaderboard: the user
+gets a decision state, the rows that produced it and the next unresolved check.
 
 ## Run locally
 
