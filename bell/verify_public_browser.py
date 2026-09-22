@@ -89,6 +89,17 @@ def main() -> int:
             require("Silver" in watchlist.inner_text(), "saved Silver reference is not visible in the local watchlist")
 
             marvell_state = search_and_check("Marvell")
+            marvell_details = page.locator("#alert-list .alert-details").first
+            marvell_details.locator("summary").click()
+            selectors = marvell_details.locator("[data-wrapper-select]")
+            require(selectors.count() >= 2, "Marvell does not expose two wrapper rows for factual comparison")
+            selectors.nth(0).check()
+            selectors.nth(1).check()
+            comparison = marvell_details.locator("[data-comparison-output]")
+            comparison.wait_for(state="visible", timeout=5_000)
+            comparison_text = comparison.inner_text()
+            require("OBSERVED FIELD DIFFERENCES" in comparison_text, "Marvell side-by-side comparison did not render")
+            require("FACTS ONLY" in comparison_text, "Marvell comparison did not preserve the no-ranking boundary")
 
             if args.screenshot:
                 page.screenshot(path=args.screenshot, full_page=True)
@@ -111,6 +122,7 @@ def main() -> int:
                 "decision_brief": brief_download.suggested_filename,
                 "shareable_case_link": "Case link copied",
                 "watchlist": "Silver saved locally",
+                "marvell_comparison": "observed field differences, no wrapper ranking",
                 "mobile_horizontal_overflow": False,
                 "screenshot": args.screenshot,
             }, ensure_ascii=False, indent=2))
