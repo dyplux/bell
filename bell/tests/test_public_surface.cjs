@@ -47,6 +47,7 @@ test('hero receipt label preserves the live freshness state', () => {
   const index = fs.readFileSync(path.join(site, 'index.html'), 'utf8');
   assert.match(index, /id="hero-receipt-trail"/);
   assert.match(integrity, /RECEIPT TRAIL/);
+  assert.match(integrity, /hero-receipt-link/);
 });
 
 test('case results can be shared as stable single-URL deep links', () => {

@@ -988,6 +988,9 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
       heroTrail.textContent = Array.isArray(observations) && observations.length
         ? `RECEIPT TRAIL · ${observations.length} dated observations · state history below`
         : 'RECEIPT TRAIL · no dated history available';
+      if (!byId('hero-receipt-link')) {
+        heroTrail.insertAdjacentHTML('afterend', '<a id="hero-receipt-link" class="hero-receipt-link" href="/api/integrity" target="_blank" rel="noopener">OPEN CREDENTIAL-FREE RECEIPT ↗</a>');
+      }
     }
     if (!target || !Array.isArray(observations) || observations.length < 2) return;
     const previous = observations[observations.length - 2];
@@ -1014,7 +1017,10 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     } catch {
       target.innerHTML = '<p class="publication-history-unavailable">Publication history is available in the linked receipt file.</p>';
       const heroTrail = byId('hero-receipt-trail');
-      if (heroTrail) heroTrail.textContent = 'RECEIPT TRAIL · open the evidence index';
+      if (heroTrail) {
+        heroTrail.textContent = 'RECEIPT TRAIL · open the evidence index';
+        if (!byId('hero-receipt-link')) heroTrail.insertAdjacentHTML('afterend', '<a id="hero-receipt-link" class="hero-receipt-link" href="proof/rwa-surface-integrity-replay-index.md" target="_blank" rel="noopener">OPEN EVIDENCE INDEX ↗</a>');
+      }
     }
   }
 
