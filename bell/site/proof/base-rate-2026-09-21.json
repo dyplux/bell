@@ -1,0 +1,28 @@
+{
+  "observed_at": "2026-09-21T21:25:01Z",
+  "population": 791,
+  "excluded_single_representation": 547,
+  "denominator_two_or_more_representations": 244,
+  "refused": 157,
+  "comparable": 87,
+  "refusal_rate": 0.6434426229508197,
+  "refusal_rate_ci95": [
+    0.5815445297741698,
+    0.70089393092008
+  ],
+  "refusal_reasons": {
+    "REPRESENTATIONS_WITHOUT_A_PRICE": 69,
+    "REPRESENTATIONS_QUOTED_BUT_UNTRADED": 51,
+    "ZERO_MCAP_POSITIVE_VOLUME": 30,
+    "PRICE_DENOMINATION_BREAK": 4,
+    "PRICE_DISPERSION": 3,
+    "SPREAD_ABOVE_PUBLISHABLE_CEILING": 1
+  },
+  "method": {
+    "population": "every reference in the captured RWA map",
+    "denominator": "references with >= 2 token representations",
+    "excluded": "single-representation references, which cannot be compared at all",
+    "numerator": "references this monitor refuses to compare, by coded rule",
+    "interval": "Wilson score, 95%"
+  }
+}

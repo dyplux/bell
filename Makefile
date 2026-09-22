@@ -11,10 +11,11 @@ WORKER := cloudflare
 
 .DEFAULT_GOAL := help
 
-.PHONY: help install test test-py test-js test-worker demo verify check clean
+.PHONY: help install test test-py test-js test-worker demo base-rate verify check clean
 
 help: ## Show the targets a reviewer needs
-	@echo "make demo     - answer one comparability question, keyless, ~10s"
+	@echo "make demo     - answer one comparability question, keyless, ~1s"
+	@echo "make base-rate- how often a comparison is safe at all, whole catalogue"
 	@echo "make test     - every suite (Python + browser-independent JS + worker)"
 	@echo "make verify   - re-hash the published receipt against its shipped inputs"
 	@echo "make check    - test + verify + public-surface audit (the full gate)"
@@ -37,6 +38,9 @@ test-worker: ## Edge worker suite
 
 demo: ## The judged capability: one reference, resolved and explained, no key
 	PYTHONPATH=$(PKG) $(PY) $(PKG)/demo.py
+
+base-rate: ## How often a comparison is safe at all, over the whole catalogue
+	PYTHONPATH=$(PKG) $(PY) $(PKG)/base_rate.py
 
 verify: ## Recompute the published receipt from the shipped inputs
 	$(PY) $(PKG)/verify_integrity_receipt.py
