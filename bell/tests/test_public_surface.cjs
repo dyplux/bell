@@ -170,6 +170,11 @@ test('mobile evidence text wraps instead of hiding the source line', () => {
   assert.match(visualOverrides, /\.hero-signal-list small\{grid-column:2;white-space:normal;overflow:visible/);
 });
 
+test('decision preview is mobile-only and cannot leak into desktop layout', () => {
+  assert.match(visualOverrides, /\.hero-mobile-decision\{display:none!important\}/);
+  assert.match(visualOverrides, /\.hero-mobile-decision\{display:block!important/);
+});
+
 test('public decision vocabulary stays canonical', () => {
   const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
   assert.match(integrity, /return 'INVESTIGATE';/);
