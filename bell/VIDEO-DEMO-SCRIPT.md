@@ -36,9 +36,10 @@ fair comparison at all.
 | 42 to 54s | Next-action handoff | “The next step is explicit: resolve unit, wrapper claim and quote identity, then verify issuer, redemption and execution.” |
 | 54 to 68s | Search `Marvell`, open factual rows | “When no critical Bell rule fires, the route is different. Marvell opens a facts-only comparison without declaring a winner.” |
 | 68 to 78s | Decision brief and local worksheet | “The investor exports a brief containing the state, evidence, unresolved questions and next diligence step.” |
-| 78 to 91s | Explore RWA, search `Gold`, open the published dossier | “The dossier makes the data boundary visible. It shows network identity, DEX contract coverage, resolved pools, security and holder surfaces, and whether CMC market pairs were available.” |
-| 91 to 101s | Search `Colgate` and open the reference-only map route | “A reference without a published token case is not treated as a failure. Bell routes it to the complete RWA map and keeps the reference-only result explicit.” |
-| 101 to 110s | Receipt JSON, freshness badge and public URL | “Every result is tied to a dated receipt. Bell is an integrity gate around CMC data, not a replacement for CMC or a buy recommendation.” |
+| 78 to 88s | Explore RWA, search `Gold`, open the published dossier | “The dossier makes the data boundary visible. It shows network identity, DEX contract coverage, resolved pools, security and holder surfaces, and whether CMC market pairs were available.” |
+| 88 to 98s | Scroll to `POPULATION SHAPE` and `OBSERVED QUOTE SPREAD` | “Bell also shows the shape of the full scan. The published receipt separates comparable references from rows without two positive prices, then shows how many sit in each observed spread band.” |
+| 98 to 105s | Search `Colgate` and open the reference-only map route | “A reference without a published token case is not treated as a failure. Bell routes it to the complete RWA map and keeps the reference-only result explicit.” |
+| 105 to 110s | Receipt JSON, freshness badge and public URL | “Every result is tied to a dated receipt. Bell is an integrity gate around CMC data, not a replacement for CMC or a buy recommendation.” |
 
 ## Proof frames
 
@@ -50,6 +51,8 @@ fair comparison at all.
 - Show Marvell as the contrasting `FACTS OPEN` route
 - Show the exported brief or worksheet
 - Show the Gold dossier's `EVIDENCE CONTEXT` panel and its market-pair boundary
+- Show the population chart using the published calibration counts, including the
+  references that remain outside the spread chart because they lack two positive prices
 - Show the map-only handoff and its reloadable `map_reference` URL
 - End on the public monitor and `/api/integrity` receipt
 
