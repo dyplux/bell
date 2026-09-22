@@ -32,6 +32,12 @@ For a longer raw walkthrough with readable pauses at each judge step, use:
 python3 bell/record_demo.py --long --output /tmp/bell-demo-video-long
 ```
 
+Validate the resulting video and manifest together before editing:
+
+```bash
+python3 bell/verify_demo_manifest.py /tmp/bell-demo-video-long/manifest.json
+```
+
 The long capture follows the first search, blocked case, evidence rows,
 population shape, facts-open contrast, Gold repeat-window check, map-only
 handoff and final receipt. It is an editing source for Hyperframe, not the

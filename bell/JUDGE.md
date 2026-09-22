@@ -105,6 +105,11 @@ For repeatable visual capture, run `PYTHONPATH=bell python3
 bell/capture_demo.py --output /tmp/bell-demo-capture`. The manifest records the
 receipt timestamp and the browser fails on console errors.
 
+For a recorded walkthrough, validate the generated manifest and video together
+with `python3 bell/verify_demo_manifest.py /path/to/manifest.json`. This checks
+the receipt timestamps, population counts, expected judge steps, console-error
+list and the existence of the referenced video artifact.
+
 The check opens the public page, waits for the receipt, searches Silver and Marvell, confirms
 that both UI states mirror the published receipt (`DO NOT SHORTLIST` and `FACTS OPEN`),
 updates the Silver capital check with a $25,000 scenario, verifies the amount-to-reported-volume context, downloads both the decision brief and the compact JSON case receipt, verifies the shareable case-link action, and checks
