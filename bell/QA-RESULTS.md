@@ -348,3 +348,17 @@ flow below it. The run reported `searchTop = 104px`,
 
 This closes the first-click gap where a submitted search previously jumped over
 its own result and sent the user to a much later section of the page.
+
+## Viewport-aware evidence handoff: 22 September 2026 · final20
+
+The same Gold submission was checked at both ends of the responsive layout:
+
+- at 390px, the compact searched-reference result and endpoint panel are the
+  immediate destination
+- at 1440px, the full `WHY THE RESULT MATTERS` card is the immediate destination,
+  keeping the decision, capital check and issuer concentration visible together
+- both routes preserve the current live receipt label and endpoint evidence
+- both routes keep the document width equal to the viewport width
+
+This avoids showing a narrow result card beside an empty desktop column while
+preserving the shorter first-click path on mobile and tablet.
