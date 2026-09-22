@@ -55,6 +55,17 @@ the first evidence is visible without a long scroll. The public page reads the c
 credential-free `/api/integrity` receipt, shows the publication time and freshness, and falls
 back to the latest replay receipt only when the live publication is unavailable.
 
+To reproduce the critical browser path without a CMC credential, install Playwright and run:
+
+```sh
+python3 bell/verify_public_browser.py --channel chrome
+```
+
+The check opens the public page, waits for the receipt, searches Silver, confirms the
+`DO NOT SHORTLIST` state and observed quote evidence, and checks that the 390px mobile
+layout has no horizontal overflow. The command is a browser smoke check, not a replacement
+for the receipt verifier or the test suite.
+
 For a local credential-free replay, run:
 
 ```sh
