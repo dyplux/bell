@@ -37,8 +37,9 @@ population shape, facts-open contrast, Gold repeat-window check, map-only
 handoff and final receipt. It is an editing source for Hyperframe, not the
 finished submission video.
 
-The output contains a `manifest.json` with the receipt timestamp and frame
-labels. The capture fails if the browser emits console errors.
+The output contains a `manifest.json` with the receipt status, observed and
+published timestamps, population counts and step selectors. The capture fails
+if the browser emits console errors.
 
 The current capture order is:
 
