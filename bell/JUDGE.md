@@ -68,7 +68,9 @@ that the reference can be saved to the local watchlist and that the 390px mobile
 no horizontal overflow. It also opens Marvell, selects two observed rows and confirms that
 the factual side-by-side keeps the no-ranking boundary. It also verifies a `SINGLE
 REPRESENTATION` route and sends a map-only reference to the complete catalogue as
-`REFERENCE ONLY`. Finally, it blocks the live receipt once and confirms that the page labels
+`REFERENCE ONLY`. A searched case also exposes a direct handoff to the credential-free
+per-asset dossier, where the reviewer can see its freshness contract, issuer and market-data
+context without turning missing market-pair data into a liquidity claim. Finally, it blocks the live receipt once and confirms that the page labels
 the fallback as `DATED REPLAY` while keeping `Explore RWA` usable. The command is a browser
 smoke check, not a replacement for the receipt verifier or the test suite. Its presentation
 checks also confirm the page landmarks, heading hierarchy, accessible names for visible
