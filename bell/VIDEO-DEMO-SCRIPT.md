@@ -16,6 +16,16 @@ To create current visual frames for Hyperframe, run:
 PYTHONPATH=bell python3 bell/capture_demo.py --output /tmp/bell-demo-capture
 ```
 
+For a short raw browser walkthrough that can be cut in Hyperframe, run:
+
+```bash
+python3 bell/record_demo.py --output /tmp/bell-demo-video
+```
+
+This records the public credential-free route only. It does not contain an API
+key or authenticated browser state. Read `prepare_demo.py` immediately before
+recording the voiceover because the observed quote endpoints can change.
+
 The output contains a `manifest.json` with the receipt timestamp and frame
 labels. The capture fails if the browser emits console errors.
 
