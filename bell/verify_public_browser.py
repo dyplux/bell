@@ -40,6 +40,14 @@ def main() -> int:
             status = page.locator("#receipt-status-label").inner_text()
             require("RECEIPT" in status, f"receipt status did not load: {status!r}")
             require("CMC API / MAP + ASSET LIST + QUOTES" in page.locator("body").inner_text(), "CMC source boundary is not visible")
+            require(page.locator("h1").count() == 1, "public page must expose exactly one h1")
+            require(page.locator("main").count() == 1 and page.locator("nav").count() >= 1, "public page landmarks are incomplete")
+            unnamed = page.locator("button:visible, a:visible, input:visible, textarea:visible, summary:visible").evaluate_all("""elements => elements
+              .filter(element => !element.getAttribute('aria-label') && !element.textContent.trim() && !element.getAttribute('title') && !element.getAttribute('placeholder'))
+              .map(element => element.outerHTML.slice(0, 120))""")
+            require(not unnamed, f"visible controls without an accessible name: {unnamed[:3]!r}")
+            missing_alt = page.locator("img").evaluate_all("elements => elements.filter(element => !element.getAttribute('alt')).map(element => element.outerHTML.slice(0, 120))")
+            require(not missing_alt, f"images without alt text: {missing_alt[:3]!r}")
 
             receipt_response = page.request.get(args.base.rstrip("/") + "/api/integrity", timeout=30_000)
             require(receipt_response.ok, f"integrity receipt request failed: {receipt_response.status}")
@@ -153,6 +161,7 @@ def main() -> int:
             print(json.dumps({
                 "base": args.base.rstrip("/"),
                 "receipt_status": status,
+                "presentation_accessibility": "landmarks, h1, named controls and image alt text pass",
                 "silver_decision": silver_state,
                 "marvell_decision": marvell_state,
                 "silver_evidence": "observed quote evidence visible",

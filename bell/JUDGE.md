@@ -70,7 +70,9 @@ the factual side-by-side keeps the no-ranking boundary. It also verifies a `SING
 REPRESENTATION` route and sends a map-only reference to the complete catalogue as
 `REFERENCE ONLY`. Finally, it blocks the live receipt once and confirms that the page labels
 the fallback as `DATED REPLAY` while keeping `Explore RWA` usable. The command is a browser
-smoke check, not a replacement for the receipt verifier or the test suite.
+smoke check, not a replacement for the receipt verifier or the test suite. Its presentation
+checks also confirm the page landmarks, heading hierarchy, accessible names for visible
+controls and alternative text for images.
 
 For a local credential-free replay, run:
 
