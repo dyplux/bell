@@ -36,7 +36,8 @@ product URL:
 - Repository: <https://github.com/dyplux/bell>
 - Track: Real World Assets
 - Video: upload the credential-free walkthrough produced by `bell/record_demo.py`
-- X post: publish the submission link with `#BuildwithCMC`
+- DoraHacks submission: add the final public BUIDL URL before publishing
+- X post: link the DoraHacks submission and the demo video, then include `#BuildwithCMC`
 
 The build names the CoinMarketCap surfaces it uses in [JUDGE.md](JUDGE.md):
 
@@ -55,6 +56,8 @@ replay inputs. The API makes the RWA map, wrapper grouping, issuer joins and
 quote fields available; its limits are preserved as visible unresolved states
 when coverage, market pairs or legal and execution evidence are unavailable.
 
-Suggested X copy:
+Suggested X copy after replacing the two bracketed links:
 
-> Before comparing a tokenised stock, ETF or commodity, Bell checks whether the wrappers share a comparable identity, unit and market state. It turns CMC RWA data into a visible decision and a dated receipt. Try it: https://bell.dyplux.com/ #BuildwithCMC
+> Tokenised assets can share a reference and still move on different clocks. Bell checks identity, unit, coverage and market state before an investor compares wrappers, then turns live CMC RWA data into a dated decision and receipt. Demo: https://bell.dyplux.com/ Submission: [DoraHacks URL] Video: [demo video URL] #BuildwithCMC
+
+Do not publish the copy until `[DoraHacks URL]` and `[demo video URL]` have been replaced with the final public links.
