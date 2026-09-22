@@ -62,6 +62,7 @@ test('search result exposes the observed quote endpoints before the evidence tab
   assert.match(integrity, /OBSERVED QUOTE BAND/);
   assert.match(integrity, /relative to the observed median/);
   assert.match(integrity, /not a ranking, discount, backing, liquidity or executable spread/);
+  assert.match(integrity, /SWIPE FOR QUOTE/);
   assert.match(visual, /\.quote-band-table/);
 });
 
