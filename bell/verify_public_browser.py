@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 
 
@@ -73,6 +74,15 @@ def main() -> int:
                 return expected
 
             silver_state = search_and_check("Silver")
+            budget_input = page.locator("#decision-hero [data-capital-budget]")
+            require(budget_input.count() == 1, "blocked case does not expose the capital-check input")
+            budget_input.fill("25000")
+            budget_input.dispatch_event("input")
+            page.wait_for_timeout(100)
+            capital_headline = page.locator("#decision-hero [data-capital-headline]").inner_text()
+            normalized_capital = re.sub(r"[\s,\.\xa0]", "", capital_headline).lower()
+            require("25000" in normalized_capital, f"capital check did not update the blocked-case consequence: {capital_headline!r}")
+            require("keep25000uncommitted" in normalized_capital, f"unexpected capital consequence: {capital_headline!r}")
             brief_button = page.locator("#decision-hero [data-brief-id]").first
             require(brief_button.count() == 1, "Silver result does not expose a decision-brief action")
             with page.expect_download(timeout=30_000) as download_info:
@@ -146,6 +156,7 @@ def main() -> int:
                 "silver_decision": silver_state,
                 "marvell_decision": marvell_state,
                 "silver_evidence": "observed quote evidence visible",
+                "capital_check": "25,000 routed to keep uncommitted",
                 "decision_brief": brief_download.suggested_filename,
                 "shareable_case_link": "Case link copied",
                 "watchlist": "Silver saved locally",
