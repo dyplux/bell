@@ -983,6 +983,12 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
   function renderPublicationHistory(history) {
     const target = byId('publication-history');
     const observations = history?.observations;
+    const heroTrail = byId('hero-receipt-trail');
+    if (heroTrail) {
+      heroTrail.textContent = Array.isArray(observations) && observations.length
+        ? `RECEIPT TRAIL · ${observations.length} dated observations · state history below`
+        : 'RECEIPT TRAIL · no dated history available';
+    }
     if (!target || !Array.isArray(observations) || observations.length < 2) return;
     const previous = observations[observations.length - 2];
     const latest = observations[observations.length - 1];
@@ -1007,6 +1013,8 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
       renderPublicationHistory(await response.json());
     } catch {
       target.innerHTML = '<p class="publication-history-unavailable">Publication history is available in the linked receipt file.</p>';
+      const heroTrail = byId('hero-receipt-trail');
+      if (heroTrail) heroTrail.textContent = 'RECEIPT TRAIL · open the evidence index';
     }
   }
 
