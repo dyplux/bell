@@ -316,3 +316,9 @@ footer{max-width:2200px;padding-left:64px;padding-right:64px;font-size:12px}
 .comparison-open{margin:9px 0 0;font-size:10.5px;color:#d2a45e;line-height:1.5}
 .comparison-open span{font-weight:700;letter-spacing:.06em;margin-right:5px}
 .comparison-limits{margin:7px 0 0;font-size:10px;color:#8798ab;line-height:1.5}
+
+/* The finding, not a question, at the top of the page. Filled from the
+   published measurement so the page and the receipt cannot drift apart. */
+.finding-lede{border-left:2px solid var(--gold);padding-left:14px;margin-top:18px}
+.finding-lede strong{color:var(--paper);font-variant-numeric:tabular-nums}
+.finding-lede small{display:block;margin-top:8px;color:#8798ab;font-size:11px;line-height:1.5}

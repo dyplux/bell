@@ -451,6 +451,39 @@
   }
 
 
+
+  // The headline number is the finding, so it is read from the measurement
+  // rather than typed into the page. Hardcoding it would let the page and the
+  // receipt drift apart, which is the defect this whole product exists to catch.
+  async function renderFinding() {
+    const headline = byId('finding-headline');
+    const lede = byId('finding-lede');
+    if (!headline || !lede) return;
+    try {
+      const response = await fetch('proof/base-rate-2026-09-21.json', { cache: 'no-store' });
+      if (!response.ok) throw new Error(`base rate unavailable (${response.status})`);
+      const r = await response.json();
+      const pct = (r.refusal_rate * 100).toFixed(1);
+      const lo = (r.refusal_rate_ci95[0] * 100).toFixed(1);
+      const hi = (r.refusal_rate_ci95[1] * 100).toFixed(1);
+      const n = r.denominator_two_or_more_representations;
+      const share = r.refusal_rate >= 0.6 ? 'Two thirds of' : r.refusal_rate >= 0.45 ? 'Half of' : 'Many';
+      headline.innerHTML = `${escapeHTML(share)} tokenised assets<br><em>cannot honestly be compared</em>`;
+      lede.innerHTML = `Of the <strong>${n.toLocaleString()}</strong> references in the CoinMarketCap RWA catalogue `
+        + `carrying more than one representation &mdash; the only ones where a comparison is something you could `
+        + `attempt &mdash; <strong>${r.refused.toLocaleString()}</strong> fail a coded comparability rule. `
+        + `That is <strong>${pct}%</strong>, 95% interval ${lo}&ndash;${hi}%, measured over the whole catalogue `
+        + `and not a sample. The other <strong>${r.comparable.toLocaleString()}</strong> are published with the `
+        + `comparison performed. `
+        + `<small>${r.excluded_single_representation.toLocaleString()} single-representation references are excluded `
+        + `rather than counted against the rate: there is nothing to compare, so the question does not arise.</small>`;
+    } catch (error) {
+      // Say what is missing rather than leaving a number-shaped hole.
+      lede.textContent = 'The population measurement could not be loaded, so no rate is shown here. '
+        + 'Run `make base-rate` against the shipped inputs to reproduce it.';
+    }
+  }
+
   function renderMetrics() {
     const universe = receipt.universe;
     byId('observed-at').textContent = `OBSERVED ${receipt.observed_at}`;
@@ -1473,6 +1506,7 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
       byId('hero-search').value = query;
       byId('alert-search').value = query;
       renderMetrics();
+      renderFinding();
       renderThesisStrip();
       renderInvestorTask();
       renderAlerts();

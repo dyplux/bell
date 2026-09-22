@@ -250,3 +250,25 @@ test('publication history labels stay distinct when receipts share a day', () =>
   assert.match(integrity, /labelByTime/);
   assert.match(integrity, /Short series/);
 });
+
+test('the headline finding is read from the measurement, never typed into the page', () => {
+  const index = fs.readFileSync(path.join(site, 'index.html'), 'utf8');
+  const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
+  // The page and the receipt drifting apart is the exact defect this product
+  // exists to catch, so the headline number must come from the published
+  // measurement and not be written into the markup.
+  assert.match(integrity, /async function renderFinding/);
+  assert.match(integrity, /base-rate-[0-9]{4}-[0-9]{2}-[0-9]{2}\.json/);
+  assert.match(index, /id="finding-headline"/);
+  assert.match(index, /id="finding-lede"/);
+  // No percentage, interval or count may be hardcoded in the hero copy.
+  const hero = index.slice(index.indexOf('id="finding-headline"'), index.indexOf('hero-search-form'));
+  assert.doesNotMatch(hero, /\d+\.\d+\s*%/);
+  assert.doesNotMatch(hero, /95%\s*interval\s*\d/);
+});
+
+test('a missing measurement says so instead of leaving a number-shaped hole', () => {
+  const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
+  assert.match(integrity, /could not be loaded/);
+  assert.match(integrity, /make base-rate/);
+});
