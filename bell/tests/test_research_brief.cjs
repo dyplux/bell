@@ -93,6 +93,7 @@ test('integrity UI distinguishes the rule threshold from observed evidence', () 
   assert.match(page, /DATED RECEIPT \/ SOURCE FINGERPRINTS/);
   assert.match(page, /complete credential-free replay inputs are linked separately/);
   assert.match(integrity, /observed quote ratio above 10× review threshold/);
+  assert.match(integrity, /Open live dossier context/);
   assert.match(receipt, /price spread above the 10x threshold/);
   assert.doesNotMatch(integrity, /PRICE_DENOMINATION_BREAK:\s*'10× price spread'/);
   assert.doesNotMatch(page, /REPLAYABLE JSON \/ SHA-256/);

@@ -82,6 +82,7 @@ def main() -> int:
                 return expected
 
             silver_state = search_and_check("Silver")
+            require(page.locator("#search-result").get_by_text("Open live dossier context ↓", exact=True).count() == 1, "searched case does not expose the live dossier handoff")
             budget_input = page.locator("#decision-hero [data-capital-budget]")
             require(budget_input.count() == 1, "blocked case does not expose the capital-check input")
             budget_input.fill("25000")
