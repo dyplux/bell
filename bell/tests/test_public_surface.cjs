@@ -33,6 +33,13 @@ test('public release includes a credential-free executable rule specification', 
   assert.equal(receipt.checks.every(check => check.pass), true);
 });
 
+test('public release names the observed threshold population and inclusivity', () => {
+  const source = fs.readFileSync(path.resolve(__dirname, '../rwa_integrity.py'), 'utf8');
+  assert.match(source, /def rule_calibration/);
+  assert.match(source, /references_with_two_positive_prices/);
+  assert.match(source, /price_denomination_break.*inclusive/s);
+});
+
 test('public page carries a shareable social preview', () => {
   assert.match(page, /property="og:title"/);
   assert.match(page, /property="og:description"/);

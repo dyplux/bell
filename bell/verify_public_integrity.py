@@ -40,6 +40,13 @@ def verify(url: str) -> dict:
     missing_population = [key for key in required_population if key not in population]
     if missing_population:
         raise RuntimeError(f"population attribution missing: {', '.join(missing_population)}")
+    calibration = payload.get("rule_calibration") or {}
+    required_calibration = ("reference_count", "references_with_two_positive_prices", "references_with_insufficient_positive_prices", "observed_ratio_bands", "thresholds")
+    missing_calibration = [key for key in required_calibration if key not in calibration]
+    if missing_calibration:
+        raise RuntimeError(f"rule calibration missing: {', '.join(missing_calibration)}")
+    if calibration.get("thresholds", {}).get("price_dispersion", {}).get("inclusive") is not True or calibration.get("thresholds", {}).get("price_denomination_break", {}).get("inclusive") is not True:
+        raise RuntimeError("rule calibration does not publish inclusive threshold semantics")
     concentration = population["concentration"]
     for key in ("top_1_share", "top_3_share", "top_5_share", "hhi", "effective_issuer_count"):
         if not isinstance(concentration.get(key), (int, float)):
@@ -65,6 +72,7 @@ def verify(url: str) -> dict:
             "hhi": concentration["hhi"],
             "matched_reference_rows": reconciliation["matched_reference_rows"],
         },
+        "rule_calibration": calibration,
         "first_alert": {
             "name": alerts[0].get("name"),
             "state": alerts[0].get("state"),

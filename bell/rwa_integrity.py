@@ -399,6 +399,41 @@ def population_attribution(list_rows: list[dict], assets: list[dict], issuer_cat
     }
 
 
+def rule_calibration(assets: list[dict]) -> dict:
+    """Publish the observed population around the two comparison thresholds."""
+    bands = {"below_2x": 0, "2x_to_below_5x": 0, "5x_to_below_10x": 0, "10x_or_more": 0}
+    comparable_references = 0
+    insufficient_price_references = 0
+    for asset in assets:
+        prices = [number(token.get("price")) for token in asset.get("tokens", []) if isinstance(token, dict)]
+        prices = [price for price in prices if price is not None and price > 0]
+        if len(prices) < 2:
+            insufficient_price_references += 1
+            continue
+        comparable_references += 1
+        ratio = max(prices) / min(prices)
+        if ratio < 2:
+            bands["below_2x"] += 1
+        elif ratio < 5:
+            bands["2x_to_below_5x"] += 1
+        elif ratio < 10:
+            bands["5x_to_below_10x"] += 1
+        else:
+            bands["10x_or_more"] += 1
+    return {
+        "schema_version": "bell.rule_calibration.v1",
+        "reference_count": len(assets),
+        "references_with_two_positive_prices": comparable_references,
+        "references_with_insufficient_positive_prices": insufficient_price_references,
+        "observed_ratio_bands": bands,
+        "thresholds": {
+            "price_dispersion": {"lower_bound": 2, "inclusive": True},
+            "price_denomination_break": {"lower_bound": 10, "inclusive": True},
+        },
+        "note": "Observed population counts around the deterministic rules; not threshold calibration, fair value or an execution measure.",
+    }
+
+
 def scan(map_payload: dict, list_payload: dict, quotes_payload: dict, info_payload: dict | None = None, issuers_payload: dict | None = None, observed_at: str | None = None, crypto_info_payload: dict | None = None) -> dict:
     required_surfaces = {"map": map_payload, "asset_list": list_payload, "quotes": quotes_payload}
     input_issues = [name for name, payload in required_surfaces.items() if not surface_has_records(payload)]
@@ -525,6 +560,7 @@ def scan(map_payload: dict, list_payload: dict, quotes_payload: dict, info_paylo
             "signals": dict(signal_counts),
         },
         "population_attribution": population_attribution(list_rows, assets, issuer_catalogue),
+        "rule_calibration": rule_calibration(assets),
         "alert_index": alert_index,
         "alerts": alerts[:50],
         "issuer_catalogue": issuer_catalogue,

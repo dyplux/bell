@@ -16,6 +16,7 @@ credential-free proof for a reviewer who wants to inspect the build quickly.
 
 - `rwa_integrity.py` collects and joins the authenticated CMC surfaces
 - `population_attribution()` reconciles positive token-level market caps with CMC's asset-level `tokenized_market_cap` field and computes issuer concentration without converting missing values to zero
+- `rule_calibration()` publishes the observed population around Bell's 2x dispersion and 10x denomination boundaries, so the thresholds can be inspected rather than treated as unexplained constants
 - `integrity_publisher.py` publishes only the normalized credential-free receipt
 - `verify_integrity_receipt.py` recomputes the public population summary from committed normalized inputs
 - `verify_catalogue_receipt.py` checks the complete-map catalogue refresh
@@ -41,6 +42,10 @@ positive token rows, missing and zero rows, top issuer-label shares, HHI and
 effective issuer count, then reconciles matched `rwa_id` rows across the quote
 and asset-list surfaces. It does not prove backing, reserves, redemption,
 legal liability, liquidity or execution.
+
+The rule calibration is also descriptive. It counts references in observed price
+bands around the two deterministic boundaries. It is not a statistical threshold
+fit, a fair-value estimate or an execution measure.
 
 ## Reproduce the proof without credentials
 

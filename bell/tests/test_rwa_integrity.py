@@ -120,6 +120,26 @@ class RwaIntegrityTests(unittest.TestCase):
         self.assertIn("MARKET_FIELDS_MISSING", codes)
         self.assertEqual(result["alerts"][0]["decision"]["state"], "hold")
 
+    def test_rule_calibration_publishes_observed_threshold_bands(self):
+        base = {"data": {"rwa_assets": [{"rwa_id": 1, "has_tokens": True}]}}
+        quotes = {"data": {"rwa_assets": [{
+            "rwa_id": 1,
+            "name": "Calibration",
+            "tokens": [
+                {"crypto_id": 1, "price": 1, "market_cap": 10, "volume_24h": 1},
+                {"crypto_id": 2, "price": 2, "market_cap": 10, "volume_24h": 1},
+                {"crypto_id": 3, "price": 10, "market_cap": 10, "volume_24h": 1},
+            ],
+            "tradfi_markets": [],
+        }]}}
+        result = scan(base, base, quotes)
+        calibration = result["rule_calibration"]
+        self.assertEqual(calibration["schema_version"], "bell.rule_calibration.v1")
+        self.assertEqual(calibration["reference_count"], 1)
+        self.assertEqual(calibration["references_with_two_positive_prices"], 1)
+        self.assertEqual(calibration["observed_ratio_bands"]["10x_or_more"], 1)
+        self.assertTrue(calibration["thresholds"]["price_denomination_break"]["inclusive"])
+
     def test_malformed_numeric_fields_are_missing_not_zero(self):
         base = {"data": {"rwa_assets": [{"rwa_id": 4, "has_tokens": True}]}}
         quotes = {"data": {"rwa_assets": [{

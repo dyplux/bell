@@ -74,6 +74,11 @@ the first evidence is visible without a long scroll. The public page reads the c
 credential-free `/api/integrity` receipt, shows the publication time and freshness, and falls
 back to the latest replay receipt only when the live publication is unavailable.
 
+The same receipt exposes `rule_calibration`, an observed population count around
+the 2x price-dispersion and 10x denomination boundaries. This makes the rule
+population inspectable without implying that the thresholds were statistically
+calibrated or that the output measures fair value, liquidity or execution.
+
 To reproduce the critical browser path without a CMC credential, install Playwright and run:
 
 ```sh
