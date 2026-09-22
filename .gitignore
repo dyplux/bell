@@ -9,6 +9,7 @@ bell/HUMAN-PILOT-*.md
 bell/INVESTOR-SIMULATION-*.md
 cloudflare/node_modules/
 cloudflare/.wrangler/
+.wrangler/
 cloudflare/.dev.vars
 *.env
 !.env.example
