@@ -125,6 +125,14 @@ def main() -> int:
             palladium_state = search_and_check("Palladium")
             require(palladium_state == "SINGLE REPRESENTATION", f"single-representation route was not explicit: {palladium_state!r}")
 
+            page.locator("#explorer-search").fill("Gold")
+            page.locator("#explorer-form button[type=submit]").click()
+            page.wait_for_function("document.querySelector('#explorer-dossier')?.textContent?.includes('EVIDENCE CONTEXT')", timeout=30_000)
+            gold_dossier = page.locator("#explorer-dossier").inner_text()
+            require("DEX CONTRACT COVERAGE" in gold_dossier, "Gold dossier did not expose contract coverage context")
+            require("DEX SURFACES" in gold_dossier, "Gold dossier did not expose resolved DEX surfaces")
+            require("CMC MARKET PAIRS" in gold_dossier, "Gold dossier did not expose the market-pair boundary")
+
             page.locator("#hero-search").fill("Colgate")
             page.locator("#hero-search-form button[type=submit]").click()
             map_result = page.locator("#search-result")
@@ -172,6 +180,7 @@ def main() -> int:
                 "watchlist": "Silver saved locally",
                 "marvell_comparison": "observed field differences, no wrapper ranking",
                 "single_representation": palladium_state,
+                "dossier_context": "Gold live dossier shows DEX coverage, surfaces and market-pair boundary",
                 "map_only": f"Colgate routed to complete RWA map as {map_route}",
                 "mobile_horizontal_overflow": False,
                 "failure_fallback": fallback_status,
