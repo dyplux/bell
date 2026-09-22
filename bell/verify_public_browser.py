@@ -56,6 +56,8 @@ def main() -> int:
                 item = next((candidate for candidate in candidates if str(candidate.get("name", "")).lower() == needle), None)
                 item = item or next((candidate for candidate in candidates if needle in str(candidate.get("name", "")).lower()), None)
                 require(item is not None, f"{name} is not present in the current published receipt")
+                if item.get("state") == "no_flags" and int(item.get("token_count") or 0) == 1:
+                    return "SINGLE REPRESENTATION"
                 return expected_states.get(item.get("state"), "REFERENCE ONLY")
 
             def search_and_check(name: str) -> str:
@@ -66,7 +68,8 @@ def main() -> int:
                 result_text = result.inner_text()
                 expected = expected_for(name)
                 require(expected in result_text, f"{name} did not mirror receipt state {expected!r}: {result_text[:500]!r}")
-                require("observed quote" in result_text.lower(), f"{name} did not expose observed evidence: {result_text[:500]!r}")
+                if expected != "SINGLE REPRESENTATION":
+                    require("observed quote" in result_text.lower(), f"{name} did not expose observed evidence: {result_text[:500]!r}")
                 return expected
 
             silver_state = search_and_check("Silver")
@@ -100,6 +103,19 @@ def main() -> int:
             comparison_text = comparison.inner_text()
             require("OBSERVED FIELD DIFFERENCES" in comparison_text, "Marvell side-by-side comparison did not render")
             require("FACTS ONLY" in comparison_text, "Marvell comparison did not preserve the no-ranking boundary")
+            palladium_state = search_and_check("Palladium")
+            require(palladium_state == "SINGLE REPRESENTATION", f"single-representation route was not explicit: {palladium_state!r}")
+
+            page.locator("#hero-search").fill("Colgate")
+            page.locator("#hero-search-form button[type=submit]").click()
+            map_result = page.locator("#search-result")
+            map_result.wait_for(state="visible", timeout=30_000)
+            require("No live case found" in map_result.inner_text(), "map-only query was incorrectly presented as a live case")
+            map_result.locator("[data-open-map-query]").click()
+            page.wait_for_function("(() => { const text = document.querySelector('#explorer-dossier')?.textContent || ''; return text.includes('DOSSIER PENDING') || text.includes('REFERENCE ONLY'); })()", timeout=30_000)
+            map_text = page.locator("#explorer-dossier").inner_text()
+            require("Colgate-Palmolive" in map_text, "map-only route did not resolve the complete RWA catalogue entry")
+            map_route = "DOSSIER PENDING" if "DOSSIER PENDING" in map_text else "REFERENCE ONLY"
 
             if args.screenshot:
                 page.screenshot(path=args.screenshot, full_page=True)
@@ -134,6 +150,8 @@ def main() -> int:
                 "shareable_case_link": "Case link copied",
                 "watchlist": "Silver saved locally",
                 "marvell_comparison": "observed field differences, no wrapper ranking",
+                "single_representation": palladium_state,
+                "map_only": f"Colgate routed to complete RWA map as {map_route}",
                 "mobile_horizontal_overflow": False,
                 "failure_fallback": fallback_status,
                 "screenshot": args.screenshot,

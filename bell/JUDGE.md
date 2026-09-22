@@ -66,10 +66,11 @@ that both UI states mirror the published receipt (`DO NOT SHORTLIST` and `FACTS 
 downloads the Silver decision brief, verifies the shareable case-link action, and checks
 that the reference can be saved to the local watchlist and that the 390px mobile layout has
 no horizontal overflow. It also opens Marvell, selects two observed rows and confirms that
-the factual side-by-side keeps the no-ranking boundary. Finally, it blocks the live receipt
-once and confirms that the page labels the fallback as `DATED REPLAY` while keeping `Explore
-RWA` usable. The command is a browser smoke check, not a replacement for the receipt verifier
-or the test suite.
+the factual side-by-side keeps the no-ranking boundary. It also verifies a `SINGLE
+REPRESENTATION` route and sends a map-only reference to the complete catalogue as
+`REFERENCE ONLY`. Finally, it blocks the live receipt once and confirms that the page labels
+the fallback as `DATED REPLAY` while keeping `Explore RWA` usable. The command is a browser
+smoke check, not a replacement for the receipt verifier or the test suite.
 
 For a local credential-free replay, run:
 
