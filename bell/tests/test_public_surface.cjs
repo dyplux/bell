@@ -43,6 +43,17 @@ test('public release names the observed threshold population and inclusivity', (
   assert.match(integrity, /references_with_insufficient_positive_prices/);
 });
 
+test('threshold language stays distinct from the observed case ratio', () => {
+  const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
+  const capital = fs.readFileSync(path.join(site, 'capital-impact.js'), 'utf8');
+  assert.match(page, /10× REVIEW/);
+  assert.match(page, /an observed case can be higher than 10×/);
+  assert.match(integrity, /formatNumber\(primaryEvidence\.max_min_ratio\).*observed price spread/);
+  assert.match(integrity, /observed quote ratio above 10× review threshold/);
+  assert.match(capital, /quote range/);
+  assert.match(capital, /not a discount or a proven saving/);
+});
+
 test('public page carries a shareable social preview', () => {
   assert.match(page, /property="og:title"/);
   assert.match(page, /property="og:description"/);
