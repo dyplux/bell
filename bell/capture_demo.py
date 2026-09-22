@@ -57,6 +57,16 @@ def capture(base: str, output: Path, channel: str) -> dict:
             page.wait_for_timeout(250)
             page.screenshot(path=str(output / '05-gold-repeat-window.png'), full_page=False)
 
+        page.goto(base.rstrip('/') + '/', wait_until='domcontentloaded', timeout=30_000)
+        page.wait_for_function("document.querySelector('#receipt-status-label')?.textContent?.includes('LOADING') === false", timeout=30_000)
+        population = page.locator('#population-visual')
+        population.wait_for(state='visible', timeout=30_000)
+        page.evaluate("window.scrollTo(0, Math.max(0, document.querySelector('#population-visual').offsetTop - 82))")
+        page.wait_for_timeout(250)
+        population_file = '06-population-shape.png'
+        page.screenshot(path=str(output / population_file), full_page=False)
+        manifest['frames'].append({'file': population_file, 'label': 'Published population shape and observed quote spread bands', 'reference': None, 'viewport': page.viewport_size})
+
         manifest['console_errors'] = errors
         browser.close()
     (output / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n', encoding='utf-8')
