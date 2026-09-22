@@ -95,6 +95,16 @@ PYTHONPATH=bell python3 bell/capture_demo.py --output /tmp/bell-demo-capture
 It records the live hero, blocked Silver case, mobile case, facts-open Marvell
 case and Gold repeat-window panel without committing generated screenshots.
 
+For the complete paced walkthrough used as an editing source:
+
+```bash
+python3 bell/record_demo.py --long --output /tmp/bell-demo-video-long
+```
+
+The long recording covers the first search, evidence rows, population shape,
+facts-open contrast, repeat-window evidence, map-only handoff and receipt
+boundary. It uses the public credential-free surface only.
+
 `verify_public_surface.py` checks the public page, health endpoint, live
 receipt and a published dossier without credentials.
 

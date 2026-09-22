@@ -26,6 +26,17 @@ This records the public credential-free route only. It does not contain an API
 key or authenticated browser state. Read `prepare_demo.py` immediately before
 recording the voiceover because the observed quote endpoints can change.
 
+For a longer raw walkthrough with readable pauses at each judge step, use:
+
+```bash
+python3 bell/record_demo.py --long --output /tmp/bell-demo-video-long
+```
+
+The long capture follows the first search, blocked case, evidence rows,
+population shape, facts-open contrast, Gold repeat-window check, map-only
+handoff and final receipt. It is an editing source for Hyperframe, not the
+finished submission video.
+
 The output contains a `manifest.json` with the receipt timestamp and frame
 labels. The capture fails if the browser emits console errors.
 
