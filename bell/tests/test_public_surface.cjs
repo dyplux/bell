@@ -23,7 +23,7 @@ test('public page carries a shareable social preview', () => {
   assert.match(page, /property="og:description"/);
   assert.match(page, /property="og:url" content="https:\/\/bell\.dyplux\.com\/"/);
   assert.match(page, /property="og:image" content="https:\/\/bell\.dyplux\.com\/assets\/og-card\.png"/);
-  assert.match(page, /name="twitter:card" content="summary"/);
+  assert.match(page, /name="twitter:card" content="summary_large_image"/);
 });
 
 test('explorer keeps all four RWA routes and the freshness boundary visible', () => {
