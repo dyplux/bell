@@ -113,6 +113,17 @@ def main() -> int:
             require(not overflow, "mobile page has horizontal overflow")
             mobile.close()
 
+            fallback = browser.new_context(viewport={"width": 1440, "height": 1100})
+            fallback_page = fallback.new_page()
+            fallback_page.route("**/api/integrity", lambda route: route.abort())
+            fallback_page.goto(args.base.rstrip("/") + "/", wait_until="domcontentloaded", timeout=30_000)
+            fallback_page.locator("#receipt-status-label").wait_for(state="attached", timeout=30_000)
+            fallback_page.wait_for_function("document.querySelector('#receipt-status-label')?.textContent?.includes('LOADING') === false", timeout=30_000)
+            fallback_status = fallback_page.locator("#receipt-status-label").inner_text()
+            require("DATED REPLAY" in fallback_status, f"live failure did not produce a dated replay label: {fallback_status!r}")
+            require("Explore RWA" in fallback_page.locator("body").inner_text(), "dated replay fallback did not keep the RWA explorer usable")
+            fallback.close()
+
             print(json.dumps({
                 "base": args.base.rstrip("/"),
                 "receipt_status": status,
@@ -124,6 +135,7 @@ def main() -> int:
                 "watchlist": "Silver saved locally",
                 "marvell_comparison": "observed field differences, no wrapper ranking",
                 "mobile_horizontal_overflow": False,
+                "failure_fallback": fallback_status,
                 "screenshot": args.screenshot,
             }, ensure_ascii=False, indent=2))
             return 0
