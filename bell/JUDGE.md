@@ -39,7 +39,7 @@ mispricing or investment conclusions.
 Start with the public demo at <https://bell.dyplux.com/>. This is the judge path for the
 current submission and does not require an API key.
 
-1. Enter `Gold` in the visible search and press `Check comparability`.
+1. Enter `Silver` in the visible search and press `Check comparability`.
 2. Read `DO NOT SHORTLIST`, the representation and issuer counts, the observed quote ratio,
    and the low/high quote endpoints with their issuer labels.
 3. Read the compact `CAPITAL ROUTE` directly below the endpoints. For a blocked case it
@@ -48,7 +48,7 @@ current submission and does not require an API key.
    recommendation.
 4. Read the boundary below the endpoints: these are CMC quote rows, not a discount, backing,
    liquidity or executable spread.
-5. In the Gold case, read `REPEAT-WINDOW CHECK` to see the two dated 168-hour
+5. Search `Gold`, then read `REPEAT-WINDOW CHECK` to see the two dated 168-hour
    weekend-versus-cash-session windows. The 72-hour overlap is disclosed, so
    this is movement context and a repeat observation, not independent validation
    or a wrapper ranking.
