@@ -51,7 +51,9 @@ current submission and does not require an API key.
 5. Read `RECEIPT TRAIL` in the live case, then open the publication-history chart lower on
    the page to see how the population state changed across dated summaries.
 6. Open `Inspect this evidence` to see the published receipt, rule evidence, identity/unit/
-   market checks, token rows and the resolution route.
+   market checks, token rows and the resolution route. The case card can also export a
+   compact `bell.case-receipt.v1` JSON containing the selected rows, signals, source
+   fingerprints and join method.
 7. Open `Explore RWA` and search a reference without a published case. Bell routes it to the
    complete map instead of inventing a clean result.
 

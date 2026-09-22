@@ -421,3 +421,11 @@ cash-session explanation and the explicit `72H OVERLAP` boundary. The panel
 states that this is a repeat observation, not independent validation or a trend
 claim. The overlap is visible in the product and the four new proof files are
 included in the public submission clone.
+
+## Case-receipt export acceptance: 22 September 2026 · final25
+
+The Silver judge path now exports `bell-silver-case-receipt.json` directly from
+the selected public receipt. The browser check verified the canonical schema,
+five exact representation rows, six source fingerprints and the `rwa_id` join
+method, with no console errors. The export is a compact snapshot for review,
+not a second source or an investment approval.

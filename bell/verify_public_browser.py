@@ -104,6 +104,19 @@ def main() -> int:
                 brief_button.click()
             brief_download = download_info.value
             require(brief_download.suggested_filename.endswith("-decision-brief.md"), f"unexpected brief filename: {brief_download.suggested_filename!r}")
+            case_receipt_button = page.locator("#decision-hero [data-case-receipt]").first
+            require(case_receipt_button.count() == 1, "Silver result does not expose a compact case-receipt action")
+            with page.expect_download(timeout=30_000) as case_download_info:
+                case_receipt_button.click()
+            case_download = case_download_info.value
+            require(case_download.suggested_filename.endswith("-case-receipt.json"), f"unexpected case receipt filename: {case_download.suggested_filename!r}")
+            with open(case_download.path(), encoding="utf-8") as case_file:
+                case_receipt = json.load(case_file)
+            require(case_receipt.get("schema_version") == "bell.case-receipt.v1", "case receipt schema is not canonical")
+            require(case_receipt.get("reference", {}).get("name") == "Silver", "case receipt does not identify Silver")
+            require(len(case_receipt.get("tokens", [])) == 5, "case receipt does not retain the exact Silver rows")
+            require(case_receipt.get("source_hashes"), "case receipt does not retain source fingerprints")
+            require(case_receipt.get("method", {}).get("join_key") == "rwa_id", "case receipt does not expose the stable join method")
             copy_button = page.locator("#decision-hero [data-copy-case]").first
             require(copy_button.count() == 1, "searched case does not expose a shareable case-link action")
             copy_button.click()
@@ -205,6 +218,7 @@ def main() -> int:
                 "silver_evidence": "observed quote evidence visible",
                 "capital_check": "25,000 routed to keep uncommitted",
                 "decision_brief": brief_download.suggested_filename,
+                "case_receipt": case_download.suggested_filename,
                 "shareable_case_link": "Case link copied",
                 "watchlist": "Silver saved locally",
                 "marvell_comparison": "observed field differences, no wrapper ranking",
