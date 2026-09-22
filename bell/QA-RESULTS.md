@@ -395,3 +395,11 @@ The deployed Silver route was checked after the observed quote-band addition:
 
 This is a presentation and navigation improvement. It does not change the
 underlying receipt or claim that the observed rows are executable quotes.
+
+## Reported-volume context acceptance: 22 September 2026 · final22
+
+The capital check now recalculates an amount-to-reported-volume percentage as
+the user changes the amount under consideration. The metric sums only positive
+token-row `volume_24h` fields and labels the result as rolling reported volume
+rather than depth or executable exit capacity. The no-volume case remains
+explicit and does not render a zero as if it were evidence.

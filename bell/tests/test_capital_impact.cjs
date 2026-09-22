@@ -1,6 +1,6 @@
 const assert = require('node:assert/strict');
 const test = require('node:test');
-const { budget, quoteRange, quoteBand, capitalMetrics, assess } = require('../site/capital-impact.js');
+const { budget, quoteRange, quoteBand, volumeMetrics, capitalMetrics, assess } = require('../site/capital-impact.js');
 
 test('quote range ignores missing, zero and negative prices', () => {
   const result = quoteRange([{ price: 0 }, { price: -2 }, { price: null }, { price: 10 }, { price: 20 }]);
@@ -33,6 +33,14 @@ test('capital metrics make the same budget consequence visible without claiming 
   assert.equal(result.nominalUnitGap, 4000);
 });
 
+test('reported volume comparison makes amount context visible without calling it exit capacity', () => {
+  const result = volumeMetrics([{ volume_24h: 900000 }, { volume_24h: 100000 }, { volume_24h: 0 }], 10000);
+  assert.equal(result.reportedVolume, 1000000);
+  assert.equal(result.positiveRows, 2);
+  assert.equal(result.amountSharePercent, 1);
+  assert.equal(volumeMetrics([{ volume_24h: null }], 10000), null);
+});
+
 test('blocked case turns the proposed amount into a capital hold', () => {
   const result = assess({ state: 'do_not_compare', token_count: 2, tokens: [{ price: 2 }, { price: 20 }] }, 25000);
   assert.equal(result.mode, 'hold');
@@ -40,6 +48,7 @@ test('blocked case turns the proposed amount into a capital hold', () => {
   assert.match(result.headline, /25,000/);
   assert.match(result.copy, /10\.00×/);
   assert.match(result.copy, /not a discount or a proven saving/i);
+  assert.equal(result.metrics.volume, null);
 });
 
 test('investigate and single-representation cases preserve the boundary', () => {

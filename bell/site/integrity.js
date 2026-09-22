@@ -449,8 +449,14 @@
 
   function capitalPanel(alert) {
     const assessment = window.BellCapitalImpact.assess(alert, readCapitalBudget(alert.rwa_id));
-    const metrics = assessment.metrics
-      ? `<div class="capital-metrics"><div><span>OBSERVED RANGE</span><strong>${formatNumber(assessment.metrics.ratio)}×</strong></div><div><span>UNITS AT LOW QUOTE</span><strong>${formatNumber(assessment.metrics.unitsAtLowQuote)}</strong></div><div><span>UNITS AT HIGH QUOTE</span><strong>${formatNumber(assessment.metrics.unitsAtHighQuote)}</strong></div></div><small class="capital-metrics-note">Nominal unit counts only. Rows remain non-comparable until Bell's identity and unit checks are cleared.</small>`
+    const rangeMetrics = assessment.metrics?.ratio
+      ? `<div><span>OBSERVED RANGE</span><strong>${formatNumber(assessment.metrics.ratio)}×</strong></div><div><span>UNITS AT LOW QUOTE</span><strong>${formatNumber(assessment.metrics.unitsAtLowQuote)}</strong></div><div><span>UNITS AT HIGH QUOTE</span><strong>${formatNumber(assessment.metrics.unitsAtHighQuote)}</strong></div>`
+      : '';
+    const volumeMetrics = assessment.metrics?.volume
+      ? `<div><span>AMOUNT / REPORTED 24H VOLUME</span><strong>${formatNumber(assessment.metrics.volume.amountSharePercent)}%</strong></div>`
+      : '';
+    const metrics = rangeMetrics || volumeMetrics
+      ? `<div class="capital-metrics">${rangeMetrics}${volumeMetrics}</div><small class="capital-metrics-note">Nominal quote units only. Reported 24h volume is a rolling field, not depth or executable exit capacity. Rows remain non-comparable until Bell's identity and unit checks are cleared.</small>`
       : '<div class="capital-metrics capital-metrics-empty"><span>No comparable quote range in this receipt.</span></div>';
     return `<section class="capital-panel capital-${assessment.mode}" data-capital-panel="${escapeHTML(alert.rwa_id || '')}">
       <div class="capital-panel-head"><span>CAPITAL CHECK</span><b>Make the financial consequence visible</b></div>
@@ -582,8 +588,14 @@
     panel.querySelector('[data-capital-headline]').textContent = assessment.headline;
     panel.querySelector('[data-capital-copy]').textContent = assessment.copy;
     const metrics = assessment.metrics;
+    const rangeMetrics = metrics?.ratio
+      ? `<div><span>OBSERVED RANGE</span><strong>${formatNumber(metrics.ratio)}×</strong></div><div><span>UNITS AT LOW QUOTE</span><strong>${formatNumber(metrics.unitsAtLowQuote)}</strong></div><div><span>UNITS AT HIGH QUOTE</span><strong>${formatNumber(metrics.unitsAtHighQuote)}</strong></div>`
+      : '';
+    const volumeMetrics = metrics?.volume
+      ? `<div><span>AMOUNT / REPORTED 24H VOLUME</span><strong>${formatNumber(metrics.volume.amountSharePercent)}%</strong></div>`
+      : '';
     panel.querySelector('[data-capital-metrics]').innerHTML = metrics
-      ? `<div class="capital-metrics"><div><span>OBSERVED RANGE</span><strong>${formatNumber(metrics.ratio)}×</strong></div><div><span>UNITS AT LOW QUOTE</span><strong>${formatNumber(metrics.unitsAtLowQuote)}</strong></div><div><span>UNITS AT HIGH QUOTE</span><strong>${formatNumber(metrics.unitsAtHighQuote)}</strong></div></div><small class="capital-metrics-note">Nominal unit counts only. Rows remain non-comparable until Bell's identity and unit checks are cleared.</small>`
+      ? `<div class="capital-metrics">${rangeMetrics}${volumeMetrics}</div><small class="capital-metrics-note">Nominal unit counts only. Reported 24h volume is a rolling field, not depth or executable exit capacity. Rows remain non-comparable until Bell's identity and unit checks are cleared.</small>`
       : '<div class="capital-metrics capital-metrics-empty"><span>No comparable quote range in this receipt.</span></div>';
     panel.querySelector('[data-capital-note]').textContent = assessment.note;
   }

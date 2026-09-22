@@ -57,22 +57,38 @@
     };
   }
 
-  function capitalMetrics(range, amount) {
-    if (!range) return null;
+  function volumeMetrics(tokens, amount) {
+    const rows = (tokens || []).map(token => Number(token && token.volume_24h)).filter(value => Number.isFinite(value) && value > 0);
+    if (!rows.length) return null;
+    const reportedVolume = rows.reduce((sum, value) => sum + value, 0);
     const value = budget(amount);
     return {
-      ratio: range.ratio,
-      gapPercent: range.gapPercent,
-      unitsAtLowQuote: value / range.low,
-      unitsAtHighQuote: value / range.high,
-      nominalUnitGap: value / range.low - value / range.high,
+      reportedVolume,
+      positiveRows: rows.length,
+      amountSharePercent: (value / reportedVolume) * 100,
+    };
+  }
+
+  function capitalMetrics(range, amount, tokens) {
+    const value = budget(amount);
+    const volume = volumeMetrics(tokens, value);
+    if (!range && !volume) return null;
+    return {
+      ...(range ? {
+        ratio: range.ratio,
+        gapPercent: range.gapPercent,
+        unitsAtLowQuote: value / range.low,
+        unitsAtHighQuote: value / range.high,
+        nominalUnitGap: value / range.low - value / range.high,
+      } : {}),
+      volume,
     };
   }
 
   function assess(alert, amount = 10000) {
     const value = budget(amount);
     const range = quoteRange(alert && (alert.tokens || alert.representations));
-    const metrics = capitalMetrics(range, value);
+    const metrics = capitalMetrics(range, value, alert && (alert.tokens || alert.representations));
     const tokenCount = Number(alert && alert.token_count) || 0;
     const state = alert && alert.state;
 
@@ -123,5 +139,5 @@
     };
   }
 
-  return { budget, quoteRange, quoteBand, capitalMetrics, assess };
+  return { budget, quoteRange, quoteBand, volumeMetrics, capitalMetrics, assess };
 });

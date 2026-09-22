@@ -65,7 +65,7 @@ python3 bell/verify_public_browser.py --channel chrome
 
 The check opens the public page, waits for the receipt, searches Silver and Marvell, confirms
 that both UI states mirror the published receipt (`DO NOT SHORTLIST` and `FACTS OPEN`),
-updates the Silver capital check with a $25,000 scenario, downloads the decision brief, verifies the shareable case-link action, and checks
+updates the Silver capital check with a $25,000 scenario, verifies the amount-to-reported-volume context, downloads the decision brief, verifies the shareable case-link action, and checks
 that the reference can be saved to the local watchlist and that the 390px mobile layout has
 no horizontal overflow. It also opens Marvell, selects two observed rows and confirms that
 the factual side-by-side keeps the no-ranking boundary. It also verifies a `SINGLE
