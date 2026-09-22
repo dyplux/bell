@@ -503,6 +503,12 @@
     const issuerTotals = [...issuerValues.values()].map(item => item.value);
     const reportedValue = issuerTotals.reduce((sum, value) => sum + value, 0);
     const topFive = issuerTotals.sort((a, b) => b - a).slice(0, 5).reduce((sum, value) => sum + value, 0);
+    const populationSignal = byId('hero-population-signal');
+    if (populationSignal && reportedValue > 0) {
+      populationSignal.hidden = false;
+      byId('hero-population-headline').textContent = `${(topFive / reportedValue * 100).toFixed(1)}% of positive reported value sits with five issuer labels`;
+      byId('hero-population-copy').textContent = `${positiveRows.toLocaleString()} priced token rows · ${nonPositiveRows.toLocaleString()} rows without positive market cap · not a legal issuer or backing measure`;
+    }
     proof.textContent = reportedValue > 0
       ? `The top five issuer labels hold ${(topFive / reportedValue * 100).toFixed(1)}% of positive reported market cap across ${positiveRows.toLocaleString()} rows. ${nonPositiveRows.toLocaleString()} rows have no positive market-cap field`
       : 'No positive market-cap fields were available for the population concentration check';

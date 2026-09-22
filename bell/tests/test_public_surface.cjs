@@ -52,6 +52,14 @@ test('hero receipt label preserves the live freshness state', () => {
   assert.match(integrity, /storedObservations\.at\(-1\)\?\.observed_at/);
 });
 
+test('first case exposes the population concentration lens from the receipt', () => {
+  const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
+  assert.match(page, /id="hero-population-signal"/);
+  assert.match(integrity, /hero-population-headline/);
+  assert.match(integrity, /five issuer labels/);
+  assert.match(integrity, /not a legal issuer or backing measure/);
+});
+
 test('case results can be shared as stable single-URL deep links', () => {
   const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
   assert.match(integrity, /searchParams\.set\('reference', query\)/);
