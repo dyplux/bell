@@ -12,7 +12,7 @@ const catalogue = JSON.parse(fs.readFileSync(path.join(site, 'catalog.json'), 'u
 test('public page exposes the single-URL RWA discovery and evidence path', () => {
   assert.match(page, /id="explorer"/);
   assert.match(page, /href="#explorer">Explore RWA/);
-  assert.match(page, /src="explorer\.js"/);
+  assert.match(page, /src="explorer\.js(?:\?v=[^"]+)?"/);
   assert.match(page, /href="\/api\/integrity"/);
   assert.match(page, /separate from live receipt/);
   assert.match(page, /id="explorer-map-freshness"/);
