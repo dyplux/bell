@@ -40,6 +40,9 @@ CMC provides the discovery surfaces. Bell adds the join logic, contradiction
 checks, missing-versus-zero handling, next action and replayable evidence path.
 The result is a research handoff rather than another RWA leaderboard: the user
 gets a decision state, the rows that produced it and the next unresolved check.
+Each selected case can also be exported as a compact `bell.case-receipt.v1`
+JSON containing the exact rows, signals, source fingerprints and stable-ID join
+method used for that decision.
 
 ## Run locally
 
