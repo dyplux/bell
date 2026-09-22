@@ -30,6 +30,7 @@ REQUIRED_FILES = (
     "bell/site/catalog.json",
     "bell/site/proof/rwa-surface-integrity-latest-replay-2026-09-21.json",
     "bell/site/proof/rwa-surface-integrity-inputs-2026-09-21.json",
+    "bell/site/proof/rule-boundary-verifier-2026-09-22.json",
     "bell/verify_integrity_receipt.py",
     "bell/verify_public_surface.py",
     "bell/verify_rule_boundaries.py",

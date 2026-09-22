@@ -86,9 +86,10 @@ The decision boundaries can also be checked without a browser, network or API ke
 python3 bell/verify_rule_boundaries.py
 ```
 
-This executable specification covers the inclusive 10x denomination stop, the
-9.99x warning boundary, the single-representation no-ranking route, and the
-resolved versus unresolved `crypto_id` and chain-contract identity join.
+This executable specification covers the 1.99x and 2x dispersion boundary, the
+inclusive 10x denomination stop, the 9.99x warning boundary, the
+single-representation no-ranking route, missing-value handling, and the resolved
+versus unresolved `crypto_id` and chain-contract identity join.
 
 Before recording the final demo, run `python3 bell/prepare_demo.py --reference
 Silver`. It reads the current public receipt and prints the timestamp, route,

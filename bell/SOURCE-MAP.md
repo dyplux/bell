@@ -66,12 +66,14 @@ redemption, custody, eligibility or execution.
 `verify_rule_boundaries.py` is a credential-free executable specification of the
 critical decision edges. It proves that 9.99x remains an investigation warning,
 that 10x is an inclusive comparison stop, that a single representation does not
-produce a wrapper ranking, and that unresolved versus resolved `crypto_id` joins
-remain visible, including chain and contract fields.
+produce a wrapper ranking, that missing or zero prices do not create a ratio, and
+that unresolved versus resolved `crypto_id` joins remain visible, including
+chain and contract fields.
 
 ## What is evidence and what is not
 
 - `site/proof/` contains dated normalized receipts and replay inputs
+- `site/proof/rule-boundary-verifier-2026-09-22.json` is the checked-in output of the credential-free rule harness
 - `/api/integrity` is the current published population observation
 - the browser and Python checks prove the public workflow and deterministic transformations
 - upstream CMC correctness and real-world legal, custody or execution claims remain outside this build

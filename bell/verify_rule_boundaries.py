@@ -34,6 +34,20 @@ def run() -> list[dict[str, Any]]:
 
     result = scan(*payloads(
         {"crypto_id": 1, "symbol": "LOW", "price": 1, "market_cap": 10, "volume_24h": 1},
+        {"crypto_id": 2, "symbol": "HIGH", "price": 1.99, "market_cap": 10, "volume_24h": 1},
+    ))
+    codes = {signal["code"] for signal in first(result)["signals"]}
+    checks.append({"name": "1.99x stays below the dispersion rule", "pass": "PRICE_DISPERSION" not in codes and "PRICE_DENOMINATION_BREAK" not in codes})
+
+    result = scan(*payloads(
+        {"crypto_id": 1, "symbol": "LOW", "price": 1, "market_cap": 10, "volume_24h": 1},
+        {"crypto_id": 2, "symbol": "HIGH", "price": 2, "market_cap": 10, "volume_24h": 1},
+    ))
+    codes = {signal["code"] for signal in first(result)["signals"]}
+    checks.append({"name": "2x is an inclusive investigation warning", "pass": "PRICE_DISPERSION" in codes and "PRICE_DENOMINATION_BREAK" not in codes})
+
+    result = scan(*payloads(
+        {"crypto_id": 1, "symbol": "LOW", "price": 1, "market_cap": 10, "volume_24h": 1},
         {"crypto_id": 2, "symbol": "HIGH", "price": 9.99, "market_cap": 10, "volume_24h": 1},
         tradfi_markets=[{}],
     ))
@@ -94,6 +108,13 @@ def run() -> list[dict[str, Any]]:
         and resolved_token["platforms"][0]["contract_address"] == "0xabc"
         and resolved_token["crypto_info_resolved"] is True,
     })
+
+    result = scan(*payloads(
+        {"crypto_id": 1, "symbol": "MISSING", "price": None, "market_cap": 10, "volume_24h": 1},
+        {"crypto_id": 2, "symbol": "ZERO", "price": 0, "market_cap": 10, "volume_24h": 1},
+    ))
+    codes = {signal["code"] for signal in first(result)["signals"]}
+    checks.append({"name": "missing and zero prices do not fabricate a ratio", "pass": "MARKET_FIELDS_MISSING" in codes and "PRICE_DISPERSION" not in codes and "PRICE_DENOMINATION_BREAK" not in codes})
     return checks
 
 

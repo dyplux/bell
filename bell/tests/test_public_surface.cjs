@@ -23,8 +23,14 @@ test('public release includes a credential-free executable rule specification', 
   const verifier = fs.readFileSync(path.resolve(__dirname, '../verify_rule_boundaries.py'), 'utf8');
   assert.match(verifier, /bell\.rule_boundary_verifier\.v1/);
   assert.match(verifier, /9\.99x stays a warning/);
+  assert.match(verifier, /1\.99x stays below the dispersion rule/);
+  assert.match(verifier, /2x is an inclusive investigation warning/);
   assert.match(verifier, /10x is an inclusive critical stop/);
+  assert.match(verifier, /missing and zero prices do not fabricate a ratio/);
   assert.match(verifier, /resolved crypto identity exposes chain and contract/);
+  const receipt = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../site/proof/rule-boundary-verifier-2026-09-22.json'), 'utf8'));
+  assert.equal(receipt.schema_version, 'bell.rule_boundary_verifier.v1');
+  assert.equal(receipt.checks.every(check => check.pass), true);
 });
 
 test('public page carries a shareable social preview', () => {

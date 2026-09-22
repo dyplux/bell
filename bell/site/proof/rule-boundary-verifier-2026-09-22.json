@@ -1,0 +1,19 @@
+{
+  "schema_version": "bell.rule_boundary_verifier.v1",
+  "observed_at": "2026-09-22T06:55:00Z",
+  "credential_free": true,
+  "checks": [
+    {"name": "1.99x stays below the dispersion rule", "pass": true},
+    {"name": "2x is an inclusive investigation warning", "pass": true},
+    {"name": "9.99x stays a warning", "pass": true},
+    {"name": "10x is an inclusive critical stop", "pass": true},
+    {"name": "single representation does not become a comparison", "pass": true},
+    {"name": "unresolved crypto identity stays visible", "pass": true},
+    {"name": "resolved crypto identity exposes chain and contract", "pass": true},
+    {"name": "missing and zero prices do not fabricate a ratio", "pass": true}
+  ],
+  "limits": [
+    "These are deterministic rule and transformation checks, not proof of backing, liquidity, legal rights or execution",
+    "The fixtures do not replace live CMC collection or the published receipt"
+  ]
+}
