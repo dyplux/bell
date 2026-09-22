@@ -52,6 +52,15 @@ test('case results can be shared as stable single-URL deep links', () => {
   assert.match(integrity, /const matchLabel = exact/);
 });
 
+test('search result exposes the observed quote endpoints before the evidence table', () => {
+  const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
+  const visual = fs.readFileSync(path.join(site, 'visual-overrides.css'), 'utf8');
+  assert.match(integrity, /function observedQuoteEndpoints/);
+  assert.match(integrity, /OBSERVED QUOTE ENDPOINTS/);
+  assert.match(integrity, /not a discount, backing, liquidity or executable spread/);
+  assert.match(visual, /\.search-evidence-grid/);
+});
+
 test('a query outside the live receipt is routed to the complete RWA map', () => {
   const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
   const explorer = fs.readFileSync(path.join(site, 'explorer.js'), 'utf8');

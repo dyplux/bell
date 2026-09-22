@@ -462,6 +462,21 @@
     </section>`;
   }
 
+  function observedQuoteEndpoints(item) {
+    const tokens = (item?.tokens || item?.representations || [])
+      .map(token => ({
+        ...token,
+        numericPrice: numericValue(token?.price),
+      }))
+      .filter(token => token.numericPrice !== null && token.numericPrice > 0);
+    if (tokens.length < 2) return '';
+    const low = tokens.reduce((current, token) => token.numericPrice < current.numericPrice ? token : current);
+    const high = tokens.reduce((current, token) => token.numericPrice > current.numericPrice ? token : current);
+    const ratio = high.numericPrice / low.numericPrice;
+    const row = (label, token) => `<div><span>${label} · ${escapeHTML(token.symbol || token.name || 'unlabelled')}</span><small>${escapeHTML(token.issuer_name || token.issuer_catalogue_name || 'issuer not resolved')}</small><strong>${formatNumber(token.numericPrice)}</strong></div>`;
+    return `<section class="search-evidence" data-search-evidence><div class="search-evidence-head"><span>OBSERVED QUOTE ENDPOINTS</span><b>${formatNumber(ratio)}×</b></div><div class="search-evidence-grid">${row('LOW', low)}${row('HIGH', high)}</div><small>CMC quote rows in this receipt · not a discount, backing, liquidity or executable spread</small></section>`;
+  }
+
   function referenceConcentrationPanel(alert) {
     const tokens = alert?.tokens || alert?.representations || [];
     if (tokens.length < 2) {
@@ -779,7 +794,7 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     result.hidden = false;
     const exact = [item.name, item.symbol, item.rwa_id].some(value => String(value || '').trim().toLowerCase() === normalizedQuery);
     const matchLabel = exact ? `${matches.filter(candidate => [candidate.name, candidate.symbol, candidate.rwa_id].some(value => String(value || '').trim().toLowerCase() === normalizedQuery)).length || 1} MATCH · EXACT MATCH` : `${matches.length} MATCH${matches.length === 1 ? '' : 'ES'} · SHOWING FIRST`;
-    result.innerHTML = `<span>SEARCHED REFERENCE · ${matchLabel}</span><strong>${escapeHTML(item.name || item.symbol || 'Reference')} · ${escapeHTML(item.symbol || 'RWA')}</strong><p>${formatNumber(item.token_count || 0)} representations · ${formatNumber(item.issuer_count || 0)} issuers · <b>${state}</b></p><p>${escapeHTML(next)}</p>${capitalPanel(item)}<a href="#monitor">Inspect this evidence ↓</a>`;
+    result.innerHTML = `<span>SEARCHED REFERENCE · ${matchLabel}</span><strong>${escapeHTML(item.name || item.symbol || 'Reference')} · ${escapeHTML(item.symbol || 'RWA')}</strong><p>${formatNumber(item.token_count || 0)} representations · ${formatNumber(item.issuer_count || 0)} issuers · <b>${state}</b></p><p>${escapeHTML(next)}</p>${capitalPanel(item)}${observedQuoteEndpoints(item)}<a href="#monitor">Inspect this evidence ↓</a>`;
   }
 
   function searchFromHero(event) {
