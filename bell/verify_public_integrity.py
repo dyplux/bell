@@ -35,6 +35,19 @@ def verify(url: str) -> dict:
     alert_index = payload.get("alert_index")
     if not isinstance(alert_index, list) or len(alert_index) < len(alerts):
         raise RuntimeError("receipt has no population alert index")
+    population = payload.get("population_attribution") or {}
+    required_population = ("token_rows", "positive_market_cap_rows", "missing_market_cap_rows", "zero_or_non_positive_market_cap_rows", "concentration", "asset_level_reconciliation")
+    missing_population = [key for key in required_population if key not in population]
+    if missing_population:
+        raise RuntimeError(f"population attribution missing: {', '.join(missing_population)}")
+    concentration = population["concentration"]
+    for key in ("top_1_share", "top_3_share", "top_5_share", "hhi", "effective_issuer_count"):
+        if not isinstance(concentration.get(key), (int, float)):
+            raise RuntimeError(f"population concentration is missing {key}")
+    reconciliation = population["asset_level_reconciliation"]
+    for key in ("matched_reference_rows", "exact_within_usd_cent", "non_exact_rows", "residual_sum"):
+        if not isinstance(reconciliation.get(key), (int, float)):
+            raise RuntimeError(f"population reconciliation is missing {key}")
     first_decision = alerts[0].get("decision") or {}
     if not first_decision.get("label") or not first_decision.get("allocation_effect"):
         raise RuntimeError("alert decision is missing its operational effect")
@@ -45,6 +58,13 @@ def verify(url: str) -> dict:
         "publication": publication,
         "states": states,
         "alert_index": len(alert_index),
+        "population_attribution": {
+            "token_rows": population["token_rows"],
+            "positive_market_cap_rows": population["positive_market_cap_rows"],
+            "top_5_share": concentration["top_5_share"],
+            "hhi": concentration["hhi"],
+            "matched_reference_rows": reconciliation["matched_reference_rows"],
+        },
         "first_alert": {
             "name": alerts[0].get("name"),
             "state": alerts[0].get("state"),

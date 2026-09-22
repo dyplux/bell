@@ -75,6 +75,31 @@ class RwaIntegrityTests(unittest.TestCase):
         self.assertEqual(decision["label"], "DO NOT SELECT A WRAPPER")
         self.assertIn("NO WRAPPER SELECTED", decision["allocation_effect"])
 
+    def test_population_attribution_reconciles_rows_and_keeps_missing_values_visible(self):
+        base = {"data": {"rwa_assets": [{"rwa_id": 1, "has_tokens": True}]}}
+        list_payload = {"data": {"rwa_assets": [{"rwa_id": 1, "tokenized_market_cap": 100.0}]}}
+        quotes = {"data": {"rwa_assets": [{
+            "rwa_id": 1,
+            "name": "Gold",
+            "asset_type": "commodity",
+            "tokens": [
+                {"crypto_id": 1, "issuer_id": "issuer-a", "issuer_name": "Issuer A", "market_cap": 60.0},
+                {"crypto_id": 2, "issuer_id": "issuer-b", "issuer_name": "Issuer B", "market_cap": 40.0},
+                {"crypto_id": 3, "issuer_id": "issuer-c", "issuer_name": "Issuer C", "market_cap": None},
+                {"crypto_id": 4, "issuer_id": "issuer-c", "issuer_name": "Issuer C", "market_cap": 0.0},
+            ],
+            "tradfi_markets": [],
+        }]}}
+        result = scan(base, list_payload, quotes)
+        population = result["population_attribution"]
+        self.assertEqual(population["token_rows"], 4)
+        self.assertEqual(population["positive_market_cap_rows"], 2)
+        self.assertEqual(population["missing_market_cap_rows"], 1)
+        self.assertEqual(population["zero_or_non_positive_market_cap_rows"], 1)
+        self.assertEqual(population["asset_level_reconciliation"]["exact_within_usd_cent"], 1)
+        self.assertEqual(population["concentration"]["hhi"], 5200.0)
+        self.assertEqual(population["concentration"]["effective_issuer_count"], 1.923076923076923)
+
     def test_rule_boundaries_are_inclusive_and_missing_values_stay_missing(self):
         base = {"data": {"rwa_assets": [{"rwa_id": 1, "has_tokens": True}]}}
         quotes = {"data": {"rwa_assets": [{

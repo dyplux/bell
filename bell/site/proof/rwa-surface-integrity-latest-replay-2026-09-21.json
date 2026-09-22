@@ -168,6 +168,124 @@
       "PRICE_DISPERSION": 4
     }
   },
+  "population_attribution": {
+    "schema_version": "bell.rwa_population_attribution.v1",
+    "basis": "positive token-level market_cap fields returned by CMC quotes/latest; missing and zero values remain separate",
+    "token_rows": 1435,
+    "positive_market_cap_rows": 586,
+    "missing_market_cap_rows": 670,
+    "zero_or_non_positive_market_cap_rows": 179,
+    "issuer_labels_with_positive_value": 15,
+    "positive_reported_value": 7560949176.990001,
+    "concentration": {
+      "top_1_share": 0.360118835432241,
+      "top_3_share": 0.7297982944274587,
+      "top_5_share": 0.9423139295172943,
+      "hhi": 2296.478591708829,
+      "effective_issuer_count": 4.354493020794466
+    },
+    "top_issuers": [
+      {
+        "issuer_id": "68904e9cabae9b5b9fb358ac",
+        "issuer_name": "Tether Holdings",
+        "positive_market_cap": 2722840212.38,
+        "priced_token_rows": 2,
+        "share_of_positive_reported_value": 0.360118835432241
+      },
+      {
+        "issuer_id": "68904c24abae9b5b9fb35815",
+        "issuer_name": "Paxos",
+        "positive_market_cap": 1885154231.7,
+        "priced_token_rows": 1,
+        "share_of_positive_reported_value": 0.24932772163540404
+      },
+      {
+        "issuer_id": "688ca4ccabae9b5b9fb3167a",
+        "issuer_name": "Ondo Assets",
+        "positive_market_cap": 909973369.5399996,
+        "priced_token_rows": 210,
+        "share_of_positive_reported_value": 0.12035173735981364
+      },
+      {
+        "issuer_id": "6a2aed5097c45356b1a5f710",
+        "issuer_name": "bStocks",
+        "positive_market_cap": 809520928.7099999,
+        "priced_token_rows": 77,
+        "share_of_positive_reported_value": 0.1070660455136492
+      },
+      {
+        "issuer_id": "6878977dcbbf471de3366e85",
+        "issuer_name": "Backed Assets",
+        "positive_market_cap": 797298987.5200001,
+        "priced_token_rows": 121,
+        "share_of_positive_reported_value": 0.10544958957618643
+      },
+      {
+        "issuer_id": "6a43600c282e7240b76c8bbb",
+        "issuer_name": "Reality",
+        "positive_market_cap": 133371256.27999996,
+        "priced_token_rows": 71,
+        "share_of_positive_reported_value": 0.017639485884376065
+      },
+      {
+        "issuer_id": "6a465832fbe3004b1a0ea2dd",
+        "issuer_name": "Robinhood",
+        "positive_market_cap": 124867256.64999998,
+        "priced_token_rows": 91,
+        "share_of_positive_reported_value": 0.016514759420682867
+      },
+      {
+        "issuer_id": "6a436076282e7240b76c8bf9",
+        "issuer_name": "Republic",
+        "positive_market_cap": 72063152.76,
+        "priced_token_rows": 1,
+        "share_of_positive_reported_value": 0.00953096642671631
+      },
+      {
+        "issuer_id": "68905a7babae9b5b9fb35a8d",
+        "issuer_name": "Matrixdock",
+        "positive_market_cap": 47551587.63,
+        "priced_token_rows": 1,
+        "share_of_positive_reported_value": 0.006289102930980181
+      },
+      {
+        "issuer_id": "68904cceabae9b5b9fb35839",
+        "issuer_name": "Comtech Gold",
+        "positive_market_cap": 19523710.68,
+        "priced_token_rows": 1,
+        "share_of_positive_reported_value": 0.0025821772138630286
+      }
+    ],
+    "categories": {
+      "commodity": {
+        "references": 4,
+        "token_rows": 14,
+        "positive_market_cap": 4680866028.9800005
+      },
+      "etf": {
+        "references": 98,
+        "token_rows": 177,
+        "positive_market_cap": 757849369.1400001
+      },
+      "stock": {
+        "references": 689,
+        "token_rows": 1244,
+        "positive_market_cap": 2122233778.8700006
+      }
+    },
+    "asset_level_reconciliation": {
+      "matched_reference_rows": 314,
+      "exact_within_usd_cent": 57,
+      "non_exact_rows": 257,
+      "asset_market_cap_sum": 7452824497.057115,
+      "token_rows_market_cap_sum": 7455055984.740004,
+      "residual_sum": -2231487.68289307,
+      "absolute_residual_sum": 2714064.6054042135,
+      "max_absolute_residual": 1211752.6499156952,
+      "tolerance_usd": 0.01,
+      "note": "This is a surface reconciliation, not proof of backing, reserves, redemption or execution."
+    }
+  },
   "alert_index": [
     {
       "rwa_id": 5,

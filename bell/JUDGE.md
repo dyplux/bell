@@ -54,11 +54,14 @@ current submission and does not require an API key.
    or a wrapper ranking.
 6. Read `RECEIPT TRAIL` in the live case, then open the publication-history chart lower on
    the page to see how the population state changed across dated summaries.
-7. Open `Inspect this evidence` to see the published receipt, rule evidence, identity/unit/
+7. Read `VALUE AND COVERAGE` below the population charts. It shows issuer concentration,
+   missing market-cap coverage and a surface reconciliation between token rows and CMC's
+   asset-level tokenized market-cap field. It is a descriptive cross-check, not a backing claim.
+8. Open `Inspect this evidence` to see the published receipt, rule evidence, identity/unit/
    market checks, token rows and the resolution route. The case card can also export a
    compact `bell.case-receipt.v1` JSON containing the selected rows, signals, source
    fingerprints and join method.
-8. Open `Explore RWA` and search a reference without a published case. Bell routes it to the
+9. Open `Explore RWA` and search a reference without a published case. Bell routes it to the
    complete map instead of inventing a clean result.
 
 On desktop the search lands on the full decision card, including the capital check and issuer

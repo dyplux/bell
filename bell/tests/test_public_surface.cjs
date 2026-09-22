@@ -58,6 +58,8 @@ test('first case exposes the population concentration lens from the receipt', ()
   assert.match(integrity, /hero-population-headline/);
   assert.match(integrity, /five issuer labels/);
   assert.match(integrity, /not a legal issuer or backing measure/);
+  assert.match(integrity, /SURFACE RECONCILIATION/);
+  assert.match(integrity, /tokenized_market_cap/);
 });
 
 test('case results can be shared as stable single-URL deep links', () => {

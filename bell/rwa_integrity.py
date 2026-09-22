@@ -282,6 +282,108 @@ def asset_scan(asset: dict, issuer_lookup: dict | None = None, crypto_lookup: di
     }
 
 
+def population_attribution(list_rows: list[dict], assets: list[dict]) -> dict:
+    """Reconcile the token population against CMC's asset-level totals.
+
+    This is deliberately a descriptive attribution, not a safety score.  It
+    keeps missing market caps out of the denominator, attributes positive
+    token rows to stable issuer IDs where available, and compares the sum of
+    token rows with the asset-list ``tokenized_market_cap`` field when both
+    surfaces contain the same RWA ID.
+    """
+    asset_by_id = {}
+    for row in list_rows:
+        rwa_id = row.get("rwa_id")
+        if rwa_id is not None and rwa_id not in asset_by_id:
+            asset_by_id[str(rwa_id)] = row
+
+    issuer_totals = {}
+    token_rows = positive_rows = missing_rows = zero_rows = 0
+    category_rows = {}
+    reconciliation_rows = []
+    for asset in assets:
+        category = asset.get("asset_type") or "unknown"
+        category_entry = category_rows.setdefault(category, {"references": 0, "token_rows": 0, "positive_market_cap": 0.0})
+        category_entry["references"] += 1
+        tokens = asset.get("tokens") or []
+        category_entry["token_rows"] += len(tokens)
+        token_sum = 0.0
+        for token in tokens:
+            token_rows += 1
+            cap = number(token.get("market_cap"))
+            if cap is None:
+                missing_rows += 1
+                continue
+            if cap <= 0:
+                zero_rows += 1
+                continue
+            value = float(cap)
+            positive_rows += 1
+            token_sum += value
+            category_entry["positive_market_cap"] += value
+            issuer_key = str(token.get("issuer_id") or token.get("issuer_name") or "unlinked issuer label")
+            issuer = issuer_totals.setdefault(issuer_key, {
+                "issuer_id": token.get("issuer_id"),
+                "issuer_name": token.get("issuer_name") or "unlinked issuer label",
+                "positive_market_cap": 0.0,
+                "priced_token_rows": 0,
+            })
+            issuer["positive_market_cap"] += value
+            issuer["priced_token_rows"] += 1
+
+        asset_row = asset_by_id.get(str(asset.get("rwa_id")))
+        asset_cap = number(asset_row.get("tokenized_market_cap")) if asset_row else None
+        if asset_row and asset_cap is not None and asset_cap >= 0:
+            residual = float(asset_cap) - token_sum
+            reconciliation_rows.append({
+                "rwa_id": asset.get("rwa_id"),
+                "name": asset.get("name"),
+                "asset_market_cap": float(asset_cap),
+                "token_rows_market_cap": token_sum,
+                "residual": residual,
+            })
+
+    reported_value = sum(item["positive_market_cap"] for item in issuer_totals.values())
+    issuers = sorted(issuer_totals.values(), key=lambda item: item["positive_market_cap"], reverse=True)
+    shares = [item["positive_market_cap"] / reported_value for item in issuers] if reported_value else []
+    for item, share in zip(issuers, shares):
+        item["share_of_positive_reported_value"] = share
+    hhi = sum((share * 100) ** 2 for share in shares)
+    reconciliation_abs = [abs(row["residual"]) for row in reconciliation_rows]
+    exact_rows = sum(1 for residual in reconciliation_abs if residual <= 0.01)
+    return {
+        "schema_version": "bell.rwa_population_attribution.v1",
+        "basis": "positive token-level market_cap fields returned by CMC quotes/latest; missing and zero values remain separate",
+        "token_rows": token_rows,
+        "positive_market_cap_rows": positive_rows,
+        "missing_market_cap_rows": missing_rows,
+        "zero_or_non_positive_market_cap_rows": zero_rows,
+        "issuer_labels_with_positive_value": len(issuers),
+        "positive_reported_value": reported_value,
+        "concentration": {
+            "top_1_share": sum(shares[:1]),
+            "top_3_share": sum(shares[:3]),
+            "top_5_share": sum(shares[:5]),
+            "hhi": hhi,
+            "effective_issuer_count": (1 / sum(share ** 2 for share in shares)) if shares else 0.0,
+        },
+        "top_issuers": issuers[:10],
+        "categories": {key: category_rows[key] for key in sorted(category_rows)},
+        "asset_level_reconciliation": {
+            "matched_reference_rows": len(reconciliation_rows),
+            "exact_within_usd_cent": exact_rows,
+            "non_exact_rows": len(reconciliation_rows) - exact_rows,
+            "asset_market_cap_sum": sum(row["asset_market_cap"] for row in reconciliation_rows),
+            "token_rows_market_cap_sum": sum(row["token_rows_market_cap"] for row in reconciliation_rows),
+            "residual_sum": sum(row["residual"] for row in reconciliation_rows),
+            "absolute_residual_sum": sum(reconciliation_abs),
+            "max_absolute_residual": max(reconciliation_abs, default=0.0),
+            "tolerance_usd": 0.01,
+            "note": "This is a surface reconciliation, not proof of backing, reserves, redemption or execution.",
+        },
+    }
+
+
 def scan(map_payload: dict, list_payload: dict, quotes_payload: dict, info_payload: dict | None = None, issuers_payload: dict | None = None, observed_at: str | None = None, crypto_info_payload: dict | None = None) -> dict:
     required_surfaces = {"map": map_payload, "asset_list": list_payload, "quotes": quotes_payload}
     input_issues = [name for name, payload in required_surfaces.items() if not surface_has_records(payload)]
@@ -407,6 +509,7 @@ def scan(map_payload: dict, list_payload: dict, quotes_payload: dict, info_paylo
             "states": {"do_not_compare": len(critical), "investigate": len(warnings), "no_flags": len(assets) - len(critical) - len(warnings)},
             "signals": dict(signal_counts),
         },
+        "population_attribution": population_attribution(list_rows, assets),
         "alert_index": alert_index,
         "alerts": alerts[:50],
         "issuer_catalogue": issuer_catalogue,

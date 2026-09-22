@@ -14,6 +14,7 @@ credential-free proof for a reviewer who wants to inspect the build quickly.
 ## Population receipt path
 
 - `rwa_integrity.py` collects and joins the authenticated CMC surfaces
+- `population_attribution()` reconciles positive token-level market caps with CMC's asset-level `tokenized_market_cap` field and computes issuer concentration without converting missing values to zero
 - `integrity_publisher.py` publishes only the normalized credential-free receipt
 - `verify_integrity_receipt.py` recomputes the public population summary from committed normalized inputs
 - `verify_catalogue_receipt.py` checks the complete-map catalogue refresh
@@ -33,6 +34,12 @@ credential-free proof for a reviewer who wants to inspect the build quickly.
 | CEX and DEX quote context | `/v2/cryptocurrency/quotes/latest` |
 
 The public page does not call CMC directly and never receives the API key.
+
+The population attribution is descriptive rather than a score. It reports the
+positive token rows, missing and zero rows, top issuer-label shares, HHI and
+effective issuer count, then reconciles matched `rwa_id` rows across the quote
+and asset-list surfaces. It does not prove backing, reserves, redemption,
+legal liability, liquidity or execution.
 
 ## Reproduce the proof without credentials
 
