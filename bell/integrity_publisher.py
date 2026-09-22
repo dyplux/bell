@@ -120,6 +120,18 @@ def publish_remote(receipt: dict) -> dict:
     return {"remote_published": True, "remote": endpoint}
 
 
+def add_public_provenance(receipt: dict) -> None:
+    """Make the live-versus-replay boundary machine-readable."""
+    receipt["collection_provenance"] = {
+        "mode": "server_side_authenticated_collection",
+        "credential_free": True,
+        "api_key_published": False,
+        "transport_headers_published": False,
+        "replay_index_url": "/proof/rwa-surface-integrity-replay-index.md",
+        "replay_package_note": "The live receipt is current; the linked replay package is a dated credential-free recomputation artifact.",
+    }
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Publish the current CMC RWA integrity receipt")
     parser.add_argument("--output", type=Path, help="local receipt path; defaults to BELL_STORE_DIR/integrity/latest.json")
@@ -134,6 +146,7 @@ def main() -> int:
     payloads = collect_live(key, surface_times)
     map_payload, list_payload, quotes_payload, info_payload, issuers_payload, crypto_info_payload = payloads
     receipt = scan(map_payload, list_payload, quotes_payload, info_payload, issuers_payload, observed_at=observed_at, crypto_info_payload=crypto_info_payload)
+    add_public_provenance(receipt)
     output = args.output or Path(os.environ.get("BELL_STORE_DIR", str(Path(__file__).resolve().parent / "runtime"))) / "integrity/latest.json"
     write_local(receipt, output)
     if args.inputs_output:
