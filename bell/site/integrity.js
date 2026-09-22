@@ -716,19 +716,40 @@
     panel.querySelector('[data-capital-note]').textContent = assessment.note;
   }
 
+  // When the gate clears a reference, the receipt carries the comparison it
+  // performed. Render it: a monitor that only ever refuses is a gate with no
+  // door. The unresolved warnings ride along so this is never read as a clean
+  // bill of health.
+  function renderComparison(item) {
+    const c = item.comparison;
+    if (!c || !Array.isArray(c.routes) || c.routes.length < 2) return '';
+    const rows = c.routes.slice(0, 6).map(route => {
+      const share = Number.isFinite(route.volume_share) ? `${(route.volume_share * 100).toFixed(1)}%` : '--';
+      const premium = Number(route.premium_to_cheapest_bps || 0);
+      return `<tr><td>${escapeHTML(route.symbol || '')}</td><td>${escapeHTML(route.issuer_name || '')}</td><td class="num">${formatNumber(route.price)}</td><td class="num">${premium === 0 ? 'cheapest' : `+${premium.toFixed(1)} bps`}</td><td class="num">${share}</td></tr>`;
+    }).join('');
+    const fill = c.cheapest_is_deepest
+      ? 'The cheapest route is also the one carrying volume.'
+      : `The cheapest route is not the deepest: ${escapeHTML(c.deepest.symbol || '')} carries more 24h volume.`;
+    const open = (c.unresolved || []).length
+      ? `<p class="comparison-open"><span>STILL OPEN</span> ${escapeHTML((c.unresolved || []).join(' · '))}. The route filter drops derivatives, keys on the token id rather than the ticker, and excludes rows without both a price and traded volume, so these do not block the comparison - but they are not resolved.</p>`
+      : '';
+    return `<div class="comparison-block"><div class="comparison-head"><span>COMPARABLE</span><strong>${Number(c.spread_bps).toFixed(1)} bps</strong><small>${c.route_count} tradable representations</small></div><p class="comparison-fill">${fill}</p><table class="comparison-table"><thead><tr><th>route</th><th>issuer</th><th class="num">price</th><th class="num">vs cheapest</th><th class="num">share of volume</th></tr></thead><tbody>${rows}</tbody></table>${open}<p class="comparison-limits">A price comparison of the representations CoinMarketCap returned. Backing, redemption, eligibility and custody are not observed here.</p></div>`;
+  }
+
   function renderAlertRow(alert) {
       const labels = alert.signals.filter(signal => signal.severity !== 'info').map(signal => signalLabels[signal.code] || signal.code).slice(0, 3).join(' · ');
       const evidence = alert.signals.filter(signal => signal.severity !== 'info').map(signal => `<div class="evidence-rule"><b>${escapeHTML(signalLabels[signal.code] || signal.code)}</b><p>${escapeHTML(signal.message)}</p><ul>${renderEvidence(signal)}</ul></div>`).join('');
       const stateLabel = alert.state === 'no_flags' ? 'FACTS OPEN' : alert.state === 'do_not_compare' ? 'DO NOT SHORTLIST' : alert.state.replaceAll('_', ' ').toUpperCase();
       const decision = alert.decision || {};
-      return `<article class="alert-row" data-rwa-id="${escapeHTML(alert.rwa_id)}"><div class="alert-name">${escapeHTML(alert.name)}<small>${escapeHTML(alert.symbol)} · ${escapeHTML(alert.asset_type)} · ${alert.issuer_count} issuers</small></div><div class="alert-state ${alert.state === 'investigate' ? 'investigate' : ''}">${escapeHTML(stateLabel)}</div><div class="alert-signals">${escapeHTML(labels)}</div><div class="alert-tokens"><strong>${alert.token_count}</strong><small>representations</small></div><div class="alert-decision"><span>Decision effect</span><b>${escapeHTML(displayDecisionLabel(alert))}</b><p>${escapeHTML(decision.consequence || '')}</p></div><div class="alert-action"><span>Next action</span>${escapeHTML(alert.next_action)}</div><div class="alert-tools">${watchButton(alert)}${briefButton(alert.rwa_id)}</div><details class="alert-details"><summary>Inspect evidence</summary>${evidence}<h4>Representation rows</h4>${renderTokenTable(alert)}</details>${renderWorksheet(alert)}</article>`;
+      return `<article class="alert-row" data-rwa-id="${escapeHTML(alert.rwa_id)}"><div class="alert-name">${escapeHTML(alert.name)}<small>${escapeHTML(alert.symbol)} · ${escapeHTML(alert.asset_type)} · ${alert.issuer_count} issuers</small></div><div class="alert-state ${alert.state === 'investigate' ? 'investigate' : ''}">${escapeHTML(stateLabel)}</div><div class="alert-signals">${escapeHTML(labels)}</div><div class="alert-tokens"><strong>${alert.token_count}</strong><small>representations</small></div><div class="alert-decision"><span>Decision effect</span><b>${escapeHTML(displayDecisionLabel(alert))}</b><p>${escapeHTML(decision.consequence || '')}</p></div><div class="alert-action"><span>Next action</span>${escapeHTML(alert.next_action)}</div>${renderComparison(alert)}<div class="alert-tools">${watchButton(alert)}${briefButton(alert.rwa_id)}</div><details class="alert-details"><summary>Inspect evidence</summary>${evidence}<h4>Representation rows</h4>${renderTokenTable(alert)}</details>${renderWorksheet(alert)}</article>`;
   }
 
   function renderIndexRow(item, detail) {
     if (detail) return renderAlertRow(detail);
     const stateLabel = item.state === 'no_flags' ? 'FACTS OPEN' : item.state === 'do_not_compare' ? 'DO NOT SHORTLIST' : String(item.state || '').replaceAll('_', ' ').toUpperCase();
     const decision = item.decision || {};
-    return `<article class="alert-row compact-row" data-rwa-id="${escapeHTML(item.rwa_id)}"><div class="alert-name">${escapeHTML(item.name)}<small>${escapeHTML(item.symbol)} · ${escapeHTML(item.asset_type)} · ${item.issuer_count || 0} issuers · RWA ${escapeHTML(item.rwa_id)}</small></div><div class="alert-state ${item.state === 'investigate' ? 'investigate' : item.state === 'no_flags' ? 'clear' : ''}">${escapeHTML(stateLabel)}</div><div class="alert-signals">${escapeHTML((item.signal_codes || []).filter(code => code !== 'NO_TRADFI_MARKET').slice(0, 3).map(code => signalLabels[code] || code).join(' · ') || 'No published rule hit')}</div><div class="alert-tokens"><strong>${Number(item.token_count || 0).toLocaleString()}</strong><small>representations</small></div><div class="alert-decision"><span>Decision effect</span><b>${escapeHTML(displayDecisionLabel(item, 'FACTS OPEN'))}</b><p>${escapeHTML(decision.consequence || '')}</p><p class="compact-observation"><span>OBSERVED</span> ${escapeHTML(compactObservation(item))}</p></div><div class="alert-action"><span>Next action</span>${escapeHTML(item.next_action || '')}</div><div class="alert-tools">${watchButton(item)}${briefButton(item.rwa_id)}</div><details class="alert-details"><summary>Inspect representations</summary><p class="compact-note">CMC quote rows observed in this receipt. Bell uses them to route research, not to certify backing, eligibility, liquidity or equivalence.</p><ul class="compact-evidence">${renderCompactEvidence(item)}</ul>${renderTokenTable(item)}</details>${renderWorksheet(item)}</article>`;
+    return `<article class="alert-row compact-row" data-rwa-id="${escapeHTML(item.rwa_id)}"><div class="alert-name">${escapeHTML(item.name)}<small>${escapeHTML(item.symbol)} · ${escapeHTML(item.asset_type)} · ${item.issuer_count || 0} issuers · RWA ${escapeHTML(item.rwa_id)}</small></div><div class="alert-state ${item.state === 'investigate' ? 'investigate' : item.state === 'no_flags' ? 'clear' : ''}">${escapeHTML(stateLabel)}</div><div class="alert-signals">${escapeHTML((item.signal_codes || []).filter(code => code !== 'NO_TRADFI_MARKET').slice(0, 3).map(code => signalLabels[code] || code).join(' · ') || 'No published rule hit')}</div><div class="alert-tokens"><strong>${Number(item.token_count || 0).toLocaleString()}</strong><small>representations</small></div><div class="alert-decision"><span>Decision effect</span><b>${escapeHTML(displayDecisionLabel(item, 'FACTS OPEN'))}</b><p>${escapeHTML(decision.consequence || '')}</p><p class="compact-observation"><span>OBSERVED</span> ${escapeHTML(compactObservation(item))}</p></div><div class="alert-action"><span>Next action</span>${escapeHTML(item.next_action || '')}</div>${renderComparison(item)}<div class="alert-tools">${watchButton(item)}${briefButton(item.rwa_id)}</div><details class="alert-details"><summary>Inspect representations</summary><p class="compact-note">CMC quote rows observed in this receipt. Bell uses them to route research, not to certify backing, eligibility, liquidity or equivalence.</p><ul class="compact-evidence">${renderCompactEvidence(item)}</ul>${renderTokenTable(item)}</details>${renderWorksheet(item)}</article>`;
   }
 
   function markdownBrief(item) {

@@ -300,3 +300,19 @@ footer{max-width:2200px;padding-left:64px;padding-right:64px;font-size:12px}
 .route-legend-item ol{margin:0;padding-left:16px;font-size:11px;color:#8798ab}
 .route-legend-item ol li{margin:2px 0}
 .replay-receipt-note{display:block;margin-top:5px;font:10px var(--font);color:#8798ab;letter-spacing:.03em;max-width:58ch}
+
+/* The affirmative half of the monitor: when the gate clears a reference, the
+   comparison it performed is shown rather than only the refusal. */
+.comparison-block{margin:12px 0 4px;padding:12px 14px;border:1px solid rgba(80,200,140,.28);border-radius:8px;background:rgba(80,200,140,.05)}
+.comparison-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.comparison-head span{font:10px var(--font);letter-spacing:.08em;font-weight:700;color:#5ec89a}
+.comparison-head strong{font-size:16px;font-variant-numeric:tabular-nums;color:#e6edf5}
+.comparison-head small{color:#8798ab;font:10px var(--font)}
+.comparison-fill{margin:6px 0 10px;font-size:12px;color:#c6d2df}
+.comparison-table{width:100%;border-collapse:collapse;font-size:11px}
+.comparison-table th{text-align:left;color:#8798ab;font-weight:600;padding:3px 6px;border-bottom:1px solid rgba(170,184,201,.16)}
+.comparison-table td{padding:3px 6px;border-bottom:1px solid rgba(170,184,201,.07);color:#c6d2df}
+.comparison-table .num{text-align:right;font-variant-numeric:tabular-nums}
+.comparison-open{margin:9px 0 0;font-size:10.5px;color:#d2a45e;line-height:1.5}
+.comparison-open span{font-weight:700;letter-spacing:.06em;margin-right:5px}
+.comparison-limits{margin:7px 0 0;font-size:10px;color:#8798ab;line-height:1.5}

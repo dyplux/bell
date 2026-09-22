@@ -196,6 +196,73 @@ def index_evidence(evidence: dict) -> dict:
     return compact
 
 
+# Above this, the spread is far more likely to be a unit or claim difference the
+# coded rules did not catch than a tradable dislocation. Published as a constant
+# so a reader can disagree with the number without reading the function.
+MAX_PUBLISHABLE_SPREAD_BPS = 2_000
+
+
+def comparable_routes(tokens: list[dict]) -> dict | None:
+    """Rank the tradable representations of one reference.
+
+    Only called for a reference that cleared every rule, so identity, unit and
+    market state are already established. Derivative-labelled rows are excluded
+    because a derivative is not a route into the same exposure, and rows with no
+    price or no traded volume are excluded because an unquoted or untraded row
+    cannot be bought at the price it prints.
+
+    The comparison is a price fact about the rows CMC returned. It is not a
+    statement about backing, redemption, eligibility or custody, none of which
+    this monitor observes.
+    """
+    routes = []
+    for token in tokens:
+        if token.get("is_derivative"):
+            continue
+        price = number(token.get("price"))
+        volume = number(token.get("volume_24h"))
+        if price is None or price <= 0:
+            continue
+        if volume is None or volume <= 0:
+            continue
+        routes.append({
+            "crypto_id": token.get("crypto_id"),
+            "symbol": token.get("symbol"),
+            "name": token.get("name"),
+            "issuer_name": token.get("issuer_name"),
+            "price": float(price),
+            "volume_24h": float(volume),
+        })
+    if len(routes) < 2:
+        return None
+    routes.sort(key=lambda route: route["price"])
+    cheapest, dearest = routes[0], routes[-1]
+    spread_bps = (dearest["price"] / cheapest["price"] - 1) * 10_000
+    # A wrapper spread on the same underlying is a few basis points to a few
+    # hundred. Twenty per cent is not a dislocation anyone can trade; it is an
+    # unmodelled unit or claim difference that the coded rules did not catch.
+    # Publishing it as a route would invite exactly the error this monitor
+    # exists to prevent, so the comparison is withheld rather than shown wide.
+    if spread_bps > MAX_PUBLISHABLE_SPREAD_BPS:
+        return None
+    traded = sum(route["volume_24h"] for route in routes)
+    for route in routes:
+        route["volume_share"] = route["volume_24h"] / traded if traded else 0.0
+        route["premium_to_cheapest_bps"] = (route["price"] / cheapest["price"] - 1) * 10_000
+    deepest = max(routes, key=lambda route: route["volume_24h"])
+    return {
+        "routes": routes,
+        "route_count": len(routes),
+        "cheapest": {"symbol": cheapest["symbol"], "issuer_name": cheapest["issuer_name"], "price": cheapest["price"]},
+        "deepest": {"symbol": deepest["symbol"], "issuer_name": deepest["issuer_name"], "volume_24h": deepest["volume_24h"]},
+        "spread_bps": round(spread_bps, 1),
+        "traded_volume_24h": traded,
+        "cheapest_is_deepest": cheapest["symbol"] == deepest["symbol"],
+        "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
+        "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
+    }
+
+
 def asset_scan(asset: dict, issuer_lookup: dict | None = None, crypto_lookup: dict | None = None, crypto_info_checked: bool = False) -> dict:
     tokens = [token_summary(token, issuer_lookup, crypto_lookup) for token in asset.get("tokens", []) if isinstance(token, dict)]
     prices = [number(token.get("price")) for token in tokens]
@@ -266,6 +333,36 @@ def asset_scan(asset: dict, issuer_lookup: dict | None = None, crypto_lookup: di
             "consequence": "The published rules did not fire; backing, liquidity and legal diligence are still outside this monitor.",
             "allocation_effect": "No allocation status is produced by this monitor.",
         }
+    # Publishing the comparison only for a spotless reference made the answer
+    # unreachable: across a 50-reference live receipt, no reference ever reached
+    # no_flags, so the monitor could refuse 35 cases and affirm none. A gate that
+    # can only ever close is not a gate.
+    #
+    # The distinction that matters is not "did any rule fire" but "does the rule
+    # that fired make these prices incomparable".
+    #
+    #   critical   - identity, unit or market state is contradictory. Never
+    #                compare: that is the error this monitor exists to prevent.
+    #   dispersion - the prices themselves disagree beyond any plausible wrapper
+    #                spread, so the disagreement is the finding. Withhold.
+    #   the rest   - derivative mixing, symbol collision, missing market fields,
+    #                unresolved chain identity. comparable_routes already
+    #                neutralises each of these by construction: it drops
+    #                derivatives, keys on crypto_id rather than the ticker, and
+    #                excludes any representation without both a price and traded
+    #                volume. Withholding on these would be refusing to answer a
+    #                question that has already been made safe to answer.
+    #
+    # Whatever survives is published WITH the unresolved warnings attached, so a
+    # comparison is never presented as a clean bill of health.
+    blocking = {"PRICE_DISPERSION"}
+    residual = [signal for signal in signals if signal["severity"] == "warning"]
+    comparison = None
+    if state != "do_not_compare" and not any(s["code"] in blocking for s in residual):
+        comparison = comparable_routes(tokens)
+        if comparison is not None:
+            comparison["unresolved"] = [s["code"] for s in residual]
+            comparison["published_under"] = state
     return {
         "rwa_id": asset.get("rwa_id"),
         "name": asset.get("name"),
@@ -277,6 +374,7 @@ def asset_scan(asset: dict, issuer_lookup: dict | None = None, crypto_lookup: di
         "signals": signals,
         "next_action": next_action,
         "decision": decision,
+        "comparison": comparison,
         "tokens": tokens,
         "tradfi_market_count": len(asset.get("tradfi_markets") or []),
     }
