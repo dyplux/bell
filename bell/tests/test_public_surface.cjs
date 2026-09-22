@@ -272,3 +272,17 @@ test('a missing measurement says so instead of leaving a number-shaped hole', ()
   assert.match(integrity, /could not be loaded/);
   assert.match(integrity, /make base-rate/);
 });
+
+test('the population list can be filtered to the references that have an answer', () => {
+  const index = fs.readFileSync(path.join(site, 'index.html'), 'utf8');
+  const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
+  const engine = fs.readFileSync(path.resolve(__dirname, '../rwa_integrity.py'), 'utf8');
+  // The affirmative half sat at positions 35-47 of the list, so a reader saw
+  // twelve refusals and left. "comparable" is not a state the scan emits; it is
+  // the outcome a reader wants, and it must be reachable in one click.
+  assert.match(index, /data-filter="comparable"/);
+  assert.match(integrity, /filter === 'comparable'/);
+  assert.match(integrity, /Boolean\(item\.comparison\)/);
+  // The filter is useless unless the index carries the field it filters on.
+  assert.match(engine, /"comparison": asset\.get\("comparison"\)/);
+});

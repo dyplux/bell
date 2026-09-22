@@ -1006,7 +1006,15 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     const normalizedQuery = query.trim().toLowerCase();
     const details = new Map((receipt.alerts || []).map(alert => [String(alert.rwa_id), alert]));
     const candidates = indexed.filter(item => {
-      const stateMatches = filter === 'all' || item.state === filter;
+      // "comparable" is not a state the scan emits, it is the outcome a reader
+      // actually wants: the references whose prices can honestly be set side by
+      // side. Without it the affirmative half sits on page four behind the
+      // refusals, which is where it was.
+      const stateMatches = filter === 'all'
+        ? true
+        : filter === 'comparable'
+          ? Boolean(item.comparison)
+          : item.state === filter;
       const haystack = [item.name, item.symbol, item.asset_type, item.rwa_id].join(' ').toLowerCase();
       return stateMatches && (!normalizedQuery || haystack.includes(normalizedQuery));
     });

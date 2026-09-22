@@ -594,6 +594,10 @@ def scan(map_payload: dict, list_payload: dict, quotes_payload: dict, info_paylo
             # expanded alert rows. These are CMC observations, not diligence
             # or approval, and deliberately exclude issuer/legal documents.
             "representations": asset["tokens"],
+            # Carried on the index so the population list can filter to the
+            # references that actually have an answer. Without it the
+            # affirmative half is only reachable by paging past the refusals.
+            "comparison": asset.get("comparison"),
             "next_action": asset["next_action"],
             "decision": asset["decision"],
         }
