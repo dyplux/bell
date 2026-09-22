@@ -1,0 +1,23 @@
+{
+  "schema_version": "bell.catalog.refresh.v1",
+  "observed_at": "2026-09-22T01:05:58.814929+00:00",
+  "api_timestamp": "2026-09-22T01:05:59.024Z",
+  "endpoint": "/v5/real-world-assets/map",
+  "calls": 79,
+  "all_calls_status_200": true,
+  "total_size": 7811,
+  "asset_types": {
+    "commodity": 4,
+    "etf": 3121,
+    "stock": 4686
+  },
+  "references_with_tokens": 791,
+  "latest_historical_data": "2026-09-22T01:03:00.000Z",
+  "catalog_sha256": "c22256ff3b064371387fa14b4868f3783a516a2aa817d7202857266f6cb8d800",
+  "credential_free_browser_file": "catalog.json",
+  "provenance_artifact": "catalogue-live.js",
+  "limitations": [
+    "This is a discovery-map refresh, not a wrapper integrity scan",
+    "Map presence does not imply a published dossier or sufficient historical coverage"
+  ]
+}

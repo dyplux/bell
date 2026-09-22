@@ -172,6 +172,20 @@ integrity receipt; it does not claim that currencies, government securities or
 real estate were observed in that snapshot. Those categories remain
 schema-compatible future routes rather than fabricated coverage.
 
+## Credential-free map refresh: 22 September 2026
+
+The browser-served `catalog.json` was refreshed from `/v5/real-world-assets/map`
+before this release. The collection made 79 paginated calls, all returned HTTP
+200, and the result contained 7,811 references: 4,686 stocks, 3,121 ETFs and 4
+commodities. Seven hundred and ninety-one references had a mapped token layer.
+The last observed historical-data timestamp in the map was
+`2026-09-22T01:03:00.000Z`.
+
+The machine-readable refresh receipt is
+`site/proof/rwa-catalogue-refresh-2026-09-22.json`. Its SHA-256 binds the
+receipt to the exact browser-served `catalog.json`. This refresh is a discovery
+map update, not a replacement for the separate live integrity receipt.
+
 ## Responsive decision-flow verification: 22 September 2026
 
 We repeated the deployed flow in Chrome with emulated `390×844`, tablet and
