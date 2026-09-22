@@ -53,6 +53,15 @@ def main() -> int:
             concentration_text = page.locator("#concentration-visual").inner_text()
             require("HHI" in concentration_text, "population concentration visual does not expose HHI")
             require("effective issuer count" in concentration_text.lower(), "population concentration visual does not expose effective issuer count")
+            attribution_button = page.locator("#download-population-attribution")
+            require(attribution_button.count() == 1, "population attribution export is not visible")
+            with page.expect_download(timeout=30_000) as attribution_download_info:
+                attribution_button.click()
+            attribution_download = attribution_download_info.value
+            require(attribution_download.suggested_filename.startswith("bell-rwa-population-attribution-") and attribution_download.suggested_filename.endswith(".csv"), f"unexpected attribution filename: {attribution_download.suggested_filename!r}")
+            attribution_text = open(attribution_download.path(), encoding="utf-8").read()
+            require(attribution_text.startswith("rwa_id,reference_name"), "attribution export does not expose its stable reference header")
+            require("market_cap_status" in attribution_text and "missing" in attribution_text and "zero_or_non_positive" in attribution_text, "attribution export collapsed missing and non-positive market-cap states")
 
             receipt_response = page.request.get(args.base.rstrip("/") + "/api/integrity", timeout=30_000)
             require(receipt_response.ok, f"integrity receipt request failed: {receipt_response.status}")
@@ -186,6 +195,9 @@ def main() -> int:
             mobile_page.wait_for_function("document.querySelector('#receipt-status-label')?.textContent?.includes('LOADING') === false", timeout=30_000)
             overflow = mobile_page.evaluate("document.documentElement.scrollWidth > window.innerWidth + 1")
             require(not overflow, "mobile page has horizontal overflow")
+            mobile_decision = mobile_page.locator("#hero-mobile-decision")
+            require(mobile_decision.is_visible(), "mobile first viewport does not expose the decision preview")
+            require("DO NOT SHORTLIST" in mobile_decision.inner_text(), "mobile decision preview does not mirror the current blocked case")
             mobile.close()
 
             tablet = browser.new_context(viewport={"width": 834, "height": 1112})
@@ -231,6 +243,8 @@ def main() -> int:
                 "mobile_horizontal_overflow": False,
                 "tablet_horizontal_overflow": False,
                 "population_concentration": "HHI and effective issuer count visible",
+                "population_attribution_export": attribution_download.suggested_filename,
+                "mobile_decision_preview": "visible before the long task panel",
                 "failure_fallback": fallback_status,
                 "screenshot": args.screenshot,
             }, ensure_ascii=False, indent=2))
