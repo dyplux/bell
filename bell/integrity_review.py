@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Thirty-second human-readable path for the RWA Surface Integrity Monitor."""
+"""Human-readable replay path for the RWA Surface Integrity Monitor."""
 
 from __future__ import annotations
 
@@ -12,7 +12,7 @@ from pathlib import Path
 from rwa_integrity import collect_live, scan
 
 ROOT = Path(__file__).resolve().parent
-FIXTURE = ROOT / "docs/proof/rwa-surface-integrity-2026-09-15.json"
+FIXTURE = ROOT / "site/proof/rwa-surface-integrity-latest-replay-2026-09-21.json"
 
 
 def receipt_hash(value: dict) -> str:

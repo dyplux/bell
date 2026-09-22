@@ -55,7 +55,7 @@ Bell is a research instrument, not a trading signal.
 
 For the public product rationale and judge path, read the public Bell repository documentation.
 The flagship RWA demo is the [Surface Integrity Monitor](RWA-INTEGRITY-PRODUCT-2026-09-15.md):
-run `python3 bell/integrity_review.py` to inspect the dated scan, or open
+run `python3 bell/integrity_review.py` to inspect the latest credential-free replay, or open
 `bell/site/index.html` for the visual receipt.
 The receipt comparison utility in [`receipt_compare.py`](receipt_compare.py)
 compares two dated windows and reports flat-bar diagnostics without treating them as liquidity.
