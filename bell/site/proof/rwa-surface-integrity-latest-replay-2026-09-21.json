@@ -190,70 +190,90 @@
         "issuer_name": "Tether Holdings",
         "positive_market_cap": 2722840212.38,
         "priced_token_rows": 2,
-        "share_of_positive_reported_value": 0.360118835432241
+        "share_of_positive_reported_value": 0.360118835432241,
+        "declared_num_tokens": 2,
+        "observed_to_declared_token_ratio": 1.0
       },
       {
         "issuer_id": "68904c24abae9b5b9fb35815",
         "issuer_name": "Paxos",
         "positive_market_cap": 1885154231.7,
         "priced_token_rows": 1,
-        "share_of_positive_reported_value": 0.24932772163540404
+        "share_of_positive_reported_value": 0.24932772163540404,
+        "declared_num_tokens": 1,
+        "observed_to_declared_token_ratio": 1.0
       },
       {
         "issuer_id": "688ca4ccabae9b5b9fb3167a",
         "issuer_name": "Ondo Assets",
         "positive_market_cap": 909973369.5399996,
         "priced_token_rows": 210,
-        "share_of_positive_reported_value": 0.12035173735981364
+        "share_of_positive_reported_value": 0.12035173735981364,
+        "declared_num_tokens": 551,
+        "observed_to_declared_token_ratio": 0.3811252268602541
       },
       {
         "issuer_id": "6a2aed5097c45356b1a5f710",
         "issuer_name": "bStocks",
         "positive_market_cap": 809520928.7099999,
         "priced_token_rows": 77,
-        "share_of_positive_reported_value": 0.1070660455136492
+        "share_of_positive_reported_value": 0.1070660455136492,
+        "declared_num_tokens": 77,
+        "observed_to_declared_token_ratio": 1.0
       },
       {
         "issuer_id": "6878977dcbbf471de3366e85",
         "issuer_name": "Backed Assets",
         "positive_market_cap": 797298987.5200001,
         "priced_token_rows": 121,
-        "share_of_positive_reported_value": 0.10544958957618643
+        "share_of_positive_reported_value": 0.10544958957618643,
+        "declared_num_tokens": 1176,
+        "observed_to_declared_token_ratio": 0.10289115646258504
       },
       {
         "issuer_id": "6a43600c282e7240b76c8bbb",
         "issuer_name": "Reality",
         "positive_market_cap": 133371256.27999996,
         "priced_token_rows": 71,
-        "share_of_positive_reported_value": 0.017639485884376065
+        "share_of_positive_reported_value": 0.017639485884376065,
+        "declared_num_tokens": 71,
+        "observed_to_declared_token_ratio": 1.0
       },
       {
         "issuer_id": "6a465832fbe3004b1a0ea2dd",
         "issuer_name": "Robinhood",
         "positive_market_cap": 124867256.64999998,
         "priced_token_rows": 91,
-        "share_of_positive_reported_value": 0.016514759420682867
+        "share_of_positive_reported_value": 0.016514759420682867,
+        "declared_num_tokens": 107,
+        "observed_to_declared_token_ratio": 0.8504672897196262
       },
       {
         "issuer_id": "6a436076282e7240b76c8bf9",
         "issuer_name": "Republic",
         "positive_market_cap": 72063152.76,
         "priced_token_rows": 1,
-        "share_of_positive_reported_value": 0.00953096642671631
+        "share_of_positive_reported_value": 0.00953096642671631,
+        "declared_num_tokens": 2,
+        "observed_to_declared_token_ratio": 0.5
       },
       {
         "issuer_id": "68905a7babae9b5b9fb35a8d",
         "issuer_name": "Matrixdock",
         "positive_market_cap": 47551587.63,
         "priced_token_rows": 1,
-        "share_of_positive_reported_value": 0.006289102930980181
+        "share_of_positive_reported_value": 0.006289102930980181,
+        "declared_num_tokens": 1,
+        "observed_to_declared_token_ratio": 1.0
       },
       {
         "issuer_id": "68904cceabae9b5b9fb35839",
         "issuer_name": "Comtech Gold",
         "positive_market_cap": 19523710.68,
         "priced_token_rows": 1,
-        "share_of_positive_reported_value": 0.0025821772138630286
+        "share_of_positive_reported_value": 0.0025821772138630286,
+        "declared_num_tokens": 1,
+        "observed_to_declared_token_ratio": 1.0
       }
     ],
     "categories": {
@@ -279,6 +299,7 @@
       "non_exact_rows": 257,
       "asset_market_cap_sum": 7452824497.057115,
       "token_rows_market_cap_sum": 7455055984.740004,
+      "token_to_asset_value_ratio": 1.0002994150316795,
       "residual_sum": -2231487.68289307,
       "absolute_residual_sum": 2714064.6054042135,
       "max_absolute_residual": 1211752.6499156952,

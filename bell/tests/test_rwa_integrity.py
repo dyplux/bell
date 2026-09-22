@@ -97,8 +97,10 @@ class RwaIntegrityTests(unittest.TestCase):
         self.assertEqual(population["missing_market_cap_rows"], 1)
         self.assertEqual(population["zero_or_non_positive_market_cap_rows"], 1)
         self.assertEqual(population["asset_level_reconciliation"]["exact_within_usd_cent"], 1)
+        self.assertEqual(population["asset_level_reconciliation"]["token_to_asset_value_ratio"], 1.0)
         self.assertEqual(population["concentration"]["hhi"], 5200.0)
         self.assertEqual(population["concentration"]["effective_issuer_count"], 1.923076923076923)
+        self.assertEqual(population["top_issuers"][0]["declared_num_tokens"], None)
 
     def test_rule_boundaries_are_inclusive_and_missing_values_stay_missing(self):
         base = {"data": {"rwa_assets": [{"rwa_id": 1, "has_tokens": True}]}}

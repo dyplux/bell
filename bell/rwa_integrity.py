@@ -282,7 +282,7 @@ def asset_scan(asset: dict, issuer_lookup: dict | None = None, crypto_lookup: di
     }
 
 
-def population_attribution(list_rows: list[dict], assets: list[dict]) -> dict:
+def population_attribution(list_rows: list[dict], assets: list[dict], issuer_catalogue: list[dict] | None = None) -> dict:
     """Reconcile the token population against CMC's asset-level totals.
 
     This is deliberately a descriptive attribution, not a safety score.  It
@@ -298,6 +298,11 @@ def population_attribution(list_rows: list[dict], assets: list[dict]) -> dict:
             asset_by_id[str(rwa_id)] = row
 
     issuer_totals = {}
+    issuer_catalogue_lookup = {
+        str(item.get("issuer_id")): item
+        for item in (issuer_catalogue or [])
+        if item.get("issuer_id") is not None
+    }
     token_rows = positive_rows = missing_rows = zero_rows = 0
     category_rows = {}
     reconciliation_rows = []
@@ -348,9 +353,18 @@ def population_attribution(list_rows: list[dict], assets: list[dict]) -> dict:
     shares = [item["positive_market_cap"] / reported_value for item in issuers] if reported_value else []
     for item, share in zip(issuers, shares):
         item["share_of_positive_reported_value"] = share
+        catalogue = issuer_catalogue_lookup.get(str(item.get("issuer_id")), {})
+        declared = number(catalogue.get("num_tokens"))
+        item["declared_num_tokens"] = int(declared) if declared is not None and declared >= 0 else None
+        item["observed_to_declared_token_ratio"] = (
+            item["priced_token_rows"] / float(declared)
+            if declared is not None and declared > 0 else None
+        )
     hhi = sum((share * 100) ** 2 for share in shares)
     reconciliation_abs = [abs(row["residual"]) for row in reconciliation_rows]
     exact_rows = sum(1 for residual in reconciliation_abs if residual <= 0.01)
+    asset_sum = sum(row["asset_market_cap"] for row in reconciliation_rows)
+    token_sum = sum(row["token_rows_market_cap"] for row in reconciliation_rows)
     return {
         "schema_version": "bell.rwa_population_attribution.v1",
         "basis": "positive token-level market_cap fields returned by CMC quotes/latest; missing and zero values remain separate",
@@ -373,8 +387,9 @@ def population_attribution(list_rows: list[dict], assets: list[dict]) -> dict:
             "matched_reference_rows": len(reconciliation_rows),
             "exact_within_usd_cent": exact_rows,
             "non_exact_rows": len(reconciliation_rows) - exact_rows,
-            "asset_market_cap_sum": sum(row["asset_market_cap"] for row in reconciliation_rows),
-            "token_rows_market_cap_sum": sum(row["token_rows_market_cap"] for row in reconciliation_rows),
+            "asset_market_cap_sum": asset_sum,
+            "token_rows_market_cap_sum": token_sum,
+            "token_to_asset_value_ratio": (token_sum / asset_sum) if asset_sum else None,
             "residual_sum": sum(row["residual"] for row in reconciliation_rows),
             "absolute_residual_sum": sum(reconciliation_abs),
             "max_absolute_residual": max(reconciliation_abs, default=0.0),
@@ -509,7 +524,7 @@ def scan(map_payload: dict, list_payload: dict, quotes_payload: dict, info_paylo
             "states": {"do_not_compare": len(critical), "investigate": len(warnings), "no_flags": len(assets) - len(critical) - len(warnings)},
             "signals": dict(signal_counts),
         },
-        "population_attribution": population_attribution(list_rows, assets),
+        "population_attribution": population_attribution(list_rows, assets, issuer_catalogue),
         "alert_index": alert_index,
         "alerts": alerts[:50],
         "issuer_catalogue": issuer_catalogue,
