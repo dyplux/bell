@@ -62,6 +62,20 @@ test('first case exposes the population concentration lens from the receipt', ()
   assert.match(integrity, /tokenized_market_cap/);
 });
 
+test('population lens keeps an auditable row-level export available', () => {
+  const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
+  assert.match(page, /id="hero-mobile-decision"/);
+  assert.match(page, /id="download-population-attribution"/);
+  assert.match(page, /Inspect source fields/);
+  assert.match(integrity, /function downloadPopulationAttribution/);
+  assert.match(integrity, /market_cap_status/);
+  assert.match(integrity, /zero_or_non_positive/);
+  assert.match(integrity, /reference\.rwa_id/);
+  assert.match(integrity, /token\.issuer_id/);
+  assert.match(visualOverrides, /\.hero-mobile-decision/);
+  assert.match(visualOverrides, /\.population-attribution-actions/);
+});
+
 test('case results can be shared as stable single-URL deep links', () => {
   const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
   assert.match(integrity, /searchParams\.set\('reference', query\)/);

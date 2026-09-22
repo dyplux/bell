@@ -855,6 +855,44 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     window.setTimeout(() => URL.revokeObjectURL(link.href), 1000);
   }
 
+  function csvCell(value) {
+    const text = value === null || value === undefined ? '' : String(value);
+    return /[",\n]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text;
+  }
+
+  function downloadPopulationAttribution() {
+    const rows = (receipt?.alert_index || []).flatMap(reference => {
+      const representations = reference.representations || reference.tokens || [];
+      return representations.map(token => {
+        const marketCap = numericValue(token.market_cap);
+        const marketCapStatus = marketCap === null ? 'missing' : marketCap <= 0 ? 'zero_or_non_positive' : 'positive';
+        return [
+          reference.rwa_id,
+          reference.name,
+          reference.symbol,
+          reference.asset_type,
+          reference.state,
+          token.crypto_id,
+          token.symbol,
+          token.name,
+          token.issuer_id,
+          token.issuer_name || token.issuer_catalogue_name,
+          marketCap === null ? '' : marketCap,
+          marketCapStatus,
+          numericValue(token.price) ?? '',
+          token.quote_source || token.source || '',
+        ];
+      });
+    });
+    const header = ['rwa_id', 'reference_name', 'reference_symbol', 'asset_type', 'state', 'crypto_id', 'token_symbol', 'token_name', 'issuer_id', 'issuer_name', 'market_cap', 'market_cap_status', 'price', 'quote_source'];
+    const csv = [header, ...rows].map(row => row.map(csvCell).join(',')).join('\n') + '\n';
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+    link.download = `bell-rwa-population-attribution-${String(receipt?.observed_at || '').slice(0, 10) || 'latest'}.csv`;
+    link.click();
+    window.setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+  }
+
   async function copyCaseLink(rwaId, button) {
     const item = (receipt?.alerts || []).find(alert => String(alert.rwa_id) === String(rwaId))
       || (receipt?.alert_index || []).find(alert => String(alert.rwa_id) === String(rwaId));
@@ -1082,7 +1120,6 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     const valueRatioLabel = Number.isFinite(valueRatio) ? `${(valueRatio * 100).toFixed(2)}%` : 'N/A';
     const reconciliationValueLabel = Number.isFinite(valueRatio) ? valueRatioLabel : residualLabel;
     const reconciliationValueNote = Number.isFinite(valueRatio) ? 'token / asset value' : 'net residual';
-    target.innerHTML = `<article class="concentration-panel issuer-panel"><div class="concentration-panel-top"><span class="eyebrow">REPORTED VALUE BY ISSUER</span><strong>${money(reportedValue)}</strong></div><h3>Five issuer labels carry ${(topFiveValue / (reportedValue || 1) * 100).toFixed(1)}% of positive reported value</h3><div class="issuer-bars">${issuerBars}</div><p class="concentration-note">${issuers.length.toLocaleString()} issuer labels carry reported value · HHI ${hhi.toFixed(0)} / 10,000 · effective issuer count ${effectiveIssuers.toFixed(2)}</p><small class="concentration-definition">HHI rises as reported value concentrates. Effective issuer count is an equivalent-share estimate, not a count of legal issuers.</small></article><article class="concentration-panel coverage-panel"><div class="concentration-panel-top"><span class="eyebrow">DATA COVERAGE</span><strong>${representations.length.toLocaleString()} rows</strong></div><h3>${missingTokens.toLocaleString()} token rows do not report market cap in this receipt</h3><div class="coverage-rows">${coverageRows}</div><p class="concentration-note">Value shares use positive token-level market-cap fields only. The denominator is not the full tokenised-asset market.</p></article><article class="concentration-panel reconciliation-panel"><div class="concentration-panel-top"><span class="eyebrow">SURFACE RECONCILIATION</span><strong>${matched.toLocaleString()} matched references</strong></div><h3>Does the asset-level total reconcile with its token rows?</h3><div class="reconciliation-metrics"><div><strong>${exact.toLocaleString()}</strong><span>within $0.01</span></div><div><strong>${Math.max(matched - exact, 0).toLocaleString()}</strong><span>non-exact</span></div><div><strong>${residualLabel}</strong><span>net residual</span></div></div><p class="concentration-note">Bell compares CMC's asset-list <code>tokenized_market_cap</code> with the sum of positive token-row market caps on the same <code>rwa_id</code>. This validates surface agreement, not backing or investability.</p></article>`;
     target.innerHTML = `<article class="concentration-panel issuer-panel"><div class="concentration-panel-top"><span class="eyebrow">REPORTED VALUE BY ISSUER</span><strong>${money(reportedValue)}</strong></div><h3>Five issuer labels carry ${(topFiveValue / (reportedValue || 1) * 100).toFixed(1)}% of positive reported value</h3><div class="issuer-bars">${issuerBars}</div><p class="concentration-note">${issuers.length.toLocaleString()} issuer labels carry reported value · HHI ${hhi.toFixed(0)} / 10,000 · effective issuer count ${effectiveIssuers.toFixed(2)}</p><small class="concentration-definition">HHI rises as reported value concentrates. Effective issuer count is an equivalent-share estimate, not a count of legal issuers.</small></article><article class="concentration-panel coverage-panel"><div class="concentration-panel-top"><span class="eyebrow">DATA COVERAGE</span><strong>${representations.length.toLocaleString()} rows</strong></div><h3>${missingTokens.toLocaleString()} token rows do not report market cap in this receipt</h3><div class="coverage-rows">${coverageRows}</div><p class="concentration-note">Value shares use positive token-level market-cap fields only. The denominator is not the full tokenised-asset market.</p></article><article class="concentration-panel reconciliation-panel"><div class="concentration-panel-top"><span class="eyebrow">SURFACE RECONCILIATION</span><strong>${matched.toLocaleString()} matched references</strong></div><h3>Does the asset-level total reconcile with its token rows?</h3><div class="reconciliation-metrics"><div><strong>${exact.toLocaleString()}</strong><span>within $0.01</span></div><div><strong>${Math.max(matched - exact, 0).toLocaleString()}</strong><span>non-exact</span></div><div><strong>${reconciliationValueLabel}</strong><span>${reconciliationValueNote}</span></div></div><p class="concentration-note">Net residual ${residualLabel}. Bell compares CMC's asset-list <code>tokenized_market_cap</code> with the sum of positive token-row market caps on the same <code>rwa_id</code>. This validates surface agreement, not backing or investability.</p></article>`;
   }
 
@@ -1230,6 +1267,13 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
       byId('hero-proof-hint').textContent = 'search a listed reference';
       byId('hero-proof-cta-label').textContent = 'Open searchable queue';
       byId('hero-proof-cta').hidden = false;
+      const mobileDecision = byId('hero-mobile-decision');
+      if (mobileDecision) {
+        mobileDecision.hidden = false;
+        byId('hero-mobile-case').textContent = normalizedQuery ? 'No matching reference' : 'Search a reference';
+        byId('hero-mobile-outcome').textContent = normalizedQuery ? 'NO MATCH' : 'START HERE';
+        byId('hero-mobile-note').textContent = normalizedQuery ? 'Try the asset name, ticker or RWA ID again' : 'The current evidence card follows below';
+      }
       byId('decision-hero').innerHTML = `<p class="eyebrow">SEARCH RESULT</p><h3>${normalizedQuery ? 'No matching reference' : 'Search a reference'}</h3><p>${normalizedQuery ? `Try the asset name, ticker or RWA ID again` : 'Try Silver, Gold, Tesla, SPY or an RWA ID'}</p>`;
       return;
     }
@@ -1309,6 +1353,13 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     setEvidenceCheck('hero-market-check', signalCodes.has('ZERO_MCAP_POSITIVE_VOLUME') || signalCodes.has('MARKET_FIELDS_MISSING') ? 'REVIEW' : 'OBSERVED', signalCodes.has('ZERO_MCAP_POSITIVE_VOLUME') || signalCodes.has('MARKET_FIELDS_MISSING') ? 'review' : 'checked');
     byId('hero-example').textContent = `${isDatedReplay ? 'Published replay' : 'Live example'}: search ${alert.name || 'the reference'} → inspect ${caseFacts.join(' · ') || 'the evidence'} → ${displayDecisionLabel(alert, 'HOLD COMPARISON')} → verify the next action before ranking a wrapper.`;
     byId('hero-proof-output').textContent = displayDecisionLabel(alert, 'HOLD COMPARISON');
+    const mobileDecision = byId('hero-mobile-decision');
+    if (mobileDecision) {
+      mobileDecision.hidden = false;
+      byId('hero-mobile-case').textContent = alert.name || alert.symbol || 'Current reference';
+      byId('hero-mobile-outcome').textContent = displayDecisionLabel(alert, 'HOLD COMPARISON');
+      byId('hero-mobile-note').textContent = caseFacts.join(' · ') || signals || 'Open the full evidence card for the supporting fields';
+    }
     const isClean = alert.state === 'no_flags';
     const hint = alert.state === 'do_not_compare' ? 'verify unit and market evidence' : alert.state === 'investigate' ? 'classify before shortlist' : Number(alert.token_count || 0) === 1 ? 'single representation · verify externally' : 'facts only · continue external diligence';
     const proofHint = byId('hero-proof-hint');
@@ -1520,6 +1571,7 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     try { localStorage.removeItem(investorTaskKey); } catch { /* optional local state */ }
     renderInvestorTask();
   });
+  byId('download-population-attribution')?.addEventListener('click', downloadPopulationAttribution);
   byId('refresh-receipt')?.addEventListener('click', event => {
     const button = event.currentTarget;
     button.disabled = true;

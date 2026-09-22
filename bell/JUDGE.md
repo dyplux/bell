@@ -57,6 +57,8 @@ current submission and does not require an API key.
 7. Read `VALUE AND COVERAGE` below the population charts. It shows issuer concentration,
    missing market-cap coverage and a surface reconciliation between token rows and CMC's
    asset-level tokenized market-cap field. It is a descriptive cross-check, not a backing claim.
+   Use `Download attribution CSV` when you want the row-level join behind the chart; the
+   export keeps positive, missing and non-positive market-cap states separate.
 8. Open `Inspect this evidence` to see the published receipt, rule evidence, identity/unit/
    market checks, token rows and the resolution route. The case card can also export a
    compact `bell.case-receipt.v1` JSON containing the selected rows, signals, source
@@ -65,7 +67,9 @@ current submission and does not require an API key.
    complete map instead of inventing a clean result.
 
 On desktop the search lands on the full decision card, including the capital check and issuer
-concentration view. On mobile and tablet it lands on the compact searched-reference result so
+concentration view. On mobile the compact decision preview appears immediately below the
+search form before the longer task panel, while the full searched-reference result remains
+available below. On tablet it lands on the compact searched-reference result so
 the first evidence is visible without a long scroll. The public page reads the current
 credential-free `/api/integrity` receipt, shows the publication time and freshness, and falls
 back to the latest replay receipt only when the live publication is unavailable.

@@ -21,7 +21,7 @@
   <title>RWA Surface Integrity Monitor | Bell</title>
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="integrity.css?v=20260922-1">
-    <link rel="stylesheet" href="visual-overrides.css?v=20260922-16">
+    <link rel="stylesheet" href="visual-overrides.css?v=20260922-17">
 </head>
 <body>
   <header class="topbar">
@@ -53,6 +53,7 @@
           <div class="quick-search" aria-label="Example references"><span>TRY AN EXAMPLE</span><button type="button" data-example-search="Silver">Silver <em>blocked</em></button><button type="button" data-example-search="Marvell">Marvell <em>facts open</em></button><button type="button" data-example-search="SPY">SPY <em>blocked</em></button></div>
           <div class="outcome-key" aria-label="Bell outcome key"><span>OUTCOME KEY</span><div><b>DO NOT SHORTLIST = BLOCKED</b><small>critical contradiction found; stop comparison</small></div><div><b>FACTS OPEN = DESCRIPTIVE ONLY</b><small>no critical rule fired; inspect, then diligence</small></div><div><b>SINGLE REPRESENTATION</b><small>one wrapper only; no ranking</small></div></div>
         </form>
+        <div id="hero-mobile-decision" class="hero-mobile-decision" aria-live="polite" hidden><div><span>DECISION PREVIEW</span><strong id="hero-mobile-case">Loading current case</strong></div><b id="hero-mobile-outcome">READING RECEIPT</b><p id="hero-mobile-note">The full evidence card follows below</p><a href="#decision">Open full case ↓</a></div>
         <div class="hero-meta"><span>CMC API / MAP + ASSET LIST + QUOTES</span><span>LIVE WHEN FRESH · DATED REPLAY IF NEEDED</span><span id="observed-at">LOADING RECEIPT</span></div>
         <p id="hero-example" class="hero-example">Live example: loading the current decision path.</p>
         <section class="investor-task" aria-label="Three minute investor task">
@@ -73,7 +74,7 @@
 
     <section id="population-visual" class="population-visual" aria-label="Population composition and observed quote spread"><div class="population-visual-head"><div><p class="eyebrow"><span></span> POPULATION SHAPE</p><h2>One scan, two useful questions</h2></div><span class="receipt-chip">CURRENT RECEIPT</span></div><div id="population-visual-grid" class="population-visual-grid"></div><p class="population-visual-foot">The first view shows how many references need a different research route. The second shows observed quote spread bands only for references with at least two priced representations. Neither is a quality score or an execution estimate.</p></section>
 
-    <section id="concentration-visual" class="concentration-visual" aria-label="Observed issuer concentration and data coverage"><div class="concentration-visual-head"><div><p class="eyebrow"><span></span> VALUE AND COVERAGE</p><h2>What the catalogue is made of</h2></div><span class="receipt-chip">TOKEN ROWS · DERIVED</span></div><div id="concentration-visual-grid" class="concentration-visual-grid"></div><p class="concentration-visual-foot">This lens attributes only the reported market-cap fields returned on token rows. It does not identify legal liability, reserves, redemption or investability. Missing market cap stays missing.</p></section>
+    <section id="concentration-visual" class="concentration-visual" aria-label="Observed issuer concentration and data coverage"><div class="concentration-visual-head"><div><p class="eyebrow"><span></span> VALUE AND COVERAGE</p><h2>What the catalogue is made of</h2></div><span class="receipt-chip">TOKEN ROWS · DERIVED</span></div><div id="concentration-visual-grid" class="concentration-visual-grid"></div><div class="population-attribution-actions"><button id="download-population-attribution" type="button">Download attribution CSV ↓</button><a href="/api/integrity" target="_blank" rel="noopener">Inspect source fields ↗</a><small>One row per representation · stable reference, token and issuer IDs · missing values are labelled, not converted to zero</small></div><p class="concentration-visual-foot">This lens attributes only the reported market-cap fields returned on token rows. It does not identify legal liability, reserves, redemption or investability. Missing market cap stays missing.</p></section>
 
     <section id="differentiation" class="differentiation" aria-label="Product difference"></section>
 
@@ -100,6 +101,6 @@
   </main>
 
   <footer><span>Bell · RWA integrity evidence</span><span>Built by Dyplux · Lisbon</span><span>Research, not a trading signal</span></footer>
-  <script src="capital-impact.js?v=20260922-2" defer></script><script src="integrity.js?v=20260922-15" defer></script><script src="explorer.js?v=20260922-30" defer></script>
+  <script src="capital-impact.js?v=20260922-2" defer></script><script src="integrity.js?v=20260922-17" defer></script><script src="explorer.js?v=20260922-30" defer></script>
 </body>
 </html>
