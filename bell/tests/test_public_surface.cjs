@@ -38,6 +38,9 @@ test('public release names the observed threshold population and inclusivity', (
   assert.match(source, /def rule_calibration/);
   assert.match(source, /references_with_two_positive_prices/);
   assert.match(source, /price_denomination_break.*inclusive/s);
+  const integrity = fs.readFileSync(path.resolve(__dirname, '../site/integrity.js'), 'utf8');
+  assert.match(integrity, /receipt\.rule_calibration/);
+  assert.match(integrity, /references_with_insufficient_positive_prices/);
 });
 
 test('public page carries a shareable social preview', () => {

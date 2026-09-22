@@ -1039,24 +1039,30 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
       const value = Number(states[key] || 0);
       return `<div class="population-state"><div><span>${label}</span><strong>${value.toLocaleString()}</strong></div><small>${note}</small><div class="population-state-track"><i class="${tone}" style="width:${Math.max((value / total) * 100, value ? 1 : 0)}%"></i></div></div>`;
     }).join('');
+    const calibration = receipt.rule_calibration || {};
+    const observedBands = calibration.observed_ratio_bands || {};
     const bands = [
-      ['&lt;2×', value => value < 2],
-      ['2×–5×', value => value >= 2 && value < 5],
-      ['5×–10×', value => value >= 5 && value < 10],
-      ['10×+', value => value >= 10],
-    ].map(([label, test]) => ({ label, test, value: 0 }));
-    let pricedReferences = 0;
-    (receipt.alert_index || []).forEach(item => {
-      const prices = (item.representations || []).map(token => Number(token?.price)).filter(value => Number.isFinite(value) && value > 0);
-      if (prices.length < 2) return;
-      pricedReferences += 1;
-      const ratio = Math.max(...prices) / Math.min(...prices);
-      const band = bands.find(entry => entry.test(ratio));
-      if (band) band.value += 1;
-    });
+      ['&lt;2×', 'below_2x', value => value < 2],
+      ['2×–5×', '2x_to_below_5x', value => value >= 2 && value < 5],
+      ['5×–10×', '5x_to_below_10x', value => value >= 5 && value < 10],
+      ['10×+', '10x_or_more', value => value >= 10],
+    ].map(([label, key, test]) => ({ label, key, test, value: Number(observedBands[key] || 0) }));
+    let pricedReferences = Number(calibration.references_with_two_positive_prices || 0);
+    if (!Object.keys(observedBands).length) {
+      pricedReferences = 0;
+      (receipt.alert_index || []).forEach(item => {
+        const prices = (item.representations || []).map(token => Number(token?.price)).filter(value => Number.isFinite(value) && value > 0);
+        if (prices.length < 2) return;
+        pricedReferences += 1;
+        const ratio = Math.max(...prices) / Math.min(...prices);
+        const band = bands.find(entry => entry.test(ratio));
+        if (band) band.value += 1;
+      });
+    }
     const maxBand = Math.max(...bands.map(band => band.value), 1);
     const spreadVisual = bands.map(band => `<div class="spread-row"><span>${band.label}</span><div class="spread-track"><i style="width:${Math.max((band.value / maxBand) * 100, band.value ? 2 : 0)}%"></i></div><strong>${band.value.toLocaleString()}</strong></div>`).join('');
-    target.innerHTML = `<article class="population-chart-panel state-panel"><div class="population-chart-top"><span class="eyebrow">ROUTE BY STATE</span><strong>${total.toLocaleString()} references</strong></div><h3>Most references need investigation before comparison</h3><div class="population-states">${stateVisual}</div><div class="population-stacked" aria-label="Stacked population state bar">${stateRows.map(([key, label, tone]) => `<i class="${tone}" style="width:${Math.max((Number(states[key] || 0) / total) * 100, Number(states[key] || 0) ? 1 : 0)}%" title="${label}: ${Number(states[key] || 0).toLocaleString()}"></i>`).join('')}</div></article><article class="population-chart-panel spread-panel"><div class="population-chart-top"><span class="eyebrow">OBSERVED QUOTE SPREAD</span><strong>${pricedReferences.toLocaleString()} references</strong></div><h3>Where multiple priced representations diverge</h3><div class="spread-rows">${spreadVisual}</div><p class="population-chart-note">A band describes the largest observed quote divided by the smallest in one reference. It identifies a review route, not a fair-value gap.</p></article>`;
+    const insufficientReferences = Number(calibration.references_with_insufficient_positive_prices || Math.max(total - pricedReferences, 0));
+    target.innerHTML = `<article class="population-chart-panel state-panel"><div class="population-chart-top"><span class="eyebrow">ROUTE BY STATE</span><strong>${total.toLocaleString()} references</strong></div><h3>Most references need investigation before comparison</h3><div class="population-states">${stateVisual}</div><div class="population-stacked" aria-label="Stacked population state bar">${stateRows.map(([key, label, tone]) => `<i class="${tone}" style="width:${Math.max((Number(states[key] || 0) / total) * 100, Number(states[key] || 0) ? 1 : 0)}%" title="${label}: ${Number(states[key] || 0).toLocaleString()}"></i>`).join('')}</div></article><article class="population-chart-panel spread-panel"><div class="population-chart-top"><span class="eyebrow">OBSERVED QUOTE SPREAD</span><strong>${pricedReferences.toLocaleString()} comparable</strong></div><h3>Where multiple priced representations diverge</h3><div class="spread-rows">${spreadVisual}</div><p class="population-chart-note">${insufficientReferences.toLocaleString()} references had fewer than two positive prices and stay outside this chart. The observed bands identify a review route, not a fair-value gap</p></article>`;
   }
 
   function renderConcentrationVisual() {
