@@ -11,8 +11,8 @@ separate competing claim.
 | Check | Result | Evidence |
 |---|---|---|
 | Integrity rule suite | PASS | `31 passed, 1 skipped` in `bell/tests` |
-| Public surface contract suite | PASS | `25 passed` in `bell/tests/*.cjs` |
-| Cloudflare Worker | PASS | `9 passed` in `cloudflare/tests/worker.test.mjs` |
+| Public surface contract suite | PASS | `27 passed` in `bell/tests/*.cjs` |
+| Cloudflare Worker | PASS | `10 passed` in `cloudflare/tests/worker.test.mjs` |
 | JavaScript syntax | PASS | `node --check bell/site/integrity.js` and `node --check bell/site/explorer.js` |
 | Public receipt verifier | PASS | HTTP 200, schema `rwa_surface_integrity.v1`, complete required surfaces |
 | Public surface smoke check | PASS | page, health endpoint, live receipt and Gold dossier |
@@ -21,13 +21,13 @@ separate competing claim.
 
 ## Current public runtime check
 
-The credential-free API was verified at `2026-09-21T23:43:13Z`:
+The credential-free API was verified at `2026-09-22T00:28:03Z`:
 
 - 791 tokenised references;
 - 1,435 representations;
-- 32 `DO NOT COMPARE`;
-- 664 `INVESTIGATE`;
-- 95 `FACTS OPEN`;
+- 37 `DO NOT COMPARE`;
+- 661 `INVESTIGATE`;
+- 93 `FACTS OPEN`;
 - 791 population index records;
 - a fresh publication contract with a 900-second stale threshold.
 
@@ -276,3 +276,23 @@ rows with 37 `do_not_compare`, 661 `investigate` and 93 `no_flags` groups.
 This check confirms that the live publication path and the public replay method
 use the same current collector boundary. It does not claim that every optional
 asset dossier is available or that CMC data proves backing, liquidity or execution.
+
+## Responsive release verification: 22 September 2026 · final11
+
+The final11 public release was checked against the deployed domain after the
+responsive layout fix:
+
+- 390px mobile: the hero copy wraps inside the viewport, the search action is
+  fully visible and the investor task remains readable
+- 768px tablet: the header moves its navigation to a second row so the receipt
+  action does not leave the viewport
+- 1440px desktop: the two-column hero and live evidence card remain intact
+- the live browser reported `documentWidth = viewportWidth` at 390px
+- `LIVE RECEIPT · FRESH` was visible on the deployed page
+- a live Gold search returned `DO NOT SHORTLIST`, 7 representations, 6
+  issuers and the observed quote-range evidence from the current receipt
+
+The release is published as Git commit `16d44c3` and tag
+`hackathon-submission-2026-09-22-final11`. These are presentation and
+navigation checks; they do not claim that a clean result proves backing,
+liquidity, redemption or investment suitability.
