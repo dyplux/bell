@@ -36,6 +36,10 @@ hardcoded examples.
 The result can be shared with a stable URL. The page accepts
 `?reference=<CMC RWA ID>` and the decision card includes a copy-link action,
 so a reviewer can open the same reference without repeating the search.
+The decision card also exports a compact `bell.case-receipt.v1` JSON file with
+the selected reference, decision, signals, exact representation rows, source
+hashes, join method and limits. It is a snapshot of the credential-free
+published receipt, not a new data source.
 If the live receipt has no case for a query, the result card sends the user to
 the complete RWA map instead of presenting that absence as proof that the asset
 does not exist. Map-only searches are preserved as `?map_reference=<name or

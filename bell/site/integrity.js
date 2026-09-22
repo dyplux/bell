@@ -801,6 +801,54 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     window.setTimeout(() => URL.revokeObjectURL(link.href), 1000);
   }
 
+  function caseReceipt(item) {
+    const publication = receipt?._publication || {};
+    return {
+      schema_version: 'bell.case-receipt.v1',
+      observed_at: receipt?.observed_at || null,
+      published_at: publication.published_at || null,
+      source: '/api/integrity',
+      credential_free: publication.credential_free === true,
+      question: 'Do these representations deserve to be compared as if they represented the same investable thing?',
+      reference: {
+        rwa_id: item.rwa_id,
+        name: item.name || null,
+        symbol: item.symbol || null,
+        asset_type: item.asset_type || null,
+        token_count: item.token_count || (item.tokens || []).length,
+        issuer_count: item.issuer_count || null,
+        tradfi_market_count: item.tradfi_market_count ?? null,
+      },
+      decision: item.decision || null,
+      next_action: item.next_action || null,
+      signals: item.signals || [],
+      tokens: item.tokens || item.representations || [],
+      method: {
+        join_key: receipt?.method?.join_key || 'rwa_id',
+        token_join_key: receipt?.method?.token_join_key || 'crypto_id',
+        rules: receipt?.method?.rules || [],
+      },
+      source_hashes: receipt?.source_hashes || {},
+      limits: [
+        'Observed CMC fields do not prove backing, redemption, custody, eligibility, solvency, liquidity or executable size',
+        'The case is a research triage record, not an investment recommendation',
+      ],
+    };
+  }
+
+  function downloadCaseReceipt(rwaId) {
+    const item = (receipt.alerts || []).find(alert => String(alert.rwa_id) === String(rwaId))
+      || (receipt.alert_index || []).find(alert => String(alert.rwa_id) === String(rwaId));
+    if (!item) return;
+    const filename = `bell-${String(item.symbol || item.name || 'rwa').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}-case-receipt.json`;
+    const blob = new Blob([JSON.stringify(caseReceipt(item), null, 2)], { type: 'application/json;charset=utf-8' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = filename;
+    link.click();
+    window.setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+  }
+
   async function copyCaseLink(rwaId, button) {
     const item = (receipt?.alerts || []).find(alert => String(alert.rwa_id) === String(rwaId))
       || (receipt?.alert_index || []).find(alert => String(alert.rwa_id) === String(rwaId));
@@ -1238,7 +1286,7 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     if (proofHint) proofHint.textContent = hint;
     const decisionHeading = query.trim() ? 'SEARCHED REFERENCE' : (isClean ? 'CURRENT REFERENCE' : 'FLAGGED REFERENCE');
     const signalLabel = signals || (isClean ? 'no published rule hit' : 'published rule hit');
-      byId('decision-hero').innerHTML = `<div class="decision-hero-top"><span class="eyebrow">${decisionHeading}</span><span class="decision-case">${escapeHTML(alert.symbol || 'RWA')}</span></div><h3>${escapeHTML(alert.name)}</h3><p class="decision-signal">${escapeHTML(signalLabel)}</p><div class="decision-outcome"><span>OUTPUT</span><strong>${escapeHTML(displayDecisionLabel(alert, 'HOLD COMPARISON'))}</strong><p>${escapeHTML(decision.consequence || alert.next_action || '')}</p><b class="allocation-gate">${escapeHTML(decision.allocation_effect || 'No allocation status is produced by this monitor')}</b></div><div class="decision-actions"><button class="brief-button" type="button" data-brief-id="${escapeHTML(alert.rwa_id)}">Save decision brief ↓</button><button class="brief-button" type="button" data-copy-case="${escapeHTML(alert.rwa_id)}">Copy case link ↗</button>${watchButton(alert)}<a class="decision-action-link" href="#monitor">Inspect representation rows ↘</a></div>${capitalPanel(alert)}${temporalPanel(alert)}${referenceConcentrationPanel(alert)}${referenceActivityPanel(alert)}${resolutionRoute(alert)}<div class="decision-receipt"><span>${escapeHTML(publication.status ? String(publication.status).toUpperCase() : 'DATED')} · ${escapeHTML(publication.observed_at || receipt.observed_at || 'N/A')}</span><a href="/api/integrity" target="_blank" rel="noopener">Open credential-free receipt ↗</a></div>`;
+      byId('decision-hero').innerHTML = `<div class="decision-hero-top"><span class="eyebrow">${decisionHeading}</span><span class="decision-case">${escapeHTML(alert.symbol || 'RWA')}</span></div><h3>${escapeHTML(alert.name)}</h3><p class="decision-signal">${escapeHTML(signalLabel)}</p><div class="decision-outcome"><span>OUTPUT</span><strong>${escapeHTML(displayDecisionLabel(alert, 'HOLD COMPARISON'))}</strong><p>${escapeHTML(decision.consequence || alert.next_action || '')}</p><b class="allocation-gate">${escapeHTML(decision.allocation_effect || 'No allocation status is produced by this monitor')}</b></div><div class="decision-actions"><button class="brief-button" type="button" data-brief-id="${escapeHTML(alert.rwa_id)}">Save decision brief ↓</button><button class="brief-button" type="button" data-case-receipt="${escapeHTML(alert.rwa_id)}">Download case JSON ↓</button><button class="brief-button" type="button" data-copy-case="${escapeHTML(alert.rwa_id)}">Copy case link ↗</button>${watchButton(alert)}<a class="decision-action-link" href="#monitor">Inspect representation rows ↘</a></div>${capitalPanel(alert)}${temporalPanel(alert)}${referenceConcentrationPanel(alert)}${referenceActivityPanel(alert)}${resolutionRoute(alert)}<div class="decision-receipt"><span>${escapeHTML(publication.status ? String(publication.status).toUpperCase() : 'DATED')} · ${escapeHTML(publication.observed_at || receipt.observed_at || 'N/A')}</span><a href="/api/integrity" target="_blank" rel="noopener">Open credential-free receipt ↗</a></div>`;
       loadTemporalEvidence(alert);
   }
 
@@ -1343,6 +1391,11 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     const briefButtonElement = event.target.closest('[data-brief-id]');
     if (briefButtonElement) {
       downloadBrief(briefButtonElement.dataset.briefId);
+      return;
+    }
+    const caseReceiptButton = event.target.closest('[data-case-receipt]');
+    if (caseReceiptButton) {
+      downloadCaseReceipt(caseReceiptButton.dataset.caseReceipt);
       return;
     }
     const removeButton = event.target.closest('[data-watch-remove]');

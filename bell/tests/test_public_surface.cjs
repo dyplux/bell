@@ -59,6 +59,9 @@ test('case results can be shared as stable single-URL deep links', () => {
   assert.match(integrity, /searchParams\.set\('reference', String\(item\.rwa_id\)\)/);
   assert.match(integrity, /const exactMatches = normalizedQuery/);
   assert.match(integrity, /const matchLabel = exact/);
+  assert.match(integrity, /bell\.case-receipt\.v1/);
+  assert.match(integrity, /Download case JSON/);
+  assert.match(integrity, /source_hashes: receipt\?\.source_hashes/);
 });
 
 test('search result exposes the observed quote endpoints before the evidence table', () => {
