@@ -8,6 +8,8 @@ import json
 import re
 import sys
 
+from verify_case_receipt import verify as verify_case_receipt
+
 
 def require(condition: bool, message: str) -> None:
     if not condition:
@@ -112,7 +114,8 @@ def main() -> int:
             require(case_download.suggested_filename.endswith("-case-receipt.json"), f"unexpected case receipt filename: {case_download.suggested_filename!r}")
             with open(case_download.path(), encoding="utf-8") as case_file:
                 case_receipt = json.load(case_file)
-            require(case_receipt.get("schema_version") == "bell.case-receipt.v1", "case receipt schema is not canonical")
+            case_verification = verify_case_receipt(case_receipt)
+            require(case_verification["status"] == "valid public case receipt", "downloaded case receipt failed its public contract")
             require(case_receipt.get("reference", {}).get("name") == "Silver", "case receipt does not identify Silver")
             require(len(case_receipt.get("tokens", [])) == 5, "case receipt does not retain the exact Silver rows")
             require(case_receipt.get("source_hashes"), "case receipt does not retain source fingerprints")

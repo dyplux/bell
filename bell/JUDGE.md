@@ -140,9 +140,11 @@ If the generated map is missing, the illustrative fallback is not the complete c
 ## Method
 
 1. `/v5/real-world-assets/map` supplies the searchable discovery index.
-2. `/v5/real-world-assets/quotes/latest` supplies the selected RWA and its wrappers.
-3. `/v2/cryptocurrency/ohlcv/historical` supplies hourly bars.
-4. `/v2/cryptocurrency/quotes/latest` supplies the latest CEX and DEX context.
+2. `/v5/real-world-assets/assets/list` is the token asset-list surface used to detect catalogue drift.
+3. `/v5/real-world-assets/quotes/latest` supplies the selected RWA and its wrappers.
+4. `/v5/real-world-assets/info` and `/v5/real-world-assets/issuers/list` resolve token and issuer joins in the population monitor.
+5. `/v2/cryptocurrency/ohlcv/historical` supplies hourly bars.
+6. `/v2/cryptocurrency/quotes/latest` supplies the latest CEX and DEX context.
 
 Each bar is assigned by its opening timestamp after conversion to
 `America/New_York`:
@@ -168,6 +170,8 @@ does not infer liquidity, solvency, ownership rights, causality or an action.
 - [Population integrity history](site/proof/rwa-surface-integrity-history.json)
 - [Latest normalized population inputs](site/proof/rwa-surface-integrity-inputs-2026-09-21.json)
 - [Population receipt verifier](verify_integrity_receipt.py)
+- [Public source map and exact API surfaces](SOURCE-MAP.md)
+- [Case receipt verifier](verify_case_receipt.py)
 - [Public submission gate](verify_submission.py)
 - [QA results](QA-RESULTS.md)
 

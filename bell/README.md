@@ -164,6 +164,10 @@ No wrapper dossier or session review is published for those entries until the se
 publisher completes the work. This is a valid catalogue result, not an API failure or proof that
 the asset has insufficient history.
 
+For a code-first review, use the [public source map](SOURCE-MAP.md). It links the live
+rendering path, receipt publisher, exact CMC endpoints and the credential-free case-receipt
+verifier in one place.
+
 A public session review appears only where published. Computing a review requires sufficient
 hourly wrapper coverage; a CMC map listing does not guarantee that coverage. Missing or partial
 coverage is retained in live receipts. The public site makes no CMC calls and requires no key.
