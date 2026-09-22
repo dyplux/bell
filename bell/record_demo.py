@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+from datetime import datetime, timezone
 import json
 import time
 from pathlib import Path
@@ -15,6 +16,24 @@ def wait_for_receipt(page) -> None:
         "document.querySelector('#receipt-status-label')?.textContent?.includes('LOADING') === false",
         timeout=30_000,
     )
+
+
+def read_receipt_metadata(page, base: str) -> dict:
+    """Record the public receipt context used by this credential-free capture."""
+    response = page.request.get(base.rstrip('/') + '/api/integrity', timeout=30_000)
+    if not response.ok:
+        return {'status': 'unavailable', 'http_status': response.status}
+    receipt = response.json()
+    publication = receipt.get('_publication') or {}
+    universe = receipt.get('universe') or {}
+    return {
+        'status': publication.get('status'),
+        'http_status': response.status,
+        'observed_at': receipt.get('observed_at'),
+        'published_at': publication.get('published_at'),
+        'tokenised_references': universe.get('tokenised_references_scanned'),
+        'representations': universe.get('tokens_scanned'),
+    }
 
 
 def pause(seconds: float) -> None:
@@ -80,9 +99,15 @@ def record_long(base: str, output: Path, channel: str) -> Path:
         page.on('console', lambda message: errors.append(f'console: {message.text}') if message.type == 'error' else None)
         page.on('pageerror', lambda error: errors.append(f'pageerror: {error}'))
 
+        receipt_metadata: dict = {}
+        steps: list[dict] = []
+
         def open_page(path: str = '/') -> None:
+            nonlocal receipt_metadata
             page.goto(base.rstrip('/') + path, wait_until='domcontentloaded', timeout=30_000)
             wait_for_receipt(page)
+            if not receipt_metadata:
+                receipt_metadata = read_receipt_metadata(page, base)
 
         def show(selector: str, seconds: float) -> None:
             page.locator(selector).wait_for(state='visible', timeout=30_000)
@@ -91,12 +116,14 @@ def record_long(base: str, output: Path, channel: str) -> Path:
 
         # 1. The product question and the current live receipt
         open_page()
+        steps.append({'id': 'hero', 'route': '/', 'selector': '#receipt-status-label'})
         pause(10)
 
         # 2. A real first action, rather than a deep-link-only demo
         page.locator('#hero-search').fill('Silver')
         page.locator('#hero-search-form').locator('button[type="submit"]').click()
         page.locator('#search-result').wait_for(state='visible', timeout=30_000)
+        steps.append({'id': 'silver-search', 'route': '/', 'selector': '#search-result'})
         pause(10)
 
         # 3. The selected case, capital consequence and evidence rows
@@ -105,15 +132,19 @@ def record_long(base: str, output: Path, channel: str) -> Path:
         if details.count():
             details.click()
             pause(7)
+        steps.append({'id': 'silver-evidence', 'route': '/', 'selector': '#decision-hero'})
 
         # 4. The population-wide shape of the monitor
         open_page()
         show('#population-visual', 12)
+        steps.append({'id': 'population-shape', 'route': '/', 'selector': '#population-visual'})
         show('#concentration-visual', 10)
+        steps.append({'id': 'population-concentration', 'route': '/', 'selector': '#concentration-visual'})
 
         # 5. A facts-open route demonstrates that Bell does not rank clean rows
         open_page('/?reference=70')
         show('#decision-hero', 11)
+        steps.append({'id': 'facts-open', 'route': '/?reference=70', 'selector': '#decision-hero'})
 
         # 6. A repeated temporal check supplies deeper evidence for Gold
         open_page('/?reference=1')
@@ -122,6 +153,7 @@ def record_long(base: str, output: Path, channel: str) -> Path:
             timeout=30_000,
         )
         show('#decision-hero [data-temporal-evidence]', 15)
+        steps.append({'id': 'gold-repeat-window', 'route': '/?reference=1', 'selector': '#decision-hero [data-temporal-evidence]'})
 
         # 7. The complete map keeps references without a published case honest
         open_page()
@@ -130,9 +162,11 @@ def record_long(base: str, output: Path, channel: str) -> Path:
         page.locator('#explorer-form').locator('button[type="submit"]').click()
         page.locator('#explorer-dossier').wait_for(state='visible', timeout=30_000)
         pause(12)
+        steps.append({'id': 'map-only', 'route': '/', 'selector': '#explorer-dossier'})
 
         # 8. End on the receipt and its reproducibility boundary
         show('#evidence', 12)
+        steps.append({'id': 'receipt', 'route': '/', 'selector': '#evidence'})
 
         video = page.video
         context.close()
@@ -144,6 +178,9 @@ def record_long(base: str, output: Path, channel: str) -> Path:
             'schema_version': 'bell.demo-video.v1',
             'mode': 'long',
             'base': base.rstrip('/'),
+            'captured_at': datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace('+00:00', 'Z'),
+            'receipt': receipt_metadata,
+            'steps': steps,
             'console_errors': errors,
             'video': target.name,
         }, indent=2) + '\n', encoding='utf-8')
