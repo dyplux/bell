@@ -126,6 +126,10 @@ def main() -> int:
     for marker in ('property="og:title"', 'property="og:description"', 'property="og:image"', 'name="twitter:card"'):
         if marker not in index_text:
             failures.append(f"share preview metadata is missing: {marker}")
+    if 'name="twitter:card" content="summary_large_image"' not in index_text:
+        failures.append("share preview must use the large Twitter card")
+    if 'name="twitter:card" content="summary_large_image"' not in index_text:
+        failures.append("share preview must use the large Twitter card")
 
     if failures:
         return fail(failures)
