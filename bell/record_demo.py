@@ -57,6 +57,8 @@ def record(base: str, output: Path, channel: str) -> Path:
         page.on('pageerror', lambda error: errors.append(f'pageerror: {error}'))
         page.goto(base.rstrip('/') + '/', wait_until='domcontentloaded', timeout=30_000)
         wait_for_receipt(page)
+        receipt_metadata = read_receipt_metadata(page, base)
+        steps: list[dict] = [{'id': 'hero', 'route': '/', 'selector': '#receipt-status-label'}]
         pause(2)
 
         for reference in ('5', None, '70', '1'):
@@ -66,11 +68,13 @@ def record(base: str, output: Path, channel: str) -> Path:
                 population = page.locator('#population-visual')
                 population.wait_for(state='visible', timeout=30_000)
                 page.evaluate("window.scrollTo(0, Math.max(0, document.querySelector('#population-visual').offsetTop - 82))")
+                steps.append({'id': 'population-shape', 'route': '/', 'selector': '#population-visual'})
                 pause(4)
                 continue
             page.goto(f"{base.rstrip('/')}/?{urlencode({'reference': reference})}", wait_until='domcontentloaded', timeout=30_000)
             wait_for_receipt(page)
             page.locator('#decision-hero h3').wait_for(state='visible', timeout=30_000)
+            steps.append({'id': f'reference-{reference}', 'route': f'/?reference={reference}', 'selector': '#decision-hero'})
             pause(4)
 
         video = page.video
@@ -79,6 +83,18 @@ def record(base: str, output: Path, channel: str) -> Path:
         video_path = video.path()
         target = output / 'bell-demo-raw.webm'
         Path(video_path).replace(target)
+        (output / 'manifest.json').write_text(json.dumps({
+            'schema_version': 'bell.demo-video.v1',
+            'mode': 'short',
+            'base': base.rstrip('/'),
+            'captured_at': datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace('+00:00', 'Z'),
+            'receipt': receipt_metadata,
+            'steps': steps,
+            'console_errors': errors,
+            'video': target.name,
+        }, indent=2) + '\n', encoding='utf-8')
+        if errors:
+            raise RuntimeError(f'browser errors captured: {errors}')
         return target
 
 
