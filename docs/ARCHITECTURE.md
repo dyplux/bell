@@ -64,7 +64,7 @@ endpoint identities, join coverage and fingerprints for the captured run.
 
 - Product: <https://bell.dyplux.com/>
 - Public receipt: <https://bell.dyplux.com/api/integrity>
-- Neutral queue: <https://rwa-surface-review.pages.dev/>
+- Public queue: <https://bell.dyplux.com/#explorer>
 - Source: <https://github.com/dyplux/bell>
 
 The public release is intentionally separate from Dyplux's private research

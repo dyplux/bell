@@ -14,7 +14,7 @@ It is not a token leaderboard, safety score or investment recommendation.
 1. Open the [Bell public page](https://bell.dyplux.com/).
 2. Read the observation time, freshness state and population totals.
 3. Open the current case, normally the highest-priority contradiction.
-4. Search the main queue or the [neutral review queue](https://rwa-surface-review.pages.dev/)
+4. Search the main `Explore RWA` queue at [Bell](https://bell.dyplux.com/#explorer)
    for an RWA such as Silver, Gold, Tesla or SPY.
 5. Inspect the decision, next action and representation rows. Bell changes the
    route for a no-token reference, a single representation or a multi-token

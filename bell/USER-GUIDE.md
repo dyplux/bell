@@ -105,8 +105,8 @@ stable identifiers, and turns contradictions into a visible next action.
    shows a `SINGLE REPRESENTATION PATH`: there is no wrapper ranking to perform.
 
 9. Use the `Previous` and `Next` controls under the main queue to browse every
-   matching reference in Bell. The [neutral searchable population queue](https://rwa-surface-review.pages.dev/)
-   remains available as an independent mirror with search, state filters and
+   matching reference in Bell. The same public page's `Explore RWA` route
+   remains the single searchable population queue with state filters and
    pagination.
 10. Open the credential-free JSON receipt to verify the observed time, published
     time, freshness state, endpoint method, source hashes and exact evidence.
