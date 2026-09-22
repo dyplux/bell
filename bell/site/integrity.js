@@ -1060,11 +1060,23 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
 
   function renderPublicationHistory(history) {
     const target = byId('publication-history');
-    const observations = history?.observations;
+    const storedObservations = Array.isArray(history?.observations) ? history.observations : [];
+    const liveObservation = receipt?.observed_at && receipt?.universe
+      ? {
+        observed_at: receipt.observed_at,
+        tokenised_references_scanned: receipt.universe.tokenised_references_scanned,
+        tokens_scanned: receipt.universe.tokens_scanned,
+        states: receipt.universe.states || {},
+        signals: receipt.universe.signals || {},
+      }
+      : null;
+    const observations = liveObservation && storedObservations.at(-1)?.observed_at !== liveObservation.observed_at
+      ? [...storedObservations, liveObservation]
+      : storedObservations;
     const heroTrail = byId('hero-receipt-trail');
     if (heroTrail) {
       heroTrail.textContent = Array.isArray(observations) && observations.length
-        ? `RECEIPT TRAIL · ${observations.length} dated observations · state history below`
+        ? `RECEIPT TRAIL · ${observations.length} dated observations · live receipt included`
         : 'RECEIPT TRAIL · no dated history available';
       if (!byId('hero-receipt-link')) {
         heroTrail.insertAdjacentHTML('afterend', '<a id="hero-receipt-link" class="hero-receipt-link" href="/api/integrity" target="_blank" rel="noopener">OPEN CREDENTIAL-FREE RECEIPT ↗</a>');

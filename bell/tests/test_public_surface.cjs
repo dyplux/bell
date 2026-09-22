@@ -48,6 +48,8 @@ test('hero receipt label preserves the live freshness state', () => {
   assert.match(index, /id="hero-receipt-trail"/);
   assert.match(integrity, /RECEIPT TRAIL/);
   assert.match(integrity, /hero-receipt-link/);
+  assert.match(integrity, /liveObservation = receipt\?\.observed_at/);
+  assert.match(integrity, /storedObservations\.at\(-1\)\?\.observed_at/);
 });
 
 test('case results can be shared as stable single-URL deep links', () => {

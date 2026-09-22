@@ -55,6 +55,9 @@ def main() -> int:
             receipt_response = page.request.get(args.base.rstrip("/") + "/api/integrity", timeout=30_000)
             require(receipt_response.ok, f"integrity receipt request failed: {receipt_response.status}")
             receipt = receipt_response.json()
+            page.wait_for_function("observed => document.querySelector('#publication-history')?.textContent?.includes(observed)", arg=receipt["observed_at"], timeout=30_000)
+            history_text = page.locator("#publication-history").inner_text()
+            require(receipt["observed_at"] in history_text, "publication history does not end at the current live receipt")
             expected_states = {
                 "do_not_compare": "DO NOT SHORTLIST",
                 "investigate": "INVESTIGATE",
@@ -192,6 +195,7 @@ def main() -> int:
             print(json.dumps({
                 "base": args.base.rstrip("/"),
                 "receipt_status": status,
+                "history_includes_current_receipt": True,
                 "presentation_accessibility": "landmarks, h1, named controls and image alt text pass",
                 "silver_decision": silver_state,
                 "gold_decision": gold_state,
