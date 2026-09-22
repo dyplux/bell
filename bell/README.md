@@ -1,5 +1,24 @@
 # Bell - RWA Comparability Evidence
 
+> **Live demo:** [bell.dyplux.com](https://bell.dyplux.com/) · **Track:** Real World Assets
+
+Bell is the pre-comparison integrity gate for tokenised stocks, ETFs and commodities. It
+does not rank wrappers or tell an investor what to buy. It checks whether representations
+grouped under one CMC reference have enough identity, unit and market evidence to be compared
+fairly, then records the next diligence action.
+
+## The 60-second judge path
+
+1. Open the [live monitor](https://bell.dyplux.com/)
+2. Search `Silver` and read the `DO NOT SHORTLIST` route, observed endpoints and capital hold
+3. Search `Marvell` and see the `FACTS OPEN` route without a winner being invented
+4. Search `Gold` and open the repeat-window evidence
+5. Scroll to `POPULATION SHAPE` to see the full-scan route counts and observed spread bands
+6. Open `Receipt` or `Inspect credential-free receipt` to verify the dated source evidence
+
+The public page requires no account and no API key. The current live receipt is fresh when the
+badge says `LIVE RECEIPT · FRESH`; otherwise the page labels the fallback as dated replay.
+
 ## Competition focus
 
 The flagship build is the **RWA Surface Integrity Monitor**. It scans the full
