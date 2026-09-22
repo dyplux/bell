@@ -53,6 +53,8 @@ def capture(base: str, output: Path, channel: str) -> dict:
         if temporal.count():
             temporal.wait_for(state='visible', timeout=30_000)
             page.wait_for_function("document.querySelector('#decision-hero [data-temporal-evidence]')?.textContent?.includes('72H OVERLAP')", timeout=30_000)
+            temporal.scroll_into_view_if_needed()
+            page.wait_for_timeout(250)
             page.screenshot(path=str(output / '05-gold-repeat-window.png'), full_page=False)
 
         manifest['console_errors'] = errors

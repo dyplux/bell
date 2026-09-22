@@ -446,3 +446,5 @@ label in the search field while retaining the numeric RWA ID in the URL. The
 live capture produced five labelled frames for the hero, Silver desktop and
 mobile, Marvell facts-open and Gold repeat-window paths. It recorded zero
 console errors and retained the current receipt timestamp in its manifest.
+The Gold frame scrolls to the temporal panel itself, so its label corresponds
+to visible evidence rather than merely the route that was opened.
