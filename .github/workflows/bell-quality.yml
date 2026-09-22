@@ -22,7 +22,11 @@ jobs:
           node-version: '20'
 
       - name: Run Python tests
-        run: python -m unittest discover -s bell/tests -p 'test_*.py' -q
+        # bell/tests import modules that live in bell/ (prepare_demo,
+        # verify_demo_manifest, verify_case_receipt), so bell/ must be on the
+        # import path. This is the command the README documents; omitting
+        # PYTHONPATH made the gate fail on every push with ModuleNotFoundError.
+        run: PYTHONPATH=bell python -m unittest discover -s bell/tests -p 'test_*.py' -q
 
       - name: Run browser-independent JavaScript tests
         run: node --test bell/tests/*.cjs

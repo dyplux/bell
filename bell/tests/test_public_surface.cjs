@@ -82,12 +82,18 @@ test('explorer keeps all four RWA routes and the freshness boundary visible', ()
   assert.match(explorer, /does not infer backing/);
 });
 
-test('hero receipt label preserves the live freshness state', () => {
+test('hero receipt label states the observation time, not a freshness adjective', () => {
   const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
   assert.match(page, /id="refresh-receipt"/);
   assert.match(integrity, /window\.location\.reload\(\)/);
   assert.match(integrity, /fetch\(source, \{ cache: 'no-store'/);
-  assert.match(integrity, /LIVE RECEIPT.*String\(status\)\.toUpperCase\(\)/s);
+  // "LIVE RECEIPT / FRESH" was read as "measured just now" when it only meant
+  // "published recently", so the label must carry the observation timestamp.
+  assert.match(integrity, /OBSERVED \$\{observedStamp\} UTC/);
+  assert.doesNotMatch(integrity, /LIVE RECEIPT · \$\{String\(status\)/);
+  // The displayed receipt must never be presented as the byte-verifiable one.
+  assert.match(integrity, /replay-receipt-note/);
+  assert.match(integrity, /byte-verifiable replay receipt/);
   assert.match(integrity, /publication\?\.source === 'dated_static'/);
   const index = fs.readFileSync(path.join(site, 'index.html'), 'utf8');
   assert.match(index, /id="hero-receipt-trail"/);
@@ -224,4 +230,23 @@ test('public catalogue is a complete credential-free map snapshot', () => {
   assert.ok(catalogue.assets.some(asset => asset.asset_type === 'etf'));
   assert.ok(catalogue.assets.some(asset => asset.asset_type === 'commodity'));
   assert.ok(catalogue.assets.every(asset => asset.slug && asset.rwa_id));
+});
+
+test('population route guidance is published once, not repeated per card', () => {
+  const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
+  // Repeating the same route on every card made roughly half the population
+  // list constant prose and buried the per-reference signals that differ.
+  assert.match(integrity, /function renderRouteLegend/);
+  assert.match(integrity, /renderRouteLegend\(visible\)/);
+  assert.doesNotMatch(integrity, /\$\{renderHandoff\(alert\)\}/);
+  assert.doesNotMatch(integrity, /\$\{renderCompactRoute\(item\)\}/);
+});
+
+test('publication history labels stay distinct when receipts share a day', () => {
+  const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
+  // Several receipts can land on one calendar day; MM-DD labels then repeat
+  // and read as a broken axis.
+  assert.match(integrity, /const distinctDays = new Set/);
+  assert.match(integrity, /labelByTime/);
+  assert.match(integrity, /Short series/);
 });

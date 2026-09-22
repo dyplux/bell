@@ -420,29 +420,36 @@
     return `<details class="research-worksheet"><summary>Open research worksheet</summary><p class="worksheet-note">Local handoff for your research process. These checks are your record, not Bell verification or investment approval.</p><div class="worksheet-checks">${checks}</div><textarea aria-label="Research note for ${escapeHTML(item.name || item.symbol || 'this reference')}" data-worksheet-note="${escapeHTML(item.rwa_id)}" placeholder="Add the one unresolved question or source you want to carry into the memo">${escapeHTML(worksheet.note)}</textarea><div class="worksheet-footer"><span data-worksheet-status="${escapeHTML(item.rwa_id)}">${escapeHTML(worksheetStateLabel(worksheet))}</span><button type="button" class="brief-button" data-save-worksheet="${escapeHTML(item.rwa_id)}">Save local worksheet</button></div></details>`;
   }
 
-  function renderHandoff(item) {
-    if (item.state === 'do_not_compare') {
-      return '<div class="alert-handoff"><span>TO CLEAR THIS CASE</span><ol><li>Match the RWA ID to the token ID and issuer ID</li><li>Confirm the exact instrument and unit, then verify issuer and redemption terms</li><li>Obtain venue and execution evidence before comparing wrappers</li></ol></div>';
-    }
-    if (Number(item.token_count || 0) === 1) {
-      return '<div class="alert-handoff"><span>SINGLE REPRESENTATION PATH</span><p>CMC returned one representation for this reference, so there is no wrapper ranking to perform. Verify the instrument, issuer, backing, redemption, eligibility, custody and executable liquidity before treating it as investable.</p></div>';
-    }
-    if (item.state === 'investigate') {
-      return '<div class="alert-handoff"><span>TO MOVE FORWARD</span><p>Classify the representation, confirm the issuer and missing fields, then keep unresolved wrappers separate in the research memo.</p></div>';
-    }
-    return '<div class="alert-handoff"><span>FACTS OPEN PATH</span><p>No published Bell rule fired for this reference. You may inspect the observed rows, but run external checks for backing, eligibility, redemption, custody and executable liquidity before treating any wrapper as investable.</p></div>';
+  // Route guidance is identical for every reference in the same state, so it is
+  // published once as a legend above the list rather than repeated on each card.
+  // Repeating it made roughly half the population list constant prose and buried
+  // the per-reference signals that actually differ.
+  const routeLegend = {
+    do_not_compare: { label: 'DO NOT SHORTLIST', route: 'Resolve identity, unit and market evidence', steps: ['Match the RWA ID to the token ID and issuer ID', 'Confirm the exact instrument and unit, then verify issuer and redemption terms', 'Obtain venue and execution evidence before comparing wrappers'] },
+    single_representation: { label: 'SINGLE REPRESENTATION', route: 'No comparison route; verify instrument and issuer terms', steps: ['CMC returned one representation, so there is no wrapper ranking to perform', 'Verify instrument, issuer, backing, redemption, eligibility and custody', 'Confirm executable liquidity before treating it as investable'] },
+    investigate: { label: 'INVESTIGATE', route: 'Classify the representation and verify missing fields', steps: ['Classify the representation and confirm the issuer', 'Fill the missing fields named on the card', 'Keep unresolved wrappers separate in the research memo'] },
+    no_flags: { label: 'FACTS OPEN', route: 'Complete external backing and execution checks', steps: ['No published rule fired; this is not an approval', 'Inspect the observed rows for yourself', 'Run external backing, eligibility, redemption, custody and liquidity checks'] },
+  };
+
+  function routeKey(item) {
+    if (item.state === 'do_not_compare') return 'do_not_compare';
+    if (Number(item.token_count || 0) === 1) return 'single_representation';
+    if (item.state === 'investigate') return 'investigate';
+    return 'no_flags';
   }
 
-  function renderCompactRoute(item) {
-    const route = item.state === 'do_not_compare'
-      ? 'Resolve identity, unit and market evidence'
-      : Number(item.token_count || 0) === 1
-        ? 'No comparison route; verify instrument and issuer terms'
-        : item.state === 'investigate'
-          ? 'Classify the representation and verify missing fields'
-          : 'Complete external backing and execution checks';
-    return `<div class="compact-route"><span>NEXT CHECK</span><p>${route}</p></div>`;
+  function renderRouteLegend(items) {
+    const present = [];
+    items.forEach(item => { const k = routeKey(item); if (!present.includes(k)) present.push(k); });
+    if (!present.length) return '';
+    const blocks = present.map(key => {
+      const entry = routeLegend[key];
+      const count = items.filter(item => routeKey(item) === key).length;
+      return `<div class="route-legend-item" data-route="${key}"><div class="route-legend-head"><span class="route-legend-label">${escapeHTML(entry.label)}</span><strong>${count.toLocaleString()}</strong></div><p class="route-legend-route">${escapeHTML(entry.route)}</p><ol>${entry.steps.map(step => `<li>${escapeHTML(step)}</li>`).join('')}</ol></div>`;
+    }).join('');
+    return `<aside class="route-legend" aria-label="What each state means and what to do next"><div class="route-legend-top"><span class="eyebrow">WHAT TO DO NEXT, BY STATE</span><small>Published once. Each card below shows only what differs for that reference.</small></div><div class="route-legend-grid">${blocks}</div></aside>`;
   }
+
 
   function renderMetrics() {
     const universe = receipt.universe;
@@ -453,12 +460,33 @@
       const age = Math.max(0, (Date.now() - Date.parse(publication.published_at)) / 1000);
       status = age <= Number(publication.stale_after_seconds) ? 'fresh' : 'stale';
     }
-    const receiptLabel = publication ? `${publication.source === 'dated_static' ? 'DATED REPLAY' : 'LIVE RECEIPT'} · ${String(status).toUpperCase()}` : 'DATED RECEIPT';
+    // "FRESH" was read as "measured just now" when it only meant "published
+    // recently". The label now states when the population was OBSERVED, and names
+    // the replay receipt separately so the displayed receipt is never mistaken
+    // for the byte-verifiable one.
+    const observedStamp = String(receipt.observed_at || '').replace('T', ' ').slice(0, 16);
+    const ageMinutes = publication?.published_at
+      ? Math.max(0, Math.round((Date.now() - Date.parse(publication.published_at)) / 60000))
+      : null;
+    const ageLabel = ageMinutes === null ? ''
+      : ageMinutes < 60 ? ` · PUBLISHED ${ageMinutes}M AGO`
+      : ` · PUBLISHED ${Math.round(ageMinutes / 60)}H AGO`;
+    const receiptLabel = publication
+      ? (publication.source === 'dated_static'
+        ? `DATED REPLAY · OBSERVED ${observedStamp} UTC`
+        : `OBSERVED ${observedStamp} UTC${ageLabel}`)
+      : `DATED RECEIPT · OBSERVED ${observedStamp} UTC`;
     byId('receipt-status-label').textContent = receiptLabel;
     const heroProofStatus = document.querySelector('.proof-id');
     if (heroProofStatus) heroProofStatus.textContent = publication?.source === 'dated_static'
-      ? 'DATED REPLAY'
-      : `LIVE RECEIPT · ${String(status).toUpperCase()}`;
+      ? `DATED REPLAY · OBSERVED ${observedStamp} UTC`
+      : `OBSERVED ${observedStamp} UTC${ageLabel}`;
+    const replayNote = byId('replay-receipt-note');
+    if (replayNote) {
+      replayNote.textContent = publication?.source === 'dated_static'
+        ? 'This receipt is the byte-verifiable replay receipt.'
+        : 'This is the current receipt. The byte-verifiable replay receipt is the dated one linked below, and it is a different observation.';
+    }
     const glossary = document.querySelector('.plain-words dl');
     if (glossary && !glossary.dataset.extended) {
       glossary.insertAdjacentHTML('beforeend', '<div><dt>HHI</dt><dd>A concentration index from 0 to 10,000; higher means reported value is held by fewer issuer labels</dd></div><div><dt>Effective issuer count</dt><dd>A simple equivalent count based only on positive reported market-cap shares, not a count of real issuers</dd></div>');
@@ -693,14 +721,14 @@
       const evidence = alert.signals.filter(signal => signal.severity !== 'info').map(signal => `<div class="evidence-rule"><b>${escapeHTML(signalLabels[signal.code] || signal.code)}</b><p>${escapeHTML(signal.message)}</p><ul>${renderEvidence(signal)}</ul></div>`).join('');
       const stateLabel = alert.state === 'no_flags' ? 'FACTS OPEN' : alert.state === 'do_not_compare' ? 'DO NOT SHORTLIST' : alert.state.replaceAll('_', ' ').toUpperCase();
       const decision = alert.decision || {};
-      return `<article class="alert-row" data-rwa-id="${escapeHTML(alert.rwa_id)}"><div class="alert-name">${escapeHTML(alert.name)}<small>${escapeHTML(alert.symbol)} · ${escapeHTML(alert.asset_type)} · ${alert.issuer_count} issuers</small></div><div class="alert-state ${alert.state === 'investigate' ? 'investigate' : ''}">${escapeHTML(stateLabel)}</div><div class="alert-signals">${escapeHTML(labels)}</div><div class="alert-tokens"><strong>${alert.token_count}</strong><small>representations</small></div><div class="alert-decision"><span>Decision effect</span><b>${escapeHTML(displayDecisionLabel(alert))}</b><p>${escapeHTML(decision.consequence || '')}</p></div><div class="alert-action"><span>Next action</span>${escapeHTML(alert.next_action)}</div>${renderHandoff(alert)}<div class="alert-tools">${watchButton(alert)}${briefButton(alert.rwa_id)}</div><details class="alert-details"><summary>Inspect evidence</summary>${evidence}<h4>Representation rows</h4>${renderTokenTable(alert)}</details>${renderWorksheet(alert)}</article>`;
+      return `<article class="alert-row" data-rwa-id="${escapeHTML(alert.rwa_id)}"><div class="alert-name">${escapeHTML(alert.name)}<small>${escapeHTML(alert.symbol)} · ${escapeHTML(alert.asset_type)} · ${alert.issuer_count} issuers</small></div><div class="alert-state ${alert.state === 'investigate' ? 'investigate' : ''}">${escapeHTML(stateLabel)}</div><div class="alert-signals">${escapeHTML(labels)}</div><div class="alert-tokens"><strong>${alert.token_count}</strong><small>representations</small></div><div class="alert-decision"><span>Decision effect</span><b>${escapeHTML(displayDecisionLabel(alert))}</b><p>${escapeHTML(decision.consequence || '')}</p></div><div class="alert-action"><span>Next action</span>${escapeHTML(alert.next_action)}</div><div class="alert-tools">${watchButton(alert)}${briefButton(alert.rwa_id)}</div><details class="alert-details"><summary>Inspect evidence</summary>${evidence}<h4>Representation rows</h4>${renderTokenTable(alert)}</details>${renderWorksheet(alert)}</article>`;
   }
 
   function renderIndexRow(item, detail) {
     if (detail) return renderAlertRow(detail);
     const stateLabel = item.state === 'no_flags' ? 'FACTS OPEN' : item.state === 'do_not_compare' ? 'DO NOT SHORTLIST' : String(item.state || '').replaceAll('_', ' ').toUpperCase();
     const decision = item.decision || {};
-    return `<article class="alert-row compact-row" data-rwa-id="${escapeHTML(item.rwa_id)}"><div class="alert-name">${escapeHTML(item.name)}<small>${escapeHTML(item.symbol)} · ${escapeHTML(item.asset_type)} · ${item.issuer_count || 0} issuers · RWA ${escapeHTML(item.rwa_id)}</small></div><div class="alert-state ${item.state === 'investigate' ? 'investigate' : item.state === 'no_flags' ? 'clear' : ''}">${escapeHTML(stateLabel)}</div><div class="alert-signals">${escapeHTML((item.signal_codes || []).filter(code => code !== 'NO_TRADFI_MARKET').slice(0, 3).map(code => signalLabels[code] || code).join(' · ') || 'No published rule hit')}</div><div class="alert-tokens"><strong>${Number(item.token_count || 0).toLocaleString()}</strong><small>representations</small></div><div class="alert-decision"><span>Decision effect</span><b>${escapeHTML(displayDecisionLabel(item, 'FACTS OPEN'))}</b><p>${escapeHTML(decision.consequence || '')}</p><p class="compact-observation"><span>OBSERVED</span> ${escapeHTML(compactObservation(item))}</p></div><div class="alert-action"><span>Next action</span>${escapeHTML(item.next_action || '')}</div>${renderCompactRoute(item)}<div class="alert-tools">${watchButton(item)}${briefButton(item.rwa_id)}</div><details class="alert-details"><summary>Inspect representations</summary><p class="compact-note">CMC quote rows observed in this receipt. Bell uses them to route research, not to certify backing, eligibility, liquidity or equivalence.</p><ul class="compact-evidence">${renderCompactEvidence(item)}</ul>${renderTokenTable(item)}</details>${renderWorksheet(item)}</article>`;
+    return `<article class="alert-row compact-row" data-rwa-id="${escapeHTML(item.rwa_id)}"><div class="alert-name">${escapeHTML(item.name)}<small>${escapeHTML(item.symbol)} · ${escapeHTML(item.asset_type)} · ${item.issuer_count || 0} issuers · RWA ${escapeHTML(item.rwa_id)}</small></div><div class="alert-state ${item.state === 'investigate' ? 'investigate' : item.state === 'no_flags' ? 'clear' : ''}">${escapeHTML(stateLabel)}</div><div class="alert-signals">${escapeHTML((item.signal_codes || []).filter(code => code !== 'NO_TRADFI_MARKET').slice(0, 3).map(code => signalLabels[code] || code).join(' · ') || 'No published rule hit')}</div><div class="alert-tokens"><strong>${Number(item.token_count || 0).toLocaleString()}</strong><small>representations</small></div><div class="alert-decision"><span>Decision effect</span><b>${escapeHTML(displayDecisionLabel(item, 'FACTS OPEN'))}</b><p>${escapeHTML(decision.consequence || '')}</p><p class="compact-observation"><span>OBSERVED</span> ${escapeHTML(compactObservation(item))}</p></div><div class="alert-action"><span>Next action</span>${escapeHTML(item.next_action || '')}</div><div class="alert-tools">${watchButton(item)}${briefButton(item.rwa_id)}</div><details class="alert-details"><summary>Inspect representations</summary><p class="compact-note">CMC quote rows observed in this receipt. Bell uses them to route research, not to certify backing, eligibility, liquidity or equivalence.</p><ul class="compact-evidence">${renderCompactEvidence(item)}</ul>${renderTokenTable(item)}</details>${renderWorksheet(item)}</article>`;
   }
 
   function markdownBrief(item) {
@@ -939,7 +967,9 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     const focusAction = normalizedQuery && matching.length ? ' <button type="button" class="focus-action" data-open-first-evidence>Open first evidence ↓</button>' : '';
     const range = matching.length ? `${start + 1}-${Math.min(start + pageSize, matching.length)}` : '0';
     byId('alert-count').innerHTML = `Showing <strong>${range}</strong> of <strong>${matching.length}</strong> matching references · ${indexed.length.toLocaleString()} references scanned · representation rows remain inspectable for each indexed reference.${focusAction}`;
-    byId('alert-list').innerHTML = visible.map(item => renderIndexRow(item, details.get(String(item.rwa_id)))).join('') || '<p class="section-note">No references match this filter.</p>';
+    byId('alert-list').innerHTML = visible.length
+      ? renderRouteLegend(visible) + visible.map(item => renderIndexRow(item, details.get(String(item.rwa_id)))).join('')
+      : '<p class="section-note">No references match this filter.</p>';
     const pagination = byId('alert-pagination');
     if (pagination) {
       pagination.innerHTML = matching.length > pageSize
@@ -1212,13 +1242,23 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     const delta = (key) => Number(latest.states?.[key] || 0) - Number(previous.states?.[key] || 0);
     const signed = (value) => `${value > 0 ? '+' : ''}${value.toLocaleString()}`;
     const visibleObservations = observations.slice(-9);
+    // Several receipts can land on the same calendar day. Labelling every column
+    // MM-DD then prints the same date repeatedly and reads as a broken axis.
+    const distinctDays = new Set(visibleObservations.map(item => String(item.observed_at || '').slice(0, 10)));
+    const labelByTime = distinctDays.size < visibleObservations.length;
+    const spanNote = distinctDays.size <= 2
+      ? `Short series: ${visibleObservations.length} receipts across ${distinctDays.size} calendar ${distinctDays.size === 1 ? 'day' : 'days'}. Columns are separate observations, not daily closes.`
+      : `${visibleObservations.length} receipts across ${distinctDays.size} calendar days.`;
     const historyBars = visibleObservations.map(item => {
       const states = item.states || {};
       const total = Number(item.tokenised_references_scanned || 0) || 1;
-      const stamp = String(item.observed_at || '').slice(5, 10);
+      const observedAt = String(item.observed_at || '');
+      const stamp = labelByTime
+        ? `${observedAt.slice(8, 10)} ${observedAt.slice(11, 16)}`.trim()
+        : observedAt.slice(5, 10);
       return `<div class="history-point" title="${escapeHTML(item.observed_at || '')}"><div class="history-stack"><i class="blocked" style="height:${Math.max((Number(states.do_not_compare || 0) / total) * 100, 1)}%"></i><i class="investigate" style="height:${Math.max((Number(states.investigate || 0) / total) * 100, 1)}%"></i><i class="clear" style="height:${Math.max((Number(states.no_flags || 0) / total) * 100, 1)}%"></i></div><small>${escapeHTML(stamp)}</small></div>`;
     }).join('');
-    target.innerHTML = `<div class="publication-history-head"><div><span class="eyebrow">PUBLICATION HISTORY</span><h3>What changed between the two receipts</h3></div><span>${escapeHTML(previous.observed_at || 'prior')} → ${escapeHTML(latest.observed_at || 'latest')}</span></div><div class="publication-history-grid"><div><strong>${signed(delta('do_not_compare'))}</strong><small>blocked groups</small></div><div><strong>${signed(delta('investigate'))}</strong><small>investigate groups</small></div><div><strong>${signed(delta('no_flags'))}</strong><small>clear groups</small></div><div><strong>${signed(Number(latest.signals?.PRICE_DENOMINATION_BREAK || 0) - Number(previous.signals?.PRICE_DENOMINATION_BREAK || 0))}</strong><small>price spread signals</small></div></div><div class="history-chart" aria-label="State composition across published receipts"><div class="history-chart-label"><span>STATE COMPOSITION · LAST ${visibleObservations.length} OF ${observations.length} RECEIPTS</span><small>each column is one dated summary</small></div><div class="history-bars">${historyBars}</div></div><p>Counts are from the published summaries, not inferred market impact. The receipts cover ${Number(latest.tokenised_references_scanned || 0).toLocaleString()} tokenised references and ${Number(latest.tokens_scanned || 0).toLocaleString()} representations.</p>`;
+    target.innerHTML = `<div class="publication-history-head"><div><span class="eyebrow">PUBLICATION HISTORY</span><h3>What changed between the two receipts</h3></div><span>${escapeHTML(previous.observed_at || 'prior')} → ${escapeHTML(latest.observed_at || 'latest')}</span></div><div class="publication-history-grid"><div><strong>${signed(delta('do_not_compare'))}</strong><small>blocked groups</small></div><div><strong>${signed(delta('investigate'))}</strong><small>investigate groups</small></div><div><strong>${signed(delta('no_flags'))}</strong><small>clear groups</small></div><div><strong>${signed(Number(latest.signals?.PRICE_DENOMINATION_BREAK || 0) - Number(previous.signals?.PRICE_DENOMINATION_BREAK || 0))}</strong><small>price spread signals</small></div></div><div class="history-chart" aria-label="State composition across published receipts"><div class="history-chart-label"><span>STATE COMPOSITION · LAST ${visibleObservations.length} OF ${observations.length} RECEIPTS</span><small>${escapeHTML(spanNote)}</small></div><div class="history-bars">${historyBars}</div></div><p>Counts are from the published summaries, not inferred market impact. The receipts cover ${Number(latest.tokenised_references_scanned || 0).toLocaleString()} tokenised references and ${Number(latest.tokens_scanned || 0).toLocaleString()} representations.</p>`;
   }
 
   async function loadPublicationHistory() {
