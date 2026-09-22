@@ -331,7 +331,7 @@ returned `LIVE RECEIPT · FRESH`, kept `documentWidth = viewportWidth` at 390px
 and returned Gold as `DO NOT SHORTLIST` with seven representations and six
 issuer labels.
 
-The public contract suite for this release passed `28/28`, including a source
+The public contract suite for that milestone passed `28/28`, including a source
 test that requires the endpoint panel and its boundary language to remain
 present.
 
@@ -396,37 +396,6 @@ The deployed Silver route was checked after the observed quote-band addition:
 This is a presentation and navigation improvement. It does not change the
 underlying receipt or claim that the observed rows are executable quotes.
 
-## Final public release verification: 22 September 2026 · final29
-
-The public submission was rechecked after the final browser and demo pass. The
-credential-free browser run returned `LIVE RECEIPT · FRESH`, passed the Silver,
-Gold, Tesla and Marvell decision routes, exposed the Gold repeat-window panel,
-confirmed the mobile decision preview, and reported no horizontal overflow or
-browser console errors at desktop, tablet or 390px mobile widths.
-
-The same run verified the map-only reference handoff, the single-representation
-route, population concentration and attribution export, the decision brief,
-case receipt, shareable case link and dated replay fallback. The public
-submission gate inspected 132 tracked files and found no private paths or
-identity disclosures in the release surface.
-
-The credential-free demo preparation immediately before recording produced the
-following current Silver values:
-
-| Field | Published value |
-|---|---|
-| Observed | `2026-09-22T07:08:27Z` |
-| Published | `2026-09-22T07:08:48.414Z` |
-| Route | `DO NOT SHORTLIST` |
-| Representations / issuers | `5 / 4` |
-| Observed quote range | `31.01×` |
-| Low endpoint | `GRAMS · 2.11 · Token` |
-| High endpoint | `XAG · 65.31 · NA (Derivatives)` |
-
-The raw browser walkthrough is retained privately with its manifest. It is a
-demo capture of the public credential-free surface, not an authenticated CMC
-session or proof that every reference can be queried on demand.
-
 ## Reported-volume context acceptance: 22 September 2026 · final22
 
 The capital check now recalculates an amount-to-reported-volume percentage as
@@ -466,7 +435,7 @@ not a second source or an investment approval.
 `bell/prepare_demo.py --reference Silver` was run against the public
 credential-free receipt immediately before capture preparation. It returned the
 current observation timestamp, route, five representations, four issuers, the
-31.02x observed spread and the current low/high endpoint labels. The script has
+31.01x observed spread and the current low/high endpoint labels. The script has
 no CMC credential path and its pure extraction helpers are covered by two unit
 tests.
 
@@ -474,8 +443,8 @@ tests.
 
 The public capture now opens `?reference=5` with the human-readable `Silver`
 label in the search field while retaining the numeric RWA ID in the URL. The
-live capture produced five labelled frames for the hero, Silver desktop and
-mobile, Marvell facts-open and Gold repeat-window paths. It recorded zero
+live capture produced six labelled frames for the hero, Silver desktop and
+mobile, Marvell facts-open, Gold repeat-window and population-shape paths. It recorded zero
 console errors and retained the current receipt timestamp in its manifest.
 The Gold frame scrolls to the temporal panel itself, so its label corresponds
 to visible evidence rather than merely the route that was opened.
@@ -490,3 +459,35 @@ identity, unit, issuer and execution checks. The browser verifier confirmed the
 full $25,000 interactive capital check separately, and the capture manifest
 recorded zero console errors. This is a user-consequence summary, not a buy,
 sell, loss or executable-liquidity claim.
+
+## Final public release verification: 22 September 2026 · final29
+
+The public submission was rechecked after the final browser and demo pass. The
+credential-free browser run returned `LIVE RECEIPT · FRESH`, passed the Silver,
+Gold, Tesla and Marvell decision routes, exposed the Gold repeat-window panel,
+confirmed the mobile decision preview, and reported no horizontal overflow or
+browser console errors at desktop, tablet or 390px mobile widths.
+
+The same run verified the map-only reference handoff, the single-representation
+route, population concentration and attribution export, the decision brief,
+case receipt, shareable case link and dated replay fallback. The public
+submission gate inspected 132 tracked files and found no private paths or
+identity disclosures in the release surface.
+
+The credential-free demo preparation immediately before recording produced the
+following current Silver values:
+
+| Field | Published value |
+|---|---|
+| Observed | `2026-09-22T07:08:27Z` |
+| Published | `2026-09-22T07:08:48.414Z` |
+| Route | `DO NOT SHORTLIST` |
+| Representations / issuers | `5 / 4` |
+| Observed quote range | `31.01×` |
+| Low endpoint | `GRAMS · 2.11 · Token` |
+| High endpoint | `XAG · 65.31 · NA (Derivatives)` |
+
+The paced raw browser walkthrough is retained privately with its manifest. It
+runs for approximately 107 seconds and records the public credential-free
+surface only. It is an editing source, not an authenticated CMC session or
+proof that every reference can be queried on demand.
