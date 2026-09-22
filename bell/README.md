@@ -138,6 +138,7 @@ Run the public-surface contract checks as well:
 node --test bell/tests/*.cjs
 python3 -m unittest discover -s bell/tests -p 'test_*.py' -q
 python3 bell/verify_integrity_receipt.py
+python3 bell/verify_catalogue_receipt.py
 python3 bell/verify_public_surface.py
 python3 bell/verify_submission.py
 ```
