@@ -152,5 +152,56 @@ class ComparisonIsGatedByTheRules(unittest.TestCase):
         self.assertIsNotNone(routes)
 
 
+
+class CoverageIsReportedNotRestated(unittest.TestCase):
+    """Demoting a rule must not hide what it was telling you.
+
+    MARKET_FIELDS_MISSING fired on 646 of 791 references and drove 84% of the
+    catalogue to INVESTIGATE, so the state distribution restated one API
+    coverage fact 646 times instead of describing any reference. It no longer
+    decides a state - but the fact itself must stay visible, or demoting it
+    would be concealment rather than correction.
+    """
+
+    def _scan(self, tokens):
+        asset = {"rwa_id": "1", "name": "Ref", "symbol": "REF", "asset_type": "commodity", "tokens": tokens}
+        return asset_scan(asset, None, crypto_lookup_for(tokens), crypto_info_checked=True)
+
+    def test_missing_market_fields_no_longer_holds_a_reference_open(self):
+        scan = self._scan([
+            token("AAA", 100.0, 50_000),
+            token("BBB", 101.0, 40_000),
+            token("NOCAP", 99.0, 30_000),
+        ])
+        scan["tokens"][2]["market_cap"] = None
+        rescan = asset_scan(
+            {"rwa_id": "1", "name": "Ref", "symbol": "REF", "asset_type": "commodity",
+             "tokens": [dict(t) for t in scan["tokens"]]},
+            None, crypto_lookup_for(scan["tokens"]), crypto_info_checked=True)
+        codes = [s["code"] for s in rescan["signals"]]
+        self.assertIn("MARKET_FIELDS_MISSING", codes, "the fact must still be reported")
+        severity = next(s["severity"] for s in rescan["signals"] if s["code"] == "MARKET_FIELDS_MISSING")
+        self.assertEqual(severity, "info", "it must not carry warning severity any more")
+        self.assertNotEqual(rescan["state"], "investigate",
+                            "a coverage gap must not by itself hold a reference open")
+
+    def test_the_fact_still_names_which_rows_are_missing(self):
+        reps = [token("AAA", 100.0, 50_000), token("NOCAP", 99.0, 30_000)]
+        reps[1]["market_cap"] = None
+        scan = self._scan(reps)
+        signal = next(s for s in scan["signals"] if s["code"] == "MARKET_FIELDS_MISSING")
+        self.assertIn("tokens", signal["evidence"])
+        self.assertGreaterEqual(signal["evidence"]["count"], 1)
+        self.assertIn("NOCAP", signal["evidence"]["tokens"])
+
+    def test_a_real_contradiction_still_holds_the_reference_open(self):
+        # Demoting one rule must not soften the ones that discriminate.
+        scan = self._scan([
+            token("SPOT", 100.0, 50_000),
+            token("PERP", 100.5, 40_000, derivative=True),
+            token("ALSO", 101.0, 30_000),
+        ])
+        self.assertEqual(scan["state"], "investigate")
+        self.assertIn("DERIVATIVE_MIX", [s["code"] for s in scan["signals"]])
 if __name__ == "__main__":
     unittest.main()

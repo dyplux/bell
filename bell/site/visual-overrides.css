@@ -335,3 +335,9 @@ footer{max-width:2200px;padding-left:64px;padding-right:64px;font-size:12px}
 .explorer-live-no_flags{border-left-color:#5ec89a;background:rgba(80,200,140,.05)}
 .explorer-live-absent{border-left-color:#5a6675;background:rgba(120,130,145,.05)}
 .explorer-live-absent>span{color:#8798ab}
+
+/* One API coverage fact, published once, after it stopped deciding 646 states. */
+.coverage-fact{margin-top:14px;padding:11px 14px;border-left:2px solid #5a6675;background:rgba(120,130,145,.06)}
+.coverage-fact>span{display:block;color:#8798ab;font:9px var(--font);letter-spacing:.09em}
+.coverage-fact>strong{display:block;color:var(--paper);font:500 15px var(--font);margin-top:5px;font-variant-numeric:tabular-nums}
+.coverage-fact>p{margin:6px 0 0;color:#8798ab;font-size:11px;line-height:1.55;max-width:66ch}

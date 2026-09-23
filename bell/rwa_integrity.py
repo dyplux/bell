@@ -292,7 +292,15 @@ def asset_scan(asset: dict, issuer_lookup: dict | None = None, crypto_lookup: di
     if repeated_symbols:
         add("SYMBOL_COLLISION", "warning", "A ticker is reused by multiple representations; symbol is not a safe identity key.", {"symbols": repeated_symbols})
     if missing_fields:
-        add("MARKET_FIELDS_MISSING", "warning", "One or more token representations are missing price, market cap or volume.", {"tokens": missing_fields, "count": len(missing_fields)})
+        # Severity "info", not "warning". This fires on 646 of 791 references
+        # and single-handedly drove 84% of the catalogue to INVESTIGATE, which
+        # made the state distribution a restatement of one API coverage fact -
+        # CoinMarketCap does not populate market_cap on most RWA token rows -
+        # rather than a finding about any particular reference. It is reported
+        # once as a population statistic and no longer decides a state; the
+        # route filter already excludes a row that lacks a price or volume, so
+        # nothing downstream depends on it holding the reference open.
+        add("MARKET_FIELDS_MISSING", "info", "One or more token representations are missing price, market cap or volume.", {"tokens": missing_fields, "count": len(missing_fields)})
     if missing_crypto_info:
         add("TOKEN_INFO_MISSING", "warning", "One or more crypto IDs could not be resolved through CMC cryptocurrency/info; chain and contract identity remains incomplete.", {"tokens": missing_crypto_info, "count": len(missing_crypto_info)})
     if not asset.get("tradfi_markets"):

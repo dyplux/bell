@@ -490,6 +490,29 @@
     }
   }
 
+
+  // MARKET_FIELDS_MISSING used to drive 84% of the catalogue to INVESTIGATE,
+  // which restated one API coverage fact 646 times instead of describing any
+  // reference. It no longer decides a state - so the fact has to be published
+  // once, in its own right, or demoting it would be concealment.
+  function renderCoverageFact() {
+    const target = byId('coverage-fact');
+    if (!target || !receipt?.universe) return;
+    const signals = receipt.universe.signals || {};
+    const refs = Number(receipt.universe.tokenised_references_scanned || 0);
+    const rows = Number(receipt.universe.tokens_scanned || 0);
+    const missing = Number(signals.MARKET_FIELDS_MISSING || 0);
+    if (!missing || !refs) { target.hidden = true; return; }
+    target.hidden = false;
+    target.innerHTML = `<span>API COVERAGE, NOT A VERDICT</span>`
+      + `<strong>${missing.toLocaleString()} of ${refs.toLocaleString()} references</strong>`
+      + `<p>carry at least one representation with no price, market cap or volume reported by `
+      + `CoinMarketCap, across ${rows.toLocaleString()} representation rows. This is a gap in the `
+      + `source data, not a contradiction in any one reference, so it is reported here once rather `
+      + `than held against each reference individually. Rows without a price and traded volume are `
+      + `excluded from every comparison on this page.</p>`;
+  }
+
   function renderMetrics() {
     const universe = receipt.universe;
     byId('observed-at').textContent = `OBSERVED ${receipt.observed_at}`;
@@ -1521,6 +1544,7 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
       byId('alert-search').value = query;
       renderMetrics();
       renderFinding();
+      renderCoverageFact();
       renderThesisStrip();
       renderInvestorTask();
       renderAlerts();
