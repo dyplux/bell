@@ -86,7 +86,12 @@ test('hero receipt label states the observation time, not a freshness adjective'
   const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
   assert.match(page, /id="refresh-receipt"/);
   assert.match(integrity, /window\.location\.reload\(\)/);
-  assert.match(integrity, /fetch\(source, \{ cache: 'no-store'/);
+  // The receipt must never be served from cache without asking. That was
+  // expressed as `no-store`, which forbids caching outright and so re-downloaded
+  // an unchanged receipt on every load; `no-cache` keeps the guarantee and
+  // allows a 304. Assert the guarantee - always revalidate - not the token.
+  assert.match(integrity, /fetch\(source, \{ cache: 'no-cache'/);
+  assert.doesNotMatch(integrity, /fetch\(source, \{ cache: '(default|force-cache|only-if-cached)'/);
   // "LIVE RECEIPT / FRESH" was read as "measured just now" when it only meant
   // "published recently", so the label must carry the observation timestamp.
   assert.match(integrity, /OBSERVED \$\{observedStamp\} UTC/);
