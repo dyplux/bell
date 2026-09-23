@@ -198,6 +198,11 @@ does not infer liquidity, solvency, ownership rights, causality or an action.
 - [Tesla repeat-window replay payload](site/proof/tesla-live-2026-09-17.payload.json)
 - [Population integrity history](site/proof/rwa-surface-integrity-history.json)
 - [Latest normalized population inputs](site/proof/rwa-surface-integrity-inputs-2026-09-21.json)
+  - This file is 16 MB, and that is deliberate. It is the credential-free
+    capture of every CMC surface the 21 September scan read. Without it,
+    "replayable" would mean "trust the receipt"; with it, `make verify`
+    re-runs the scan and asserts the published receipt is what those inputs
+    produce, in about a second, with no API key. It is the evidence, not bulk.
 - [Population receipt verifier](verify_integrity_receipt.py)
 - [Public source map and exact API surfaces](SOURCE-MAP.md)
 - [Case receipt verifier](verify_case_receipt.py)
