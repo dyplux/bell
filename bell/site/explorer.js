@@ -82,8 +82,54 @@
     return state ? String(state).replaceAll('_', ' ').toUpperCase() : 'DOSSIER PENDING';
   }
 
+  // The map is a dated snapshot of every reference CMC lists; the receipt is the
+  // current scan of the ones carrying tokens. Keeping them apart was honest but
+  // it made the product look dated: a reader searching the map was told the
+  // answer lived somewhere else. Where the live receipt covers the reference,
+  // show its current verdict here instead of sending the reader away.
+  let liveIndex = null;
+  const liveReady = fetch('/api/integrity', { cache: 'no-store', headers: { Accept: 'application/json' } })
+    .then(response => (response.ok ? response.json() : null))
+    .then(receipt => {
+      if (!receipt) return null;
+      const rows = receipt.alert_index || receipt.alerts || [];
+      liveIndex = new Map(rows.map(row => [String(row.rwa_id), row]));
+      liveIndex.observed_at = receipt.observed_at || null;
+      return liveIndex;
+    })
+    .catch(() => null);
+
+  function liveVerdictFor(asset) {
+    if (!liveIndex) return null;
+    return liveIndex.get(String(asset.rwa_id || '')) || null;
+  }
+
+  function liveVerdictBlock(asset) {
+    const row = liveVerdictFor(asset);
+    if (!row) {
+      return '<div class="explorer-live explorer-live-absent"><span>NOT IN THE CURRENT SCAN</span>'
+        + '<p>This reference is in the CoinMarketCap RWA map but carried no token representation in the '
+        + 'latest scan, so there is nothing to compare and no verdict to publish.</p></div>';
+    }
+    const stateLabel = row.state === 'do_not_compare' ? 'DO NOT SHORTLIST'
+      : row.state === 'investigate' ? 'INVESTIGATE'
+      : Number(row.token_count || 0) === 1 ? 'SINGLE REPRESENTATION' : 'FACTS OPEN';
+    const cmp = row.comparison;
+    const answer = cmp
+      ? `<p class="explorer-live-answer"><strong>${Number(cmp.spread_bps).toFixed(1)} bps</strong> across `
+        + `${cmp.route_count} tradable representations · cheapest ${escapeHTML(cmp.cheapest.symbol || '')}`
+        + `${cmp.cheapest_is_deepest ? ', which also carries the most volume' : `, but ${escapeHTML(cmp.deepest.symbol || '')} carries more volume`}.</p>`
+      : '<p class="explorer-live-answer">No comparison is published for this reference: a coded rule refuses it.</p>';
+    return `<div class="explorer-live explorer-live-${escapeHTML(row.state || 'unknown')}">`
+      + `<span>CURRENT VERDICT · OBSERVED ${escapeHTML(String(liveIndex.observed_at || '').replace('T', ' ').slice(0, 16))} UTC</span>`
+      + `<strong>${escapeHTML(stateLabel)}</strong>${answer}`
+      + `<small>${escapeHTML(row.next_action || '')}</small></div>`;
+  }
+
   function renderMapOnly(asset, message = '') {
-    dossier.innerHTML = `<div class="explorer-dossier-head"><div><span class="eyebrow">CMC RWA MAP</span><h3>${escapeHTML(asset.name || 'Reference')}</h3><p>${escapeHTML(asset.symbol || '—')} · ${escapeHTML(asset.asset_type || 'RWA')} · reference ID ${escapeHTML(asset.rwa_id || '—')}</p></div><span class="explorer-state">${asset.has_tokens ? 'DOSSIER PENDING' : 'REFERENCE ONLY'}</span></div><div class="explorer-map-grid"><div><small>Token wrappers</small><strong>${asset.has_tokens ? 'Mapped' : 'None mapped'}</strong></div><div><small>Historical data</small><strong>${asset.last_historical_data ? 'Available' : 'Not shown'}</strong></div><div><small>Next route</small><strong>${asset.has_tokens ? 'Wait for dossier' : 'Descriptive brief'}</strong></div></div><p class="explorer-note">${escapeHTML(message || (asset.has_tokens ? 'The reference is in the CMC map, but no server-side dossier has been published for it yet. A request is queued automatically.' : 'There is no wrapper comparison to make. Bell keeps this as a reference-level route instead of inventing a ranking.'))}</p><a class="source-link" href="/api/published?slug=${encodeURIComponent(slugFor(asset))}" target="_blank" rel="noopener">Open credential-free dossier endpoint ↗</a>`;
+    // liveReady may still be in flight on first paint; re-render when it lands.
+    if (liveIndex === null) liveReady.then(() => { if (liveIndex) renderMapOnly(asset, message); });
+    dossier.innerHTML = `<div class="explorer-dossier-head"><div><span class="eyebrow">CMC RWA MAP</span><h3>${escapeHTML(asset.name || 'Reference')}</h3><p>${escapeHTML(asset.symbol || '—')} · ${escapeHTML(asset.asset_type || 'RWA')} · reference ID ${escapeHTML(asset.rwa_id || '—')}</p></div><span class="explorer-state">${asset.has_tokens ? 'DOSSIER PENDING' : 'REFERENCE ONLY'}</span></div><div class="explorer-map-grid"><div><small>Token wrappers</small><strong>${asset.has_tokens ? 'Mapped' : 'None mapped'}</strong></div><div><small>Historical data</small><strong>${asset.last_historical_data ? 'Available' : 'Not shown'}</strong></div><div><small>Next route</small><strong>${asset.has_tokens ? 'Wait for dossier' : 'Descriptive brief'}</strong></div></div><p class="explorer-note">${escapeHTML(message || (asset.has_tokens ? 'The reference is in the CMC map, but no server-side dossier has been published for it yet. A request is queued automatically.' : 'There is no wrapper comparison to make. Bell keeps this as a reference-level route instead of inventing a ranking.'))}</p><a class="source-link" href="/api/published?slug=${encodeURIComponent(slugFor(asset))}" target="_blank" rel="noopener">Open credential-free dossier endpoint ↗</a>${liveVerdictBlock(asset)}`;
   }
 
   function renderDossier(payload, asset) {

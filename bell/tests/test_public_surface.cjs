@@ -286,3 +286,18 @@ test('the population list can be filtered to the references that have an answer'
   // The filter is useless unless the index carries the field it filters on.
   assert.match(engine, /"comparison": asset\.get\("comparison"\)/);
 });
+
+test('the dated map and the live receipt are joined, not kept apart', () => {
+  const explorerSrc = fs.readFileSync(path.join(site, 'explorer.js'), 'utf8');
+  // A reader searching the map used to be told the answer lived somewhere else,
+  // which read as a dated artefact even though the receipt is current. Where the
+  // live scan covers a reference, its verdict belongs on the same screen.
+  assert.match(explorerSrc, /\/api\/integrity/);
+  assert.match(explorerSrc, /function liveVerdictBlock/);
+  assert.match(explorerSrc, /\$\{liveVerdictBlock\(asset\)\}/);
+  // A reference absent from the scan must say why, not show an empty panel.
+  assert.match(explorerSrc, /NOT IN THE CURRENT SCAN/);
+  assert.match(explorerSrc, /carried no token representation/);
+  // The verdict must carry the observation time, not imply it is live-now.
+  assert.match(explorerSrc, /CURRENT VERDICT · OBSERVED/);
+});
