@@ -359,3 +359,11 @@ footer{max-width:2200px;padding-left:64px;padding-right:64px;font-size:12px}
   .hero>div:first-of-type>.hero-meta{order:9}
   .hero h1{font-size:44px}
 }
+
+/* The strip showed blocked / investigate / facts open and no affirmative, so a
+   reader counting the tiles saw three ways to be refused and none to be
+   answered. The fourth is the comparison Bell actually published. */
+.thesis-metrics{grid-template-columns:repeat(4,1fr)}
+.thesis-metric.comparable{border-top-color:var(--gold)}
+.thesis-metric.comparable strong{color:var(--gold)}
+@media(max-width:760px){.thesis-metrics{grid-template-columns:repeat(2,1fr)}}

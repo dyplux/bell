@@ -577,9 +577,13 @@
     const blocked = Number(states.do_not_compare || 0);
     const investigate = Number(states.investigate || 0);
     const clear = Number(states.no_flags || 0);
-    const unresolved = blocked + investigate;
-    const share = (unresolved / total) * 100;
-    copy.textContent = `${share.toFixed(1)}% of the scanned references need identity or market-data follow-up before a wrapper comparison. This routes the next question; it is not a safety score or an approval label`;
+    const comparable = (receipt.alert_index || []).filter(item => item.comparison).length;
+    // This strip used to print (blocked + investigate) / 791 as a percentage -
+    // a second "comparability" rate in the same vocabulary as the headline's
+    // 64.3%, which is measured over the 244 references where a comparison is
+    // something you could attempt. Two rates, two denominators, one word: the
+    // exact confusion this product exists to prevent. Print the counts.
+    copy.textContent = `Of ${total.toLocaleString()} scanned references, ${blocked.toLocaleString()} carry a contradiction that blocks comparison and ${investigate.toLocaleString()} need identity or market-data follow-up first. ${comparable.toLocaleString()} are published with the comparison performed. This routes the next question; it is not a safety score or an approval label`;
     const issuerValues = new Map();
     let positiveRows = 0;
     let nonPositiveRows = 0;
@@ -607,7 +611,7 @@
     proof.textContent = reportedValue > 0
       ? `The top five issuer labels hold ${(topFive / reportedValue * 100).toFixed(1)}% of positive reported market cap across ${positiveRows.toLocaleString()} rows. ${nonPositiveRows.toLocaleString()} rows have no positive market-cap field`
       : 'No positive market-cap fields were available for the population concentration check';
-    metrics.innerHTML = `<div class="thesis-metric blocked"><strong>${blocked.toLocaleString()}</strong><span>do not shortlist</span></div><div class="thesis-metric investigate"><strong>${investigate.toLocaleString()}</strong><span>investigate first</span></div><div class="thesis-metric clear"><strong>${clear.toLocaleString()}</strong><span>facts open</span></div>`;
+    metrics.innerHTML = `<div class="thesis-metric blocked"><strong>${blocked.toLocaleString()}</strong><span>do not shortlist</span></div><div class="thesis-metric investigate"><strong>${investigate.toLocaleString()}</strong><span>investigate first</span></div><div class="thesis-metric clear"><strong>${clear.toLocaleString()}</strong><span>facts open</span></div><div class="thesis-metric comparable"><strong>${comparable.toLocaleString()}</strong><span>comparison published</span></div>`;
   }
 
   function renderCompactEvidence(item) {

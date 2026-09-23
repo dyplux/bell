@@ -378,3 +378,25 @@ test('the one control the product asks you to use is reachable on a phone', () =
   assert.ok(order('#finding-headline') < order('\\.hero-search'),
     'the headline should still come first: the box needs a question above it');
 });
+
+test('the page states one comparability rate, over one denominator', () => {
+  // The signature strip printed (blocked + investigate) / 791 as a percentage,
+  // next to a headline stating 64.3% measured over the 244 references where a
+  // comparison is something anyone could attempt. Two rates, two denominators,
+  // one word - the exact confusion this product exists to prevent.
+  const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
+  const strip = integrity.split('function renderThesisStrip')[1].split('function renderCompactEvidence')[0];
+  assert.ok(!/const share = \(unresolved \/ total\) \* 100/.test(strip),
+    'the strip computes a second comparability share');
+  assert.ok(!/share\.toFixed/.test(strip), 'the strip still prints a competing rate');
+  assert.match(strip, /scanned references/);
+});
+
+test('the signature strip offers an affirmative, not only ways to be refused', () => {
+  const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
+  const strip = integrity.split('function renderThesisStrip')[1].split('function renderCompactEvidence')[0];
+  assert.match(strip, /thesis-metric comparable/);
+  assert.match(strip, /comparison published/);
+  const css = fs.readFileSync(path.join(site, 'visual-overrides.css'), 'utf8');
+  assert.match(css, /\.thesis-metrics\{grid-template-columns:repeat\(4,1fr\)\}/);
+});
