@@ -47,14 +47,11 @@ source ~/.config/dyplux/bell.env
 python3 bell/integrity_publisher.py
 ```
 
-The product thesis and current scan are documented in
-[RWA-INTEGRITY-PRODUCT-2026-09-15.md](RWA-INTEGRITY-PRODUCT-2026-09-15.md).
 The dated CMC surface composition and its user consequences are in
 [API-FEEDBACK.md](API-FEEDBACK.md).
 The complete visitor journey, receipt lifecycle and demo script are in
 [USER-GUIDE.md](USER-GUIDE.md).
-The investor job-to-be-done, demand hypothesis and differentiation boundary are
-in [PRODUCT-THESIS-2026-09-16.md](PRODUCT-THESIS-2026-09-16.md). The
+The
 credential-free public audit pack is available from the single product page at
 `https://bell.dyplux.com/`; it explains the setup path, receipt contract,
 endpoint map and product boundaries for a reviewer who does not have the
@@ -76,7 +73,7 @@ Comparability and session review are evidence modules inside the terminal, not t
 Bell is a research instrument, not a trading signal.
 
 For the public product rationale and judge path, read the public Bell repository documentation.
-The flagship RWA demo is the [Surface Integrity Monitor](RWA-INTEGRITY-PRODUCT-2026-09-15.md):
+The flagship RWA demo is the Surface Integrity Monitor:
 run `python3 bell/integrity_review.py` to inspect the latest credential-free replay, or open
 `bell/site/index.html` for the visual receipt.
 The receipt comparison utility in [`receipt_compare.py`](receipt_compare.py)
@@ -93,7 +90,7 @@ metadata are not committed. The replay package is a dated 21 September artifact;
 receipt can move independently when the scheduled publisher observes a new window.
 `python3 bell/verify_public_surface.py` performs a credential-free smoke check against the public
 page, health endpoint, live receipt and published Gold dossier; it does not call CMC directly.
-For the investor workflow and product boundary, read [USE-CASE-INVESTOR.md](USE-CASE-INVESTOR.md).
+For the visitor journey and the product boundary, read [USER-GUIDE.md](USER-GUIDE.md).
 For the dated population finding behind the catalogue insight, read [MAP-INSIGHT-2026-09-11.md](MAP-INSIGHT-2026-09-11.md).
 The public page and receipts are the source of truth for the currently exposed CMC surfaces;
 private API-plan notes and internal research records are intentionally not part of this release.

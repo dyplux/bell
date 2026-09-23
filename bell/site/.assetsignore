@@ -1,11 +1,3 @@
 README.md
 .checks/
 .assetsignore
-app.js
-audit-snapshots.js
-catalogue.js
-catalogue-live.js
-research-brief.js
-snapshot.js
-styles.css
-terminal.js

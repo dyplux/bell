@@ -132,8 +132,10 @@ The CMC market-pairs surface is not available on the Startup plan. Bell records
 that limitation rather than presenting missing venue data as zero liquidity.
 
 Read the [public product brief](docs/PRODUCT.md),
-[architecture](docs/ARCHITECTURE.md), [judge path](bell/JUDGE.md) and
-[QA results](bell/QA-RESULTS.md) for the method and boundaries.
+[architecture](docs/ARCHITECTURE.md) and [judge path](bell/JUDGE.md) for the
+method and boundaries. `make check` is the QA record: it runs the suite and
+re-derives the published receipt from the shipped inputs, so the test result is
+something you reproduce rather than something this repository asserts.
 
 This repository contains the public product, tests, receipts and deployment
 adapter. Private research, competitor dossiers, jury reports and credentials

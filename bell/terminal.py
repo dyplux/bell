@@ -10,7 +10,8 @@ from collections import Counter
 from typing import Any
 
 
-def _records(value: Any) -> list[dict[str, Any]]:
+def _token_rows(value: Any) -> list[dict[str, Any]]:
+    """Token rows only. Unlike `cmc_shapes.records`, a lone object is not a row."""
     return [item for item in value if isinstance(item, dict)] if isinstance(value, list) else []
 
 
@@ -31,17 +32,17 @@ def build_terminal_summary(evidence: dict[str, Any]) -> dict[str, Any]:
 
     asset = evidence.get("asset") if isinstance(evidence.get("asset"), dict) else {}
     metadata = evidence.get("metadata") if isinstance(evidence.get("metadata"), dict) else {}
-    tokens = _records(evidence.get("tokens"))
-    pairs = _records(evidence.get("market_pairs"))
-    issuers = _records(evidence.get("issuers"))
-    crypto_info = _records(evidence.get("crypto_info"))
+    tokens = _token_rows(evidence.get("tokens"))
+    pairs = _token_rows(evidence.get("market_pairs"))
+    issuers = _token_rows(evidence.get("issuers"))
+    crypto_info = _token_rows(evidence.get("crypto_info"))
     state = _state(asset, tokens)
     issuer_names = {str(item.get("name")) for item in issuers if item.get("name")}
     issuer_names.update(str(item.get("issuer_name")) for item in tokens if item.get("issuer_name"))
     categories = Counter(str(item.get("category") or "unknown").lower() for item in pairs)
     missing_prices = [item.get("symbol") for item in tokens if item.get("price") in (None, "")]
     missing_market_caps = [item.get("symbol") for item in tokens if item.get("market_cap") in (None, "")]
-    findings = _records(evidence.get("findings"))
+    findings = _token_rows(evidence.get("findings"))
     market_pairs_error = evidence.get("market_pairs_error")
     dex = evidence.get("dex_evidence") if isinstance(evidence.get("dex_evidence"), dict) else {}
     dex_covered = int(dex.get("covered_token_count") or 0)

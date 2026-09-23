@@ -17,27 +17,11 @@ from pathlib import Path
 from typing import Any
 
 from bell import BellDataError, CMCClient
+from cmc_shapes import payload_data as _payload_data, records as _records
 
 
 MAX_DEX_TOKEN_PROBES = 20
 
-
-def _payload_data(response: dict[str, Any]) -> Any:
-    return response.get("data", response)
-
-
-def _records(data: Any, *keys: str) -> list[dict[str, Any]]:
-    if isinstance(data, list):
-        return [item for item in data if isinstance(item, dict)]
-    if not isinstance(data, dict):
-        return []
-    for key in keys:
-        value = data.get(key)
-        if isinstance(value, list):
-            return [item for item in value if isinstance(item, dict)]
-    if data and all(isinstance(value, dict) for value in data.values()):
-        return list(data.values())
-    return [data]
 
 
 def _first_record(response: dict[str, Any], *keys: str) -> dict[str, Any]:

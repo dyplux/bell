@@ -11,7 +11,8 @@ CLI is `python3 bell/integrity_review.py`.
 Build with CMC API Hackathon, Real World Assets track. Bell is a research instrument,
 not a trading signal.
 
-The product rationale and spoken demo narrative are in [STORY.md](STORY.md).
+The product rationale is the claim below, and the boundary it refuses to cross is in
+[the user guide](USER-GUIDE.md).
 
 ## The claim
 
@@ -187,12 +188,12 @@ does not infer liquidity, solvency, ownership rights, causality or an action.
 
 ## Proof files
 
-- [Gold live receipt](docs/proof/gold-live-2026-09-13.json)
-- [Gold normalised replay payload](docs/proof/gold-live-2026-09-13.payload.json)
+- [Gold live receipt](site/proof/gold-live-2026-09-13.json)
+- [Gold normalised replay payload](site/proof/gold-live-2026-09-13.payload.json)
 - [Gold repeat-window receipt](site/proof/gold-live-2026-09-17.json)
 - [Gold repeat-window replay payload](site/proof/gold-live-2026-09-17.payload.json)
-- [Tesla live receipt](docs/proof/tesla-live-2026-09-13.json)
-- [Tesla normalised replay payload](docs/proof/tesla-live-2026-09-13.payload.json)
+- [Tesla live receipt](site/proof/tesla-live-2026-09-13.json)
+- [Tesla normalised replay payload](site/proof/tesla-live-2026-09-13.payload.json)
 - [Tesla repeat-window receipt](site/proof/tesla-live-2026-09-17.json)
 - [Tesla repeat-window replay payload](site/proof/tesla-live-2026-09-17.payload.json)
 - [Population integrity history](site/proof/rwa-surface-integrity-history.json)
@@ -201,7 +202,7 @@ does not infer liquidity, solvency, ownership rights, causality or an action.
 - [Public source map and exact API surfaces](SOURCE-MAP.md)
 - [Case receipt verifier](verify_case_receipt.py)
 - [Public submission gate](verify_submission.py)
-- [QA results](QA-RESULTS.md)
+- [The full gate, as CI runs it](../Makefile) — `make check`
 
 A receipt is a machine-readable record of a run. It is not a payment receipt. Session receipts
 record the schema, asset, time window, session results, coverage, warnings and endpoint

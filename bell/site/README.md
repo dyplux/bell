@@ -57,7 +57,7 @@ observation rather than a discount, parity claim or execution estimate.
 - `integrity.js` renders search, filters, routes, evidence and exports
 - `integrity.css` and `visual-overrides.css` define the responsive interface
 - `catalog.json` is the browser-served credential-free map snapshot regenerated from CMC on 22 September 2026
-- `catalogue-live.js` preserves the same snapshot with endpoint provenance for repository verification
+- `catalog.json` is the snapshot the explorer reads, with its endpoint provenance recorded in `proof/`
 - `proof/rwa-catalogue-refresh-2026-09-22.json` records the map refresh counts, call statuses and catalog hash
 - `proof/rwa-surface-integrity-history.json` contains the public receipt history
 - `proof/rwa-surface-integrity-latest-replay-2026-09-21.json` contains the last replay record captured on 21 September

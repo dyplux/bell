@@ -19,6 +19,7 @@ from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
 from engine import BellDataError, analyse_dataset, load_payload, parse_timestamp, save_receipt
+from cmc_shapes import as_list as _as_list, payload_data as _payload_data, records as _records
 
 
 ROOT = Path(__file__).resolve().parent
@@ -62,29 +63,6 @@ class CMCClient:
             raise BellDataError(f"CMC returned HTTP {status} for {endpoint}")
         return body
 
-
-def _as_list(data: Any) -> list[dict[str, Any]]:
-    if isinstance(data, list):
-        return [item for item in data if isinstance(item, dict)]
-    if isinstance(data, dict):
-        return [data]
-    return []
-
-
-def _records(data: Any, *keys: str) -> list[dict[str, Any]]:
-    """Extract list-shaped records from CMC's object-or-list response variants."""
-    if isinstance(data, dict):
-        for key in keys:
-            if isinstance(data.get(key), list):
-                return [item for item in data[key] if isinstance(item, dict)]
-        values = [value for value in data.values() if isinstance(value, dict)]
-        if values and len(values) == len(data):
-            return values
-    return _as_list(data)
-
-
-def _payload_data(response: dict[str, Any]) -> Any:
-    return response.get("data", response)
 
 
 def _extract_quote_value(record: dict[str, Any], field: str) -> Any:

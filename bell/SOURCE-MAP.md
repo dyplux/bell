@@ -9,8 +9,6 @@ credential-free proof for a reviewer who wants to inspect the build quickly.
 - `site/integrity.js` loads the dated `/api/integrity` receipt, renders decisions and exports the brief and `bell.case-receipt.v1`
 - `site/integrity.js` also exports a row-level population attribution CSV with stable reference, token and issuer IDs; positive, missing and non-positive market-cap states stay distinct
 - `site/capital-impact.js` contains the deterministic capital scenario calculation used by the blocked-case panel
-- `site/catalogue.js` and `site/catalogue-live.js` contain the complete-map discovery path
-- `site/research-brief.js` generates the downloadable research brief from the displayed snapshot
 
 ## Population receipt path
 
