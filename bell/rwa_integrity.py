@@ -15,6 +15,7 @@ from datetime import datetime, timezone
 from decimal import Decimal, InvalidOperation
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 import sys
@@ -25,6 +26,34 @@ from urllib.request import Request, urlopen
 
 
 API_ROOT = "https://pro-api.coinmarketcap.com"
+
+
+# Floats that reach a published receipt
+# ------------------------------------
+# A receipt is only replayable if recomputing it produces the SAME bytes, and a
+# float sum does not: `sum()` adds left to right and how accurately it does so
+# changed between Python versions, so the same inputs gave totals differing in
+# the last bits and `make verify` passed on one interpreter and failed on
+# another. Every aggregate that reaches the receipt goes through these.
+#
+# fsum is exactly rounded, so it is identical on every interpreter. The
+# rounding then removes representation noise at a precision far finer than any
+# use of these figures: 12 decimal places on a share is a part in a trillion.
+SHARE_PLACES = 12
+VALUE_PLACES = 6
+
+
+def total(values) -> float:
+    """An exactly-rounded sum. Use instead of sum() for anything published."""
+    return math.fsum(values)
+
+
+def share(numerator: float, denominator: float) -> float:
+    return round(numerator / denominator, SHARE_PLACES) if denominator else 0.0
+
+
+def published(value: float, places: int = VALUE_PLACES) -> float:
+    return round(value, places)
 
 
 def utc_now() -> str:
@@ -256,10 +285,17 @@ def comparable_routes(tokens: list[dict]) -> dict | None:
     # exists to prevent, so the comparison is withheld rather than shown wide.
     if spread_bps > MAX_PUBLISHABLE_SPREAD_BPS:
         return None
-    traded = sum(route["volume_24h"] for route in routes)
+    # `sum()` over floats adds left to right, and how accurately it does so
+    # changed between Python versions: the same inputs produced totals that
+    # differed in the last bits, so the published receipt recomputed to
+    # something not bit-identical and "replayable" failed on one interpreter
+    # while passing on another. math.fsum is exactly rounded and therefore the
+    # same everywhere, and the published figures are rounded to a precision
+    # that is far finer than any use and free of the representation noise.
+    traded = published(total(route["volume_24h"] for route in routes))
     for route in routes:
-        route["volume_share"] = route["volume_24h"] / traded if traded else 0.0
-        route["premium_to_cheapest_bps"] = (route["price"] / cheapest["price"] - 1) * 10_000
+        route["volume_share"] = share(route["volume_24h"], traded)
+        route["premium_to_cheapest_bps"] = published((route["price"] / cheapest["price"] - 1) * 10_000)
     deepest = max(routes, key=lambda route: route["volume_24h"])
     return {
         "routes": routes,
@@ -490,11 +526,11 @@ def population_attribution(list_rows: list[dict], assets: list[dict], issuer_cat
                 "residual": residual,
             })
 
-    reported_value = sum(item["positive_market_cap"] for item in issuer_totals.values())
+    reported_value = published(total(item["positive_market_cap"] for item in issuer_totals.values()))
     issuers = sorted(issuer_totals.values(), key=lambda item: item["positive_market_cap"], reverse=True)
-    shares = [item["positive_market_cap"] / reported_value for item in issuers] if reported_value else []
-    for item, share in zip(issuers, shares):
-        item["share_of_positive_reported_value"] = share
+    shares = [share(item["positive_market_cap"], reported_value) for item in issuers] if reported_value else []
+    for item, issuer_share in zip(issuers, shares):
+        item["share_of_positive_reported_value"] = issuer_share
         catalogue = issuer_catalogue_lookup.get(str(item.get("issuer_id")), {})
         declared = number(catalogue.get("num_tokens"))
         item["declared_num_tokens"] = int(declared) if declared is not None and declared >= 0 else None
@@ -502,11 +538,11 @@ def population_attribution(list_rows: list[dict], assets: list[dict], issuer_cat
             item["priced_token_rows"] / float(declared)
             if declared is not None and declared > 0 else None
         )
-    hhi = sum((share * 100) ** 2 for share in shares)
+    hhi = published(total((value * 100) ** 2 for value in shares))
     reconciliation_abs = [abs(row["residual"]) for row in reconciliation_rows]
     exact_rows = sum(1 for residual in reconciliation_abs if residual <= 0.01)
-    asset_sum = sum(row["asset_market_cap"] for row in reconciliation_rows)
-    token_sum = sum(row["token_rows_market_cap"] for row in reconciliation_rows)
+    asset_sum = published(total(row["asset_market_cap"] for row in reconciliation_rows))
+    token_sum = published(total(row["token_rows_market_cap"] for row in reconciliation_rows))
     return {
         "schema_version": "bell.rwa_population_attribution.v1",
         "basis": "positive token-level market_cap fields returned by CMC quotes/latest; missing and zero values remain separate",
@@ -517,11 +553,11 @@ def population_attribution(list_rows: list[dict], assets: list[dict], issuer_cat
         "issuer_labels_with_positive_value": len(issuers),
         "positive_reported_value": reported_value,
         "concentration": {
-            "top_1_share": sum(shares[:1]),
-            "top_3_share": sum(shares[:3]),
-            "top_5_share": sum(shares[:5]),
+            "top_1_share": published(total(shares[:1]), SHARE_PLACES),
+            "top_3_share": published(total(shares[:3]), SHARE_PLACES),
+            "top_5_share": published(total(shares[:5]), SHARE_PLACES),
             "hhi": hhi,
-            "effective_issuer_count": (1 / sum(share ** 2 for share in shares)) if shares else 0.0,
+            "effective_issuer_count": published(1 / total(value ** 2 for value in shares)) if shares else 0.0,
         },
         "top_issuers": issuers[:10],
         "categories": {key: category_rows[key] for key in sorted(category_rows)},
@@ -532,8 +568,8 @@ def population_attribution(list_rows: list[dict], assets: list[dict], issuer_cat
             "asset_market_cap_sum": asset_sum,
             "token_rows_market_cap_sum": token_sum,
             "token_to_asset_value_ratio": (token_sum / asset_sum) if asset_sum else None,
-            "residual_sum": sum(row["residual"] for row in reconciliation_rows),
-            "absolute_residual_sum": sum(reconciliation_abs),
+            "residual_sum": published(total(row["residual"] for row in reconciliation_rows)),
+            "absolute_residual_sum": published(total(reconciliation_abs)),
             "max_absolute_residual": max(reconciliation_abs, default=0.0),
             "tolerance_usd": 0.01,
             "note": "This is a surface reconciliation, not proof of backing, reserves, redemption or execution.",

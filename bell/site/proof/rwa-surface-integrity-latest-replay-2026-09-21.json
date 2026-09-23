@@ -177,13 +177,13 @@
     "missing_market_cap_rows": 670,
     "zero_or_non_positive_market_cap_rows": 179,
     "issuer_labels_with_positive_value": 15,
-    "positive_reported_value": 7560949176.990001,
+    "positive_reported_value": 7560949176.99,
     "concentration": {
-      "top_1_share": 0.360118835432241,
-      "top_3_share": 0.7297982944274587,
-      "top_5_share": 0.9423139295172943,
-      "hhi": 2296.478591708829,
-      "effective_issuer_count": 4.354493020794466
+      "top_1_share": 0.360118835432,
+      "top_3_share": 0.729798294427,
+      "top_5_share": 0.942313929517,
+      "hhi": 2296.478592,
+      "effective_issuer_count": 4.354493
     },
     "top_issuers": [
       {
@@ -191,7 +191,7 @@
         "issuer_name": "Tether Holdings",
         "positive_market_cap": 2722840212.38,
         "priced_token_rows": 2,
-        "share_of_positive_reported_value": 0.360118835432241,
+        "share_of_positive_reported_value": 0.360118835432,
         "declared_num_tokens": 2,
         "observed_to_declared_token_ratio": 1.0
       },
@@ -200,7 +200,7 @@
         "issuer_name": "Paxos",
         "positive_market_cap": 1885154231.7,
         "priced_token_rows": 1,
-        "share_of_positive_reported_value": 0.24932772163540404,
+        "share_of_positive_reported_value": 0.249327721635,
         "declared_num_tokens": 1,
         "observed_to_declared_token_ratio": 1.0
       },
@@ -209,7 +209,7 @@
         "issuer_name": "Ondo Assets",
         "positive_market_cap": 909973369.5399996,
         "priced_token_rows": 210,
-        "share_of_positive_reported_value": 0.12035173735981364,
+        "share_of_positive_reported_value": 0.12035173736,
         "declared_num_tokens": 551,
         "observed_to_declared_token_ratio": 0.3811252268602541
       },
@@ -218,7 +218,7 @@
         "issuer_name": "bStocks",
         "positive_market_cap": 809520928.7099999,
         "priced_token_rows": 77,
-        "share_of_positive_reported_value": 0.1070660455136492,
+        "share_of_positive_reported_value": 0.107066045514,
         "declared_num_tokens": 77,
         "observed_to_declared_token_ratio": 1.0
       },
@@ -227,7 +227,7 @@
         "issuer_name": "Backed Assets",
         "positive_market_cap": 797298987.5200001,
         "priced_token_rows": 121,
-        "share_of_positive_reported_value": 0.10544958957618643,
+        "share_of_positive_reported_value": 0.105449589576,
         "declared_num_tokens": 1176,
         "observed_to_declared_token_ratio": 0.10289115646258504
       },
@@ -236,7 +236,7 @@
         "issuer_name": "Reality",
         "positive_market_cap": 133371256.27999996,
         "priced_token_rows": 71,
-        "share_of_positive_reported_value": 0.017639485884376065,
+        "share_of_positive_reported_value": 0.017639485884,
         "declared_num_tokens": 71,
         "observed_to_declared_token_ratio": 1.0
       },
@@ -245,7 +245,7 @@
         "issuer_name": "Robinhood",
         "positive_market_cap": 124867256.64999998,
         "priced_token_rows": 91,
-        "share_of_positive_reported_value": 0.016514759420682867,
+        "share_of_positive_reported_value": 0.016514759421,
         "declared_num_tokens": 107,
         "observed_to_declared_token_ratio": 0.8504672897196262
       },
@@ -254,7 +254,7 @@
         "issuer_name": "Republic",
         "positive_market_cap": 72063152.76,
         "priced_token_rows": 1,
-        "share_of_positive_reported_value": 0.00953096642671631,
+        "share_of_positive_reported_value": 0.009530966427,
         "declared_num_tokens": 2,
         "observed_to_declared_token_ratio": 0.5
       },
@@ -263,7 +263,7 @@
         "issuer_name": "Matrixdock",
         "positive_market_cap": 47551587.63,
         "priced_token_rows": 1,
-        "share_of_positive_reported_value": 0.006289102930980181,
+        "share_of_positive_reported_value": 0.006289102931,
         "declared_num_tokens": 1,
         "observed_to_declared_token_ratio": 1.0
       },
@@ -272,7 +272,7 @@
         "issuer_name": "Comtech Gold",
         "positive_market_cap": 19523710.68,
         "priced_token_rows": 1,
-        "share_of_positive_reported_value": 0.0025821772138630286,
+        "share_of_positive_reported_value": 0.002582177214,
         "declared_num_tokens": 1,
         "observed_to_declared_token_ratio": 1.0
       }
@@ -298,11 +298,11 @@
       "matched_reference_rows": 314,
       "exact_within_usd_cent": 57,
       "non_exact_rows": 257,
-      "asset_market_cap_sum": 7452824497.057115,
-      "token_rows_market_cap_sum": 7455055984.740004,
-      "token_to_asset_value_ratio": 1.0002994150316795,
-      "residual_sum": -2231487.68289307,
-      "absolute_residual_sum": 2714064.6054042135,
+      "asset_market_cap_sum": 7452824497.057108,
+      "token_rows_market_cap_sum": 7455055984.740001,
+      "token_to_asset_value_ratio": 1.0002994150316802,
+      "residual_sum": -2231487.682893,
+      "absolute_residual_sum": 2714064.605404,
       "max_absolute_residual": 1211752.6499156952,
       "tolerance_usd": 0.01,
       "note": "This is a surface reconciliation, not proof of backing, reserves, redemption or execution."
@@ -11949,7 +11949,7 @@
             "issuer_name": "Ondo Assets",
             "price": 258.1871815656684,
             "volume_24h": 3174909.74899277,
-            "volume_share": 0.19085139805532428,
+            "volume_share": 0.190851398055,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -11959,8 +11959,8 @@
             "issuer_name": "Reality",
             "price": 258.47899271090733,
             "volume_24h": 182744.16220487,
-            "volume_share": 0.010985187485821606,
-            "premium_to_cheapest_bps": 11.302309567398083
+            "volume_share": 0.010985187486,
+            "premium_to_cheapest_bps": 11.30231
           },
           {
             "crypto_id": 40929,
@@ -11969,8 +11969,8 @@
             "issuer_name": "bStocks",
             "price": 258.5374168500367,
             "volume_24h": 2820348.63438577,
-            "volume_share": 0.16953788372936035,
-            "premium_to_cheapest_bps": 13.565169356759554
+            "volume_share": 0.169537883729,
+            "premium_to_cheapest_bps": 13.565169
           },
           {
             "crypto_id": 40718,
@@ -11979,8 +11979,8 @@
             "issuer_name": "Robinhood",
             "price": 258.54509507492475,
             "volume_24h": 1687222.98556482,
-            "volume_share": 0.1014229981586974,
-            "premium_to_cheapest_bps": 13.862559213277947
+            "volume_share": 0.101422998159,
+            "premium_to_cheapest_bps": 13.862559
           },
           {
             "crypto_id": 37014,
@@ -11989,8 +11989,8 @@
             "issuer_name": "Backed Assets",
             "price": 258.61410482411384,
             "volume_24h": 8770281.36764023,
-            "volume_share": 0.5272025325707963,
-            "premium_to_cheapest_bps": 16.535416508927092
+            "volume_share": 0.527202532571,
+            "premium_to_cheapest_bps": 16.535417
           }
         ],
         "route_count": 5,
@@ -12005,7 +12005,7 @@
           "volume_24h": 8770281.36764023
         },
         "spread_bps": 16.5,
-        "traded_volume_24h": 16635506.898788461,
+        "traded_volume_24h": 16635506.898788,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -12384,7 +12384,7 @@
             "issuer_name": "Robinhood",
             "price": 201.36232802581137,
             "volume_24h": 1636706.9090291,
-            "volume_share": 0.09233075479563797,
+            "volume_share": 0.092330754796,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -12394,8 +12394,8 @@
             "issuer_name": "Backed Assets",
             "price": 201.665845355548,
             "volume_24h": 5646841.22522285,
-            "volume_share": 0.3185525213217518,
-            "premium_to_cheapest_bps": 15.073193318351219
+            "volume_share": 0.318552521322,
+            "premium_to_cheapest_bps": 15.073193
           },
           {
             "crypto_id": 37193,
@@ -12404,8 +12404,8 @@
             "issuer_name": "Backed Assets",
             "price": 201.69493809186497,
             "volume_24h": 295090.46083239,
-            "volume_share": 0.016646795361675102,
-            "premium_to_cheapest_bps": 16.517988707946962
+            "volume_share": 0.016646795362,
+            "premium_to_cheapest_bps": 16.517989
           },
           {
             "crypto_id": 40789,
@@ -12414,8 +12414,8 @@
             "issuer_name": "bStocks",
             "price": 201.8310063057635,
             "volume_24h": 5009699.31261655,
-            "volume_share": 0.2826097429425899,
-            "premium_to_cheapest_bps": 23.275370549553642
+            "volume_share": 0.282609742943,
+            "premium_to_cheapest_bps": 23.275371
           },
           {
             "crypto_id": 40651,
@@ -12424,8 +12424,8 @@
             "issuer_name": "Reality",
             "price": 202.1257528780702,
             "volume_24h": 425212.97600608,
-            "volume_share": 0.023987333839037905,
-            "premium_to_cheapest_bps": 37.91299294875871
+            "volume_share": 0.023987333839,
+            "premium_to_cheapest_bps": 37.912993
           },
           {
             "crypto_id": 38046,
@@ -12434,8 +12434,8 @@
             "issuer_name": "Ondo Assets",
             "price": 202.16553046424576,
             "volume_24h": 4713011.76220377,
-            "volume_share": 0.26587285173930736,
-            "premium_to_cheapest_bps": 39.88841638399521
+            "volume_share": 0.265872851739,
+            "premium_to_cheapest_bps": 39.888416
           }
         ],
         "route_count": 6,
@@ -12450,7 +12450,7 @@
           "volume_24h": 5646841.22522285
         },
         "spread_bps": 39.9,
-        "traded_volume_24h": 17726562.64591074,
+        "traded_volume_24h": 17726562.645911,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -12772,7 +12772,7 @@
             "issuer_name": "Robinhood",
             "price": 462.41515247441964,
             "volume_24h": 2053.23622145,
-            "volume_share": 0.0005301477181223528,
+            "volume_share": 0.000530147718,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -12782,8 +12782,8 @@
             "issuer_name": "bStocks",
             "price": 463.54490695129044,
             "volume_24h": 1553883.31067501,
-            "volume_share": 0.40121427957324995,
-            "premium_to_cheapest_bps": 24.431605902734965
+            "volume_share": 0.401214279573,
+            "premium_to_cheapest_bps": 24.431606
           },
           {
             "crypto_id": 40170,
@@ -12792,8 +12792,8 @@
             "issuer_name": "Backed Assets",
             "price": 463.98688647230205,
             "volume_24h": 176481.14977038,
-            "volume_share": 0.04556761558409636,
-            "premium_to_cheapest_bps": 33.989673337302406
+            "volume_share": 0.045567615584,
+            "premium_to_cheapest_bps": 33.989673
           },
           {
             "crypto_id": 40639,
@@ -12802,8 +12802,8 @@
             "issuer_name": "Reality",
             "price": 464.37429339184825,
             "volume_24h": 86319.96880674,
-            "volume_share": 0.022287905314162255,
-            "premium_to_cheapest_bps": 42.367576126021156
+            "volume_share": 0.022287905314,
+            "premium_to_cheapest_bps": 42.367576
           },
           {
             "crypto_id": 39218,
@@ -12812,8 +12812,8 @@
             "issuer_name": "Ondo Assets",
             "price": 465.65443854557805,
             "volume_24h": 2054213.49750046,
-            "volume_share": 0.5304000518103691,
-            "premium_to_cheapest_bps": 70.05146898462877
+            "volume_share": 0.53040005181,
+            "premium_to_cheapest_bps": 70.051469
           }
         ],
         "route_count": 5,
@@ -12828,7 +12828,7 @@
           "volume_24h": 2054213.49750046
         },
         "spread_bps": 70.1,
-        "traded_volume_24h": 3872951.16297404,
+        "traded_volume_24h": 3872951.162974,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -13165,7 +13165,7 @@
             "issuer_name": "Robinhood",
             "price": 23.14800669200624,
             "volume_24h": 20231712.26117304,
-            "volume_share": 0.44794621341293794,
+            "volume_share": 0.447946213413,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -13175,8 +13175,8 @@
             "issuer_name": "Backed Assets",
             "price": 23.200831039840157,
             "volume_24h": 20619828.7248944,
-            "volume_share": 0.45653942085098814,
-            "premium_to_cheapest_bps": 22.820257716686942
+            "volume_share": 0.456539420851,
+            "premium_to_cheapest_bps": 22.820258
           },
           {
             "crypto_id": 41077,
@@ -13185,8 +13185,8 @@
             "issuer_name": "bStocks",
             "price": 23.22153103371905,
             "volume_24h": 3224200.01041498,
-            "volume_share": 0.07138635461532639,
-            "premium_to_cheapest_bps": 31.76270971884554
+            "volume_share": 0.071386354615,
+            "premium_to_cheapest_bps": 31.76271
           },
           {
             "crypto_id": 37120,
@@ -13195,8 +13195,8 @@
             "issuer_name": "Backed Assets",
             "price": 23.27173904748635,
             "volume_24h": 147297.68363533,
-            "volume_share": 0.0032612879610574956,
-            "premium_to_cheapest_bps": 53.45270421182269
+            "volume_share": 0.003261287961,
+            "premium_to_cheapest_bps": 53.452704
           },
           {
             "crypto_id": 37997,
@@ -13205,8 +13205,8 @@
             "issuer_name": "Ondo Assets",
             "price": 23.570186033680706,
             "volume_24h": 942455.87117225,
-            "volume_share": 0.020866723159689876,
-            "premium_to_cheapest_bps": 182.38259012611113
+            "volume_share": 0.02086672316,
+            "premium_to_cheapest_bps": 182.38259
           }
         ],
         "route_count": 5,
@@ -13221,7 +13221,7 @@
           "volume_24h": 20619828.7248944
         },
         "spread_bps": 182.4,
-        "traded_volume_24h": 45165494.551290005,
+        "traded_volume_24h": 45165494.55129,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -13545,7 +13545,7 @@
             "issuer_name": "Robinhood",
             "price": 47.18433525536186,
             "volume_24h": 1344.93592202,
-            "volume_share": 0.0002750183684981854,
+            "volume_share": 0.000275018368,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -13555,8 +13555,8 @@
             "issuer_name": "Ondo Assets",
             "price": 47.276697960740655,
             "volume_24h": 2484773.11258575,
-            "volume_share": 0.5080972530536134,
-            "premium_to_cheapest_bps": 19.57486629385219
+            "volume_share": 0.508097253054,
+            "premium_to_cheapest_bps": 19.574866
           },
           {
             "crypto_id": 40970,
@@ -13565,8 +13565,8 @@
             "issuer_name": "bStocks",
             "price": 47.312684555137196,
             "volume_24h": 1952366.92828123,
-            "volume_share": 0.3992285123288818,
-            "premium_to_cheapest_bps": 27.201675954680038
+            "volume_share": 0.399228512329,
+            "premium_to_cheapest_bps": 27.201676
           },
           {
             "crypto_id": 40162,
@@ -13575,8 +13575,8 @@
             "issuer_name": "Backed Assets",
             "price": 47.329149770168016,
             "volume_24h": 353635.94359747,
-            "volume_share": 0.07231302150396891,
-            "premium_to_cheapest_bps": 30.69122708255101
+            "volume_share": 0.072313021504,
+            "premium_to_cheapest_bps": 30.691227
           },
           {
             "crypto_id": 40623,
@@ -13585,8 +13585,8 @@
             "issuer_name": "Reality",
             "price": 47.344320547992204,
             "volume_24h": 98228.51105114,
-            "volume_share": 0.020086194745037655,
-            "premium_to_cheapest_bps": 33.9064419927726
+            "volume_share": 0.020086194745,
+            "premium_to_cheapest_bps": 33.906442
           }
         ],
         "route_count": 5,
@@ -13601,7 +13601,7 @@
           "volume_24h": 2484773.11258575
         },
         "spread_bps": 33.9,
-        "traded_volume_24h": 4890349.43143761,
+        "traded_volume_24h": 4890349.431438,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -13932,7 +13932,7 @@
             "issuer_name": "Robinhood",
             "price": 146.81788149137006,
             "volume_24h": 13192.39238665,
-            "volume_share": 0.001988151185334308,
+            "volume_share": 0.001988151185,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -13942,8 +13942,8 @@
             "issuer_name": "bStocks",
             "price": 148.54377336310986,
             "volume_24h": 3213360.72864741,
-            "volume_share": 0.4842675046591272,
-            "premium_to_cheapest_bps": 117.55324720723826
+            "volume_share": 0.484267504659,
+            "premium_to_cheapest_bps": 117.553247
           },
           {
             "crypto_id": 40654,
@@ -13952,8 +13952,8 @@
             "issuer_name": "Reality",
             "price": 148.56217839536814,
             "volume_24h": 538746.77992546,
-            "volume_share": 0.08119149413625319,
-            "premium_to_cheapest_bps": 118.80684329998337
+            "volume_share": 0.081191494136,
+            "premium_to_cheapest_bps": 118.806843
           },
           {
             "crypto_id": 37059,
@@ -13962,8 +13962,8 @@
             "issuer_name": "Backed Assets",
             "price": 148.63170748322358,
             "volume_24h": 1163671.19963473,
-            "volume_share": 0.17537033519669853,
-            "premium_to_cheapest_bps": 123.54258033345556
+            "volume_share": 0.175370335197,
+            "premium_to_cheapest_bps": 123.54258
           },
           {
             "crypto_id": 38009,
@@ -13972,8 +13972,8 @@
             "issuer_name": "Ondo Assets",
             "price": 149.72888064934233,
             "volume_24h": 1706536.54287085,
-            "volume_share": 0.25718251482258664,
-            "premium_to_cheapest_bps": 198.27279404950326
+            "volume_share": 0.257182514823,
+            "premium_to_cheapest_bps": 198.272794
           }
         ],
         "route_count": 5,
@@ -13988,7 +13988,7 @@
           "volume_24h": 3213360.72864741
         },
         "spread_bps": 198.3,
-        "traded_volume_24h": 6635507.643465101,
+        "traded_volume_24h": 6635507.643465,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -14319,7 +14319,7 @@
             "issuer_name": "Robinhood",
             "price": 182.28674099221644,
             "volume_24h": 1366764.1891355,
-            "volume_share": 0.17181293009386134,
+            "volume_share": 0.171812930094,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -14329,8 +14329,8 @@
             "issuer_name": "Ondo Assets",
             "price": 182.7376277397411,
             "volume_24h": 3180195.15168956,
-            "volume_share": 0.39977536112332657,
-            "premium_to_cheapest_bps": 24.735027082629646
+            "volume_share": 0.399775361123,
+            "premium_to_cheapest_bps": 24.735027
           },
           {
             "crypto_id": 40655,
@@ -14339,8 +14339,8 @@
             "issuer_name": "Reality",
             "price": 182.7580762357342,
             "volume_24h": 59562.86750405,
-            "volume_share": 0.0074875175044908275,
-            "premium_to_cheapest_bps": 25.856803459878286
+            "volume_share": 0.007487517504,
+            "premium_to_cheapest_bps": 25.856803
           },
           {
             "crypto_id": 37220,
@@ -14349,8 +14349,8 @@
             "issuer_name": "Backed Assets",
             "price": 182.84876652271856,
             "volume_24h": 55982.61646051,
-            "volume_share": 0.007037451994176796,
-            "premium_to_cheapest_bps": 30.831947921332592
+            "volume_share": 0.007037451994,
+            "premium_to_cheapest_bps": 30.831948
           },
           {
             "crypto_id": 40590,
@@ -14359,8 +14359,8 @@
             "issuer_name": "bStocks",
             "price": 182.88507603484624,
             "volume_24h": 2249435.43317427,
-            "volume_share": 0.28277159725342355,
-            "premium_to_cheapest_bps": 32.82383783773657
+            "volume_share": 0.282771597253,
+            "premium_to_cheapest_bps": 32.823838
           },
           {
             "crypto_id": 37062,
@@ -14369,8 +14369,8 @@
             "issuer_name": "Backed Assets",
             "price": 183.37646223679658,
             "volume_24h": 1043015.10185005,
-            "volume_share": 0.131115142030721,
-            "premium_to_cheapest_bps": 59.78060931083773
+            "volume_share": 0.131115142031,
+            "premium_to_cheapest_bps": 59.780609
           }
         ],
         "route_count": 6,
@@ -14385,7 +14385,7 @@
           "volume_24h": 3180195.15168956
         },
         "spread_bps": 59.8,
-        "traded_volume_24h": 7954955.35981394,
+        "traded_volume_24h": 7954955.359814,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -14718,7 +14718,7 @@
             "issuer_name": "bStocks",
             "price": 193.6529749268727,
             "volume_24h": 2859834.07535534,
-            "volume_share": 0.5588845822695994,
+            "volume_share": 0.55888458227,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -14728,8 +14728,8 @@
             "issuer_name": "Backed Assets",
             "price": 194.0082626798398,
             "volume_24h": 513990.41766895,
-            "volume_share": 0.10044684841857311,
-            "premium_to_cheapest_bps": 18.34661993193043
+            "volume_share": 0.100446848419,
+            "premium_to_cheapest_bps": 18.34662
           },
           {
             "crypto_id": 40649,
@@ -14738,8 +14738,8 @@
             "issuer_name": "Reality",
             "price": 194.22670045295638,
             "volume_24h": 313904.22176845,
-            "volume_share": 0.061344898072076284,
-            "premium_to_cheapest_bps": 29.626476241861877
+            "volume_share": 0.061344898072,
+            "premium_to_cheapest_bps": 29.626476
           },
           {
             "crypto_id": 38048,
@@ -14748,8 +14748,8 @@
             "issuer_name": "Ondo Assets",
             "price": 197.68458084637513,
             "volume_24h": 1169621.21924414,
-            "volume_share": 0.22857384355408775,
-            "premium_to_cheapest_bps": 208.18714099408277
+            "volume_share": 0.228573843554,
+            "premium_to_cheapest_bps": 208.187141
           },
           {
             "crypto_id": 40749,
@@ -14758,8 +14758,8 @@
             "issuer_name": "Robinhood",
             "price": 204.15049755814798,
             "volume_24h": 259688.83583169,
-            "volume_share": 0.050749827685663614,
-            "premium_to_cheapest_bps": 542.0790790969954
+            "volume_share": 0.050749827686,
+            "premium_to_cheapest_bps": 542.079079
           }
         ],
         "route_count": 5,
@@ -14774,7 +14774,7 @@
           "volume_24h": 2859834.07535534
         },
         "spread_bps": 542.1,
-        "traded_volume_24h": 5117038.769868569,
+        "traded_volume_24h": 5117038.769869,
         "cheapest_is_deepest": true,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -15088,7 +15088,7 @@
             "issuer_name": "Backed Assets",
             "price": 36.8,
             "volume_24h": 1316.134152,
-            "volume_share": 0.00025768549627681474,
+            "volume_share": 0.000257685496,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -15098,8 +15098,8 @@
             "issuer_name": "Robinhood",
             "price": 40.88677243850405,
             "volume_24h": 534.50087671,
-            "volume_share": 0.00010464976041090443,
-            "premium_to_cheapest_bps": 1110.5359887239285
+            "volume_share": 0.00010464976,
+            "premium_to_cheapest_bps": 1110.535989
           },
           {
             "crypto_id": 40599,
@@ -15108,8 +15108,8 @@
             "issuer_name": "Reality",
             "price": 41.0450762089774,
             "volume_24h": 1034053.77941203,
-            "volume_share": 0.20245706786028664,
-            "premium_to_cheapest_bps": 1153.5533176569036
+            "volume_share": 0.20245706786,
+            "premium_to_cheapest_bps": 1153.553318
           },
           {
             "crypto_id": 40966,
@@ -15118,8 +15118,8 @@
             "issuer_name": "bStocks",
             "price": 41.05134903703594,
             "volume_24h": 1432497.90340534,
-            "volume_share": 0.28046831897308105,
-            "premium_to_cheapest_bps": 1155.2578904988975
+            "volume_share": 0.280468318973,
+            "premium_to_cheapest_bps": 1155.25789
           },
           {
             "crypto_id": 37996,
@@ -15128,8 +15128,8 @@
             "issuer_name": "Ondo Assets",
             "price": 41.19109421913511,
             "volume_24h": 2639118.94748025,
-            "volume_share": 0.5167122779099445,
-            "premium_to_cheapest_bps": 1193.2321247649757
+            "volume_share": 0.51671227791,
+            "premium_to_cheapest_bps": 1193.232125
           }
         ],
         "route_count": 5,
@@ -15144,7 +15144,7 @@
           "volume_24h": 2639118.94748025
         },
         "spread_bps": 1193.2,
-        "traded_volume_24h": 5107521.26532633,
+        "traded_volume_24h": 5107521.265326,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -15487,7 +15487,7 @@
             "issuer_name": "bStocks",
             "price": 188.74802660722554,
             "volume_24h": 5869461.58387373,
-            "volume_share": 0.8188645645710712,
+            "volume_share": 0.818864564571,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -15497,8 +15497,8 @@
             "issuer_name": "Robinhood",
             "price": 188.76758545926057,
             "volume_24h": 4637.01286998,
-            "volume_share": 0.0006469222892810252,
-            "premium_to_cheapest_bps": 1.036241405358851
+            "volume_share": 0.000646922289,
+            "premium_to_cheapest_bps": 1.036241
           },
           {
             "crypto_id": 40645,
@@ -15507,8 +15507,8 @@
             "issuer_name": "Reality",
             "price": 188.76989429847117,
             "volume_24h": 35986.4228204,
-            "volume_share": 0.005020563817005,
-            "premium_to_cheapest_bps": 1.1585652914480882
+            "volume_share": 0.005020563817,
+            "premium_to_cheapest_bps": 1.158565
           },
           {
             "crypto_id": 39781,
@@ -15517,8 +15517,8 @@
             "issuer_name": "Ondo Assets",
             "price": 188.81757838176688,
             "volume_24h": 1069115.53445564,
-            "volume_share": 0.14915521876887364,
-            "premium_to_cheapest_bps": 3.6849007532180345
+            "volume_share": 0.149155218769,
+            "premium_to_cheapest_bps": 3.684901
           },
           {
             "crypto_id": 40159,
@@ -15527,8 +15527,8 @@
             "issuer_name": "Backed Assets",
             "price": 188.85606167832267,
             "volume_24h": 188604.52367122,
-            "volume_share": 0.026312730553769027,
-            "premium_to_cheapest_bps": 5.723772218395595
+            "volume_share": 0.026312730554,
+            "premium_to_cheapest_bps": 5.723772
           }
         ],
         "route_count": 5,
@@ -15543,7 +15543,7 @@
           "volume_24h": 5869461.58387373
         },
         "spread_bps": 5.7,
-        "traded_volume_24h": 7167805.077690971,
+        "traded_volume_24h": 7167805.077691,
         "cheapest_is_deepest": true,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -15839,7 +15839,7 @@
             "issuer_name": "Backed Assets",
             "price": 1162.704440051984,
             "volume_24h": 201129.15010316,
-            "volume_share": 0.0394282826005725,
+            "volume_share": 0.039428282601,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -15849,8 +15849,8 @@
             "issuer_name": "Reality",
             "price": 1164.8602626908323,
             "volume_24h": 15515.00331125,
-            "volume_share": 0.003041478248135709,
-            "premium_to_cheapest_bps": 18.541450127702586
+            "volume_share": 0.003041478248,
+            "premium_to_cheapest_bps": 18.54145
           },
           {
             "crypto_id": 40720,
@@ -15859,8 +15859,8 @@
             "issuer_name": "Robinhood",
             "price": 1165.459209685592,
             "volume_24h": 1419930.55282838,
-            "volume_share": 0.27835558933843924,
-            "premium_to_cheapest_bps": 23.69277641603329
+            "volume_share": 0.278355589338,
+            "premium_to_cheapest_bps": 23.692776
           },
           {
             "crypto_id": 38043,
@@ -15869,8 +15869,8 @@
             "issuer_name": "Ondo Assets",
             "price": 1170.248400971384,
             "volume_24h": 3464564.29442572,
-            "volume_share": 0.6791746498128526,
-            "premium_to_cheapest_bps": 64.88287701956975
+            "volume_share": 0.679174649813,
+            "premium_to_cheapest_bps": 64.882877
           }
         ],
         "route_count": 4,
@@ -15885,7 +15885,7 @@
           "volume_24h": 3464564.29442572
         },
         "spread_bps": 64.9,
-        "traded_volume_24h": 5101139.00066851,
+        "traded_volume_24h": 5101139.000669,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -16145,7 +16145,7 @@
             "issuer_name": "bStocks",
             "price": 443.7443173035018,
             "volume_24h": 1540839.18321386,
-            "volume_share": 0.2776782781954013,
+            "volume_share": 0.277678278195,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -16155,8 +16155,8 @@
             "issuer_name": "Reality",
             "price": 444.72665033444497,
             "volume_24h": 198977.73541606,
-            "volume_share": 0.03585824891492457,
-            "premium_to_cheapest_bps": 22.137365880254833
+            "volume_share": 0.035858248915,
+            "premium_to_cheapest_bps": 22.137366
           },
           {
             "crypto_id": 40769,
@@ -16165,8 +16165,8 @@
             "issuer_name": "Robinhood",
             "price": 445.0464719774496,
             "volume_24h": 639131.78749538,
-            "volume_share": 0.11517945300527443,
-            "premium_to_cheapest_bps": 29.34470647107279
+            "volume_share": 0.115179453005,
+            "premium_to_cheapest_bps": 29.344706
           },
           {
             "crypto_id": 38075,
@@ -16175,8 +16175,8 @@
             "issuer_name": "Ondo Assets",
             "price": 448.96635359152367,
             "volume_24h": 3170060.00002051,
-            "volume_share": 0.5712840198843997,
-            "premium_to_cheapest_bps": 117.68119803211351
+            "volume_share": 0.571284019884,
+            "premium_to_cheapest_bps": 117.681198
           }
         ],
         "route_count": 4,
@@ -16191,7 +16191,7 @@
           "volume_24h": 3170060.00002051
         },
         "spread_bps": 117.7,
-        "traded_volume_24h": 5549008.70614581,
+        "traded_volume_24h": 5549008.706146,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -16412,7 +16412,7 @@
             "issuer_name": "bStocks",
             "price": 208.10142299591203,
             "volume_24h": 4838622.56465814,
-            "volume_share": 0.9581568104335245,
+            "volume_share": 0.958156810433,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -16422,8 +16422,8 @@
             "issuer_name": "Reality",
             "price": 208.3750032143944,
             "volume_24h": 211305.07972073,
-            "volume_share": 0.041843189566475474,
-            "premium_to_cheapest_bps": 13.146484754587018
+            "volume_share": 0.041843189566,
+            "premium_to_cheapest_bps": 13.146485
           }
         ],
         "route_count": 2,
@@ -16438,7 +16438,7 @@
           "volume_24h": 4838622.56465814
         },
         "spread_bps": 13.1,
-        "traded_volume_24h": 5049927.64437887,
+        "traded_volume_24h": 5049927.644379,
         "cheapest_is_deepest": true,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -16660,7 +16660,7 @@
             "issuer_name": "Robinhood",
             "price": 157.70521479770622,
             "volume_24h": 605084.56643641,
-            "volume_share": 0.4573815949227581,
+            "volume_share": 0.457381594923,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -16670,8 +16670,8 @@
             "issuer_name": "Ondo Assets",
             "price": 158.6096481072144,
             "volume_24h": 622935.37574111,
-            "volume_share": 0.4708749677227463,
-            "premium_to_cheapest_bps": 57.34961337000355
+            "volume_share": 0.470874967723,
+            "premium_to_cheapest_bps": 57.349613
           },
           {
             "crypto_id": 42302,
@@ -16680,8 +16680,8 @@
             "issuer_name": "bStocks",
             "price": 158.65016745997417,
             "volume_24h": 94911.66056569,
-            "volume_share": 0.07174343735449566,
-            "premium_to_cheapest_bps": 59.918923003279275
+            "volume_share": 0.071743437355,
+            "premium_to_cheapest_bps": 59.918923
           }
         ],
         "route_count": 3,
@@ -16696,7 +16696,7 @@
           "volume_24h": 622935.37574111
         },
         "spread_bps": 59.9,
-        "traded_volume_24h": 1322931.6027432098,
+        "traded_volume_24h": 1322931.602743,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -16971,7 +16971,7 @@
             "issuer_name": "Ondo Assets",
             "price": 15.37988262090707,
             "volume_24h": 1487773.77021413,
-            "volume_share": 0.9545212353232189,
+            "volume_share": 0.954521235323,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -16981,8 +16981,8 @@
             "issuer_name": "Backed Assets",
             "price": 15.398274726947033,
             "volume_24h": 15355.44877731,
-            "volume_share": 0.00985170072849907,
-            "premium_to_cheapest_bps": 11.95854772972238
+            "volume_share": 0.009851700728,
+            "premium_to_cheapest_bps": 11.958548
           },
           {
             "crypto_id": 40711,
@@ -16991,8 +16991,8 @@
             "issuer_name": "Robinhood",
             "price": 15.41557873245422,
             "volume_24h": 55530.46835469,
-            "volume_share": 0.03562706394828213,
-            "premium_to_cheapest_bps": 23.209612470400653
+            "volume_share": 0.035627063948,
+            "premium_to_cheapest_bps": 23.209612
           }
         ],
         "route_count": 3,
@@ -17007,7 +17007,7 @@
           "volume_24h": 1487773.77021413
         },
         "spread_bps": 23.2,
-        "traded_volume_24h": 1558659.68734613,
+        "traded_volume_24h": 1558659.687346,
         "cheapest_is_deepest": true,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -17237,7 +17237,7 @@
             "issuer_name": "Robinhood",
             "price": 16.724208782621307,
             "volume_24h": 3504.42432821,
-            "volume_share": 0.004959067432769506,
+            "volume_share": 0.004959067433,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -17247,8 +17247,8 @@
             "issuer_name": "Reality",
             "price": 16.987962114263727,
             "volume_24h": 92543.3436471,
-            "volume_share": 0.13095693860633117,
-            "premium_to_cheapest_bps": 157.70750955733882
+            "volume_share": 0.130956938606,
+            "premium_to_cheapest_bps": 157.70751
           },
           {
             "crypto_id": 39283,
@@ -17257,8 +17257,8 @@
             "issuer_name": "Ondo Assets",
             "price": 17.009476971883153,
             "volume_24h": 610622.26136383,
-            "volume_share": 0.8640839939608993,
-            "premium_to_cheapest_bps": 170.57200909754044
+            "volume_share": 0.864083993961,
+            "premium_to_cheapest_bps": 170.572009
           }
         ],
         "route_count": 3,
@@ -17273,7 +17273,7 @@
           "volume_24h": 610622.26136383
         },
         "spread_bps": 170.6,
-        "traded_volume_24h": 706670.0293391399,
+        "traded_volume_24h": 706670.029339,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -17463,7 +17463,7 @@
             "issuer_name": "Robinhood",
             "price": 17.544332584139436,
             "volume_24h": 2096.86257609,
-            "volume_share": 0.0022595383296693783,
+            "volume_share": 0.00225953833,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -17473,8 +17473,8 @@
             "issuer_name": "Ondo Assets",
             "price": 17.66929413305144,
             "volume_24h": 913631.0679487,
-            "volume_share": 0.9845110694170022,
-            "premium_to_cheapest_bps": 71.22616281509231
+            "volume_share": 0.984511069417,
+            "premium_to_cheapest_bps": 71.226163
           },
           {
             "crypto_id": 40646,
@@ -17483,8 +17483,8 @@
             "issuer_name": "Reality",
             "price": 17.68787815193204,
             "volume_24h": 12276.94045114,
-            "volume_share": 0.01322939225332841,
-            "premium_to_cheapest_bps": 81.81876802904054
+            "volume_share": 0.013229392253,
+            "premium_to_cheapest_bps": 81.818768
           }
         ],
         "route_count": 3,
@@ -17499,7 +17499,7 @@
           "volume_24h": 913631.0679487
         },
         "spread_bps": 81.8,
-        "traded_volume_24h": 928004.8709759301,
+        "traded_volume_24h": 928004.870976,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -17689,7 +17689,7 @@
             "issuer_name": "Robinhood",
             "price": 16.196385014403138,
             "volume_24h": 1935.08134699,
-            "volume_share": 0.005450930046251046,
+            "volume_share": 0.005450930046,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -17699,8 +17699,8 @@
             "issuer_name": "Ondo Assets",
             "price": 16.496672663611108,
             "volume_24h": 352292.30374387,
-            "volume_share": 0.9923720811672858,
-            "premium_to_cheapest_bps": 185.40411884561348
+            "volume_share": 0.992372081166,
+            "premium_to_cheapest_bps": 185.404119
           },
           {
             "crypto_id": 40615,
@@ -17709,8 +17709,8 @@
             "issuer_name": "Reality",
             "price": 16.50801968843403,
             "volume_24h": 772.83149069,
-            "volume_share": 0.0021769887864630825,
-            "premium_to_cheapest_bps": 192.41001850336391
+            "volume_share": 0.002176988786,
+            "premium_to_cheapest_bps": 192.410019
           }
         ],
         "route_count": 3,
@@ -17725,7 +17725,7 @@
           "volume_24h": 352292.30374387
         },
         "spread_bps": 192.4,
-        "traded_volume_24h": 355000.21658155,
+        "traded_volume_24h": 355000.216582,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -17950,7 +17950,7 @@
             "issuer_name": "Robinhood",
             "price": 89.36769238025411,
             "volume_24h": 2797.58258821,
-            "volume_share": 0.6757176633585169,
+            "volume_share": 0.675717663419,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -17960,8 +17960,8 @@
             "issuer_name": "Backed Assets",
             "price": 91.32607030974044,
             "volume_24h": 1342.58236516,
-            "volume_share": 0.324282336641483,
-            "premium_to_cheapest_bps": 219.13712632900317
+            "volume_share": 0.32428233667,
+            "premium_to_cheapest_bps": 219.137126
           }
         ],
         "route_count": 2,
@@ -17976,7 +17976,7 @@
           "volume_24h": 2797.58258821
         },
         "spread_bps": 219.1,
-        "traded_volume_24h": 4140.16495337,
+        "traded_volume_24h": 4140.164953,
         "cheapest_is_deepest": true,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -18670,7 +18670,7 @@
             "issuer_name": "Ondo Assets",
             "price": 137.8929078748752,
             "volume_24h": 1898148.22275659,
-            "volume_share": 0.92314233856087,
+            "volume_share": 0.923142338561,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -18680,8 +18680,8 @@
             "issuer_name": "Robinhood",
             "price": 137.91943089319957,
             "volume_24h": 158033.30361095,
-            "volume_share": 0.07685766143913003,
-            "premium_to_cheapest_bps": 1.9234505046816786
+            "volume_share": 0.076857661439,
+            "premium_to_cheapest_bps": 1.923451
           }
         ],
         "route_count": 2,
@@ -18696,7 +18696,7 @@
           "volume_24h": 1898148.22275659
         },
         "spread_bps": 1.9,
-        "traded_volume_24h": 2056181.52636754,
+        "traded_volume_24h": 2056181.526368,
         "cheapest_is_deepest": true,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -18996,7 +18996,7 @@
             "issuer_name": "Ondo Assets",
             "price": 148.02566109443973,
             "volume_24h": 1005166.36586809,
-            "volume_share": 0.19199453986321904,
+            "volume_share": 0.191994539863,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -19006,8 +19006,8 @@
             "issuer_name": "Robinhood",
             "price": 148.1702600316353,
             "volume_24h": 4230224.00817167,
-            "volume_share": 0.808005460136781,
-            "premium_to_cheapest_bps": 9.768504739413597
+            "volume_share": 0.808005460137,
+            "premium_to_cheapest_bps": 9.768505
           }
         ],
         "route_count": 2,
@@ -19022,7 +19022,7 @@
           "volume_24h": 4230224.00817167
         },
         "spread_bps": 9.8,
-        "traded_volume_24h": 5235390.37403976,
+        "traded_volume_24h": 5235390.37404,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -19849,7 +19849,7 @@
             "issuer_name": "Backed Assets",
             "price": 51.75,
             "volume_24h": 50.87702925,
-            "volume_share": 2.8717183067859374e-05,
+            "volume_share": 2.8717183e-05,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -19859,8 +19859,8 @@
             "issuer_name": "bStocks",
             "price": 52.511411905773265,
             "volume_24h": 1223269.38348614,
-            "volume_share": 0.6904658417507535,
-            "premium_to_cheapest_bps": 147.13273541512305
+            "volume_share": 0.690465841751,
+            "premium_to_cheapest_bps": 147.132735
           },
           {
             "crypto_id": 38010,
@@ -19869,8 +19869,8 @@
             "issuer_name": "Ondo Assets",
             "price": 53.02221071817552,
             "volume_24h": 548337.81366885,
-            "volume_share": 0.3095054410661788,
-            "premium_to_cheapest_bps": 245.83781993729792
+            "volume_share": 0.309505441066,
+            "premium_to_cheapest_bps": 245.83782
           }
         ],
         "route_count": 3,
@@ -19885,7 +19885,7 @@
           "volume_24h": 1223269.38348614
         },
         "spread_bps": 245.8,
-        "traded_volume_24h": 1771658.0741842398,
+        "traded_volume_24h": 1771658.074184,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -20136,7 +20136,7 @@
             "issuer_name": "Ondo Assets",
             "price": 205.00775078025228,
             "volume_24h": 898306.34829639,
-            "volume_share": 0.9943885404179665,
+            "volume_share": 0.994388540417,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -20146,8 +20146,8 @@
             "issuer_name": "Reality",
             "price": 205.225381044887,
             "volume_24h": 5069.25568916,
-            "volume_share": 0.005611459582033483,
-            "premium_to_cheapest_bps": 10.615709103993787
+            "volume_share": 0.005611459582,
+            "premium_to_cheapest_bps": 10.615709
           }
         ],
         "route_count": 2,
@@ -20162,7 +20162,7 @@
           "volume_24h": 898306.34829639
         },
         "spread_bps": 10.6,
-        "traded_volume_24h": 903375.60398555,
+        "traded_volume_24h": 903375.603986,
         "cheapest_is_deepest": true,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -20418,7 +20418,7 @@
             "issuer_name": "Reality",
             "price": 111.3966367951808,
             "volume_24h": 28172.94455732,
-            "volume_share": 0.01165397020240271,
+            "volume_share": 0.011653970202,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -20428,8 +20428,8 @@
             "issuer_name": "Ondo Assets",
             "price": 112.93250561814351,
             "volume_24h": 2341590.76409736,
-            "volume_share": 0.9686182761440086,
-            "premium_to_cheapest_bps": 137.87389522240457
+            "volume_share": 0.968618276144,
+            "premium_to_cheapest_bps": 137.873895
           },
           {
             "crypto_id": 37032,
@@ -20438,8 +20438,8 @@
             "issuer_name": "Backed Assets",
             "price": 113.06480993017313,
             "volume_24h": 47690.94997415,
-            "volume_share": 0.019727753653588732,
-            "premium_to_cheapest_bps": 149.75076294803324
+            "volume_share": 0.019727753654,
+            "premium_to_cheapest_bps": 149.750763
           }
         ],
         "route_count": 3,
@@ -20454,7 +20454,7 @@
           "volume_24h": 2341590.76409736
         },
         "spread_bps": 149.8,
-        "traded_volume_24h": 2417454.6586288298,
+        "traded_volume_24h": 2417454.658629,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -20676,7 +20676,7 @@
             "issuer_name": "Reality",
             "price": 320.9215020714588,
             "volume_24h": 688046.91559504,
-            "volume_share": 0.16372437223837405,
+            "volume_share": 0.163724372238,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -20686,8 +20686,8 @@
             "issuer_name": "bStocks",
             "price": 321.1422891192452,
             "volume_24h": 1897673.81284643,
-            "volume_share": 0.45156143669765075,
-            "premium_to_cheapest_bps": 6.87978357203578
+            "volume_share": 0.451561436698,
+            "premium_to_cheapest_bps": 6.879784
           },
           {
             "crypto_id": 39751,
@@ -20696,8 +20696,8 @@
             "issuer_name": "Ondo Assets",
             "price": 321.21228368642846,
             "volume_24h": 1616750.20602197,
-            "volume_share": 0.3847141910639751,
-            "premium_to_cheapest_bps": 9.06083304149874
+            "volume_share": 0.384714191064,
+            "premium_to_cheapest_bps": 9.060833
           }
         ],
         "route_count": 3,
@@ -20712,7 +20712,7 @@
           "volume_24h": 1897673.81284643
         },
         "spread_bps": 9.1,
-        "traded_volume_24h": 4202470.93446344,
+        "traded_volume_24h": 4202470.934463,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -20968,7 +20968,7 @@
             "issuer_name": "Backed Assets",
             "price": 946.1300000000001,
             "volume_24h": 1372.2764133,
-            "volume_share": 0.0012361702367662247,
+            "volume_share": 0.001236170237,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -20978,8 +20978,8 @@
             "issuer_name": "bStocks",
             "price": 956.2428279320491,
             "volume_24h": 988278.68762473,
-            "volume_share": 0.890258469380978,
-            "premium_to_cheapest_bps": 106.88624113017298
+            "volume_share": 0.890258469381,
+            "premium_to_cheapest_bps": 106.886241
           },
           {
             "crypto_id": 38038,
@@ -20988,8 +20988,8 @@
             "issuer_name": "Ondo Assets",
             "price": 973.6257639916238,
             "volume_24h": 120452.13704441,
-            "volume_share": 0.1085053603822559,
-            "premium_to_cheapest_bps": 290.61296007550476
+            "volume_share": 0.108505360382,
+            "premium_to_cheapest_bps": 290.61296
           }
         ],
         "route_count": 3,
@@ -21004,7 +21004,7 @@
           "volume_24h": 988278.68762473
         },
         "spread_bps": 290.6,
-        "traded_volume_24h": 1110103.10108244,
+        "traded_volume_24h": 1110103.101082,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -21254,7 +21254,7 @@
             "issuer_name": "Backed Assets",
             "price": 290.06,
             "volume_24h": 29.00629006,
-            "volume_share": 1.9143391876938237e-05,
+            "volume_share": 1.9143392e-05,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -21264,8 +21264,8 @@
             "issuer_name": "Reality",
             "price": 302.42372107593917,
             "volume_24h": 20663.646877,
-            "volume_share": 0.013637465837748778,
-            "premium_to_cheapest_bps": 426.2470204764246
+            "volume_share": 0.013637465838,
+            "premium_to_cheapest_bps": 426.24702
           },
           {
             "crypto_id": 39304,
@@ -21274,8 +21274,8 @@
             "issuer_name": "Ondo Assets",
             "price": 303.35028283246453,
             "volume_24h": 1494518.97946652,
-            "volume_share": 0.9863433907703743,
-            "premium_to_cheapest_bps": 458.1908168125404
+            "volume_share": 0.98634339077,
+            "premium_to_cheapest_bps": 458.190817
           }
         ],
         "route_count": 3,
@@ -21290,7 +21290,7 @@
           "volume_24h": 1494518.97946652
         },
         "spread_bps": 458.2,
-        "traded_volume_24h": 1515211.6326335801,
+        "traded_volume_24h": 1515211.632634,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -21550,7 +21550,7 @@
             "issuer_name": "Ondo Assets",
             "price": 7.38341116934588,
             "volume_24h": 1504328.41616854,
-            "volume_share": 0.9402709112744976,
+            "volume_share": 0.940270911274,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -21560,8 +21560,8 @@
             "issuer_name": "Backed Assets",
             "price": 7.39032370118755,
             "volume_24h": 44688.2129503,
-            "volume_share": 0.027932083355194506,
-            "premium_to_cheapest_bps": 9.362246911521765
+            "volume_share": 0.027932083355,
+            "premium_to_cheapest_bps": 9.362247
           },
           {
             "crypto_id": 40660,
@@ -21570,8 +21570,8 @@
             "issuer_name": "Reality",
             "price": 7.399112398207863,
             "volume_24h": 50871.65640675,
-            "volume_share": 0.031797005370307975,
-            "premium_to_cheapest_bps": 21.26554854099183
+            "volume_share": 0.03179700537,
+            "premium_to_cheapest_bps": 21.265549
           }
         ],
         "route_count": 3,
@@ -21586,7 +21586,7 @@
           "volume_24h": 1504328.41616854
         },
         "spread_bps": 21.3,
-        "traded_volume_24h": 1599888.28552559,
+        "traded_volume_24h": 1599888.285526,
         "cheapest_is_deepest": true,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -21842,7 +21842,7 @@
             "issuer_name": "bStocks",
             "price": 236.2912993950863,
             "volume_24h": 72765.19145081,
-            "volume_share": 0.04160454733040817,
+            "volume_share": 0.04160454733,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -21852,8 +21852,8 @@
             "issuer_name": "Ondo Assets",
             "price": 238.21471341225129,
             "volume_24h": 1675676.23126881,
-            "volume_share": 0.9580920448947315,
-            "premium_to_cheapest_bps": 81.4001201943948
+            "volume_share": 0.958092044895,
+            "premium_to_cheapest_bps": 81.40012
           },
           {
             "crypto_id": 37042,
@@ -21862,8 +21862,8 @@
             "issuer_name": "Backed Assets",
             "price": 238.22,
             "volume_24h": 530.6517254,
-            "volume_share": 0.0003034077748602048,
-            "premium_to_cheapest_bps": 81.62385199333322
+            "volume_share": 0.000303407775,
+            "premium_to_cheapest_bps": 81.623852
           }
         ],
         "route_count": 3,
@@ -21878,7 +21878,7 @@
           "volume_24h": 1675676.23126881
         },
         "spread_bps": 81.6,
-        "traded_volume_24h": 1748972.0744450202,
+        "traded_volume_24h": 1748972.074445,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -22102,7 +22102,7 @@
             "issuer_name": "Backed Assets",
             "price": 324.8,
             "volume_24h": 935.713072,
-            "volume_share": 0.010371315771519864,
+            "volume_share": 0.010371315771,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -22112,8 +22112,8 @@
             "issuer_name": "Ondo Assets",
             "price": 329.83591705787177,
             "volume_24h": 89285.53682664,
-            "volume_share": 0.9896286842284802,
-            "premium_to_cheapest_bps": 155.04670744679095
+            "volume_share": 0.989628684225,
+            "premium_to_cheapest_bps": 155.046707
           }
         ],
         "route_count": 2,
@@ -22128,7 +22128,7 @@
           "volume_24h": 89285.53682664
         },
         "spread_bps": 155.0,
-        "traded_volume_24h": 90221.24989864,
+        "traded_volume_24h": 90221.249899,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -22549,7 +22549,7 @@
             "issuer_name": "Backed Assets",
             "price": 206.2264108688588,
             "volume_24h": 5159.977389,
-            "volume_share": 0.0031889384730451015,
+            "volume_share": 0.003188938473,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -22559,8 +22559,8 @@
             "issuer_name": "Ondo Assets",
             "price": 209.22723207944028,
             "volume_24h": 1612926.23926753,
-            "volume_share": 0.996811061526955,
-            "premium_to_cheapest_bps": 145.51100404349927
+            "volume_share": 0.996811061527,
+            "premium_to_cheapest_bps": 145.511004
           }
         ],
         "route_count": 2,
@@ -22575,7 +22575,7 @@
           "volume_24h": 1612926.23926753
         },
         "spread_bps": 145.5,
-        "traded_volume_24h": 1618086.2166565298,
+        "traded_volume_24h": 1618086.216657,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -22791,7 +22791,7 @@
             "issuer_name": "Backed Assets",
             "price": 89.41903825553733,
             "volume_24h": 977663.02542122,
-            "volume_share": 0.4320410910580573,
+            "volume_share": 0.432041091058,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -22801,8 +22801,8 @@
             "issuer_name": "Ondo Assets",
             "price": 89.49383809761109,
             "volume_24h": 1285230.587376,
-            "volume_share": 0.5679589089419427,
-            "premium_to_cheapest_bps": 8.365091319815221
+            "volume_share": 0.567958908942,
+            "premium_to_cheapest_bps": 8.365091
           }
         ],
         "route_count": 2,
@@ -22817,7 +22817,7 @@
           "volume_24h": 1285230.587376
         },
         "spread_bps": 8.4,
-        "traded_volume_24h": 2262893.61279722,
+        "traded_volume_24h": 2262893.612797,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -23041,7 +23041,7 @@
             "issuer_name": "Ondo Assets",
             "price": 301.94206126273383,
             "volume_24h": 126621.25578005,
-            "volume_share": 0.8765096285773694,
+            "volume_share": 0.876509628575,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -23051,8 +23051,8 @@
             "issuer_name": "Backed Assets",
             "price": 304.89583847324405,
             "volume_24h": 17839.5141325,
-            "volume_share": 0.12349037142263075,
-            "premium_to_cheapest_bps": 97.82596032356095
+            "volume_share": 0.123490371422,
+            "premium_to_cheapest_bps": 97.82596
           }
         ],
         "route_count": 2,
@@ -23067,7 +23067,7 @@
           "volume_24h": 126621.25578005
         },
         "spread_bps": 97.8,
-        "traded_volume_24h": 144460.76991255,
+        "traded_volume_24h": 144460.769913,
         "cheapest_is_deepest": true,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -23296,7 +23296,7 @@
             "issuer_name": "Ondo Assets",
             "price": 401.01141804758095,
             "volume_24h": 551849.5529208,
-            "volume_share": 0.9614047892859182,
+            "volume_share": 0.961404789286,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -23306,8 +23306,8 @@
             "issuer_name": "Backed Assets",
             "price": 402.8448639441357,
             "volume_24h": 22153.77956799,
-            "volume_share": 0.03859521071408179,
-            "premium_to_cheapest_bps": 45.72054096318112
+            "volume_share": 0.038595210714,
+            "premium_to_cheapest_bps": 45.720541
           }
         ],
         "route_count": 2,
@@ -23322,7 +23322,7 @@
           "volume_24h": 551849.5529208
         },
         "spread_bps": 45.7,
-        "traded_volume_24h": 574003.33248879,
+        "traded_volume_24h": 574003.332489,
         "cheapest_is_deepest": true,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -23546,7 +23546,7 @@
             "issuer_name": "Backed Assets",
             "price": 346.4021710565302,
             "volume_24h": 6365.17831057,
-            "volume_share": 0.004996525710366196,
+            "volume_share": 0.00499652571,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -23556,8 +23556,8 @@
             "issuer_name": "Ondo Assets",
             "price": 356.4505768176152,
             "volume_24h": 1267555.67780837,
-            "volume_share": 0.9950034742896338,
-            "premium_to_cheapest_bps": 290.07917965517385
+            "volume_share": 0.99500347429,
+            "premium_to_cheapest_bps": 290.07918
           }
         ],
         "route_count": 2,
@@ -23572,7 +23572,7 @@
           "volume_24h": 1267555.67780837
         },
         "spread_bps": 290.1,
-        "traded_volume_24h": 1273920.85611894,
+        "traded_volume_24h": 1273920.856119,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -23796,7 +23796,7 @@
             "issuer_name": "Backed Assets",
             "price": 270.1524031326728,
             "volume_24h": 6208.79678818,
-            "volume_share": 0.05213220222629595,
+            "volume_share": 0.052132202226,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -23806,8 +23806,8 @@
             "issuer_name": "Ondo Assets",
             "price": 272.16843386127846,
             "volume_24h": 112888.35474263,
-            "volume_share": 0.947867797773704,
-            "premium_to_cheapest_bps": 74.62568184579688
+            "volume_share": 0.947867797772,
+            "premium_to_cheapest_bps": 74.625682
           }
         ],
         "route_count": 2,
@@ -23822,7 +23822,7 @@
           "volume_24h": 112888.35474263
         },
         "spread_bps": 74.6,
-        "traded_volume_24h": 119097.15153081,
+        "traded_volume_24h": 119097.151531,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -24225,7 +24225,7 @@
             "issuer_name": "Backed Assets",
             "price": 143.87,
             "volume_24h": 1451.73721166,
-            "volume_share": 0.008481582541757687,
+            "volume_share": 0.008481582542,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -24235,8 +24235,8 @@
             "issuer_name": "Ondo Assets",
             "price": 152.014405566573,
             "volume_24h": 169711.74607847,
-            "volume_share": 0.9915184174582424,
-            "premium_to_cheapest_bps": 566.0947776863145
+            "volume_share": 0.991518417459,
+            "premium_to_cheapest_bps": 566.094778
           }
         ],
         "route_count": 2,
@@ -24251,7 +24251,7 @@
           "volume_24h": 169711.74607847
         },
         "spread_bps": 566.1,
-        "traded_volume_24h": 171163.48329012998,
+        "traded_volume_24h": 171163.48329,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -24475,7 +24475,7 @@
             "issuer_name": "Backed Assets",
             "price": 40.02235909335566,
             "volume_24h": 6202.43526474,
-            "volume_share": 0.003300104211541949,
+            "volume_share": 0.003300104212,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -24485,8 +24485,8 @@
             "issuer_name": "Ondo Assets",
             "price": 41.191388662966034,
             "volume_24h": 1873264.05038359,
-            "volume_share": 0.9966998957884581,
-            "premium_to_cheapest_bps": 292.0941184110393
+            "volume_share": 0.996699895789,
+            "premium_to_cheapest_bps": 292.094118
           }
         ],
         "route_count": 2,
@@ -24501,7 +24501,7 @@
           "volume_24h": 1873264.05038359
         },
         "spread_bps": 292.1,
-        "traded_volume_24h": 1879466.4856483298,
+        "traded_volume_24h": 1879466.485648,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -24725,7 +24725,7 @@
             "issuer_name": "Backed Assets",
             "price": 381.9353841099875,
             "volume_24h": 77359.74180899,
-            "volume_share": 0.0723247766261237,
+            "volume_share": 0.072324776626,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -24735,8 +24735,8 @@
             "issuer_name": "Ondo Assets",
             "price": 385.9412816994937,
             "volume_24h": 992256.30704373,
-            "volume_share": 0.9276752233738763,
-            "premium_to_cheapest_bps": 104.88417036407904
+            "volume_share": 0.927675223374,
+            "premium_to_cheapest_bps": 104.88417
           }
         ],
         "route_count": 2,
@@ -24751,7 +24751,7 @@
           "volume_24h": 992256.30704373
         },
         "spread_bps": 104.9,
-        "traded_volume_24h": 1069616.04885272,
+        "traded_volume_24h": 1069616.048853,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -24957,7 +24957,7 @@
             "issuer_name": "Backed Assets",
             "price": 550.0,
             "volume_24h": 15700.32365,
-            "volume_share": 0.008036119149992105,
+            "volume_share": 0.00803611915,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -24967,8 +24967,8 @@
             "issuer_name": "bStocks",
             "price": 595.0383213396555,
             "volume_24h": 1938019.29610146,
-            "volume_share": 0.991963880850008,
-            "premium_to_cheapest_bps": 818.8785698119183
+            "volume_share": 0.99196388085,
+            "premium_to_cheapest_bps": 818.87857
           }
         ],
         "route_count": 2,
@@ -24983,7 +24983,7 @@
           "volume_24h": 1938019.29610146
         },
         "spread_bps": 818.9,
-        "traded_volume_24h": 1953719.61975146,
+        "traded_volume_24h": 1953719.619751,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -25201,7 +25201,7 @@
             "issuer_name": "Backed Assets",
             "price": 365.3999387221653,
             "volume_24h": 2081.78416411,
-            "volume_share": 0.02371831367590499,
+            "volume_share": 0.023718313676,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -25211,8 +25211,8 @@
             "issuer_name": "Ondo Assets",
             "price": 372.5919518025619,
             "volume_24h": 85689.38677815,
-            "volume_share": 0.9762816863240951,
-            "premium_to_cheapest_bps": 196.82578780794603
+            "volume_share": 0.976281686327,
+            "premium_to_cheapest_bps": 196.825788
           }
         ],
         "route_count": 2,
@@ -25227,7 +25227,7 @@
           "volume_24h": 85689.38677815
         },
         "spread_bps": 196.8,
-        "traded_volume_24h": 87771.17094226,
+        "traded_volume_24h": 87771.170942,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -26049,7 +26049,7 @@
             "issuer_name": "bStocks",
             "price": 186.73977211910395,
             "volume_24h": 2834174.83388692,
-            "volume_share": 0.9081161354677898,
+            "volume_share": 0.908116135468,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -26059,8 +26059,8 @@
             "issuer_name": "Reality",
             "price": 186.7475976504436,
             "volume_24h": 286763.91303555,
-            "volume_share": 0.09188386453221016,
-            "premium_to_cheapest_bps": 0.41906077376197004
+            "volume_share": 0.091883864532,
+            "premium_to_cheapest_bps": 0.419061
           }
         ],
         "route_count": 2,
@@ -26075,7 +26075,7 @@
           "volume_24h": 2834174.83388692
         },
         "spread_bps": 0.4,
-        "traded_volume_24h": 3120938.74692247,
+        "traded_volume_24h": 3120938.746922,
         "cheapest_is_deepest": true,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -26213,7 +26213,7 @@
             "issuer_name": "Reality",
             "price": 35.40639104581476,
             "volume_24h": 271392.63149666,
-            "volume_share": 0.0242564138407885,
+            "volume_share": 0.024256413841,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -26223,8 +26223,8 @@
             "issuer_name": "bStocks",
             "price": 35.43834995146228,
             "volume_24h": 10917096.86567288,
-            "volume_share": 0.9757435861592114,
-            "premium_to_cheapest_bps": 9.026309856365877
+            "volume_share": 0.975743586159,
+            "premium_to_cheapest_bps": 9.02631
           }
         ],
         "route_count": 2,
@@ -26239,7 +26239,7 @@
           "volume_24h": 10917096.86567288
         },
         "spread_bps": 9.0,
-        "traded_volume_24h": 11188489.497169541,
+        "traded_volume_24h": 11188489.49717,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -29659,7 +29659,7 @@
             "issuer_name": "bStocks",
             "price": 362.11617342340804,
             "volume_24h": 3686967.87644497,
-            "volume_share": 0.2789817434498724,
+            "volume_share": 0.27898174345,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -29669,8 +29669,8 @@
             "issuer_name": "Reality",
             "price": 362.50651350949465,
             "volume_24h": 4208970.52526746,
-            "volume_share": 0.3184801101116313,
-            "premium_to_cheapest_bps": 10.779415964672356
+            "volume_share": 0.318480110112,
+            "premium_to_cheapest_bps": 10.779416
           },
           {
             "crypto_id": 37021,
@@ -29679,8 +29679,8 @@
             "issuer_name": "Backed Assets",
             "price": 362.73509886737327,
             "volume_24h": 963577.93838799,
-            "volume_share": 0.07291103752726918,
-            "premium_to_cheapest_bps": 17.091902803290093
+            "volume_share": 0.072911037527,
+            "premium_to_cheapest_bps": 17.091903
           },
           {
             "crypto_id": 40705,
@@ -29689,8 +29689,8 @@
             "issuer_name": "Robinhood",
             "price": 363.6171182952956,
             "volume_24h": 25739.5082189,
-            "volume_share": 0.0019476309854304802,
-            "premium_to_cheapest_bps": 41.44926358018664
+            "volume_share": 0.001947630985,
+            "premium_to_cheapest_bps": 41.449264
           },
           {
             "crypto_id": 38062,
@@ -29699,8 +29699,8 @@
             "issuer_name": "Ondo Assets",
             "price": 364.7291898895231,
             "volume_24h": 4330547.56179682,
-            "volume_share": 0.32767947792579666,
-            "premium_to_cheapest_bps": 72.15961776608549
+            "volume_share": 0.327679477926,
+            "premium_to_cheapest_bps": 72.159618
           }
         ],
         "route_count": 5,
@@ -29715,7 +29715,7 @@
           "volume_24h": 4330547.56179682
         },
         "spread_bps": 72.2,
-        "traded_volume_24h": 13215803.41011614,
+        "traded_volume_24h": 13215803.410116,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -29965,7 +29965,7 @@
             "issuer_name": "bStocks",
             "price": 322.102409090001,
             "volume_24h": 2892026.1776054,
-            "volume_share": 0.46531050832524656,
+            "volume_share": 0.465310508325,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -29975,8 +29975,8 @@
             "issuer_name": "Ondo Assets",
             "price": 322.25014911685355,
             "volume_24h": 3170122.13682122,
-            "volume_share": 0.5100545611792406,
-            "premium_to_cheapest_bps": 4.586740821652668
+            "volume_share": 0.510054561179,
+            "premium_to_cheapest_bps": 4.586741
           },
           {
             "crypto_id": 40663,
@@ -29985,8 +29985,8 @@
             "issuer_name": "Reality",
             "price": 322.26134134356676,
             "volume_24h": 153112.51863393,
-            "volume_share": 0.024634930495512863,
-            "premium_to_cheapest_bps": 4.934214991274555
+            "volume_share": 0.024634930496,
+            "premium_to_cheapest_bps": 4.934215
           }
         ],
         "route_count": 3,
@@ -30001,7 +30001,7 @@
           "volume_24h": 3170122.13682122
         },
         "spread_bps": 4.9,
-        "traded_volume_24h": 6215260.83306055,
+        "traded_volume_24h": 6215260.833061,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -30275,7 +30275,7 @@
             "issuer_name": "bStocks",
             "price": 257.0667821609246,
             "volume_24h": 4148587.0901906,
-            "volume_share": 0.38476431172971626,
+            "volume_share": 0.38476431173,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -30285,8 +30285,8 @@
             "issuer_name": "Backed Assets",
             "price": 257.18375440935404,
             "volume_24h": 2093616.23600252,
-            "volume_share": 0.19417425561015741,
-            "premium_to_cheapest_bps": 4.550266955773985
+            "volume_share": 0.19417425561,
+            "premium_to_cheapest_bps": 4.550267
           },
           {
             "crypto_id": 40723,
@@ -30295,8 +30295,8 @@
             "issuer_name": "Robinhood",
             "price": 257.2957799776106,
             "volume_24h": 30586.61190707,
-            "volume_share": 0.0028367818784363623,
-            "premium_to_cheapest_bps": 8.908106086715772
+            "volume_share": 0.002836781878,
+            "premium_to_cheapest_bps": 8.908106
           },
           {
             "crypto_id": 40614,
@@ -30305,8 +30305,8 @@
             "issuer_name": "Reality",
             "price": 257.30913304794745,
             "volume_24h": 219514.27004152,
-            "volume_share": 0.020359041570342466,
-            "premium_to_cheapest_bps": 9.427545830138495
+            "volume_share": 0.02035904157,
+            "premium_to_cheapest_bps": 9.427546
           },
           {
             "crypto_id": 38089,
@@ -30315,8 +30315,8 @@
             "issuer_name": "Ondo Assets",
             "price": 257.45544381635193,
             "volume_24h": 4200846.65899744,
-            "volume_share": 0.3896111708135716,
-            "premium_to_cheapest_bps": 15.119092873852047
+            "volume_share": 0.389611170814,
+            "premium_to_cheapest_bps": 15.119093
           },
           {
             "crypto_id": 37213,
@@ -30325,8 +30325,8 @@
             "issuer_name": "Backed Assets",
             "price": 257.9474771377792,
             "volume_24h": 89000.60512328,
-            "volume_share": 0.008254438397775997,
-            "premium_to_cheapest_bps": 34.259384641273094
+            "volume_share": 0.008254438398,
+            "premium_to_cheapest_bps": 34.259385
           }
         ],
         "route_count": 6,
@@ -30341,7 +30341,7 @@
           "volume_24h": 4200846.65899744
         },
         "spread_bps": 34.3,
-        "traded_volume_24h": 10782151.47226243,
+        "traded_volume_24h": 10782151.472262,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -30582,7 +30582,7 @@
             "issuer_name": "Robinhood",
             "price": 61.61097686081015,
             "volume_24h": 3520.2757876,
-            "volume_share": 0.0021119888090295373,
+            "volume_share": 0.002111988809,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -30592,8 +30592,8 @@
             "issuer_name": "bStocks",
             "price": 61.771065607096084,
             "volume_24h": 1580127.09904849,
-            "volume_share": 0.9479969614283859,
-            "premium_to_cheapest_bps": 25.983802634326203
+            "volume_share": 0.947996961428,
+            "premium_to_cheapest_bps": 25.983803
           },
           {
             "crypto_id": 40164,
@@ -30602,8 +30602,8 @@
             "issuer_name": "Backed Assets",
             "price": 61.78170294500824,
             "volume_24h": 76998.977702,
-            "volume_share": 0.046195522460530894,
-            "premium_to_cheapest_bps": 27.710335543582598
+            "volume_share": 0.046195522461,
+            "premium_to_cheapest_bps": 27.710336
           },
           {
             "crypto_id": 40665,
@@ -30612,8 +30612,8 @@
             "issuer_name": "Reality",
             "price": 61.80258612611189,
             "volume_24h": 6159.72737555,
-            "volume_share": 0.0036955273020537254,
-            "premium_to_cheapest_bps": 31.099858347420906
+            "volume_share": 0.003695527302,
+            "premium_to_cheapest_bps": 31.099858
           }
         ],
         "route_count": 4,
@@ -30628,7 +30628,7 @@
           "volume_24h": 1580127.09904849
         },
         "spread_bps": 31.1,
-        "traded_volume_24h": 1666806.07991364,
+        "traded_volume_24h": 1666806.079914,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -30859,7 +30859,7 @@
             "issuer_name": "bStocks",
             "price": 955.7551915421755,
             "volume_24h": 4170249.20966318,
-            "volume_share": 0.6396175339794079,
+            "volume_share": 0.639617533979,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -30869,8 +30869,8 @@
             "issuer_name": "Backed Assets",
             "price": 956.224454608408,
             "volume_24h": 1785121.24157662,
-            "volume_share": 0.2737953510657739,
-            "premium_to_cheapest_bps": 4.909866777447203
+            "volume_share": 0.273795351066,
+            "premium_to_cheapest_bps": 4.909867
           },
           {
             "crypto_id": 40664,
@@ -30879,8 +30879,8 @@
             "issuer_name": "Reality",
             "price": 956.3852714710567,
             "volume_24h": 562049.45812273,
-            "volume_share": 0.08620508518913159,
-            "premium_to_cheapest_bps": 6.592482410319178
+            "volume_share": 0.086205085189,
+            "premium_to_cheapest_bps": 6.592482
           },
           {
             "crypto_id": 40750,
@@ -30889,8 +30889,8 @@
             "issuer_name": "Robinhood",
             "price": 961.7538262190926,
             "volume_24h": 2490.79996058,
-            "volume_share": 0.0003820297656865599,
-            "premium_to_cheapest_bps": 62.763296814929426
+            "volume_share": 0.000382029766,
+            "premium_to_cheapest_bps": 62.763297
           }
         ],
         "route_count": 4,
@@ -30905,7 +30905,7 @@
           "volume_24h": 4170249.20966318
         },
         "spread_bps": 62.8,
-        "traded_volume_24h": 6519910.70932311,
+        "traded_volume_24h": 6519910.709323,
         "cheapest_is_deepest": true,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -31148,7 +31148,7 @@
             "issuer_name": "Backed Assets",
             "price": 78.44286624965412,
             "volume_24h": 211315.33844345,
-            "volume_share": 0.03194154837084591,
+            "volume_share": 0.031941548371,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -31158,8 +31158,8 @@
             "issuer_name": "bStocks",
             "price": 78.77009883410044,
             "volume_24h": 4324897.58867233,
-            "volume_share": 0.6537335460128025,
-            "premium_to_cheapest_bps": 41.71604125286166
+            "volume_share": 0.653733546013,
+            "premium_to_cheapest_bps": 41.716041
           },
           {
             "crypto_id": 40633,
@@ -31168,8 +31168,8 @@
             "issuer_name": "Reality",
             "price": 78.82054464198997,
             "volume_24h": 341782.18921139,
-            "volume_share": 0.051662375336330495,
-            "premium_to_cheapest_bps": 48.14693934485304
+            "volume_share": 0.051662375336,
+            "premium_to_cheapest_bps": 48.146939
           },
           {
             "crypto_id": 39284,
@@ -31178,8 +31178,8 @@
             "issuer_name": "Ondo Assets",
             "price": 79.03225783183578,
             "volume_24h": 1737693.51560917,
-            "volume_share": 0.26266253028002107,
-            "premium_to_cheapest_bps": 75.13641588590802
+            "volume_share": 0.26266253028,
+            "premium_to_cheapest_bps": 75.136416
           }
         ],
         "route_count": 4,
@@ -31194,7 +31194,7 @@
           "volume_24h": 4324897.58867233
         },
         "spread_bps": 75.1,
-        "traded_volume_24h": 6615688.63193634,
+        "traded_volume_24h": 6615688.631936,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -31366,7 +31366,7 @@
             "issuer_name": "Robinhood",
             "price": 106.79327912335522,
             "volume_24h": 2033.2459372,
-            "volume_share": 0.0006601615574895818,
+            "volume_share": 0.000660161557,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -31376,8 +31376,8 @@
             "issuer_name": "bStocks",
             "price": 109.56283999982479,
             "volume_24h": 2548592.98938575,
-            "volume_share": 0.8274862801874758,
-            "premium_to_cheapest_bps": 259.338499501498
+            "volume_share": 0.827486280187,
+            "premium_to_cheapest_bps": 259.3385
           },
           {
             "crypto_id": 40630,
@@ -31386,8 +31386,8 @@
             "issuer_name": "Reality",
             "price": 109.59685269831942,
             "volume_24h": 529295.51130509,
-            "volume_share": 0.17185355825503468,
-            "premium_to_cheapest_bps": 262.52340952334976
+            "volume_share": 0.171853558255,
+            "premium_to_cheapest_bps": 262.52341
           }
         ],
         "route_count": 3,
@@ -31402,7 +31402,7 @@
           "volume_24h": 2548592.98938575
         },
         "spread_bps": 262.5,
-        "traded_volume_24h": 3079921.74662804,
+        "traded_volume_24h": 3079921.746628,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -31574,7 +31574,7 @@
             "issuer_name": "Robinhood",
             "price": 271.44843313725494,
             "volume_24h": 599560.75130882,
-            "volume_share": 0.2040514773640349,
+            "volume_share": 0.204051477364,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -31584,8 +31584,8 @@
             "issuer_name": "bStocks",
             "price": 272.0233121541096,
             "volume_24h": 2240117.12201119,
-            "volume_share": 0.7623901451471295,
-            "premium_to_cheapest_bps": 21.17820354350597
+            "volume_share": 0.762390145147,
+            "premium_to_cheapest_bps": 21.178204
           },
           {
             "crypto_id": 40657,
@@ -31594,8 +31594,8 @@
             "issuer_name": "Reality",
             "price": 272.05736384167255,
             "volume_24h": 98603.97131071,
-            "volume_share": 0.03355837748883564,
-            "premium_to_cheapest_bps": 22.432647607499856
+            "volume_share": 0.033558377489,
+            "premium_to_cheapest_bps": 22.432648
           }
         ],
         "route_count": 3,
@@ -31610,7 +31610,7 @@
           "volume_24h": 2240117.12201119
         },
         "spread_bps": 22.4,
-        "traded_volume_24h": 2938281.8446307196,
+        "traded_volume_24h": 2938281.844631,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -31808,7 +31808,7 @@
             "issuer_name": "Ondo Assets",
             "price": 201.2783105791962,
             "volume_24h": 1162554.82880237,
-            "volume_share": 0.8340397144287114,
+            "volume_share": 0.834039714429,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -31818,8 +31818,8 @@
             "issuer_name": "Robinhood",
             "price": 201.46991869518624,
             "volume_24h": 231329.42957336,
-            "volume_share": 0.1659602855712886,
-            "premium_to_cheapest_bps": 9.51956102168694
+            "volume_share": 0.165960285571,
+            "premium_to_cheapest_bps": 9.519561
           }
         ],
         "route_count": 2,
@@ -31834,7 +31834,7 @@
           "volume_24h": 1162554.82880237
         },
         "spread_bps": 9.5,
-        "traded_volume_24h": 1393884.25837573,
+        "traded_volume_24h": 1393884.258376,
         "cheapest_is_deepest": true,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -31995,7 +31995,7 @@
             "issuer_name": "Robinhood",
             "price": 85.30712471324591,
             "volume_24h": 16936.48238338,
-            "volume_share": 0.004345251002557233,
+            "volume_share": 0.004345251003,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -32005,8 +32005,8 @@
             "issuer_name": "Reality",
             "price": 85.51974100252953,
             "volume_24h": 481259.39814494,
-            "volume_share": 0.12347268074576731,
-            "premium_to_cheapest_bps": 24.923626250246134
+            "volume_share": 0.123472680746,
+            "premium_to_cheapest_bps": 24.923626
           },
           {
             "crypto_id": 40877,
@@ -32015,8 +32015,8 @@
             "issuer_name": "bStocks",
             "price": 85.55050247223447,
             "volume_24h": 3399503.55580175,
-            "volume_share": 0.8721820682516754,
-            "premium_to_cheapest_bps": 28.529593490187466
+            "volume_share": 0.872182068252,
+            "premium_to_cheapest_bps": 28.529593
           }
         ],
         "route_count": 3,
@@ -32031,7 +32031,7 @@
           "volume_24h": 3399503.55580175
         },
         "spread_bps": 28.5,
-        "traded_volume_24h": 3897699.4363300703,
+        "traded_volume_24h": 3897699.43633,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -32242,7 +32242,7 @@
             "issuer_name": "bStocks",
             "price": 158.71384559624246,
             "volume_24h": 2784556.44173812,
-            "volume_share": 0.8000123050244667,
+            "volume_share": 0.800012305025,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -32252,8 +32252,8 @@
             "issuer_name": "Backed Assets",
             "price": 158.88219831895347,
             "volume_24h": 695537.05966252,
-            "volume_share": 0.19983010507168028,
-            "premium_to_cheapest_bps": 10.6073116733163
+            "volume_share": 0.199830105072,
+            "premium_to_cheapest_bps": 10.607312
           },
           {
             "crypto_id": 40713,
@@ -32262,8 +32262,8 @@
             "issuer_name": "Robinhood",
             "price": 159.88987961051927,
             "volume_24h": 548.51404056,
-            "volume_share": 0.0001575899038529739,
-            "premium_to_cheapest_bps": 74.09775812934116
+            "volume_share": 0.000157589904,
+            "premium_to_cheapest_bps": 74.097758
           }
         ],
         "route_count": 3,
@@ -32278,7 +32278,7 @@
           "volume_24h": 2784556.44173812
         },
         "spread_bps": 74.1,
-        "traded_volume_24h": 3480642.0154411998,
+        "traded_volume_24h": 3480642.015441,
         "cheapest_is_deepest": true,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -32488,7 +32488,7 @@
             "issuer_name": "bStocks",
             "price": 141.5894147664673,
             "volume_24h": 22367827.35468526,
-            "volume_share": 0.7088312969212859,
+            "volume_share": 0.708831296921,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -32498,8 +32498,8 @@
             "issuer_name": "Backed Assets",
             "price": 141.60213467449677,
             "volume_24h": 8530056.93100106,
-            "volume_share": 0.27031553942798947,
-            "premium_to_cheapest_bps": 0.8983657465089223
+            "volume_share": 0.270315539428,
+            "premium_to_cheapest_bps": 0.898366
           },
           {
             "crypto_id": 40600,
@@ -32508,8 +32508,8 @@
             "issuer_name": "Reality",
             "price": 141.67555908730563,
             "volume_24h": 658040.87145182,
-            "volume_share": 0.020853163650724628,
-            "premium_to_cheapest_bps": 6.0840932904770995
+            "volume_share": 0.020853163651,
+            "premium_to_cheapest_bps": 6.084093
           }
         ],
         "route_count": 3,
@@ -32524,7 +32524,7 @@
           "volume_24h": 22367827.35468526
         },
         "spread_bps": 6.1,
-        "traded_volume_24h": 31555925.157138143,
+        "traded_volume_24h": 31555925.157138,
         "cheapest_is_deepest": true,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -32742,7 +32742,7 @@
             "issuer_name": "Robinhood",
             "price": 158.37973793726493,
             "volume_24h": 18030.31042028,
-            "volume_share": 0.009723153691044529,
+            "volume_share": 0.009723153691,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -32752,8 +32752,8 @@
             "issuer_name": "Backed Assets",
             "price": 159.65046283553843,
             "volume_24h": 5054.0401916,
-            "volume_share": 0.0027254777315630827,
-            "premium_to_cheapest_bps": 80.23279460007915
+            "volume_share": 0.002725477732,
+            "premium_to_cheapest_bps": 80.232795
           },
           {
             "crypto_id": 39280,
@@ -32762,8 +32762,8 @@
             "issuer_name": "Ondo Assets",
             "price": 160.73156686694165,
             "volume_24h": 1831284.20029221,
-            "volume_share": 0.9875513685773925,
-            "premium_to_cheapest_bps": 148.49304338464543
+            "volume_share": 0.987551368577,
+            "premium_to_cheapest_bps": 148.493043
           }
         ],
         "route_count": 3,
@@ -32778,7 +32778,7 @@
           "volume_24h": 1831284.20029221
         },
         "spread_bps": 148.5,
-        "traded_volume_24h": 1854368.55090409,
+        "traded_volume_24h": 1854368.550904,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -32939,7 +32939,7 @@
             "issuer_name": "bStocks",
             "price": 231.8360480633845,
             "volume_24h": 4109493.36510113,
-            "volume_share": 0.8357857314600813,
+            "volume_share": 0.83578573146,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -32949,8 +32949,8 @@
             "issuer_name": "Robinhood",
             "price": 231.86065270862758,
             "volume_24h": 18325.15187898,
-            "volume_share": 0.0037269558815587658,
-            "premium_to_cheapest_bps": 1.0612950595301207
+            "volume_share": 0.003726955882,
+            "premium_to_cheapest_bps": 1.061295
           },
           {
             "crypto_id": 40650,
@@ -32959,8 +32959,8 @@
             "issuer_name": "Reality",
             "price": 231.9721724843546,
             "volume_24h": 789103.62037443,
-            "volume_share": 0.16048731265836005,
-            "premium_to_cheapest_bps": 5.871581322540731
+            "volume_share": 0.160487312658,
+            "premium_to_cheapest_bps": 5.871581
           }
         ],
         "route_count": 3,
@@ -32975,7 +32975,7 @@
           "volume_24h": 4109493.36510113
         },
         "spread_bps": 5.9,
-        "traded_volume_24h": 4916922.13735454,
+        "traded_volume_24h": 4916922.137355,
         "cheapest_is_deepest": true,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -33198,7 +33198,7 @@
             "issuer_name": "Reality",
             "price": 40.225174564851656,
             "volume_24h": 19557.43467885,
-            "volume_share": 0.015402013194934767,
+            "volume_share": 0.015402013195,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -33208,8 +33208,8 @@
             "issuer_name": "Ondo Assets",
             "price": 40.2371224528697,
             "volume_24h": 1250239.85943604,
-            "volume_share": 0.9845979868050653,
-            "premium_to_cheapest_bps": 2.970251377971689
+            "volume_share": 0.984597986805,
+            "premium_to_cheapest_bps": 2.970251
           }
         ],
         "route_count": 2,
@@ -33224,7 +33224,7 @@
           "volume_24h": 1250239.85943604
         },
         "spread_bps": 3.0,
-        "traded_volume_24h": 1269797.29411489,
+        "traded_volume_24h": 1269797.294115,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -33445,7 +33445,7 @@
             "issuer_name": "Backed Assets",
             "price": 27.75,
             "volume_24h": 698.694495,
-            "volume_share": 0.9455275399831577,
+            "volume_share": 0.945527539791,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -33455,8 +33455,8 @@
             "issuer_name": "Ondo Assets",
             "price": 29.481960239444657,
             "volume_24h": 40.25224685,
-            "volume_share": 0.054472460016842285,
-            "premium_to_cheapest_bps": 624.1298160160924
+            "volume_share": 0.054472460006,
+            "premium_to_cheapest_bps": 624.129816
           }
         ],
         "route_count": 2,
@@ -33471,7 +33471,7 @@
           "volume_24h": 698.694495
         },
         "spread_bps": 624.1,
-        "traded_volume_24h": 738.94674185,
+        "traded_volume_24h": 738.946742,
         "cheapest_is_deepest": true,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -33632,7 +33632,7 @@
             "issuer_name": "bStocks",
             "price": 69.72170923183238,
             "volume_24h": 3293691.7936389,
-            "volume_share": 0.8868113682496609,
+            "volume_share": 0.88681136825,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -33642,8 +33642,8 @@
             "issuer_name": "Reality",
             "price": 69.74163375337817,
             "volume_24h": 420392.07082464,
-            "volume_share": 0.11318863175033911,
-            "premium_to_cheapest_bps": 2.8577213274472157
+            "volume_share": 0.11318863175,
+            "premium_to_cheapest_bps": 2.857721
           }
         ],
         "route_count": 2,
@@ -33658,7 +33658,7 @@
           "volume_24h": 3293691.7936389
         },
         "spread_bps": 2.9,
-        "traded_volume_24h": 3714083.86446354,
+        "traded_volume_24h": 3714083.864464,
         "cheapest_is_deepest": true,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -33830,7 +33830,7 @@
             "issuer_name": "bStocks",
             "price": 16.834242576321664,
             "volume_24h": 2397073.63229436,
-            "volume_share": 0.952864969925201,
+            "volume_share": 0.952864969925,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -33840,8 +33840,8 @@
             "issuer_name": "Reality",
             "price": 16.83820657866547,
             "volume_24h": 3341.23662807,
-            "volume_share": 0.0013281808686333824,
-            "premium_to_cheapest_bps": 2.354725688331616
+            "volume_share": 0.001328180869,
+            "premium_to_cheapest_bps": 2.354726
           },
           {
             "crypto_id": 40738,
@@ -33850,8 +33850,8 @@
             "issuer_name": "Robinhood",
             "price": 16.888529604464896,
             "volume_24h": 115233.94591702,
-            "volume_share": 0.04580684920616564,
-            "premium_to_cheapest_bps": 32.24797783274891
+            "volume_share": 0.045806849206,
+            "premium_to_cheapest_bps": 32.247978
           }
         ],
         "route_count": 3,
@@ -33866,7 +33866,7 @@
           "volume_24h": 2397073.63229436
         },
         "spread_bps": 32.2,
-        "traded_volume_24h": 2515648.81483945,
+        "traded_volume_24h": 2515648.814839,
         "cheapest_is_deepest": true,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -34077,7 +34077,7 @@
             "issuer_name": "Backed Assets",
             "price": 447.21989202088304,
             "volume_24h": 162511.73542405,
-            "volume_share": 0.0513101887968091,
+            "volume_share": 0.051310188797,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -34087,8 +34087,8 @@
             "issuer_name": "bStocks",
             "price": 447.74616019770895,
             "volume_24h": 2831988.4449563,
-            "volume_share": 0.894149960320867,
-            "premium_to_cheapest_bps": 11.767548497179092
+            "volume_share": 0.894149960321,
+            "premium_to_cheapest_bps": 11.767548
           },
           {
             "crypto_id": 40611,
@@ -34097,8 +34097,8 @@
             "issuer_name": "Reality",
             "price": 447.9462641077192,
             "volume_24h": 172740.85370753,
-            "volume_share": 0.0545398508823238,
-            "premium_to_cheapest_bps": 16.241944953607756
+            "volume_share": 0.054539850882,
+            "premium_to_cheapest_bps": 16.241945
           }
         ],
         "route_count": 3,
@@ -34113,7 +34113,7 @@
           "volume_24h": 2831988.4449563
         },
         "spread_bps": 16.2,
-        "traded_volume_24h": 3167241.03408788,
+        "traded_volume_24h": 3167241.034088,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -34300,7 +34300,7 @@
             "issuer_name": "Ondo Assets",
             "price": 269.1352941380051,
             "volume_24h": 140649.71691736,
-            "volume_share": 0.6138085212119136,
+            "volume_share": 0.613808521213,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -34310,8 +34310,8 @@
             "issuer_name": "Backed Assets",
             "price": 272.9819649353366,
             "volume_24h": 88492.94248994,
-            "volume_share": 0.3861914787880864,
-            "premium_to_cheapest_bps": 142.92702893731192
+            "volume_share": 0.386191478789,
+            "premium_to_cheapest_bps": 142.927029
           }
         ],
         "route_count": 2,
@@ -34326,7 +34326,7 @@
           "volume_24h": 140649.71691736
         },
         "spread_bps": 142.9,
-        "traded_volume_24h": 229142.6594073,
+        "traded_volume_24h": 229142.659407,
         "cheapest_is_deepest": true,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -34513,7 +34513,7 @@
             "issuer_name": "Backed Assets",
             "price": 103.9647919357061,
             "volume_24h": 59246.06175786,
-            "volume_share": 0.15243599590631948,
+            "volume_share": 0.152435995906,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -34523,8 +34523,8 @@
             "issuer_name": "Ondo Assets",
             "price": 103.99155792598191,
             "volume_24h": 329415.82486287,
-            "volume_share": 0.8475640040936805,
-            "premium_to_cheapest_bps": 2.5745244882857676
+            "volume_share": 0.847564004093,
+            "premium_to_cheapest_bps": 2.574524
           }
         ],
         "route_count": 2,
@@ -34539,7 +34539,7 @@
           "volume_24h": 329415.82486287
         },
         "spread_bps": 2.6,
-        "traded_volume_24h": 388661.88662073,
+        "traded_volume_24h": 388661.886621,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -34726,7 +34726,7 @@
             "issuer_name": "Ondo Assets",
             "price": 191.94868486423633,
             "volume_24h": 1222409.5455885,
-            "volume_share": 0.9502731143592997,
+            "volume_share": 0.950273114359,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -34736,8 +34736,8 @@
             "issuer_name": "Backed Assets",
             "price": 193.0830297979327,
             "volume_24h": 63967.52550509,
-            "volume_share": 0.04972688564070034,
-            "premium_to_cheapest_bps": 59.09625973726796
+            "volume_share": 0.049726885641,
+            "premium_to_cheapest_bps": 59.09626
           }
         ],
         "route_count": 2,
@@ -34752,7 +34752,7 @@
           "volume_24h": 1222409.5455885
         },
         "spread_bps": 59.1,
-        "traded_volume_24h": 1286377.07109359,
+        "traded_volume_24h": 1286377.071094,
         "cheapest_is_deepest": true,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -35091,7 +35091,7 @@
             "issuer_name": "Backed Assets",
             "price": 57.02,
             "volume_24h": 393.14280746,
-            "volume_share": 0.0005281335177818897,
+            "volume_share": 0.000528133518,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -35101,8 +35101,8 @@
             "issuer_name": "Ondo Assets",
             "price": 58.599963880044825,
             "volume_24h": 744007.26773865,
-            "volume_share": 0.9994718664822181,
-            "premium_to_cheapest_bps": 277.08942126356106
+            "volume_share": 0.999471866482,
+            "premium_to_cheapest_bps": 277.089421
           }
         ],
         "route_count": 2,
@@ -35117,7 +35117,7 @@
           "volume_24h": 744007.26773865
         },
         "spread_bps": 277.1,
-        "traded_volume_24h": 744400.41054611,
+        "traded_volume_24h": 744400.410546,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -35270,7 +35270,7 @@
             "issuer_name": "Robinhood",
             "price": 889.9631004052179,
             "volume_24h": 558392.63244604,
-            "volume_share": 0.12023346517163709,
+            "volume_share": 0.120233465172,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -35280,8 +35280,8 @@
             "issuer_name": "Ondo Assets",
             "price": 902.7659423628402,
             "volume_24h": 4085843.74258413,
-            "volume_share": 0.8797665348283629,
-            "premium_to_cheapest_bps": 143.85812121640694
+            "volume_share": 0.879766534828,
+            "premium_to_cheapest_bps": 143.858121
           }
         ],
         "route_count": 2,
@@ -35296,7 +35296,7 @@
           "volume_24h": 4085843.74258413
         },
         "spread_bps": 143.9,
-        "traded_volume_24h": 4644236.37503017,
+        "traded_volume_24h": 4644236.37503,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -35449,7 +35449,7 @@
             "issuer_name": "Ondo Assets",
             "price": 13.03268336017172,
             "volume_24h": 37224.05209584,
-            "volume_share": 0.22953157117065923,
+            "volume_share": 0.22953157117,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -35459,8 +35459,8 @@
             "issuer_name": "Robinhood",
             "price": 13.264379611562397,
             "volume_24h": 124949.94386467,
-            "volume_share": 0.7704684288293409,
-            "premium_to_cheapest_bps": 177.78092583661476
+            "volume_share": 0.770468428827,
+            "premium_to_cheapest_bps": 177.780926
           }
         ],
         "route_count": 2,
@@ -35475,7 +35475,7 @@
           "volume_24h": 124949.94386467
         },
         "spread_bps": 177.8,
-        "traded_volume_24h": 162173.99596051,
+        "traded_volume_24h": 162173.995961,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -35617,7 +35617,7 @@
             "issuer_name": "Robinhood",
             "price": 113.94712527574761,
             "volume_24h": 657.99890441,
-            "volume_share": 0.0011310734313382225,
+            "volume_share": 0.001131073431,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -35627,8 +35627,8 @@
             "issuer_name": "Reality",
             "price": 114.13630814262534,
             "volume_24h": 23163.98713474,
-            "volume_share": 0.03981795446218472,
-            "premium_to_cheapest_bps": 16.602688871694138
+            "volume_share": 0.039817954462,
+            "premium_to_cheapest_bps": 16.602689
           },
           {
             "crypto_id": 38090,
@@ -35637,8 +35637,8 @@
             "issuer_name": "Ondo Assets",
             "price": 116.30229669792604,
             "volume_24h": 557925.30479014,
-            "volume_share": 0.9590509721064769,
-            "premium_to_cheapest_bps": 206.68984991758288
+            "volume_share": 0.959050972107,
+            "premium_to_cheapest_bps": 206.68985
           }
         ],
         "route_count": 3,
@@ -35653,7 +35653,7 @@
           "volume_24h": 557925.30479014
         },
         "spread_bps": 206.7,
-        "traded_volume_24h": 581747.29082929,
+        "traded_volume_24h": 581747.290829,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -35972,7 +35972,7 @@
             "issuer_name": "Robinhood",
             "price": 301.63398945970266,
             "volume_24h": 2174.33145137,
-            "volume_share": 0.0040304048711060254,
+            "volume_share": 0.004030404871,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -35982,8 +35982,8 @@
             "issuer_name": "Ondo Assets",
             "price": 306.6714832340408,
             "volume_24h": 537307.81014631,
-            "volume_share": 0.9959695951288939,
-            "premium_to_cheapest_bps": 167.00683445395103
+            "volume_share": 0.995969595128,
+            "premium_to_cheapest_bps": 167.006834
           }
         ],
         "route_count": 2,
@@ -35998,7 +35998,7 @@
           "volume_24h": 537307.81014631
         },
         "spread_bps": 167.0,
-        "traded_volume_24h": 539482.14159768,
+        "traded_volume_24h": 539482.141598,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -36362,7 +36362,7 @@
             "issuer_name": "Backed Assets",
             "price": 460.83,
             "volume_24h": 177.58821378,
-            "volume_share": 0.001591132624519624,
+            "volume_share": 0.001591132625,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -36372,8 +36372,8 @@
             "issuer_name": "Ondo Assets",
             "price": 464.84747367452104,
             "volume_24h": 111433.60688293,
-            "volume_share": 0.9984088673754803,
-            "premium_to_cheapest_bps": 87.17908284011644
+            "volume_share": 0.998408867373,
+            "premium_to_cheapest_bps": 87.179083
           }
         ],
         "route_count": 2,
@@ -36388,7 +36388,7 @@
           "volume_24h": 111433.60688293
         },
         "spread_bps": 87.2,
-        "traded_volume_24h": 111611.19509671001,
+        "traded_volume_24h": 111611.195097,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -36575,7 +36575,7 @@
             "issuer_name": "Backed Assets",
             "price": 566.2926314281289,
             "volume_24h": 56532.89545335,
-            "volume_share": 0.03566923055655615,
+            "volume_share": 0.035669230557,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -36585,8 +36585,8 @@
             "issuer_name": "Ondo Assets",
             "price": 568.724007217398,
             "volume_24h": 1528387.62487335,
-            "volume_share": 0.9643307694434439,
-            "premium_to_cheapest_bps": 42.93497132635382
+            "volume_share": 0.964330769443,
+            "premium_to_cheapest_bps": 42.934971
           }
         ],
         "route_count": 2,
@@ -36601,7 +36601,7 @@
           "volume_24h": 1528387.62487335
         },
         "spread_bps": 42.9,
-        "traded_volume_24h": 1584920.5203266998,
+        "traded_volume_24h": 1584920.520327,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -36777,7 +36777,7 @@
             "issuer_name": "Ondo Assets",
             "price": 253.66079380880274,
             "volume_24h": 1006675.15152048,
-            "volume_share": 0.3834066543457357,
+            "volume_share": 0.383406654346,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -36787,8 +36787,8 @@
             "issuer_name": "Backed Assets",
             "price": 254.18028998605104,
             "volume_24h": 1618931.73378077,
-            "volume_share": 0.6165933456542644,
-            "premium_to_cheapest_bps": 20.47995551255344
+            "volume_share": 0.616593345654,
+            "premium_to_cheapest_bps": 20.479956
           }
         ],
         "route_count": 2,
@@ -36803,7 +36803,7 @@
           "volume_24h": 1618931.73378077
         },
         "spread_bps": 20.5,
-        "traded_volume_24h": 2625606.88530125,
+        "traded_volume_24h": 2625606.885301,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -36944,7 +36944,7 @@
             "issuer_name": "bStocks",
             "price": 10.890245680399977,
             "volume_24h": 1968734.27237218,
-            "volume_share": 0.931952418381073,
+            "volume_share": 0.931952418381,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -36954,8 +36954,8 @@
             "issuer_name": "Reality",
             "price": 10.938834915118779,
             "volume_24h": 143749.40548783,
-            "volume_share": 0.06804758161892695,
-            "premium_to_cheapest_bps": 44.61720712715555
+            "volume_share": 0.068047581619,
+            "premium_to_cheapest_bps": 44.617207
           }
         ],
         "route_count": 2,
@@ -36970,7 +36970,7 @@
           "volume_24h": 1968734.27237218
         },
         "spread_bps": 44.6,
-        "traded_volume_24h": 2112483.67786001,
+        "traded_volume_24h": 2112483.67786,
         "cheapest_is_deepest": true,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -37318,7 +37318,7 @@
             "issuer_name": "Backed Assets",
             "price": 133.08308162129754,
             "volume_24h": 132612.19332736,
-            "volume_share": 0.10744702271806508,
+            "volume_share": 0.107447022718,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -37328,8 +37328,8 @@
             "issuer_name": "Ondo Assets",
             "price": 134.3124307492408,
             "volume_24h": 1101597.83848829,
-            "volume_share": 0.8925529772819348,
-            "premium_to_cheapest_bps": 92.3745612865745
+            "volume_share": 0.892552977282,
+            "premium_to_cheapest_bps": 92.374561
           }
         ],
         "route_count": 2,
@@ -37344,7 +37344,7 @@
           "volume_24h": 1101597.83848829
         },
         "spread_bps": 92.4,
-        "traded_volume_24h": 1234210.0318156502,
+        "traded_volume_24h": 1234210.031816,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -37486,7 +37486,7 @@
             "issuer_name": "bStocks",
             "price": 34.63233541445888,
             "volume_24h": 1024399.59997452,
-            "volume_share": 0.7066067068531434,
+            "volume_share": 0.706606706853,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -37496,8 +37496,8 @@
             "issuer_name": "Reality",
             "price": 34.63584506404329,
             "volume_24h": 359675.03537525,
-            "volume_share": 0.2480953646312579,
-            "premium_to_cheapest_bps": 1.0134025160035698
+            "volume_share": 0.248095364631,
+            "premium_to_cheapest_bps": 1.013403
           },
           {
             "crypto_id": 39300,
@@ -37506,8 +37506,8 @@
             "issuer_name": "Ondo Assets",
             "price": 35.44241479317315,
             "volume_24h": 65670.44920605,
-            "volume_share": 0.045297928515598614,
-            "premium_to_cheapest_bps": 233.90838908774913
+            "volume_share": 0.045297928516,
+            "premium_to_cheapest_bps": 233.908389
           }
         ],
         "route_count": 3,
@@ -37522,7 +37522,7 @@
           "volume_24h": 1024399.59997452
         },
         "spread_bps": 233.9,
-        "traded_volume_24h": 1449745.08455582,
+        "traded_volume_24h": 1449745.084556,
         "cheapest_is_deepest": true,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -37709,7 +37709,7 @@
             "issuer_name": "Backed Assets",
             "price": 149.68412024508757,
             "volume_24h": 29764.6290707,
-            "volume_share": 0.0855344484034657,
+            "volume_share": 0.085534448403,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -37719,8 +37719,8 @@
             "issuer_name": "Ondo Assets",
             "price": 149.99513204724792,
             "volume_24h": 318219.48290136,
-            "volume_share": 0.9144655515965342,
-            "premium_to_cheapest_bps": 20.777875545590074
+            "volume_share": 0.914465551597,
+            "premium_to_cheapest_bps": 20.777876
           }
         ],
         "route_count": 2,
@@ -37735,7 +37735,7 @@
           "volume_24h": 318219.48290136
         },
         "spread_bps": 20.8,
-        "traded_volume_24h": 347984.11197206005,
+        "traded_volume_24h": 347984.111972,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -37876,7 +37876,7 @@
             "issuer_name": "bStocks",
             "price": 61.53480244418063,
             "volume_24h": 4197764.95926514,
-            "volume_share": 0.9399156060674693,
+            "volume_share": 0.939915606067,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -37886,8 +37886,8 @@
             "issuer_name": "Reality",
             "price": 61.54344506632183,
             "volume_24h": 268343.41489863,
-            "volume_share": 0.06008439393253066,
-            "premium_to_cheapest_bps": 1.4045096104831067
+            "volume_share": 0.060084393933,
+            "premium_to_cheapest_bps": 1.40451
           }
         ],
         "route_count": 2,
@@ -37902,7 +37902,7 @@
           "volume_24h": 4197764.95926514
         },
         "spread_bps": 1.4,
-        "traded_volume_24h": 4466108.37416377,
+        "traded_volume_24h": 4466108.374164,
         "cheapest_is_deepest": true,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -38266,7 +38266,7 @@
             "issuer_name": "Backed Assets",
             "price": 642.69,
             "volume_24h": 278.5739805,
-            "volume_share": 0.0011495711068759996,
+            "volume_share": 0.001149571107,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -38276,8 +38276,8 @@
             "issuer_name": "Ondo Assets",
             "price": 654.6653953311124,
             "volume_24h": 242050.04652305,
-            "volume_share": 0.998850428893124,
-            "premium_to_cheapest_bps": 186.33237379004575
+            "volume_share": 0.998850428891,
+            "premium_to_cheapest_bps": 186.332374
           }
         ],
         "route_count": 2,
@@ -38292,7 +38292,7 @@
           "volume_24h": 242050.04652305
         },
         "spread_bps": 186.3,
-        "traded_volume_24h": 242328.62050355,
+        "traded_volume_24h": 242328.620504,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -38473,7 +38473,7 @@
             "issuer_name": "Ondo Assets",
             "price": 383.4159193497732,
             "volume_24h": 1598.37148898,
-            "volume_share": 0.022414664797554856,
+            "volume_share": 0.022414664798,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -38483,8 +38483,8 @@
             "issuer_name": "Backed Assets",
             "price": 386.71764264626586,
             "volume_24h": 69710.81396689,
-            "volume_share": 0.9775853352024451,
-            "premium_to_cheapest_bps": 86.11335966675514
+            "volume_share": 0.977585335201,
+            "premium_to_cheapest_bps": 86.11336
           }
         ],
         "route_count": 2,
@@ -38499,7 +38499,7 @@
           "volume_24h": 69710.81396689
         },
         "spread_bps": 86.1,
-        "traded_volume_24h": 71309.18545587,
+        "traded_volume_24h": 71309.185456,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -38680,7 +38680,7 @@
             "issuer_name": "Ondo Assets",
             "price": 251.32339487879028,
             "volume_24h": 1628904.64370156,
-            "volume_share": 0.9763993956923791,
+            "volume_share": 0.976399395693,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -38690,8 +38690,8 @@
             "issuer_name": "Backed Assets",
             "price": 251.70660884400112,
             "volume_24h": 39372.34508793,
-            "volume_share": 0.02360060430762086,
-            "premium_to_cheapest_bps": 15.247842939398737
+            "volume_share": 0.023600604308,
+            "premium_to_cheapest_bps": 15.247843
           }
         ],
         "route_count": 2,
@@ -38706,7 +38706,7 @@
           "volume_24h": 1628904.64370156
         },
         "spread_bps": 15.2,
-        "traded_volume_24h": 1668276.9887894902,
+        "traded_volume_24h": 1668276.988789,
         "cheapest_is_deepest": true,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -39008,7 +39008,7 @@
             "issuer_name": "Robinhood",
             "price": 100.38624580502292,
             "volume_24h": 500283.57643937,
-            "volume_share": 0.8579322002773028,
+            "volume_share": 0.857932200277,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -39018,8 +39018,8 @@
             "issuer_name": "Ondo Assets",
             "price": 102.32717079100604,
             "volume_24h": 82843.59407325,
-            "volume_share": 0.1420677997226972,
-            "premium_to_cheapest_bps": 193.34570890846115
+            "volume_share": 0.142067799723,
+            "premium_to_cheapest_bps": 193.345709
           }
         ],
         "route_count": 2,
@@ -39034,7 +39034,7 @@
           "volume_24h": 500283.57643937
         },
         "spread_bps": 193.3,
-        "traded_volume_24h": 583127.17051262,
+        "traded_volume_24h": 583127.170513,
         "cheapest_is_deepest": true,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -39404,7 +39404,7 @@
             "issuer_name": "bStocks",
             "price": 79.90602159229846,
             "volume_24h": 5425088.816884,
-            "volume_share": 0.8708011015624884,
+            "volume_share": 0.870801101563,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -39414,8 +39414,8 @@
             "issuer_name": "Reality",
             "price": 80.09146953391355,
             "volume_24h": 804908.83372726,
-            "volume_share": 0.1291988984375116,
-            "premium_to_cheapest_bps": 23.2082561388558
+            "volume_share": 0.129198898438,
+            "premium_to_cheapest_bps": 23.208256
           }
         ],
         "route_count": 2,
@@ -39430,7 +39430,7 @@
           "volume_24h": 5425088.816884
         },
         "spread_bps": 23.2,
-        "traded_volume_24h": 6229997.65061126,
+        "traded_volume_24h": 6229997.650611,
         "cheapest_is_deepest": true,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -42746,7 +42746,7 @@
             "issuer_name": "Robinhood",
             "price": 7.231025534658598,
             "volume_24h": 1666.14222916,
-            "volume_share": 0.0010290789507936837,
+            "volume_share": 0.001029078951,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -42756,8 +42756,8 @@
             "issuer_name": "bStocks",
             "price": 7.3818819564935145,
             "volume_24h": 1617395.47386451,
-            "volume_share": 0.9989709210492063,
-            "premium_to_cheapest_bps": 208.62382674747158
+            "volume_share": 0.998970921049,
+            "premium_to_cheapest_bps": 208.623827
           }
         ],
         "route_count": 2,
@@ -42772,7 +42772,7 @@
           "volume_24h": 1617395.47386451
         },
         "spread_bps": 208.6,
-        "traded_volume_24h": 1619061.61609367,
+        "traded_volume_24h": 1619061.616094,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -44034,7 +44034,7 @@
             "issuer_name": "Reality",
             "price": 50.0639942943605,
             "volume_24h": 4298.14219238,
-            "volume_share": 0.0031150191254937583,
+            "volume_share": 0.003115019125,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -44044,8 +44044,8 @@
             "issuer_name": "Ondo Assets",
             "price": 50.14498022167526,
             "volume_24h": 1375514.31456058,
-            "volume_share": 0.9968849808745062,
-            "premium_to_cheapest_bps": 16.17648141268857
+            "volume_share": 0.996884980874,
+            "premium_to_cheapest_bps": 16.176481
           }
         ],
         "route_count": 2,
@@ -44060,7 +44060,7 @@
           "volume_24h": 1375514.31456058
         },
         "spread_bps": 16.2,
-        "traded_volume_24h": 1379812.45675296,
+        "traded_volume_24h": 1379812.456753,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -45264,7 +45264,7 @@
             "issuer_name": "Reality",
             "price": 11.598764626634171,
             "volume_24h": 11377.42730106,
-            "volume_share": 0.9981573797247134,
+            "volume_share": 0.998157379707,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -45274,8 +45274,8 @@
             "issuer_name": "Robinhood",
             "price": 11.714552865185444,
             "volume_24h": 21.00297874,
-            "volume_share": 0.001842620275286583,
-            "premium_to_cheapest_bps": 99.82807848810893
+            "volume_share": 0.001842620275,
+            "premium_to_cheapest_bps": 99.828078
           }
         ],
         "route_count": 2,
@@ -45290,7 +45290,7 @@
           "volume_24h": 11377.42730106
         },
         "spread_bps": 99.8,
-        "traded_volume_24h": 11398.4302798,
+        "traded_volume_24h": 11398.43028,
         "cheapest_is_deepest": true,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -45832,7 +45832,7 @@
             "issuer_name": "bStocks",
             "price": 874.466204086989,
             "volume_24h": 850361.20708366,
-            "volume_share": 0.9548181225551052,
+            "volume_share": 0.954818122555,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -45842,8 +45842,8 @@
             "issuer_name": "Reality",
             "price": 875.2350063036852,
             "volume_24h": 40238.98890768,
-            "volume_share": 0.04518187744489479,
-            "premium_to_cheapest_bps": 8.791674430674856
+            "volume_share": 0.045181877445,
+            "premium_to_cheapest_bps": 8.791674
           }
         ],
         "route_count": 2,
@@ -45858,7 +45858,7 @@
           "volume_24h": 850361.20708366
         },
         "spread_bps": 8.8,
-        "traded_volume_24h": 890600.19599134,
+        "traded_volume_24h": 890600.195991,
         "cheapest_is_deepest": true,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -95248,7 +95248,7 @@
             "issuer_name": "Ondo Assets",
             "price": 258.1871815656684,
             "volume_24h": 3174909.74899277,
-            "volume_share": 0.19085139805532428,
+            "volume_share": 0.190851398055,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -95258,8 +95258,8 @@
             "issuer_name": "Reality",
             "price": 258.47899271090733,
             "volume_24h": 182744.16220487,
-            "volume_share": 0.010985187485821606,
-            "premium_to_cheapest_bps": 11.302309567398083
+            "volume_share": 0.010985187486,
+            "premium_to_cheapest_bps": 11.30231
           },
           {
             "crypto_id": 40929,
@@ -95268,8 +95268,8 @@
             "issuer_name": "bStocks",
             "price": 258.5374168500367,
             "volume_24h": 2820348.63438577,
-            "volume_share": 0.16953788372936035,
-            "premium_to_cheapest_bps": 13.565169356759554
+            "volume_share": 0.169537883729,
+            "premium_to_cheapest_bps": 13.565169
           },
           {
             "crypto_id": 40718,
@@ -95278,8 +95278,8 @@
             "issuer_name": "Robinhood",
             "price": 258.54509507492475,
             "volume_24h": 1687222.98556482,
-            "volume_share": 0.1014229981586974,
-            "premium_to_cheapest_bps": 13.862559213277947
+            "volume_share": 0.101422998159,
+            "premium_to_cheapest_bps": 13.862559
           },
           {
             "crypto_id": 37014,
@@ -95288,8 +95288,8 @@
             "issuer_name": "Backed Assets",
             "price": 258.61410482411384,
             "volume_24h": 8770281.36764023,
-            "volume_share": 0.5272025325707963,
-            "premium_to_cheapest_bps": 16.535416508927092
+            "volume_share": 0.527202532571,
+            "premium_to_cheapest_bps": 16.535417
           }
         ],
         "route_count": 5,
@@ -95304,7 +95304,7 @@
           "volume_24h": 8770281.36764023
         },
         "spread_bps": 16.5,
-        "traded_volume_24h": 16635506.898788461,
+        "traded_volume_24h": 16635506.898788,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -95687,7 +95687,7 @@
             "issuer_name": "Robinhood",
             "price": 201.36232802581137,
             "volume_24h": 1636706.9090291,
-            "volume_share": 0.09233075479563797,
+            "volume_share": 0.092330754796,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -95697,8 +95697,8 @@
             "issuer_name": "Backed Assets",
             "price": 201.665845355548,
             "volume_24h": 5646841.22522285,
-            "volume_share": 0.3185525213217518,
-            "premium_to_cheapest_bps": 15.073193318351219
+            "volume_share": 0.318552521322,
+            "premium_to_cheapest_bps": 15.073193
           },
           {
             "crypto_id": 37193,
@@ -95707,8 +95707,8 @@
             "issuer_name": "Backed Assets",
             "price": 201.69493809186497,
             "volume_24h": 295090.46083239,
-            "volume_share": 0.016646795361675102,
-            "premium_to_cheapest_bps": 16.517988707946962
+            "volume_share": 0.016646795362,
+            "premium_to_cheapest_bps": 16.517989
           },
           {
             "crypto_id": 40789,
@@ -95717,8 +95717,8 @@
             "issuer_name": "bStocks",
             "price": 201.8310063057635,
             "volume_24h": 5009699.31261655,
-            "volume_share": 0.2826097429425899,
-            "premium_to_cheapest_bps": 23.275370549553642
+            "volume_share": 0.282609742943,
+            "premium_to_cheapest_bps": 23.275371
           },
           {
             "crypto_id": 40651,
@@ -95727,8 +95727,8 @@
             "issuer_name": "Reality",
             "price": 202.1257528780702,
             "volume_24h": 425212.97600608,
-            "volume_share": 0.023987333839037905,
-            "premium_to_cheapest_bps": 37.91299294875871
+            "volume_share": 0.023987333839,
+            "premium_to_cheapest_bps": 37.912993
           },
           {
             "crypto_id": 38046,
@@ -95737,8 +95737,8 @@
             "issuer_name": "Ondo Assets",
             "price": 202.16553046424576,
             "volume_24h": 4713011.76220377,
-            "volume_share": 0.26587285173930736,
-            "premium_to_cheapest_bps": 39.88841638399521
+            "volume_share": 0.265872851739,
+            "premium_to_cheapest_bps": 39.888416
           }
         ],
         "route_count": 6,
@@ -95753,7 +95753,7 @@
           "volume_24h": 5646841.22522285
         },
         "spread_bps": 39.9,
-        "traded_volume_24h": 17726562.64591074,
+        "traded_volume_24h": 17726562.645911,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -96137,7 +96137,7 @@
             "issuer_name": "Robinhood",
             "price": 462.41515247441964,
             "volume_24h": 2053.23622145,
-            "volume_share": 0.0005301477181223528,
+            "volume_share": 0.000530147718,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -96147,8 +96147,8 @@
             "issuer_name": "bStocks",
             "price": 463.54490695129044,
             "volume_24h": 1553883.31067501,
-            "volume_share": 0.40121427957324995,
-            "premium_to_cheapest_bps": 24.431605902734965
+            "volume_share": 0.401214279573,
+            "premium_to_cheapest_bps": 24.431606
           },
           {
             "crypto_id": 40170,
@@ -96157,8 +96157,8 @@
             "issuer_name": "Backed Assets",
             "price": 463.98688647230205,
             "volume_24h": 176481.14977038,
-            "volume_share": 0.04556761558409636,
-            "premium_to_cheapest_bps": 33.989673337302406
+            "volume_share": 0.045567615584,
+            "premium_to_cheapest_bps": 33.989673
           },
           {
             "crypto_id": 40639,
@@ -96167,8 +96167,8 @@
             "issuer_name": "Reality",
             "price": 464.37429339184825,
             "volume_24h": 86319.96880674,
-            "volume_share": 0.022287905314162255,
-            "premium_to_cheapest_bps": 42.367576126021156
+            "volume_share": 0.022287905314,
+            "premium_to_cheapest_bps": 42.367576
           },
           {
             "crypto_id": 39218,
@@ -96177,8 +96177,8 @@
             "issuer_name": "Ondo Assets",
             "price": 465.65443854557805,
             "volume_24h": 2054213.49750046,
-            "volume_share": 0.5304000518103691,
-            "premium_to_cheapest_bps": 70.05146898462877
+            "volume_share": 0.53040005181,
+            "premium_to_cheapest_bps": 70.051469
           }
         ],
         "route_count": 5,
@@ -96193,7 +96193,7 @@
           "volume_24h": 2054213.49750046
         },
         "spread_bps": 70.1,
-        "traded_volume_24h": 3872951.16297404,
+        "traded_volume_24h": 3872951.162974,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -96521,7 +96521,7 @@
             "issuer_name": "Robinhood",
             "price": 23.14800669200624,
             "volume_24h": 20231712.26117304,
-            "volume_share": 0.44794621341293794,
+            "volume_share": 0.447946213413,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -96531,8 +96531,8 @@
             "issuer_name": "Backed Assets",
             "price": 23.200831039840157,
             "volume_24h": 20619828.7248944,
-            "volume_share": 0.45653942085098814,
-            "premium_to_cheapest_bps": 22.820257716686942
+            "volume_share": 0.456539420851,
+            "premium_to_cheapest_bps": 22.820258
           },
           {
             "crypto_id": 41077,
@@ -96541,8 +96541,8 @@
             "issuer_name": "bStocks",
             "price": 23.22153103371905,
             "volume_24h": 3224200.01041498,
-            "volume_share": 0.07138635461532639,
-            "premium_to_cheapest_bps": 31.76270971884554
+            "volume_share": 0.071386354615,
+            "premium_to_cheapest_bps": 31.76271
           },
           {
             "crypto_id": 37120,
@@ -96551,8 +96551,8 @@
             "issuer_name": "Backed Assets",
             "price": 23.27173904748635,
             "volume_24h": 147297.68363533,
-            "volume_share": 0.0032612879610574956,
-            "premium_to_cheapest_bps": 53.45270421182269
+            "volume_share": 0.003261287961,
+            "premium_to_cheapest_bps": 53.452704
           },
           {
             "crypto_id": 37997,
@@ -96561,8 +96561,8 @@
             "issuer_name": "Ondo Assets",
             "price": 23.570186033680706,
             "volume_24h": 942455.87117225,
-            "volume_share": 0.020866723159689876,
-            "premium_to_cheapest_bps": 182.38259012611113
+            "volume_share": 0.02086672316,
+            "premium_to_cheapest_bps": 182.38259
           }
         ],
         "route_count": 5,
@@ -96577,7 +96577,7 @@
           "volume_24h": 20619828.7248944
         },
         "spread_bps": 182.4,
-        "traded_volume_24h": 45165494.551290005,
+        "traded_volume_24h": 45165494.55129,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -96909,7 +96909,7 @@
             "issuer_name": "Robinhood",
             "price": 47.18433525536186,
             "volume_24h": 1344.93592202,
-            "volume_share": 0.0002750183684981854,
+            "volume_share": 0.000275018368,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -96919,8 +96919,8 @@
             "issuer_name": "Ondo Assets",
             "price": 47.276697960740655,
             "volume_24h": 2484773.11258575,
-            "volume_share": 0.5080972530536134,
-            "premium_to_cheapest_bps": 19.57486629385219
+            "volume_share": 0.508097253054,
+            "premium_to_cheapest_bps": 19.574866
           },
           {
             "crypto_id": 40970,
@@ -96929,8 +96929,8 @@
             "issuer_name": "bStocks",
             "price": 47.312684555137196,
             "volume_24h": 1952366.92828123,
-            "volume_share": 0.3992285123288818,
-            "premium_to_cheapest_bps": 27.201675954680038
+            "volume_share": 0.399228512329,
+            "premium_to_cheapest_bps": 27.201676
           },
           {
             "crypto_id": 40162,
@@ -96939,8 +96939,8 @@
             "issuer_name": "Backed Assets",
             "price": 47.329149770168016,
             "volume_24h": 353635.94359747,
-            "volume_share": 0.07231302150396891,
-            "premium_to_cheapest_bps": 30.69122708255101
+            "volume_share": 0.072313021504,
+            "premium_to_cheapest_bps": 30.691227
           },
           {
             "crypto_id": 40623,
@@ -96949,8 +96949,8 @@
             "issuer_name": "Reality",
             "price": 47.344320547992204,
             "volume_24h": 98228.51105114,
-            "volume_share": 0.020086194745037655,
-            "premium_to_cheapest_bps": 33.9064419927726
+            "volume_share": 0.020086194745,
+            "premium_to_cheapest_bps": 33.906442
           }
         ],
         "route_count": 5,
@@ -96965,7 +96965,7 @@
           "volume_24h": 2484773.11258575
         },
         "spread_bps": 33.9,
-        "traded_volume_24h": 4890349.43143761,
+        "traded_volume_24h": 4890349.431438,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -97292,7 +97292,7 @@
             "issuer_name": "Robinhood",
             "price": 146.81788149137006,
             "volume_24h": 13192.39238665,
-            "volume_share": 0.001988151185334308,
+            "volume_share": 0.001988151185,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -97302,8 +97302,8 @@
             "issuer_name": "bStocks",
             "price": 148.54377336310986,
             "volume_24h": 3213360.72864741,
-            "volume_share": 0.4842675046591272,
-            "premium_to_cheapest_bps": 117.55324720723826
+            "volume_share": 0.484267504659,
+            "premium_to_cheapest_bps": 117.553247
           },
           {
             "crypto_id": 40654,
@@ -97312,8 +97312,8 @@
             "issuer_name": "Reality",
             "price": 148.56217839536814,
             "volume_24h": 538746.77992546,
-            "volume_share": 0.08119149413625319,
-            "premium_to_cheapest_bps": 118.80684329998337
+            "volume_share": 0.081191494136,
+            "premium_to_cheapest_bps": 118.806843
           },
           {
             "crypto_id": 37059,
@@ -97322,8 +97322,8 @@
             "issuer_name": "Backed Assets",
             "price": 148.63170748322358,
             "volume_24h": 1163671.19963473,
-            "volume_share": 0.17537033519669853,
-            "premium_to_cheapest_bps": 123.54258033345556
+            "volume_share": 0.175370335197,
+            "premium_to_cheapest_bps": 123.54258
           },
           {
             "crypto_id": 38009,
@@ -97332,8 +97332,8 @@
             "issuer_name": "Ondo Assets",
             "price": 149.72888064934233,
             "volume_24h": 1706536.54287085,
-            "volume_share": 0.25718251482258664,
-            "premium_to_cheapest_bps": 198.27279404950326
+            "volume_share": 0.257182514823,
+            "premium_to_cheapest_bps": 198.272794
           }
         ],
         "route_count": 5,
@@ -97348,7 +97348,7 @@
           "volume_24h": 3213360.72864741
         },
         "spread_bps": 198.3,
-        "traded_volume_24h": 6635507.643465101,
+        "traded_volume_24h": 6635507.643465,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -97682,7 +97682,7 @@
             "issuer_name": "Robinhood",
             "price": 182.28674099221644,
             "volume_24h": 1366764.1891355,
-            "volume_share": 0.17181293009386134,
+            "volume_share": 0.171812930094,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -97692,8 +97692,8 @@
             "issuer_name": "Ondo Assets",
             "price": 182.7376277397411,
             "volume_24h": 3180195.15168956,
-            "volume_share": 0.39977536112332657,
-            "premium_to_cheapest_bps": 24.735027082629646
+            "volume_share": 0.399775361123,
+            "premium_to_cheapest_bps": 24.735027
           },
           {
             "crypto_id": 40655,
@@ -97702,8 +97702,8 @@
             "issuer_name": "Reality",
             "price": 182.7580762357342,
             "volume_24h": 59562.86750405,
-            "volume_share": 0.0074875175044908275,
-            "premium_to_cheapest_bps": 25.856803459878286
+            "volume_share": 0.007487517504,
+            "premium_to_cheapest_bps": 25.856803
           },
           {
             "crypto_id": 37220,
@@ -97712,8 +97712,8 @@
             "issuer_name": "Backed Assets",
             "price": 182.84876652271856,
             "volume_24h": 55982.61646051,
-            "volume_share": 0.007037451994176796,
-            "premium_to_cheapest_bps": 30.831947921332592
+            "volume_share": 0.007037451994,
+            "premium_to_cheapest_bps": 30.831948
           },
           {
             "crypto_id": 40590,
@@ -97722,8 +97722,8 @@
             "issuer_name": "bStocks",
             "price": 182.88507603484624,
             "volume_24h": 2249435.43317427,
-            "volume_share": 0.28277159725342355,
-            "premium_to_cheapest_bps": 32.82383783773657
+            "volume_share": 0.282771597253,
+            "premium_to_cheapest_bps": 32.823838
           },
           {
             "crypto_id": 37062,
@@ -97732,8 +97732,8 @@
             "issuer_name": "Backed Assets",
             "price": 183.37646223679658,
             "volume_24h": 1043015.10185005,
-            "volume_share": 0.131115142030721,
-            "premium_to_cheapest_bps": 59.78060931083773
+            "volume_share": 0.131115142031,
+            "premium_to_cheapest_bps": 59.780609
           }
         ],
         "route_count": 6,
@@ -97748,7 +97748,7 @@
           "volume_24h": 3180195.15168956
         },
         "spread_bps": 59.8,
-        "traded_volume_24h": 7954955.35981394,
+        "traded_volume_24h": 7954955.359814,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -98093,7 +98093,7 @@
             "issuer_name": "bStocks",
             "price": 193.6529749268727,
             "volume_24h": 2859834.07535534,
-            "volume_share": 0.5588845822695994,
+            "volume_share": 0.55888458227,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -98103,8 +98103,8 @@
             "issuer_name": "Backed Assets",
             "price": 194.0082626798398,
             "volume_24h": 513990.41766895,
-            "volume_share": 0.10044684841857311,
-            "premium_to_cheapest_bps": 18.34661993193043
+            "volume_share": 0.100446848419,
+            "premium_to_cheapest_bps": 18.34662
           },
           {
             "crypto_id": 40649,
@@ -98113,8 +98113,8 @@
             "issuer_name": "Reality",
             "price": 194.22670045295638,
             "volume_24h": 313904.22176845,
-            "volume_share": 0.061344898072076284,
-            "premium_to_cheapest_bps": 29.626476241861877
+            "volume_share": 0.061344898072,
+            "premium_to_cheapest_bps": 29.626476
           },
           {
             "crypto_id": 38048,
@@ -98123,8 +98123,8 @@
             "issuer_name": "Ondo Assets",
             "price": 197.68458084637513,
             "volume_24h": 1169621.21924414,
-            "volume_share": 0.22857384355408775,
-            "premium_to_cheapest_bps": 208.18714099408277
+            "volume_share": 0.228573843554,
+            "premium_to_cheapest_bps": 208.187141
           },
           {
             "crypto_id": 40749,
@@ -98133,8 +98133,8 @@
             "issuer_name": "Robinhood",
             "price": 204.15049755814798,
             "volume_24h": 259688.83583169,
-            "volume_share": 0.050749827685663614,
-            "premium_to_cheapest_bps": 542.0790790969954
+            "volume_share": 0.050749827686,
+            "premium_to_cheapest_bps": 542.079079
           }
         ],
         "route_count": 5,
@@ -98149,7 +98149,7 @@
           "volume_24h": 2859834.07535534
         },
         "spread_bps": 542.1,
-        "traded_volume_24h": 5117038.769868569,
+        "traded_volume_24h": 5117038.769869,
         "cheapest_is_deepest": true,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -98477,7 +98477,7 @@
             "issuer_name": "Backed Assets",
             "price": 36.8,
             "volume_24h": 1316.134152,
-            "volume_share": 0.00025768549627681474,
+            "volume_share": 0.000257685496,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -98487,8 +98487,8 @@
             "issuer_name": "Robinhood",
             "price": 40.88677243850405,
             "volume_24h": 534.50087671,
-            "volume_share": 0.00010464976041090443,
-            "premium_to_cheapest_bps": 1110.5359887239285
+            "volume_share": 0.00010464976,
+            "premium_to_cheapest_bps": 1110.535989
           },
           {
             "crypto_id": 40599,
@@ -98497,8 +98497,8 @@
             "issuer_name": "Reality",
             "price": 41.0450762089774,
             "volume_24h": 1034053.77941203,
-            "volume_share": 0.20245706786028664,
-            "premium_to_cheapest_bps": 1153.5533176569036
+            "volume_share": 0.20245706786,
+            "premium_to_cheapest_bps": 1153.553318
           },
           {
             "crypto_id": 40966,
@@ -98507,8 +98507,8 @@
             "issuer_name": "bStocks",
             "price": 41.05134903703594,
             "volume_24h": 1432497.90340534,
-            "volume_share": 0.28046831897308105,
-            "premium_to_cheapest_bps": 1155.2578904988975
+            "volume_share": 0.280468318973,
+            "premium_to_cheapest_bps": 1155.25789
           },
           {
             "crypto_id": 37996,
@@ -98517,8 +98517,8 @@
             "issuer_name": "Ondo Assets",
             "price": 41.19109421913511,
             "volume_24h": 2639118.94748025,
-            "volume_share": 0.5167122779099445,
-            "premium_to_cheapest_bps": 1193.2321247649757
+            "volume_share": 0.51671227791,
+            "premium_to_cheapest_bps": 1193.232125
           }
         ],
         "route_count": 5,
@@ -98533,7 +98533,7 @@
           "volume_24h": 2639118.94748025
         },
         "spread_bps": 1193.2,
-        "traded_volume_24h": 5107521.26532633,
+        "traded_volume_24h": 5107521.265326,
         "cheapest_is_deepest": false,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
@@ -98861,7 +98861,7 @@
             "issuer_name": "bStocks",
             "price": 188.74802660722554,
             "volume_24h": 5869461.58387373,
-            "volume_share": 0.8188645645710712,
+            "volume_share": 0.818864564571,
             "premium_to_cheapest_bps": 0.0
           },
           {
@@ -98871,8 +98871,8 @@
             "issuer_name": "Robinhood",
             "price": 188.76758545926057,
             "volume_24h": 4637.01286998,
-            "volume_share": 0.0006469222892810252,
-            "premium_to_cheapest_bps": 1.036241405358851
+            "volume_share": 0.000646922289,
+            "premium_to_cheapest_bps": 1.036241
           },
           {
             "crypto_id": 40645,
@@ -98881,8 +98881,8 @@
             "issuer_name": "Reality",
             "price": 188.76989429847117,
             "volume_24h": 35986.4228204,
-            "volume_share": 0.005020563817005,
-            "premium_to_cheapest_bps": 1.1585652914480882
+            "volume_share": 0.005020563817,
+            "premium_to_cheapest_bps": 1.158565
           },
           {
             "crypto_id": 39781,
@@ -98891,8 +98891,8 @@
             "issuer_name": "Ondo Assets",
             "price": 188.81757838176688,
             "volume_24h": 1069115.53445564,
-            "volume_share": 0.14915521876887364,
-            "premium_to_cheapest_bps": 3.6849007532180345
+            "volume_share": 0.149155218769,
+            "premium_to_cheapest_bps": 3.684901
           },
           {
             "crypto_id": 40159,
@@ -98901,8 +98901,8 @@
             "issuer_name": "Backed Assets",
             "price": 188.85606167832267,
             "volume_24h": 188604.52367122,
-            "volume_share": 0.026312730553769027,
-            "premium_to_cheapest_bps": 5.723772218395595
+            "volume_share": 0.026312730554,
+            "premium_to_cheapest_bps": 5.723772
           }
         ],
         "route_count": 5,
@@ -98917,7 +98917,7 @@
           "volume_24h": 5869461.58387373
         },
         "spread_bps": 5.7,
-        "traded_volume_24h": 7167805.077690971,
+        "traded_volume_24h": 7167805.077691,
         "cheapest_is_deepest": true,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",

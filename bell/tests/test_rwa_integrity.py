@@ -99,7 +99,10 @@ class RwaIntegrityTests(unittest.TestCase):
         self.assertEqual(population["asset_level_reconciliation"]["exact_within_usd_cent"], 1)
         self.assertEqual(population["asset_level_reconciliation"]["token_to_asset_value_ratio"], 1.0)
         self.assertEqual(population["concentration"]["hhi"], 5200.0)
-        self.assertEqual(population["concentration"]["effective_issuer_count"], 1.923076923076923)
+        # Published at a declared precision rather than full float width, so the
+        # receipt recomputes identically on any interpreter. See
+        # test_replay_is_portable.py for why that mattered.
+        self.assertEqual(population["concentration"]["effective_issuer_count"], 1.923077)
         self.assertEqual(population["top_issuers"][0]["declared_num_tokens"], None)
 
     def test_rule_boundaries_are_inclusive_and_missing_values_stay_missing(self):
