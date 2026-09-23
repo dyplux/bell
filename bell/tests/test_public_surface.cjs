@@ -307,3 +307,74 @@ test('the dated map and the live receipt are joined, not kept apart', () => {
   // The verdict must carry the observation time, not imply it is live-now.
   assert.match(explorerSrc, /CURRENT VERDICT · OBSERVED/);
 });
+
+test('every column the population export offers is one Bell actually observed', () => {
+  // `quote_source` shipped in this header and was empty on every row of every
+  // export: a column promising provenance and delivering nothing. An export is
+  // the artefact a reader takes away and checks, so a column that is always
+  // blank is worse than a missing one.
+  const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
+  const header = integrity.match(/const header = \[([^\]]+)\]/);
+  assert.ok(header, 'the population export no longer declares a header');
+  const columns = header[1].split(',').map(entry => entry.trim().replace(/^'|'$/g, ''));
+
+  const receipt = JSON.parse(fs.readFileSync(
+    path.join(site, 'proof', 'rwa-surface-integrity-latest-replay-2026-09-21.json'), 'utf8'));
+  const observed = new Set();
+  for (const reference of receipt.alert_index) {
+    for (const key of Object.keys(reference)) observed.add(key);
+    for (const representation of reference.representations || []) {
+      for (const key of Object.keys(representation)) observed.add(key);
+    }
+  }
+  // Names the export derives rather than reads straight off a row.
+  const derived = new Set(['reference_name', 'reference_symbol', 'token_symbol', 'token_name',
+    'market_cap_status', 'in_published_comparison', 'premium_to_cheapest_bps']);
+
+  const unbacked = columns.filter(column => !observed.has(column) && !derived.has(column));
+  assert.deepEqual(unbacked, [],
+    'these export columns correspond to no observed field and no declared derivation');
+  assert.ok(!columns.includes('quote_source'), 'the always-empty column is back');
+});
+
+test('the export separates a published route from a representation Bell would not compare', () => {
+  const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
+  assert.match(integrity, /comparison\?\.routes/);
+  assert.match(integrity, /premium_to_cheapest_bps/);
+});
+
+test('no rendering path states a rate the measurement does not support', () => {
+  // The static headline read "Most tokenised assets cannot honestly be
+  // compared". That is true of 157 of the 244 references carrying more than
+  // one representation, and false of the 791-reference catalogue - and it was
+  // what a visitor saw before the fetch resolved, and what stayed on screen if
+  // it failed. Both paths now leave the question standing.
+  const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
+  const overstated = /Most tokenised assets\s*(<br>)?\s*<em>cannot honestly/;
+  assert.ok(!overstated.test(page), 'the static headline overstates the finding');
+  const rendered = integrity.split('catch (error)')[1] || '';
+  assert.ok(!overstated.test(rendered), 'the failure path leaves the overstated headline on screen');
+  assert.match(page, /id="finding-headline"/);
+  // The measured claim must always carry its denominator in the same sentence.
+  assert.match(integrity, /comparable-looking/);
+});
+
+test('the one control the product asks you to use is reachable on a phone', () => {
+  // On a 390px screen the search box sat below the eyebrow, the headline, the
+  // measured lede, the coverage fact and three paragraphs - about a screen
+  // below the fold. Source order stays as written for readers and crawlers;
+  // the phone layout orders the box above the prose.
+  const css = fs.readFileSync(path.join(site, 'visual-overrides.css'), 'utf8');
+  const phone = css.split('@media(max-width:620px)').pop();
+  assert.match(phone, /\.hero>div:first-of-type\{display:flex;flex-direction:column\}/);
+  const order = name => {
+    const rule = new RegExp(`\\.hero>div:first-of-type>${name}\\{order:(\\d+)`);
+    const found = phone.match(rule);
+    assert.ok(found, `no phone order declared for ${name}`);
+    return Number(found[1]);
+  };
+  assert.ok(order('\\.hero-search') < order('#finding-lede'),
+    'the search box is still ordered below the explanatory prose on a phone');
+  assert.ok(order('#finding-headline') < order('\\.hero-search'),
+    'the headline should still come first: the box needs a question above it');
+});

@@ -484,7 +484,12 @@
         + `<small>${r.excluded_single_representation.toLocaleString()} single-representation references are excluded `
         + `rather than counted against the rate: there is nothing to compare, so the question does not arise.</small>`;
     } catch (error) {
-      // Say what is missing rather than leaving a number-shaped hole.
+      // Say what is missing rather than leaving a number-shaped hole - and
+      // leave the question standing rather than a claim the measurement has
+      // not yet backed. The static headline said "Most tokenised assets cannot
+      // honestly be compared", which is true of 157 of the 244 that carry more
+      // than one representation and false of the 791-reference catalogue.
+      headline.innerHTML = 'Can these tokenised assets<br><em>honestly be compared?</em>';
       lede.textContent = 'The population measurement could not be loaded, so no rate is shown here. '
         + 'Run `make base-rate` against the shipped inputs to reproduce it.';
     }
@@ -979,6 +984,10 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
   function downloadPopulationAttribution() {
     const rows = (receipt?.alert_index || []).flatMap(reference => {
       const representations = reference.representations || reference.tokens || [];
+      // A route the comparison published carries its rank and its premium to
+      // the cheapest. Everything else is a representation Bell would not put
+      // side by side, and the export has to say which is which.
+      const routes = new Map((reference.comparison?.routes || []).map(route => [String(route.crypto_id), route]));
       return representations.map(token => {
         const marketCap = numericValue(token.market_cap);
         const marketCapStatus = marketCap === null ? 'missing' : marketCap <= 0 ? 'zero_or_non_positive' : 'positive';
@@ -996,11 +1005,17 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
           marketCap === null ? '' : marketCap,
           marketCapStatus,
           numericValue(token.price) ?? '',
-          token.quote_source || token.source || '',
+          numericValue(token.volume_24h) ?? '',
+          token.is_derivative ? 'yes' : 'no',
+          routes.has(String(token.crypto_id)) ? 'yes' : 'no',
+          routes.get(String(token.crypto_id))?.premium_to_cheapest_bps?.toFixed(1) ?? '',
         ];
       });
     });
-    const header = ['rwa_id', 'reference_name', 'reference_symbol', 'asset_type', 'state', 'crypto_id', 'token_symbol', 'token_name', 'issuer_id', 'issuer_name', 'market_cap', 'market_cap_status', 'price', 'quote_source'];
+    // `quote_source` was in this header and empty on every row of every export:
+    // a column promising provenance and delivering nothing. These four are
+    // fields Bell actually observed.
+    const header = ['rwa_id', 'reference_name', 'reference_symbol', 'asset_type', 'state', 'crypto_id', 'token_symbol', 'token_name', 'issuer_id', 'issuer_name', 'market_cap', 'market_cap_status', 'price', 'volume_24h', 'is_derivative', 'in_published_comparison', 'premium_to_cheapest_bps'];
     const csv = [header, ...rows].map(row => row.map(csvCell).join(',')).join('\n') + '\n';
     const link = document.createElement('a');
     link.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
