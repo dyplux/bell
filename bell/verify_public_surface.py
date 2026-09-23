@@ -5,9 +5,12 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from rwa_integrity import RULES_VERSION
 
 
 def fetch(base: str, path: str) -> tuple[int, str, object]:
@@ -59,6 +62,20 @@ def main() -> int:
     tokens = int(universe.get("tokens_scanned") or 0)
     require(tokenised > 0 and tokens > 0, "receipt has no measured RWA population")
     require(sum(int(value or 0) for value in states.values()) == tokenised, "receipt state totals do not reconcile")
+
+    # The scheduled publisher runs from its own checkout. When that checkout
+    # stopped being updated, it kept republishing every fifteen minutes under an
+    # older rule set, and the only symptom was a live state distribution that
+    # quietly disagreed with the one this repository produces. Drift in the
+    # runtime is now a named failure rather than something you notice by eye.
+    live_rules = universe.get("rules_version")
+    require(live_rules == RULES_VERSION,
+            f"the live receipt was produced under {live_rules!r} but this repository is {RULES_VERSION!r}: "
+            "the scheduled publisher is running a different version of the rules")
+
+    comparisons = sum(1 for row in receipt.get("alert_index") or [] if row.get("comparison"))
+    require(comparisons > 0,
+            "no reference on the live surface carries a published comparison: the monitor can only refuse")
 
     dossier_status, _, dossier = fetch(args.base, "/api/published?slug=gold")
     require(dossier_status == 200 and isinstance(dossier, dict), "published Gold dossier did not return JSON 200")
