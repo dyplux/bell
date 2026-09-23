@@ -40,14 +40,27 @@ def main() -> int:
             page.locator("#receipt-status-label").wait_for(state="visible", timeout=30_000)
             page.wait_for_function("document.querySelector('#receipt-status-label')?.textContent?.includes('LOADING') === false", timeout=30_000)
             status = page.locator("#receipt-status-label").inner_text()
-            require("RECEIPT" in status, f"receipt status did not load: {status!r}")
+            # The label used to read "LIVE RECEIPT / FRESH"; it now states the
+            # observation time instead, because "fresh" was read as "measured
+            # just now" when it only meant "published recently". This assertion
+            # kept checking for the old word and failed silently on the live
+            # site for anyone following the README - it is not in `make check`,
+            # so nothing caught the rot. Assert the guarantee, not the wording:
+            # whatever the label says, it must name when the data was observed.
+            require(
+                "OBSERVED" in status or "DATED REPLAY" in status,
+                f"receipt status did not name an observation time: {status!r}",
+            )
             refresh_requests = []
             page.on("request", lambda request: refresh_requests.append(request.url) if "/api/integrity" in request.url else None)
             with page.expect_navigation(wait_until="domcontentloaded", timeout=30_000):
                 page.locator("#refresh-receipt").click()
             page.wait_for_function("document.querySelector('#receipt-status-label')?.textContent?.includes('LOADING') === false", timeout=30_000)
             refreshed_status = page.locator("#receipt-status-label").inner_text()
-            require("RECEIPT" in refreshed_status, f"receipt status did not survive refresh: {refreshed_status!r}")
+            require(
+                "OBSERVED" in refreshed_status or "DATED REPLAY" in refreshed_status,
+                f"receipt status did not survive refresh: {refreshed_status!r}",
+            )
             require(refresh_requests, "refresh action did not request the live integrity receipt")
             require("CMC API / MAP + ASSET LIST + QUOTES" in page.locator("body").inner_text(), "CMC source boundary is not visible")
             require(page.locator("h1").count() == 1, "public page must expose exactly one h1")

@@ -204,7 +204,7 @@ python3 bell/bell.py --catalog --output bell/site/catalog.json
 ```
 
 The 22 September map snapshot used for catalogue replay contained 7,811 records. The current integrity
-monitor is a separate live receipt over 791 tokenised references and 1,435 representation rows.
+monitor is a separate live receipt over 791 tokenised references and 1,440 representation rows.
 CMC's map is used for discovery; the selected asset's
 `quotes/latest` response supplies wrapper details, and the session review only runs when historical
 OHLCV coverage is sufficient. Gold has also passed the seven-day session review with seven ready wrappers;

@@ -32,7 +32,7 @@ dossiers. It searches the 7,811-entry dated CMC map snapshot, while keeping
 that catalogue separate from the live integrity receipt.
 
 The latest public receipt observed on 22 September 2026 contained 791
-tokenised references and 1,435 representation rows. The receipt is published
+tokenised references and 1,440 representation rows as observed on 23 September 2026. The receipt is published
 server-side and exposes observation time, publication time, freshness state,
 rule evidence and source fingerprints without exposing the CMC credential.
 
@@ -67,14 +67,27 @@ The key remains in the server process and is never sent to the browser.
 
 ## Verify the release
 
+One command, no API key, no account, offline:
+
 ```bash
-node --test bell/tests/*.cjs
-PYTHONPATH=bell python3 -m unittest discover -s bell/tests -p 'test_*.py' -q
-python3 bell/verify_integrity_receipt.py
-python3 bell/verify_public_surface.py
-python3 bell/verify_public_browser.py --channel chrome --screenshot /tmp/bell-live-proof.png
-node --test cloudflare/tests/worker.test.mjs
+make check
 ```
+
+That runs every suite, re-hashes the published receipt against the shipped
+credential-free input package, re-runs the scan asserting structural equality,
+and audits the public surface. It takes about a second.
+
+Two more, also keyless:
+
+```bash
+make demo        # answer one comparability question from the shipped receipt
+make base-rate   # reproduce the published population measurement
+```
+
+`make check-live` additionally drives a real browser against the deployed site.
+It needs network and a browser, which is why it is separate from `make check`.
+
+`make help` lists everything.
 
 Before recording the demo, refresh the values used in the narration from the
 public receipt:

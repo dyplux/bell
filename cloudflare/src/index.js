@@ -38,11 +38,35 @@ function publicationStatus(row) {
   };
 }
 
+// A queued job is work a credential-holding publisher will do against the
+// CoinMarketCap API, so anything that can enqueue can spend our credits. This
+// was reachable from an unauthenticated GET with an arbitrary slug: the
+// per-slug dedupe below does nothing against a caller who varies the slug, so
+// a loop over [a-z0-9-]+ was unbounded row growth and unbounded credit burn.
+// Two gates now stand in front of it - the slug must be one the published map
+// actually contains, and the queue has a hard global ceiling per hour.
+const REFRESH_JOBS_PER_HOUR = 50;
+
+async function withinGlobalRefreshCap(env) {
+  const row = await env.DB.prepare(
+    "SELECT COUNT(*) AS queued FROM refresh_jobs WHERE requested_at > datetime('now', '-1 hour')",
+  ).first();
+  return Number(row?.queued || 0) < REFRESH_JOBS_PER_HOUR;
+}
+
+async function knownSlug(env, slug) {
+  const row = await env.DB.prepare('SELECT 1 AS hit FROM dossiers WHERE slug = ?1').bind(slug).first();
+  return Boolean(row);
+}
+
 async function enqueueRefresh(env, slug) {
   const recent = await env.DB.prepare(
     "SELECT id FROM refresh_jobs WHERE slug = ?1 AND status IN ('queued', 'leased') AND requested_at > datetime('now', '-15 minutes') LIMIT 1",
   ).bind(slug).first();
   if (recent) return { queued: false, job_id: recent.id };
+  if (!(await withinGlobalRefreshCap(env))) {
+    return { queued: false, job_id: null, declined: 'hourly refresh cap reached' };
+  }
   const result = await env.DB.prepare(
     "INSERT INTO refresh_jobs (slug, status, requested_at) VALUES (?1, 'queued', ?2)",
   ).bind(slug, now()).run();
@@ -54,13 +78,16 @@ async function published(request, env) {
   if (!validSlug(slug)) return json({ error: 'a valid RWA slug is required' }, 400);
   const row = await env.DB.prepare('SELECT * FROM dossiers WHERE slug = ?1').bind(slug).first();
   if (!row) {
-    const queue = await enqueueRefresh(env, slug);
+    // An arbitrary slug no longer queues work. A reference the map does not
+    // contain cannot be investigated anyway, so there is nothing to schedule.
+    const queue = (await knownSlug(env, slug)) ? await enqueueRefresh(env, slug) : { queued: false, declined: 'slug is not in the published map' };
     return json({
       status: 'map_only',
       slug,
       refresh_queued: queue.queued,
-      job_id: queue.job_id,
-      message: 'No published dossier exists yet; Bell will investigate this RWA server-side.',
+      job_id: queue.job_id || null,
+      declined: queue.declined || null,
+      message: 'No published dossier exists yet for this reference.',
     }, 404, { 'cache-control': 'no-store' });
   }
   const queue = publicationStatus(row).status === 'stale' ? await enqueueRefresh(env, slug) : { queued: false };

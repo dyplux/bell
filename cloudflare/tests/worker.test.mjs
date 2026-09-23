@@ -71,12 +71,44 @@ function fakeDb(row = null) {
   };
 }
 
-test('missing dossier is explicit and queues a refresh', async () => {
-  const response = await worker.fetch(new Request('https://example.test/api/published?slug=nvidia'), { ASSETS: assets, DB: fakeDb() });
-  const body = await response.json();
-  assert.equal(response.status, 404);
-  assert.equal(body.status, 'map_only');
-  assert.equal(body.refresh_queued, true);
+test('a reference in the published map queues a refresh; an unknown one does not', async () => {
+  // This test previously asserted that ANY slug queues a refresh. That was the
+  // vulnerability written down as a requirement: a queued job is work a
+  // credential-holding publisher performs against the CoinMarketCap API, so an
+  // unauthenticated GET with an arbitrary slug could spend our credits without
+  // bound. Only a reference the map actually contains may queue.
+  const known = { ASSETS: assets, DB: { prepare(sql) { return {
+    bind() { return this; },
+    async first() {
+      if (/SELECT \* FROM dossiers/.test(sql)) return null;      // nothing published yet
+      if (/SELECT 1 AS hit FROM dossiers/.test(sql)) return { hit: 1 };  // but it is in the map
+      if (/status IN \('queued', 'leased'\)/.test(sql)) return null;
+      if (/COUNT\(\*\)/.test(sql)) return { queued: 0 };
+      return null;
+    },
+    async run() { return { meta: { last_row_id: 7 } }; },
+  }; } } };
+  const queued = await worker.fetch(new Request('https://example.test/api/published?slug=nvidia'), known);
+  const queuedBody = await queued.json();
+  assert.equal(queued.status, 404);
+  assert.equal(queuedBody.status, 'map_only');
+  assert.equal(queuedBody.refresh_queued, true);
+
+  const inserts = [];
+  const unknown = { ASSETS: assets, DB: { prepare(sql) { return {
+    bind() { return this; },
+    async first() {
+      if (/COUNT\(\*\)/.test(sql)) return { queued: 0 };
+      return null;                                               // not published, not in the map
+    },
+    async run() { inserts.push(sql); return { meta: { last_row_id: 1 } }; },
+  }; } } };
+  const declined = await worker.fetch(
+    new Request('https://example.test/api/published?slug=not-a-real-reference'), unknown);
+  const declinedBody = await declined.json();
+  assert.equal(declinedBody.refresh_queued, false);
+  assert.equal(declinedBody.declined, 'slug is not in the published map');
+  assert.equal(inserts.length, 0, 'an unknown slug must not insert a refresh job');
 });
 
 test('published dossier returns freshness metadata', async () => {
@@ -127,4 +159,26 @@ test('integrity endpoint returns a published receipt with freshness metadata', a
 test('integrity publication requires the publisher token', async () => {
   const response = await worker.fetch(new Request('https://example.test/internal/integrity', { method: 'POST', body: JSON.stringify({}) }), { ASSETS: assets, PUBLISHER_TOKEN: 'secret' });
   assert.equal(response.status, 401);
+});
+
+
+test('the refresh queue has a hard hourly ceiling', async () => {
+  const inserts = [];
+  const env = { ASSETS: assets, DB: { prepare(sql) { return {
+    bind() { return this; },
+    async first() {
+      if (/SELECT \* FROM dossiers/.test(sql)) return null;
+      if (/SELECT 1 AS hit FROM dossiers/.test(sql)) return { hit: 1 };
+      if (/status IN \('queued', 'leased'\)/.test(sql)) return null;
+      if (/COUNT\(\*\)/.test(sql)) return { queued: 50 };        // cap already reached
+      return null;
+    },
+    async run() { inserts.push(sql); return { meta: { last_row_id: 1 } }; },
+  }; } } };
+  const response = await worker.fetch(
+    new Request('https://example.test/api/published?slug=silver'), env);
+  const body = await response.json();
+  assert.equal(body.refresh_queued, false);
+  assert.equal(body.declined, 'hourly refresh cap reached');
+  assert.equal(inserts.length, 0, 'no insert once the hourly cap is reached');
 });

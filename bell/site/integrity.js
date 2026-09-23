@@ -467,9 +467,15 @@
       const lo = (r.refusal_rate_ci95[0] * 100).toFixed(1);
       const hi = (r.refusal_rate_ci95[1] * 100).toFixed(1);
       const n = r.denominator_two_or_more_representations;
-      const share = r.refusal_rate >= 0.6 ? 'Two thirds of' : r.refusal_rate >= 0.45 ? 'Half of' : 'Many';
-      headline.innerHTML = `${escapeHTML(share)} tokenised assets<br><em>cannot honestly be compared</em>`;
-      lede.innerHTML = `Of the <strong>${n.toLocaleString()}</strong> references in the CoinMarketCap RWA catalogue `
+      // The rate is over references carrying MORE THAN ONE representation - the
+      // only ones where a comparison is a thing anyone could attempt. Saying
+      // "two thirds of tokenised assets" applied it to all 791 and overstated
+      // the finding threefold. State the counts; do not band them into a word.
+      headline.innerHTML = `<strong>${r.refused.toLocaleString()}</strong> of the <strong>${n.toLocaleString()}</strong> comparable-looking<br>`
+        + `tokenised assets <em>cannot honestly be compared</em>`;
+      lede.innerHTML = `The catalogue holds <strong>${r.population.toLocaleString()}</strong> tokenised references. `
+        + `<strong>${r.excluded_single_representation.toLocaleString()}</strong> carry a single representation, so there is nothing to compare and they are excluded. `
+        + `Of the remaining <strong>${n.toLocaleString()}</strong> `
         + `carrying more than one representation &mdash; the only ones where a comparison is something you could `
         + `attempt &mdash; <strong>${r.refused.toLocaleString()}</strong> fail a coded comparability rule. `
         + `That is <strong>${pct}%</strong>, 95% interval ${lo}&ndash;${hi}%, measured over the whole catalogue `

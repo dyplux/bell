@@ -23,7 +23,7 @@ instrument identity merely because it sits under a familiar reference name.
 ## What the dated receipt exposed
 
 The live receipt observed on 22 September 2026 covered 791 tokenised
-references and 1,435 representations. Its deterministic signals included:
+references and 1,440 representations. Its deterministic signals included:
 
 | Signal | Observed count | Route |
 |---|---:|---|

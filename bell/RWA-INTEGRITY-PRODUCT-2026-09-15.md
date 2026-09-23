@@ -69,7 +69,7 @@ python3 bell/integrity_review.py
 ```
 
 The default path reads the dated receipt at
-`bell/docs/proof/rwa-surface-integrity-2026-09-15.json`. The live path is:
+`bell/docs/proof/rwa-surface-integrity-2026-09-15T20-36-32Z-superseded.json`. The live path is:
 
 ```sh
 CMC_API_KEY='key in the process only' python3 bell/integrity_review.py --live

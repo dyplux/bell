@@ -11,7 +11,7 @@ WORKER := cloudflare
 
 .DEFAULT_GOAL := help
 
-.PHONY: help install test test-py test-js test-worker demo base-rate verify check clean
+.PHONY: help install test test-py test-js test-worker demo base-rate verify check check-live clean
 
 help: ## Show the targets a reviewer needs
 	@echo "make demo     - answer one comparability question, keyless, ~1s"
@@ -19,6 +19,7 @@ help: ## Show the targets a reviewer needs
 	@echo "make test     - every suite (Python + browser-independent JS + worker)"
 	@echo "make verify   - re-hash the published receipt against its shipped inputs"
 	@echo "make check    - test + verify + public-surface audit (the full gate)"
+	@echo "make check-live- the gate plus a real browser against the deployed site"
 	@echo "make install  - optional; only needed for coverage and property tests"
 
 install: ## Dev dependencies. The suites below run without them.
@@ -48,6 +49,12 @@ verify: ## Recompute the published receipt from the shipped inputs
 
 check: test verify ## The full gate, as CI runs it
 	$(PY) $(PKG)/verify_submission.py
+
+check-live: check ## The gate plus a real browser against the deployed site
+	# Not in `check` because it needs network and a browser; it is here so the
+	# assertion cannot rot unnoticed again - it did, and the README shipped a
+	# command that failed for anyone who ran it.
+	$(PY) $(PKG)/verify_public_browser.py --channel chrome
 
 clean:
 	find . -name '__pycache__' -type d -prune -exec rm -rf {} +
