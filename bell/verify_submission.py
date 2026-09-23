@@ -124,6 +124,11 @@ def main() -> int:
     index_text = (ROOT / "bell/site/index.html").read_text(encoding="utf-8")
     if 'data-filter="no_flags">FACTS OPEN</button>' not in index_text:
         failures.append("public population filter is not labelled FACTS OPEN")
+    # The monitor must be able to say yes, not only no. If the affirmative
+    # route disappears from the public surface, the product is a gate with no
+    # door again and the gate should refuse to ship it.
+    if 'data-filter="comparable">COMPARABLE</button>' not in index_text:
+        failures.append("public population filter has no COMPARABLE route")
     if 'href="#explorer"' not in index_text or 'id="explorer"' not in index_text:
         failures.append("single-URL explorer route is missing")
     for marker in ('property="og:title"', 'property="og:description"', 'property="og:image"', 'name="twitter:card"'):
@@ -136,7 +141,7 @@ def main() -> int:
         return fail(failures)
 
     print(f"submission gate: ok ({len(files)} tracked files inspected)")
-    print("public state vocabulary: FACTS OPEN / INVESTIGATE / DO NOT SHORTLIST / SINGLE REPRESENTATION")
+    print("public state vocabulary: COMPARABLE / FACTS OPEN / INVESTIGATE / DO NOT SHORTLIST / SINGLE REPRESENTATION")
     print("private paths and identity disclosures: none found in the public surface")
     return 0
 

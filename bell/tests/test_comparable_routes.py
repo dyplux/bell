@@ -205,3 +205,40 @@ class CoverageIsReportedNotRestated(unittest.TestCase):
         self.assertIn("DERIVATIVE_MIX", [s["code"] for s in scan["signals"]])
 if __name__ == "__main__":
     unittest.main()
+
+
+class TheDecisionMatchesWhatTheReaderHolds(unittest.TestCase):
+    """A reader handed the cheapest route, the spread and the depth was told in
+    the same block that nothing had been produced: the decision still read
+    "NO RULE HIT, NOT APPROVED". The refusal was right about diligence and
+    wrong about what the reader was holding.
+    """
+
+    def _scan(self, tokens):
+        asset = {"rwa_id": "1", "name": "Ref", "symbol": "REF", "asset_type": "commodity", "tokens": tokens}
+        return asset_scan(asset, None, crypto_lookup_for(tokens), crypto_info_checked=True)
+
+    def test_a_published_comparison_is_named_in_the_decision(self):
+        scan = self._scan([token("AAA", 100.0, 50_000), token("BBB", 101.0, 40_000)])
+        self.assertIsNotNone(scan["comparison"])
+        self.assertEqual(scan["decision"]["label"], "COMPARABLE, NOT ENDORSED")
+        self.assertIn("bps", scan["decision"]["consequence"])
+        self.assertIn("AAA", scan["decision"]["consequence"])
+
+    def test_the_decision_still_refuses_to_endorse(self):
+        # Naming the comparison must not turn into an allocation claim.
+        scan = self._scan([token("AAA", 100.0, 50_000), token("BBB", 101.0, 40_000)])
+        effect = scan["decision"]["allocation_effect"].lower()
+        for absent in ("backing", "redemption", "eligibility", "custody"):
+            self.assertIn(absent, effect)
+        self.assertIn("not an allocation", effect)
+
+    def test_a_blocked_reference_keeps_its_refusal(self):
+        scan = self._scan([token("GRAM", 100.0, 50_000), token("OUNCE", 3_110.0, 40_000)])
+        self.assertIsNone(scan["comparison"])
+        self.assertEqual(scan["decision"]["label"], "DO NOT SELECT A WRAPPER")
+
+    def test_a_reference_with_no_comparison_keeps_the_unresolved_label(self):
+        scan = self._scan([token("ONLY", 100.0, 50_000)])
+        self.assertIsNone(scan["comparison"])
+        self.assertNotEqual(scan["decision"]["label"], "COMPARABLE, NOT ENDORSED")

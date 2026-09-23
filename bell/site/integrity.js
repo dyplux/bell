@@ -619,6 +619,11 @@
 
   function displayDecisionLabel(item, fallback = 'REVIEW') {
     if (item?.state === 'do_not_compare' || item?.decision?.state === 'blocked') return 'DO NOT SHORTLIST';
+    // A reference whose comparison was published is not merely "under
+    // investigation" or "facts open" - the reader is holding the cheapest
+    // route, the spread and the depth. Say so, and keep the refusal to endorse
+    // in the decision body where it belongs.
+    if (item?.comparison) return 'COMPARABLE';
     if (item?.state === 'investigate') return 'INVESTIGATE';
     if (item?.state === 'no_flags' && Number(item?.token_count || 0) === 1) return 'SINGLE REPRESENTATION';
     if (item?.state === 'no_flags') return 'FACTS OPEN';

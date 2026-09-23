@@ -12017,10 +12017,10 @@
       },
       "next_action": "Split derivative-labelled representations from spot or wrapper representations.",
       "decision": {
-        "state": "hold",
-        "label": "HOLD COMPARISON",
-        "consequence": "Keep issuer comparison open, but do not treat the current rows as equivalent exposure.",
-        "allocation_effect": "NO EQUIVALENCE CLAIM published while the investigation is open."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "5 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 16.5 bps; cheapest route AMZNon, though AMZNX carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -12462,10 +12462,10 @@
       },
       "next_action": "Split derivative-labelled representations from spot or wrapper representations.",
       "decision": {
-        "state": "hold",
-        "label": "HOLD COMPARISON",
-        "consequence": "Keep issuer comparison open, but do not treat the current rows as equivalent exposure.",
-        "allocation_effect": "NO EQUIVALENCE CLAIM published while the investigation is open."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "6 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 39.9 bps; cheapest route COIN, though COINX carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -12840,10 +12840,10 @@
       },
       "next_action": "Split derivative-labelled representations from spot or wrapper representations.",
       "decision": {
-        "state": "hold",
-        "label": "HOLD COMPARISON",
-        "consequence": "Keep issuer comparison open, but do not treat the current rows as equivalent exposure.",
-        "allocation_effect": "NO EQUIVALENCE CLAIM published while the investigation is open."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "5 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 70.1 bps; cheapest route AMAT, though AMATon carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -13233,10 +13233,10 @@
       },
       "next_action": "Split derivative-labelled representations from spot or wrapper representations.",
       "decision": {
-        "state": "hold",
-        "label": "HOLD COMPARISON",
-        "consequence": "Keep issuer comparison open, but do not treat the current rows as equivalent exposure.",
-        "allocation_effect": "NO EQUIVALENCE CLAIM published while the investigation is open."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "5 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 182.4 bps; cheapest route GME, though GMEX carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -13613,10 +13613,10 @@
       },
       "next_action": "Split derivative-labelled representations from spot or wrapper representations.",
       "decision": {
-        "state": "hold",
-        "label": "HOLD COMPARISON",
-        "consequence": "Keep issuer comparison open, but do not treat the current rows as equivalent exposure.",
-        "allocation_effect": "NO EQUIVALENCE CLAIM published while the investigation is open."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "5 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 33.9 bps; cheapest route IREN, though IRENon carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -14000,10 +14000,10 @@
       },
       "next_action": "Split derivative-labelled representations from spot or wrapper representations.",
       "decision": {
-        "state": "hold",
-        "label": "HOLD COMPARISON",
-        "consequence": "Keep issuer comparison open, but do not treat the current rows as equivalent exposure.",
-        "allocation_effect": "NO EQUIVALENCE CLAIM published while the investigation is open."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "5 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 198.3 bps; cheapest route ORCL, though ORCLB carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -14397,10 +14397,10 @@
       },
       "next_action": "Split derivative-labelled representations from spot or wrapper representations.",
       "decision": {
-        "state": "hold",
-        "label": "HOLD COMPARISON",
-        "consequence": "Keep issuer comparison open, but do not treat the current rows as equivalent exposure.",
-        "allocation_effect": "NO EQUIVALENCE CLAIM published while the investigation is open."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "6 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 59.8 bps; cheapest route PLTR, though PLTRon carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -14786,10 +14786,10 @@
       },
       "next_action": "Split derivative-labelled representations from spot or wrapper representations.",
       "decision": {
-        "state": "hold",
-        "label": "HOLD COMPARISON",
-        "consequence": "Keep issuer comparison open, but do not treat the current rows as equivalent exposure.",
-        "allocation_effect": "NO EQUIVALENCE CLAIM published while the investigation is open."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "5 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 542.1 bps; cheapest route QCOMB.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -15156,10 +15156,10 @@
       },
       "next_action": "Split derivative-labelled representations from spot or wrapper representations.",
       "decision": {
-        "state": "hold",
-        "label": "HOLD COMPARISON",
-        "consequence": "Keep issuer comparison open, but do not treat the current rows as equivalent exposure.",
-        "allocation_effect": "NO EQUIVALENCE CLAIM published while the investigation is open."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "5 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 1193.2 bps; cheapest route SMCIx, though SMCIon carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -15555,10 +15555,10 @@
       },
       "next_action": "Split derivative-labelled representations from spot or wrapper representations.",
       "decision": {
-        "state": "hold",
-        "label": "HOLD COMPARISON",
-        "consequence": "Keep issuer comparison open, but do not treat the current rows as equivalent exposure.",
-        "allocation_effect": "NO EQUIVALENCE CLAIM published while the investigation is open."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "5 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 5.7 bps; cheapest route EWYB.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -15897,10 +15897,10 @@
       },
       "next_action": "Split derivative-labelled representations from spot or wrapper representations.",
       "decision": {
-        "state": "hold",
-        "label": "HOLD COMPARISON",
-        "consequence": "Keep issuer comparison open, but do not treat the current rows as equivalent exposure.",
-        "allocation_effect": "NO EQUIVALENCE CLAIM published while the investigation is open."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "4 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 64.9 bps; cheapest route LLYX, though LLYon carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -16203,10 +16203,10 @@
       },
       "next_action": "Split derivative-labelled representations from spot or wrapper representations.",
       "decision": {
-        "state": "hold",
-        "label": "HOLD COMPARISON",
-        "consequence": "Keep issuer comparison open, but do not treat the current rows as equivalent exposure.",
-        "allocation_effect": "NO EQUIVALENCE CLAIM published while the investigation is open."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "4 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 117.7 bps; cheapest route TSMB, though TSMon carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -16450,10 +16450,10 @@
       },
       "next_action": "Split derivative-labelled representations from spot or wrapper representations.",
       "decision": {
-        "state": "hold",
-        "label": "HOLD COMPARISON",
-        "consequence": "Keep issuer comparison open, but do not treat the current rows as equivalent exposure.",
-        "allocation_effect": "NO EQUIVALENCE CLAIM published while the investigation is open."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "2 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 13.1 bps; cheapest route CBRSB.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -16708,10 +16708,10 @@
       },
       "next_action": "Split derivative-labelled representations from spot or wrapper representations.",
       "decision": {
-        "state": "hold",
-        "label": "HOLD COMPARISON",
-        "consequence": "Keep issuer comparison open, but do not treat the current rows as equivalent exposure.",
-        "allocation_effect": "NO EQUIVALENCE CLAIM published while the investigation is open."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "3 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 59.9 bps; cheapest route RDDT, though RDDTon carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -17019,10 +17019,10 @@
       },
       "next_action": "Split derivative-labelled representations from spot or wrapper representations.",
       "decision": {
-        "state": "hold",
-        "label": "HOLD COMPARISON",
-        "consequence": "Keep issuer comparison open, but do not treat the current rows as equivalent exposure.",
-        "allocation_effect": "NO EQUIVALENCE CLAIM published while the investigation is open."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "3 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 23.2 bps; cheapest route RIVNon.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -17285,10 +17285,10 @@
       },
       "next_action": "Split derivative-labelled representations from spot or wrapper representations.",
       "decision": {
-        "state": "hold",
-        "label": "HOLD COMPARISON",
-        "consequence": "Keep issuer comparison open, but do not treat the current rows as equivalent exposure.",
-        "allocation_effect": "NO EQUIVALENCE CLAIM published while the investigation is open."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "3 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 170.6 bps; cheapest route SOFI, though SOFIon carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -17511,10 +17511,10 @@
       },
       "next_action": "Split derivative-labelled representations from spot or wrapper representations.",
       "decision": {
-        "state": "hold",
-        "label": "HOLD COMPARISON",
-        "consequence": "Keep issuer comparison open, but do not treat the current rows as equivalent exposure.",
-        "allocation_effect": "NO EQUIVALENCE CLAIM published while the investigation is open."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "3 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 81.8 bps; cheapest route QBTS, though QBTSon carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -17737,10 +17737,10 @@
       },
       "next_action": "Split derivative-labelled representations from spot or wrapper representations.",
       "decision": {
-        "state": "hold",
-        "label": "HOLD COMPARISON",
-        "consequence": "Keep issuer comparison open, but do not treat the current rows as equivalent exposure.",
-        "allocation_effect": "NO EQUIVALENCE CLAIM published while the investigation is open."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "3 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 192.4 bps; cheapest route RGTI, though RGTIon carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -17988,10 +17988,10 @@
       },
       "next_action": "Split derivative-labelled representations from spot or wrapper representations.",
       "decision": {
-        "state": "hold",
-        "label": "HOLD COMPARISON",
-        "consequence": "Keep issuer comparison open, but do not treat the current rows as equivalent exposure.",
-        "allocation_effect": "NO EQUIVALENCE CLAIM published while the investigation is open."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "2 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 219.1 bps; cheapest route ZM.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -18708,10 +18708,10 @@
       },
       "next_action": "Split derivative-labelled representations from spot or wrapper representations.",
       "decision": {
-        "state": "hold",
-        "label": "HOLD COMPARISON",
-        "consequence": "Keep issuer comparison open, but do not treat the current rows as equivalent exposure.",
-        "allocation_effect": "NO EQUIVALENCE CLAIM published while the investigation is open."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "2 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 1.9 bps; cheapest route SHOPon.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -19034,10 +19034,10 @@
       },
       "next_action": "Split derivative-labelled representations from spot or wrapper representations.",
       "decision": {
-        "state": "hold",
-        "label": "HOLD COMPARISON",
-        "consequence": "Keep issuer comparison open, but do not treat the current rows as equivalent exposure.",
-        "allocation_effect": "NO EQUIVALENCE CLAIM published while the investigation is open."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "2 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 9.8 bps; cheapest route USOon, though USO carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -19896,10 +19896,10 @@
       },
       "next_action": "Split derivative-labelled representations from spot or wrapper representations.",
       "decision": {
-        "state": "hold",
-        "label": "HOLD COMPARISON",
-        "consequence": "Keep issuer comparison open, but do not treat the current rows as equivalent exposure.",
-        "allocation_effect": "NO EQUIVALENCE CLAIM published while the investigation is open."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "3 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 245.8 bps; cheapest route PYPLx, though PYPLB carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -20173,10 +20173,10 @@
       },
       "next_action": "Split derivative-labelled representations from spot or wrapper representations.",
       "decision": {
-        "state": "hold",
-        "label": "HOLD COMPARISON",
-        "consequence": "Keep issuer comparison open, but do not treat the current rows as equivalent exposure.",
-        "allocation_effect": "NO EQUIVALENCE CLAIM published while the investigation is open."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "2 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 10.6 bps; cheapest route ANETon.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -20465,10 +20465,10 @@
       },
       "next_action": "Split derivative-labelled representations from spot or wrapper representations.",
       "decision": {
-        "state": "hold",
-        "label": "HOLD COMPARISON",
-        "consequence": "Keep issuer comparison open, but do not treat the current rows as equivalent exposure.",
-        "allocation_effect": "NO EQUIVALENCE CLAIM published while the investigation is open."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "3 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 149.8 bps; cheapest route rCSCO, though CSCOon carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -20723,10 +20723,10 @@
       },
       "next_action": "Split derivative-labelled representations from spot or wrapper representations.",
       "decision": {
-        "state": "hold",
-        "label": "HOLD COMPARISON",
-        "consequence": "Keep issuer comparison open, but do not treat the current rows as equivalent exposure.",
-        "allocation_effect": "NO EQUIVALENCE CLAIM published while the investigation is open."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "3 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 9.1 bps; cheapest route rCOHR, though COHRB carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -21015,10 +21015,10 @@
       },
       "next_action": "Split derivative-labelled representations from spot or wrapper representations.",
       "decision": {
-        "state": "hold",
-        "label": "HOLD COMPARISON",
-        "consequence": "Keep issuer comparison open, but do not treat the current rows as equivalent exposure.",
-        "allocation_effect": "NO EQUIVALENCE CLAIM published while the investigation is open."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "3 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 290.6 bps; cheapest route GSX, though GSB carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -21301,10 +21301,10 @@
       },
       "next_action": "Split derivative-labelled representations from spot or wrapper representations.",
       "decision": {
-        "state": "hold",
-        "label": "HOLD COMPARISON",
-        "consequence": "Keep issuer comparison open, but do not treat the current rows as equivalent exposure.",
-        "allocation_effect": "NO EQUIVALENCE CLAIM published while the investigation is open."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "3 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 458.2 bps; cheapest route LRCXx, though LRCXon carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -21597,10 +21597,10 @@
       },
       "next_action": "Split derivative-labelled representations from spot or wrapper representations.",
       "decision": {
-        "state": "hold",
-        "label": "HOLD COMPARISON",
-        "consequence": "Keep issuer comparison open, but do not treat the current rows as equivalent exposure.",
-        "allocation_effect": "NO EQUIVALENCE CLAIM published while the investigation is open."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "3 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 21.3 bps; cheapest route ONDSon.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -21889,10 +21889,10 @@
       },
       "next_action": "Split derivative-labelled representations from spot or wrapper representations.",
       "decision": {
-        "state": "hold",
-        "label": "HOLD COMPARISON",
-        "consequence": "Keep issuer comparison open, but do not treat the current rows as equivalent exposure.",
-        "allocation_effect": "NO EQUIVALENCE CLAIM published while the investigation is open."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "3 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 81.6 bps; cheapest route CRMB, though CRMon carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -22139,10 +22139,10 @@
       },
       "next_action": "Split derivative-labelled representations from spot or wrapper representations.",
       "decision": {
-        "state": "hold",
-        "label": "HOLD COMPARISON",
-        "consequence": "Keep issuer comparison open, but do not treat the current rows as equivalent exposure.",
-        "allocation_effect": "NO EQUIVALENCE CLAIM published while the investigation is open."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "2 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 155.0 bps; cheapest route APPX, though APPon carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -22586,10 +22586,10 @@
       },
       "next_action": "Split derivative-labelled representations from spot or wrapper representations.",
       "decision": {
-        "state": "hold",
-        "label": "HOLD COMPARISON",
-        "consequence": "Keep issuer comparison open, but do not treat the current rows as equivalent exposure.",
-        "allocation_effect": "NO EQUIVALENCE CLAIM published while the investigation is open."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "2 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 145.5 bps; cheapest route CVXX, though CVXon carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -22828,10 +22828,10 @@
       },
       "next_action": "Split derivative-labelled representations from spot or wrapper representations.",
       "decision": {
-        "state": "hold",
-        "label": "HOLD COMPARISON",
-        "consequence": "Keep issuer comparison open, but do not treat the current rows as equivalent exposure.",
-        "allocation_effect": "NO EQUIVALENCE CLAIM published while the investigation is open."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "2 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 8.4 bps; cheapest route KOX, though KOon carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -23078,10 +23078,10 @@
       },
       "next_action": "Split derivative-labelled representations from spot or wrapper representations.",
       "decision": {
-        "state": "hold",
-        "label": "HOLD COMPARISON",
-        "consequence": "Keep issuer comparison open, but do not treat the current rows as equivalent exposure.",
-        "allocation_effect": "NO EQUIVALENCE CLAIM published while the investigation is open."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "2 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 97.8 bps; cheapest route HDon.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -23333,10 +23333,10 @@
       },
       "next_action": "Split derivative-labelled representations from spot or wrapper representations.",
       "decision": {
-        "state": "hold",
-        "label": "HOLD COMPARISON",
-        "consequence": "Keep issuer comparison open, but do not treat the current rows as equivalent exposure.",
-        "allocation_effect": "NO EQUIVALENCE CLAIM published while the investigation is open."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "2 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 45.7 bps; cheapest route ISRGon.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -23583,10 +23583,10 @@
       },
       "next_action": "Split derivative-labelled representations from spot or wrapper representations.",
       "decision": {
-        "state": "hold",
-        "label": "HOLD COMPARISON",
-        "consequence": "Keep issuer comparison open, but do not treat the current rows as equivalent exposure.",
-        "allocation_effect": "NO EQUIVALENCE CLAIM published while the investigation is open."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "2 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 290.1 bps; cheapest route JPMX, though JPMon carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -23833,10 +23833,10 @@
       },
       "next_action": "Split derivative-labelled representations from spot or wrapper representations.",
       "decision": {
-        "state": "hold",
-        "label": "HOLD COMPARISON",
-        "consequence": "Keep issuer comparison open, but do not treat the current rows as equivalent exposure.",
-        "allocation_effect": "NO EQUIVALENCE CLAIM published while the investigation is open."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "2 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 74.6 bps; cheapest route JNJX, though JNJon carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -24262,10 +24262,10 @@
       },
       "next_action": "Split derivative-labelled representations from spot or wrapper representations.",
       "decision": {
-        "state": "hold",
-        "label": "HOLD COMPARISON",
-        "consequence": "Keep issuer comparison open, but do not treat the current rows as equivalent exposure.",
-        "allocation_effect": "NO EQUIVALENCE CLAIM published while the investigation is open."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "2 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 566.1 bps; cheapest route MRKX, though MRKon carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -24512,10 +24512,10 @@
       },
       "next_action": "Split derivative-labelled representations from spot or wrapper representations.",
       "decision": {
-        "state": "hold",
-        "label": "HOLD COMPARISON",
-        "consequence": "Keep issuer comparison open, but do not treat the current rows as equivalent exposure.",
-        "allocation_effect": "NO EQUIVALENCE CLAIM published while the investigation is open."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "2 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 292.1 bps; cheapest route NVOX, though NVOon carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -24762,10 +24762,10 @@
       },
       "next_action": "Split derivative-labelled representations from spot or wrapper representations.",
       "decision": {
-        "state": "hold",
-        "label": "HOLD COMPARISON",
-        "consequence": "Keep issuer comparison open, but do not treat the current rows as equivalent exposure.",
-        "allocation_effect": "NO EQUIVALENCE CLAIM published while the investigation is open."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "2 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 104.9 bps; cheapest route UNHX, though UNHon carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -24994,10 +24994,10 @@
       },
       "next_action": "Split derivative-labelled representations from spot or wrapper representations.",
       "decision": {
-        "state": "hold",
-        "label": "HOLD COMPARISON",
-        "consequence": "Keep issuer comparison open, but do not treat the current rows as equivalent exposure.",
-        "allocation_effect": "NO EQUIVALENCE CLAIM published while the investigation is open."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "2 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 818.9 bps; cheapest route SMHx, though SMHB carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -25238,10 +25238,10 @@
       },
       "next_action": "Split derivative-labelled representations from spot or wrapper representations.",
       "decision": {
-        "state": "hold",
-        "label": "HOLD COMPARISON",
-        "consequence": "Keep issuer comparison open, but do not treat the current rows as equivalent exposure.",
-        "allocation_effect": "NO EQUIVALENCE CLAIM published while the investigation is open."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "2 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 196.8 bps; cheapest route VX, though Von carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -26086,10 +26086,10 @@
       },
       "next_action": "Split derivative-labelled representations from spot or wrapper representations.",
       "decision": {
-        "state": "hold",
-        "label": "HOLD COMPARISON",
-        "consequence": "Keep issuer comparison open, but do not treat the current rows as equivalent exposure.",
-        "allocation_effect": "NO EQUIVALENCE CLAIM published while the investigation is open."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "2 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 0.4 bps; cheapest route CRDOB.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -26250,10 +26250,10 @@
       },
       "next_action": "Split derivative-labelled representations from spot or wrapper representations.",
       "decision": {
-        "state": "hold",
-        "label": "HOLD COMPARISON",
-        "consequence": "Keep issuer comparison open, but do not treat the current rows as equivalent exposure.",
-        "allocation_effect": "NO EQUIVALENCE CLAIM published while the investigation is open."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "2 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 9.0 bps; cheapest route rSOXS, though SOXSB carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -29724,10 +29724,10 @@
       },
       "next_action": "Keep nulls visible and re-check the missing token fields before ranking.",
       "decision": {
-        "state": "unresolved",
-        "label": "NO RULE HIT, NOT APPROVED",
-        "consequence": "The published rules did not fire; backing, liquidity and legal diligence are still outside this monitor.",
-        "allocation_effect": "No allocation status is produced by this monitor."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "5 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 72.2 bps; cheapest route AVGOB, though AVGOon carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -30010,10 +30010,10 @@
       },
       "next_action": "Keep nulls visible and re-check the missing token fields before ranking.",
       "decision": {
-        "state": "unresolved",
-        "label": "NO RULE HIT, NOT APPROVED",
-        "consequence": "The published rules did not fire; backing, liquidity and legal diligence are still outside this monitor.",
-        "allocation_effect": "No allocation status is produced by this monitor."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "3 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 4.9 bps; cheapest route ARMB, though ARMon carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -30350,10 +30350,10 @@
       },
       "next_action": "No rule hit in this scan; this is not proof of backing, liquidity or eligibility.",
       "decision": {
-        "state": "unresolved",
-        "label": "NO RULE HIT, NOT APPROVED",
-        "consequence": "The published rules did not fire; backing, liquidity and legal diligence are still outside this monitor.",
-        "allocation_effect": "No allocation status is produced by this monitor."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "6 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 34.3 bps; cheapest route MRVLB, though MRVLon carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -30637,10 +30637,10 @@
       },
       "next_action": "Keep nulls visible and re-check the missing token fields before ranking.",
       "decision": {
-        "state": "unresolved",
-        "label": "NO RULE HIT, NOT APPROVED",
-        "consequence": "The published rules did not fire; backing, liquidity and legal diligence are still outside this monitor.",
-        "allocation_effect": "No allocation status is produced by this monitor."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "4 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 31.1 bps; cheapest route ASTS, though ASTSB carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -30914,10 +30914,10 @@
       },
       "next_action": "Keep nulls visible and re-check the missing token fields before ranking.",
       "decision": {
-        "state": "unresolved",
-        "label": "NO RULE HIT, NOT APPROVED",
-        "consequence": "The published rules did not fire; backing, liquidity and legal diligence are still outside this monitor.",
-        "allocation_effect": "No allocation status is produced by this monitor."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "4 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 62.8 bps; cheapest route LITEB.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -31203,10 +31203,10 @@
       },
       "next_action": "Keep nulls visible and re-check the missing token fields before ranking.",
       "decision": {
-        "state": "unresolved",
-        "label": "NO RULE HIT, NOT APPROVED",
-        "consequence": "The published rules did not fire; backing, liquidity and legal diligence are still outside this monitor.",
-        "allocation_effect": "No allocation status is produced by this monitor."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "4 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 75.1 bps; cheapest route TQQQX, though TQQQB carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -31411,10 +31411,10 @@
       },
       "next_action": "Keep nulls visible and re-check the missing token fields before ranking.",
       "decision": {
-        "state": "unresolved",
-        "label": "NO RULE HIT, NOT APPROVED",
-        "consequence": "The published rules did not fire; backing, liquidity and legal diligence are still outside this monitor.",
-        "allocation_effect": "No allocation status is produced by this monitor."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "3 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 262.5 bps; cheapest route AAOI, though AAOIB carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -31619,10 +31619,10 @@
       },
       "next_action": "Keep nulls visible and re-check the missing token fields before ranking.",
       "decision": {
-        "state": "unresolved",
-        "label": "NO RULE HIT, NOT APPROVED",
-        "consequence": "The published rules did not fire; backing, liquidity and legal diligence are still outside this monitor.",
-        "allocation_effect": "No allocation status is produced by this monitor."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "3 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 22.4 bps; cheapest route BE, though BEB carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -31843,10 +31843,10 @@
       },
       "next_action": "Keep nulls visible and re-check the missing token fields before ranking.",
       "decision": {
-        "state": "unresolved",
-        "label": "NO RULE HIT, NOT APPROVED",
-        "consequence": "The published rules did not fire; backing, liquidity and legal diligence are still outside this monitor.",
-        "allocation_effect": "No allocation status is produced by this monitor."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "2 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 9.5 bps; cheapest route BAon.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -32040,10 +32040,10 @@
       },
       "next_action": "No rule hit in this scan; this is not proof of backing, liquidity or eligibility.",
       "decision": {
-        "state": "unresolved",
-        "label": "NO RULE HIT, NOT APPROVED",
-        "consequence": "The published rules did not fire; backing, liquidity and legal diligence are still outside this monitor.",
-        "allocation_effect": "No allocation status is produced by this monitor."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "3 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 28.5 bps; cheapest route CRWV, though CRWVB carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -32287,10 +32287,10 @@
       },
       "next_action": "Keep nulls visible and re-check the missing token fields before ranking.",
       "decision": {
-        "state": "unresolved",
-        "label": "NO RULE HIT, NOT APPROVED",
-        "consequence": "The published rules did not fire; backing, liquidity and legal diligence are still outside this monitor.",
-        "allocation_effect": "No allocation status is produced by this monitor."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "3 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 74.1 bps; cheapest route GLWB.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -32533,10 +32533,10 @@
       },
       "next_action": "Keep nulls visible and re-check the missing token fields before ranking.",
       "decision": {
-        "state": "unresolved",
-        "label": "NO RULE HIT, NOT APPROVED",
-        "consequence": "The published rules did not fire; backing, liquidity and legal diligence are still outside this monitor.",
-        "allocation_effect": "No allocation status is produced by this monitor."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "3 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 6.1 bps; cheapest route SOXLB.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -32787,10 +32787,10 @@
       },
       "next_action": "Keep nulls visible and re-check the missing token fields before ranking.",
       "decision": {
-        "state": "unresolved",
-        "label": "NO RULE HIT, NOT APPROVED",
-        "consequence": "The published rules did not fire; backing, liquidity and legal diligence are still outside this monitor.",
-        "allocation_effect": "No allocation status is produced by this monitor."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "3 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 148.5 bps; cheapest route XOM, though XOMon carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -32984,10 +32984,10 @@
       },
       "next_action": "No rule hit in this scan; this is not proof of backing, liquidity or eligibility.",
       "decision": {
-        "state": "unresolved",
-        "label": "NO RULE HIT, NOT APPROVED",
-        "consequence": "The published rules did not fire; backing, liquidity and legal diligence are still outside this monitor.",
-        "allocation_effect": "No allocation status is produced by this monitor."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "3 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 5.9 bps; cheapest route NBISB.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -33233,10 +33233,10 @@
       },
       "next_action": "Keep nulls visible and re-check the missing token fields before ranking.",
       "decision": {
-        "state": "unresolved",
-        "label": "NO RULE HIT, NOT APPROVED",
-        "consequence": "The published rules did not fire; backing, liquidity and legal diligence are still outside this monitor.",
-        "allocation_effect": "No allocation status is produced by this monitor."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "2 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 3.0 bps; cheapest route rOKLO, though OKLOon carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -33480,10 +33480,10 @@
       },
       "next_action": "Keep nulls visible and re-check the missing token fields before ranking.",
       "decision": {
-        "state": "unresolved",
-        "label": "NO RULE HIT, NOT APPROVED",
-        "consequence": "The published rules did not fire; backing, liquidity and legal diligence are still outside this monitor.",
-        "allocation_effect": "No allocation status is produced by this monitor."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "2 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 624.1 bps; cheapest route PFEX.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -33667,10 +33667,10 @@
       },
       "next_action": "No rule hit in this scan; this is not proof of backing, liquidity or eligibility.",
       "decision": {
-        "state": "unresolved",
-        "label": "NO RULE HIT, NOT APPROVED",
-        "consequence": "The published rules did not fire; backing, liquidity and legal diligence are still outside this monitor.",
-        "allocation_effect": "No allocation status is produced by this monitor."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "2 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 2.9 bps; cheapest route RKLBB.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -33875,10 +33875,10 @@
       },
       "next_action": "Keep nulls visible and re-check the missing token fields before ranking.",
       "decision": {
-        "state": "unresolved",
-        "label": "NO RULE HIT, NOT APPROVED",
-        "consequence": "The published rules did not fire; backing, liquidity and legal diligence are still outside this monitor.",
-        "allocation_effect": "No allocation status is produced by this monitor."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "3 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 32.2 bps; cheapest route USARB.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -34122,10 +34122,10 @@
       },
       "next_action": "Keep nulls visible and re-check the missing token fields before ranking.",
       "decision": {
-        "state": "unresolved",
-        "label": "NO RULE HIT, NOT APPROVED",
-        "consequence": "The published rules did not fire; backing, liquidity and legal diligence are still outside this monitor.",
-        "allocation_effect": "No allocation status is produced by this monitor."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "3 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 16.2 bps; cheapest route WDCx, though WDCB carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -34335,10 +34335,10 @@
       },
       "next_action": "Keep nulls visible and re-check the missing token fields before ranking.",
       "decision": {
-        "state": "unresolved",
-        "label": "NO RULE HIT, NOT APPROVED",
-        "consequence": "The published rules did not fire; backing, liquidity and legal diligence are still outside this monitor.",
-        "allocation_effect": "No allocation status is produced by this monitor."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "2 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 142.9 bps; cheapest route ABBVon.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -34548,10 +34548,10 @@
       },
       "next_action": "Keep nulls visible and re-check the missing token fields before ranking.",
       "decision": {
-        "state": "unresolved",
-        "label": "NO RULE HIT, NOT APPROVED",
-        "consequence": "The published rules did not fire; backing, liquidity and legal diligence are still outside this monitor.",
-        "allocation_effect": "No allocation status is produced by this monitor."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "2 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 2.6 bps; cheapest route ABTX, though ABTon carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -34761,10 +34761,10 @@
       },
       "next_action": "Keep nulls visible and re-check the missing token fields before ranking.",
       "decision": {
-        "state": "unresolved",
-        "label": "NO RULE HIT, NOT APPROVED",
-        "consequence": "The published rules did not fire; backing, liquidity and legal diligence are still outside this monitor.",
-        "allocation_effect": "No allocation status is produced by this monitor."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "2 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 59.1 bps; cheapest route ACNon.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -35126,10 +35126,10 @@
       },
       "next_action": "Keep nulls visible and re-check the missing token fields before ranking.",
       "decision": {
-        "state": "unresolved",
-        "label": "NO RULE HIT, NOT APPROVED",
-        "consequence": "The published rules did not fire; backing, liquidity and legal diligence are still outside this monitor.",
-        "allocation_effect": "No allocation status is produced by this monitor."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "2 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 277.1 bps; cheapest route BACX, though BACon carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -35305,10 +35305,10 @@
       },
       "next_action": "Keep nulls visible and re-check the missing token fields before ranking.",
       "decision": {
-        "state": "unresolved",
-        "label": "NO RULE HIT, NOT APPROVED",
-        "consequence": "The published rules did not fire; backing, liquidity and legal diligence are still outside this monitor.",
-        "allocation_effect": "No allocation status is produced by this monitor."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "2 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 143.9 bps; cheapest route COST, though COSTon carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -35484,10 +35484,10 @@
       },
       "next_action": "Keep nulls visible and re-check the missing token fields before ranking.",
       "decision": {
-        "state": "unresolved",
-        "label": "NO RULE HIT, NOT APPROVED",
-        "consequence": "The published rules did not fire; backing, liquidity and legal diligence are still outside this monitor.",
-        "allocation_effect": "No allocation status is produced by this monitor."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "2 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 177.8 bps; cheapest route Fon, though F carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -35662,10 +35662,10 @@
       },
       "next_action": "No rule hit in this scan; this is not proof of backing, liquidity or eligibility.",
       "decision": {
-        "state": "unresolved",
-        "label": "NO RULE HIT, NOT APPROVED",
-        "consequence": "The published rules did not fire; backing, liquidity and legal diligence are still outside this monitor.",
-        "allocation_effect": "No allocation status is produced by this monitor."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "3 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 206.7 bps; cheapest route FUTU, though FUTUon carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -36007,10 +36007,10 @@
       },
       "next_action": "Keep nulls visible and re-check the missing token fields before ranking.",
       "decision": {
-        "state": "unresolved",
-        "label": "NO RULE HIT, NOT APPROVED",
-        "consequence": "The published rules did not fire; backing, liquidity and legal diligence are still outside this monitor.",
-        "allocation_effect": "No allocation status is produced by this monitor."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "2 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 167.0 bps; cheapest route INTU, though INTUon carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -36397,10 +36397,10 @@
       },
       "next_action": "Keep nulls visible and re-check the missing token fields before ranking.",
       "decision": {
-        "state": "unresolved",
-        "label": "NO RULE HIT, NOT APPROVED",
-        "consequence": "The published rules did not fire; backing, liquidity and legal diligence are still outside this monitor.",
-        "allocation_effect": "No allocation status is produced by this monitor."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "2 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 87.2 bps; cheapest route LINX, though LINon carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -36610,10 +36610,10 @@
       },
       "next_action": "Keep nulls visible and re-check the missing token fields before ranking.",
       "decision": {
-        "state": "unresolved",
-        "label": "NO RULE HIT, NOT APPROVED",
-        "consequence": "The published rules did not fire; backing, liquidity and legal diligence are still outside this monitor.",
-        "allocation_effect": "No allocation status is produced by this monitor."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "2 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 42.9 bps; cheapest route MAX, though MAon carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -36812,10 +36812,10 @@
       },
       "next_action": "No rule hit in this scan; this is not proof of backing, liquidity or eligibility.",
       "decision": {
-        "state": "unresolved",
-        "label": "NO RULE HIT, NOT APPROVED",
-        "consequence": "The published rules did not fire; backing, liquidity and legal diligence are still outside this monitor.",
-        "allocation_effect": "No allocation status is produced by this monitor."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "2 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 20.5 bps; cheapest route MCDon, though MCDX carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -36979,10 +36979,10 @@
       },
       "next_action": "Keep nulls visible and re-check the missing token fields before ranking.",
       "decision": {
-        "state": "unresolved",
-        "label": "NO RULE HIT, NOT APPROVED",
-        "consequence": "The published rules did not fire; backing, liquidity and legal diligence are still outside this monitor.",
-        "allocation_effect": "No allocation status is produced by this monitor."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "2 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 44.6 bps; cheapest route NOKB.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -37353,10 +37353,10 @@
       },
       "next_action": "Keep nulls visible and re-check the missing token fields before ranking.",
       "decision": {
-        "state": "unresolved",
-        "label": "NO RULE HIT, NOT APPROVED",
-        "consequence": "The published rules did not fire; backing, liquidity and legal diligence are still outside this monitor.",
-        "allocation_effect": "No allocation status is produced by this monitor."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "2 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 92.4 bps; cheapest route PEPX, though PEPon carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -37531,10 +37531,10 @@
       },
       "next_action": "No rule hit in this scan; this is not proof of backing, liquidity or eligibility.",
       "decision": {
-        "state": "unresolved",
-        "label": "NO RULE HIT, NOT APPROVED",
-        "consequence": "The published rules did not fire; backing, liquidity and legal diligence are still outside this monitor.",
-        "allocation_effect": "No allocation status is produced by this monitor."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "3 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 233.9 bps; cheapest route SQQQB.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -37744,10 +37744,10 @@
       },
       "next_action": "Keep nulls visible and re-check the missing token fields before ranking.",
       "decision": {
-        "state": "unresolved",
-        "label": "NO RULE HIT, NOT APPROVED",
-        "consequence": "The published rules did not fire; backing, liquidity and legal diligence are still outside this monitor.",
-        "allocation_effect": "No allocation status is produced by this monitor."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "2 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 20.8 bps; cheapest route PGX, though PGon carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -37911,10 +37911,10 @@
       },
       "next_action": "Keep nulls visible and re-check the missing token fields before ranking.",
       "decision": {
-        "state": "unresolved",
-        "label": "NO RULE HIT, NOT APPROVED",
-        "consequence": "The published rules did not fire; backing, liquidity and legal diligence are still outside this monitor.",
-        "allocation_effect": "No allocation status is produced by this monitor."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "2 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 1.4 bps; cheapest route DRAMB.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -38301,10 +38301,10 @@
       },
       "next_action": "Keep nulls visible and re-check the missing token fields before ranking.",
       "decision": {
-        "state": "unresolved",
-        "label": "NO RULE HIT, NOT APPROVED",
-        "consequence": "The published rules did not fire; backing, liquidity and legal diligence are still outside this monitor.",
-        "allocation_effect": "No allocation status is produced by this monitor."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "2 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 186.3 bps; cheapest route TMOX, though TMOon carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -38508,10 +38508,10 @@
       },
       "next_action": "Keep nulls visible and re-check the missing token fields before ranking.",
       "decision": {
-        "state": "unresolved",
-        "label": "NO RULE HIT, NOT APPROVED",
-        "consequence": "The published rules did not fire; backing, liquidity and legal diligence are still outside this monitor.",
-        "allocation_effect": "No allocation status is produced by this monitor."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "2 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 86.1 bps; cheapest route VTIon, though VTIX carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -38715,10 +38715,10 @@
       },
       "next_action": "Keep nulls visible and re-check the missing token fields before ranking.",
       "decision": {
-        "state": "unresolved",
-        "label": "NO RULE HIT, NOT APPROVED",
-        "consequence": "The published rules did not fire; backing, liquidity and legal diligence are still outside this monitor.",
-        "allocation_effect": "No allocation status is produced by this monitor."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "2 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 15.2 bps; cheapest route VRTon.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -39043,10 +39043,10 @@
       },
       "next_action": "Keep nulls visible and re-check the missing token fields before ranking.",
       "decision": {
-        "state": "unresolved",
-        "label": "NO RULE HIT, NOT APPROVED",
-        "consequence": "The published rules did not fire; backing, liquidity and legal diligence are still outside this monitor.",
-        "allocation_effect": "No allocation status is produced by this monitor."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "2 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 193.3 bps; cheapest route SGOV.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -39439,10 +39439,10 @@
       },
       "next_action": "No rule hit in this scan; this is not proof of backing, liquidity or eligibility.",
       "decision": {
-        "state": "unresolved",
-        "label": "NO RULE HIT, NOT APPROVED",
-        "consequence": "The published rules did not fire; backing, liquidity and legal diligence are still outside this monitor.",
-        "allocation_effect": "No allocation status is produced by this monitor."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "2 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 23.2 bps; cheapest route AXTIB.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -42781,10 +42781,10 @@
       },
       "next_action": "No rule hit in this scan; this is not proof of backing, liquidity or eligibility.",
       "decision": {
-        "state": "unresolved",
-        "label": "NO RULE HIT, NOT APPROVED",
-        "consequence": "The published rules did not fire; backing, liquidity and legal diligence are still outside this monitor.",
-        "allocation_effect": "No allocation status is produced by this monitor."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "2 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 208.6 bps; cheapest route FLNC, though FLNCB carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -44069,10 +44069,10 @@
       },
       "next_action": "No rule hit in this scan; this is not proof of backing, liquidity or eligibility.",
       "decision": {
-        "state": "unresolved",
-        "label": "NO RULE HIT, NOT APPROVED",
-        "consequence": "The published rules did not fire; backing, liquidity and legal diligence are still outside this monitor.",
-        "allocation_effect": "No allocation status is produced by this monitor."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "2 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 16.2 bps; cheapest route rMP, though MPon carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -45299,10 +45299,10 @@
       },
       "next_action": "No rule hit in this scan; this is not proof of backing, liquidity or eligibility.",
       "decision": {
-        "state": "unresolved",
-        "label": "NO RULE HIT, NOT APPROVED",
-        "consequence": "The published rules did not fire; backing, liquidity and legal diligence are still outside this monitor.",
-        "allocation_effect": "No allocation status is produced by this monitor."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "2 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 99.8 bps; cheapest route rRDW.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -45867,10 +45867,10 @@
       },
       "next_action": "No rule hit in this scan; this is not proof of backing, liquidity or eligibility.",
       "decision": {
-        "state": "unresolved",
-        "label": "NO RULE HIT, NOT APPROVED",
-        "consequence": "The published rules did not fire; backing, liquidity and legal diligence are still outside this monitor.",
-        "allocation_effect": "No allocation status is produced by this monitor."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "2 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 8.8 bps; cheapest route STXB.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       }
     },
     {
@@ -95234,10 +95234,10 @@
       ],
       "next_action": "Split derivative-labelled representations from spot or wrapper representations.",
       "decision": {
-        "state": "hold",
-        "label": "HOLD COMPARISON",
-        "consequence": "Keep issuer comparison open, but do not treat the current rows as equivalent exposure.",
-        "allocation_effect": "NO EQUIVALENCE CLAIM published while the investigation is open."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "5 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 16.5 bps; cheapest route AMZNon, though AMZNX carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       },
       "comparison": {
         "routes": [
@@ -95673,10 +95673,10 @@
       ],
       "next_action": "Split derivative-labelled representations from spot or wrapper representations.",
       "decision": {
-        "state": "hold",
-        "label": "HOLD COMPARISON",
-        "consequence": "Keep issuer comparison open, but do not treat the current rows as equivalent exposure.",
-        "allocation_effect": "NO EQUIVALENCE CLAIM published while the investigation is open."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "6 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 39.9 bps; cheapest route COIN, though COINX carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       },
       "comparison": {
         "routes": [
@@ -96123,10 +96123,10 @@
       ],
       "next_action": "Split derivative-labelled representations from spot or wrapper representations.",
       "decision": {
-        "state": "hold",
-        "label": "HOLD COMPARISON",
-        "consequence": "Keep issuer comparison open, but do not treat the current rows as equivalent exposure.",
-        "allocation_effect": "NO EQUIVALENCE CLAIM published while the investigation is open."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "5 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 70.1 bps; cheapest route AMAT, though AMATon carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       },
       "comparison": {
         "routes": [
@@ -96507,10 +96507,10 @@
       ],
       "next_action": "Split derivative-labelled representations from spot or wrapper representations.",
       "decision": {
-        "state": "hold",
-        "label": "HOLD COMPARISON",
-        "consequence": "Keep issuer comparison open, but do not treat the current rows as equivalent exposure.",
-        "allocation_effect": "NO EQUIVALENCE CLAIM published while the investigation is open."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "5 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 182.4 bps; cheapest route GME, though GMEX carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       },
       "comparison": {
         "routes": [
@@ -96895,10 +96895,10 @@
       ],
       "next_action": "Split derivative-labelled representations from spot or wrapper representations.",
       "decision": {
-        "state": "hold",
-        "label": "HOLD COMPARISON",
-        "consequence": "Keep issuer comparison open, but do not treat the current rows as equivalent exposure.",
-        "allocation_effect": "NO EQUIVALENCE CLAIM published while the investigation is open."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "5 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 33.9 bps; cheapest route IREN, though IRENon carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       },
       "comparison": {
         "routes": [
@@ -97278,10 +97278,10 @@
       ],
       "next_action": "Split derivative-labelled representations from spot or wrapper representations.",
       "decision": {
-        "state": "hold",
-        "label": "HOLD COMPARISON",
-        "consequence": "Keep issuer comparison open, but do not treat the current rows as equivalent exposure.",
-        "allocation_effect": "NO EQUIVALENCE CLAIM published while the investigation is open."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "5 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 198.3 bps; cheapest route ORCL, though ORCLB carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       },
       "comparison": {
         "routes": [
@@ -97668,10 +97668,10 @@
       ],
       "next_action": "Split derivative-labelled representations from spot or wrapper representations.",
       "decision": {
-        "state": "hold",
-        "label": "HOLD COMPARISON",
-        "consequence": "Keep issuer comparison open, but do not treat the current rows as equivalent exposure.",
-        "allocation_effect": "NO EQUIVALENCE CLAIM published while the investigation is open."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "6 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 59.8 bps; cheapest route PLTR, though PLTRon carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       },
       "comparison": {
         "routes": [
@@ -98079,10 +98079,10 @@
       ],
       "next_action": "Split derivative-labelled representations from spot or wrapper representations.",
       "decision": {
-        "state": "hold",
-        "label": "HOLD COMPARISON",
-        "consequence": "Keep issuer comparison open, but do not treat the current rows as equivalent exposure.",
-        "allocation_effect": "NO EQUIVALENCE CLAIM published while the investigation is open."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "5 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 542.1 bps; cheapest route QCOMB.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       },
       "comparison": {
         "routes": [
@@ -98463,10 +98463,10 @@
       ],
       "next_action": "Split derivative-labelled representations from spot or wrapper representations.",
       "decision": {
-        "state": "hold",
-        "label": "HOLD COMPARISON",
-        "consequence": "Keep issuer comparison open, but do not treat the current rows as equivalent exposure.",
-        "allocation_effect": "NO EQUIVALENCE CLAIM published while the investigation is open."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "5 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 1193.2 bps; cheapest route SMCIx, though SMCIon carries more 24h volume.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       },
       "comparison": {
         "routes": [
@@ -98847,10 +98847,10 @@
       ],
       "next_action": "Split derivative-labelled representations from spot or wrapper representations.",
       "decision": {
-        "state": "hold",
-        "label": "HOLD COMPARISON",
-        "consequence": "Keep issuer comparison open, but do not treat the current rows as equivalent exposure.",
-        "allocation_effect": "NO EQUIVALENCE CLAIM published while the investigation is open."
+        "state": "comparable",
+        "label": "COMPARABLE, NOT ENDORSED",
+        "consequence": "5 representations share an identity, a unit and a market state, so their prices can be set side by side. Observed spread 5.7 bps; cheapest route EWYB.",
+        "allocation_effect": "A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed by this monitor and remain your diligence."
       },
       "comparison": {
         "routes": [

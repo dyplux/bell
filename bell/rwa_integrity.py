@@ -352,6 +352,12 @@ def asset_scan(asset: dict, issuer_lookup: dict | None = None, crypto_lookup: di
             "consequence": "The published rules did not fire; backing, liquidity and legal diligence are still outside this monitor.",
             "allocation_effect": "No allocation status is produced by this monitor.",
         }
+    # The decision still read "NO RULE HIT, NOT APPROVED" even for a reference
+    # whose comparison was published, so a reader who had been handed the
+    # cheapest route, the spread and the depth was told in the same breath that
+    # nothing had been produced. The refusal was accurate about diligence and
+    # wrong about what the reader was holding. When a comparison exists, say
+    # what it is - and keep saying, in the same block, what it is not.
     # Publishing the comparison only for a spotless reference made the answer
     # unreachable: across a 50-reference live receipt, no reference ever reached
     # no_flags, so the monitor could refuse 35 cases and affirm none. A gate that
@@ -382,6 +388,25 @@ def asset_scan(asset: dict, issuer_lookup: dict | None = None, crypto_lookup: di
         if comparison is not None:
             comparison["unresolved"] = [s["code"] for s in residual]
             comparison["published_under"] = state
+    if comparison is not None:
+        cheapest = comparison["cheapest"]
+        decision = {
+            "state": "comparable",
+            "label": "COMPARABLE, NOT ENDORSED",
+            "consequence": (
+                f"{comparison['route_count']} representations share an identity, a unit and a market "
+                f"state, so their prices can be set side by side. Observed spread "
+                f"{comparison['spread_bps']:.1f} bps; cheapest route {cheapest['symbol']}"
+                + ("" if comparison["cheapest_is_deepest"]
+                   else f", though {comparison['deepest']['symbol']} carries more 24h volume")
+                + "."
+            ),
+            "allocation_effect": (
+                "A price comparison, not an allocation. Backing, redemption, eligibility and custody "
+                "are not observed by this monitor and remain your diligence."
+            ),
+        }
+
     return {
         "rwa_id": asset.get("rwa_id"),
         "name": asset.get("name"),
