@@ -294,7 +294,8 @@ test('the dated map and the live receipt are joined, not kept apart', () => {
   // live scan covers a reference, its verdict belongs on the same screen.
   assert.match(explorerSrc, /\/api\/integrity/);
   assert.match(explorerSrc, /function liveVerdictBlock/);
-  assert.match(explorerSrc, /\$\{liveVerdictBlock\(asset\)\}/);
+  assert.match(explorerSrc, /function appendLiveVerdict/);
+  assert.match(explorerSrc, /appendLiveVerdict\(asset\)/);
   // A reference absent from the scan must say why, not show an empty panel.
   assert.match(explorerSrc, /NOT IN THE CURRENT SCAN/);
   assert.match(explorerSrc, /carried no token representation/);

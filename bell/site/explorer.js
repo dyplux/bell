@@ -127,9 +127,7 @@
   }
 
   function renderMapOnly(asset, message = '') {
-    // liveReady may still be in flight on first paint; re-render when it lands.
-    if (liveIndex === null) liveReady.then(() => { if (liveIndex) renderMapOnly(asset, message); });
-    dossier.innerHTML = `<div class="explorer-dossier-head"><div><span class="eyebrow">CMC RWA MAP</span><h3>${escapeHTML(asset.name || 'Reference')}</h3><p>${escapeHTML(asset.symbol || '—')} · ${escapeHTML(asset.asset_type || 'RWA')} · reference ID ${escapeHTML(asset.rwa_id || '—')}</p></div><span class="explorer-state">${asset.has_tokens ? 'DOSSIER PENDING' : 'REFERENCE ONLY'}</span></div><div class="explorer-map-grid"><div><small>Token wrappers</small><strong>${asset.has_tokens ? 'Mapped' : 'None mapped'}</strong></div><div><small>Historical data</small><strong>${asset.last_historical_data ? 'Available' : 'Not shown'}</strong></div><div><small>Next route</small><strong>${asset.has_tokens ? 'Wait for dossier' : 'Descriptive brief'}</strong></div></div><p class="explorer-note">${escapeHTML(message || (asset.has_tokens ? 'The reference is in the CMC map, but no server-side dossier has been published for it yet. A request is queued automatically.' : 'There is no wrapper comparison to make. Bell keeps this as a reference-level route instead of inventing a ranking.'))}</p><a class="source-link" href="/api/published?slug=${encodeURIComponent(slugFor(asset))}" target="_blank" rel="noopener">Open credential-free dossier endpoint ↗</a>${liveVerdictBlock(asset)}`;
+    dossier.innerHTML = `<div class="explorer-dossier-head"><div><span class="eyebrow">CMC RWA MAP</span><h3>${escapeHTML(asset.name || 'Reference')}</h3><p>${escapeHTML(asset.symbol || '—')} · ${escapeHTML(asset.asset_type || 'RWA')} · reference ID ${escapeHTML(asset.rwa_id || '—')}</p></div><span class="explorer-state">${asset.has_tokens ? 'DOSSIER PENDING' : 'REFERENCE ONLY'}</span></div><div class="explorer-map-grid"><div><small>Token wrappers</small><strong>${asset.has_tokens ? 'Mapped' : 'None mapped'}</strong></div><div><small>Historical data</small><strong>${asset.last_historical_data ? 'Available' : 'Not shown'}</strong></div><div><small>Next route</small><strong>${asset.has_tokens ? 'Wait for dossier' : 'Descriptive brief'}</strong></div></div><p class="explorer-note">${escapeHTML(message || (asset.has_tokens ? 'The reference is in the CMC map, but no server-side dossier has been published for it yet. A request is queued automatically.' : 'There is no wrapper comparison to make. Bell keeps this as a reference-level route instead of inventing a ranking.'))}</p><a class="source-link" href="/api/published?slug=${encodeURIComponent(slugFor(asset))}" target="_blank" rel="noopener">Open credential-free dossier endpoint ↗</a>`;
   }
 
   function renderDossier(payload, asset) {
@@ -169,6 +167,20 @@
     dossier.innerHTML = `<div class="explorer-dossier-head"><div><span class="eyebrow">${freshnessLabel} · PUBLISHED RWA DOSSIER · ${escapeHTML(observed)}</span><h3>${escapeHTML(source.asset?.name || asset.name || 'Reference')}</h3><p>${escapeHTML(source.asset?.symbol || asset.symbol || '—')} · ${escapeHTML(source.asset?.asset_type || asset.asset_type || 'RWA')} · ${tokens.length} representation${tokens.length === 1 ? '' : 's'}</p></div><span class="explorer-state ${state === 'do_not_compare' ? 'blocked' : ''}">${escapeHTML(stateLabel(state, tokens.length))}</span></div><div class="explorer-metrics"><div><small>Tokenised market cap</small><strong>${money(source.asset?.tokenized_market_cap)}</strong></div><div><small>24h tokenised volume</small><strong>${money(source.asset?.tokenized_volume_24h)}</strong></div><div><small>Issuers observed</small><strong>${number(metrics.issuer_count || new Set(tokens.map(token => token.issuer_id).filter(Boolean)).size)}</strong></div><div><small>DEX evidence</small><strong>${escapeHTML(dexCoverage)}</strong></div><div><small>CMC market pairs</small><strong>${escapeHTML(pairStatus)}</strong></div></div><p class="explorer-freshness ${publicationStatus}">${escapeHTML(freshnessNote)}</p>${evidenceContext}${findingMarkup}<div class="explorer-table-wrap"><table class="explorer-table"><thead><tr><th>Representation</th><th>Issuer</th><th>Quote</th><th>MCap</th><th>24h volume</th></tr></thead><tbody>${rows || '<tr><td colspan="5">No token rows returned</td></tr>'}</tbody></table></div><p class="explorer-note">${dossierNote}</p><div class="explorer-actions"><a class="source-link" href="/api/published?slug=${encodeURIComponent(slugFor(asset))}" target="_blank" rel="noopener">Open full receipt ↗</a><button type="button" class="explorer-refresh" data-explorer-refresh="${escapeHTML(slugFor(asset))}">Refresh dossier ↻</button></div>`;
   }
 
+  // Both render paths end in the same container, so the current verdict is
+  // appended once here rather than threaded through each of them. It is the
+  // same answer whether the reference has a published dossier or only a map row.
+  function appendLiveVerdict(asset) {
+    if (!asset || !dossier) return;
+    if (dossier.querySelector('.explorer-live')) return;
+    const apply = () => {
+      if (dossier.querySelector('.explorer-live')) return;
+      dossier.insertAdjacentHTML('beforeend', liveVerdictBlock(asset));
+    };
+    if (liveIndex === null) liveReady.then(apply);
+    else apply();
+  }
+
   async function load(asset) {
     if (!asset) return;
     dossier.innerHTML = '<p class="explorer-loading">Loading the credential-free published dossier…</p>';
@@ -177,11 +189,14 @@
       const payload = await response.json();
       if (response.status === 404) {
         renderMapOnly(asset, payload.message);
+        appendLiveVerdict(asset);
         return;
       }
       if (!response.ok) throw new Error(payload.error || `HTTP ${response.status}`);
       renderDossier(payload, asset);
+      appendLiveVerdict(asset);
     } catch (error) {
+      appendLiveVerdict(asset);
       renderMapOnly(asset, `The dossier could not be loaded right now (${error.message}). The map entry remains available for inspection.`);
     }
   }
