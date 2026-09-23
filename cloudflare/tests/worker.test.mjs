@@ -151,7 +151,11 @@ test('integrity endpoint returns a published receipt with freshness metadata', a
   const response = await worker.fetch(new Request('https://example.test/api/integrity'), { ASSETS: assets, DB: db });
   const body = await response.json();
   assert.equal(response.status, 200);
-  assert.equal(response.headers.get('cache-control'), 'no-store');
+  // The guarantee is "never serve a stale receipt without asking", not the
+  // literal token `no-store`. `no-cache` keeps the guarantee and allows a 304,
+  // which stops every page load re-downloading an unchanged receipt.
+  assert.equal(response.headers.get('cache-control'), 'no-cache');
+  assert.ok(response.headers.get('etag'), 'the receipt must be revalidatable');
   assert.equal(body.schema_version, 'rwa_surface_integrity.v1');
   assert.equal(body._publication.status, 'fresh');
 });
@@ -181,4 +185,38 @@ test('the refresh queue has a hard hourly ceiling', async () => {
   assert.equal(body.refresh_queued, false);
   assert.equal(body.declined, 'hourly refresh cap reached');
   assert.equal(inserts.length, 0, 'no insert once the hourly cap is reached');
+});
+
+test('the receipt revalidates instead of re-downloading unchanged', async () => {
+  // `no-store` forbade caching outright, so every page load pulled the whole
+  // receipt again - about 250 KB gzipped - even when the publication had not
+  // moved. A receipt must still be revalidated every time, so the answer is
+  // `no-cache` plus an entity tag, not a cache lifetime.
+  const row = {
+    id: 1,
+    payload_json: JSON.stringify({ universe: { states: {} } }),
+    observed_at: '2026-09-23T20:00:00Z',
+    published_at: '2026-09-23T20:05:00Z',
+    stale_after_seconds: 3600,
+  };
+  const env = { ASSETS: assets, DB: { prepare() { return { bind() { return this; }, async first() { return row; } }; } } };
+
+  const first = await worker.fetch(new Request('https://example.test/api/integrity'), env);
+  assert.equal(first.status, 200);
+  const etag = first.headers.get('etag');
+  assert.ok(etag, 'the receipt must carry an entity tag');
+  assert.equal(first.headers.get('cache-control'), 'no-cache');
+
+  const second = await worker.fetch(
+    new Request('https://example.test/api/integrity', { headers: { 'if-none-match': etag } }), env);
+  assert.equal(second.status, 304, 'an unchanged publication must answer 304');
+  assert.equal(await second.text(), '', '304 must carry no body');
+
+  // A new publication must invalidate the tag, or a reader would be pinned to
+  // a stale receipt - the opposite of what this product promises.
+  row.published_at = '2026-09-23T21:00:00Z';
+  const third = await worker.fetch(
+    new Request('https://example.test/api/integrity', { headers: { 'if-none-match': etag } }), env);
+  assert.equal(third.status, 200, 'a republished receipt must not answer 304');
+  assert.notEqual(third.headers.get('etag'), etag);
 });

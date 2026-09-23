@@ -109,6 +109,23 @@ async function published(request, env) {
   return json(payload, 200, { 'cache-control': 'no-store' });
 }
 
+// `no-store` forbids caching outright, so every visit re-downloaded the whole
+// receipt even when nothing had changed - about 250 KB on the wire, gzipped,
+// per page load. A receipt still has to be revalidated every time, so the
+// answer is `no-cache` plus an entity tag: the browser always asks, and gets
+// 304 with no body when the publication has not moved. Freshness is unchanged;
+// the redundant transfer is not.
+function receiptETag(row) {
+  return `W/"${row.id ?? 1}-${row.published_at ?? ''}-${row.observed_at ?? ''}"`;
+}
+
+function notModified(etag) {
+  return new Response(null, {
+    status: 304,
+    headers: { ...CORS_HEADERS, etag, 'cache-control': 'no-cache' },
+  });
+}
+
 async function integrity(request, env) {
   const row = await env.DB.prepare('SELECT * FROM integrity_receipts WHERE id = 1').first();
   if (!row) return json({ status: 'dated_static', message: 'No live integrity receipt has been published yet.' }, 404, { 'cache-control': 'no-store' });
@@ -126,7 +143,9 @@ async function integrity(request, env) {
     credential_free: true,
     ...publication,
   };
-  return json(payload, 200, { 'cache-control': 'no-store' });
+  const etag = receiptETag(row);
+  if (request.headers.get('if-none-match') === etag) return notModified(etag);
+  return json(payload, 200, { 'cache-control': 'no-cache', etag });
 }
 
 async function jobs(request, env) {

@@ -460,7 +460,7 @@
     const lede = byId('finding-lede');
     if (!headline || !lede) return;
     try {
-      const response = await fetch('proof/base-rate-2026-09-21.json', { cache: 'no-store' });
+      const response = await fetch('proof/base-rate-2026-09-21.json', { cache: 'no-cache' });
       if (!response.ok) throw new Error(`base rate unavailable (${response.status})`);
       const r = await response.json();
       const pct = (r.refusal_rate * 100).toFixed(1);
@@ -1356,7 +1356,7 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     const target = byId('publication-history');
     if (!target || window.location.protocol === 'file:') return;
     try {
-      const response = await fetch('proof/rwa-surface-integrity-history.json', { cache: 'no-store', headers: { Accept: 'application/json' } });
+      const response = await fetch('proof/rwa-surface-integrity-history.json', { cache: 'no-cache', headers: { Accept: 'application/json' } });
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       renderPublicationHistory(await response.json());
     } catch {
@@ -1516,7 +1516,7 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
       let lastError;
       for (const source of sources) {
         try {
-          const response = await fetch(source, { cache: 'no-store', headers: { Accept: 'application/json' } });
+          const response = await fetch(source, { cache: 'no-cache', headers: { Accept: 'application/json' } });
           if (!response.ok) throw new Error(`HTTP ${response.status}`);
           const candidate = await response.json();
           if (candidate.schema_version === 'rwa_surface_integrity.v1') {

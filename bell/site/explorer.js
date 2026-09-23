@@ -18,7 +18,7 @@
   const initialMapQuery = initialURL.searchParams.get('map_reference') || '';
   const catalogueReady = assets.length
     ? Promise.resolve(window.BELL_CATALOGUE_LIVE)
-    : fetch('catalog.json', { cache: 'no-store', headers: { Accept: 'application/json' } }).then(response => {
+    : fetch('catalog.json', { cache: 'no-cache', headers: { Accept: 'application/json' } }).then(response => {
       if (!response.ok) throw new Error(`catalogue HTTP ${response.status}`);
       return response.json();
     }).then(catalogue => {
@@ -88,7 +88,7 @@
   // answer lived somewhere else. Where the live receipt covers the reference,
   // show its current verdict here instead of sending the reader away.
   let liveIndex = null;
-  const liveReady = fetch('/api/integrity', { cache: 'no-store', headers: { Accept: 'application/json' } })
+  const liveReady = fetch('/api/integrity', { cache: 'no-cache', headers: { Accept: 'application/json' } })
     .then(response => (response.ok ? response.json() : null))
     .then(receipt => {
       if (!receipt) return null;
@@ -185,7 +185,7 @@
     if (!asset) return;
     dossier.innerHTML = '<p class="explorer-loading">Loading the credential-free published dossier…</p>';
     try {
-      const response = await fetch(`/api/published?slug=${encodeURIComponent(slugFor(asset))}`, { cache: 'no-store', headers: { Accept: 'application/json' } });
+      const response = await fetch(`/api/published?slug=${encodeURIComponent(slugFor(asset))}`, { cache: 'no-cache', headers: { Accept: 'application/json' } });
       const payload = await response.json();
       if (response.status === 404) {
         renderMapOnly(asset, payload.message);
