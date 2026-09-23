@@ -9,6 +9,7 @@ working file as evidence that it will be included in the public repository.
 from __future__ import annotations
 
 import re
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -75,13 +76,32 @@ FORBIDDEN_PUBLIC_TEXT = (
 )
 
 
+SKIP_DIRS = {".git", "node_modules", "__pycache__", ".venv", "venv", ".v", ".pytest_cache"}
+
+
 def tracked_files() -> list[str]:
+    """Every file in the release, with or without a git checkout.
+
+    This gate asked git which files are tracked, so `make check` - the one
+    command the README tells a reviewer to run - exited non-zero for anyone who
+    downloaded a release archive instead of cloning. The gate that exists to
+    stop a bad release from shipping was itself unrunnable in the form most
+    reviewers receive.
+    """
     result = subprocess.run(
         ["git", "-C", str(ROOT), "ls-files", "-z"],
-        check=True,
         capture_output=True,
     )
-    return [item for item in result.stdout.decode().split("\0") if item]
+    if result.returncode == 0 and result.stdout.strip():
+        return [item for item in result.stdout.decode().split("\0") if item]
+    found: list[str] = []
+    for root, dirs, names in os.walk(ROOT):
+        dirs[:] = [d for d in dirs if d not in SKIP_DIRS]
+        for name in names:
+            if name.endswith((".pyc", ".pyo")):
+                continue
+            found.append(os.path.relpath(os.path.join(root, name), ROOT))
+    return sorted(found)
 
 
 def fail(messages: list[str]) -> int:

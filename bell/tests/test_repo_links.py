@@ -81,3 +81,35 @@ class RelativeLinksResolve(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class TheReleaseGateRunsOutsideACheckout(unittest.TestCase):
+    """`make check` is the one command the README asks a reviewer to run.
+
+    Both the link checker and the submission gate asked git which files are in
+    the release, so `make check` exited non-zero for anyone who downloaded an
+    archive instead of cloning - which is most reviewers. The gate that exists
+    to stop a bad release shipping was unrunnable in the form the release
+    actually takes.
+    """
+
+    def test_the_submission_gate_enumerates_files_without_git(self):
+        import importlib
+        gate = importlib.import_module('verify_submission')
+        original = gate.subprocess.run
+        gate.subprocess.run = lambda *a, **k: type('R', (), {'returncode': 128, 'stdout': b''})()
+        try:
+            found = gate.tracked_files()
+        finally:
+            gate.subprocess.run = original
+        self.assertTrue(found, 'the gate found no files without a git checkout')
+        self.assertIn('README.md', found)
+        self.assertFalse([name for name in found if name.startswith('.git/')],
+                         'the walk fallback is reading the git directory itself')
+
+    def test_the_gate_still_refuses_to_pass_on_an_empty_listing(self):
+        # A fallback that silently returns nothing would make every content
+        # assertion vacuously true, which is worse than the failure it replaced.
+        import importlib
+        gate = importlib.import_module('verify_submission')
+        self.assertGreater(len(gate.tracked_files()), 50)
