@@ -55,12 +55,33 @@ def verify_observation(observation: dict, receipt: dict, label: str) -> None:
     states = universe.get("states")
     if not isinstance(states, dict):
         raise ValueError(f"{label}.universe.states is missing")
-    assert_equal(
-        f"{label}.states",
-        {key: states.get(key) for key in observation["states"]},
-        observation["states"],
-    )
-    assert_equal(f"{label}.state total", sum(observation["states"].values()), observation["tokenised_references_scanned"])
+    # A state is a function of the rules, so two receipts over the same
+    # observation are only comparable when the same rules produced them. When
+    # the rules change, the distribution changes without the catalogue moving -
+    # reconciling that silently by overwriting the history would erase the fact
+    # that it was the rules. Report it instead, and compare only within a
+    # version.
+    recorded_rules = observation.get("rules_version")
+    current_rules = universe.get("rules_version")
+    # An observation recorded before rule versioning existed carries no version.
+    # That is itself a different version from the one running now, so it is
+    # reported rather than compared.
+    rules_differ = bool(current_rules) and recorded_rules != current_rules
+    if rules_differ:
+        recorded_rules = recorded_rules or "an unversioned rule set"
+        print(
+            f"{label}: recorded under {recorded_rules}, recomputed under {current_rules}; "
+            f"states {observation['states']} -> {{{', '.join(f'{k!r}: {states.get(k)}' for k in observation['states'])}}}. "
+            "State counts are not compared across rule versions."
+        )
+    else:
+        assert_equal(
+            f"{label}.states",
+            {key: states.get(key) for key in observation["states"]},
+            observation["states"],
+        )
+    if not rules_differ:
+        assert_equal(f"{label}.state total", sum(observation["states"].values()), observation["tokenised_references_scanned"])
 
     signals = universe.get("signals")
     if not isinstance(signals, dict):

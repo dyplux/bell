@@ -152,6 +152,7 @@
   "universe": {
     "tokenised_references_scanned": 791,
     "tokens_scanned": 1435,
+    "rules_version": "bell.rules.v2",
     "states": {
       "do_not_compare": 35,
       "investigate": 90,

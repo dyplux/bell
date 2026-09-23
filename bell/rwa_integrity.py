@@ -199,6 +199,17 @@ def index_evidence(evidence: dict) -> dict:
 # Above this, the spread is far more likely to be a unit or claim difference the
 # coded rules did not catch than a tradable dislocation. Published as a constant
 # so a reader can disagree with the number without reading the function.
+# The state a reference lands in is a function of the rules, so a receipt is
+# only comparable with another receipt computed under the same rules. Recording
+# the version makes a distribution change attributable: the catalogue moved, or
+# the rules did, and a reader should never have to guess which.
+#
+# v2 demoted MARKET_FIELDS_MISSING from warning to info. It fired on 646 of 791
+# references and drove 84% of the catalogue to INVESTIGATE, so the published
+# state distribution restated one API coverage fact instead of describing any
+# reference.
+RULES_VERSION = "bell.rules.v2"
+
 MAX_PUBLISHABLE_SPREAD_BPS = 2_000
 
 
@@ -666,7 +677,7 @@ def scan(map_payload: dict, list_payload: dict, quotes_payload: dict, info_paylo
         "universe": {
             "tokenised_references_scanned": len(quote_rows),
             "tokens_scanned": sum(asset["token_count"] for asset in assets),
-            "states": {"do_not_compare": len(critical), "investigate": len(warnings), "no_flags": len(assets) - len(critical) - len(warnings)},
+            "rules_version": RULES_VERSION, "states": {"do_not_compare": len(critical), "investigate": len(warnings), "no_flags": len(assets) - len(critical) - len(warnings)},
             "signals": dict(signal_counts),
         },
         "population_attribution": population_attribution(list_rows, assets, issuer_catalogue),
