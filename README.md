@@ -22,6 +22,13 @@ stable identifiers, then routes each reference into the honest workflow:
 The product is not a safety score, investment recommendation or proof of
 backing, redemption, custody, solvency or executable liquidity.
 
+For a selected reference, the public page also makes the immediate review
+consequence visible: an illustrative amount can be kept uncommitted, held for
+verification or routed to descriptive diligence. Where at least two positive
+quote rows exist, Bell shows the observed quote band, each row's distance from
+the observed median and the reported 24-hour volume state. These are evidence
+fields, not a discount, fair-value, liquidity or execution claim.
+
 ## How often is a comparison safe at all?
 
 A monitor that refuses is only worth reading if you know how often it refuses,
@@ -48,13 +55,6 @@ representation majority is excluded from the denominator rather than scored as
 a pass, because there was never a comparison to refuse. The rate is a statement
 about the data on one dated observation, not a verdict on any issuer.
 
-
-For a selected reference, the public page also makes the immediate review
-consequence visible: an illustrative amount can be kept uncommitted, held for
-verification or routed to descriptive diligence. Where at least two positive
-quote rows exist, Bell shows the observed quote band, each row's distance from
-the observed median and the reported 24-hour volume state. These are evidence
-fields, not a discount, fair-value, liquidity or execution claim.
 
 ## The public surface
 
