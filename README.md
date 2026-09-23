@@ -10,6 +10,10 @@ Live product: [bell.dyplux.com](https://bell.dyplux.com/)
 Bell joins CMC RWA references, token rows, quotes, metadata and issuers through
 stable identifiers, then routes each reference into the honest workflow:
 
+- `COMPARABLE, NOT ENDORSED` when the representations share an identity, a unit
+  and a market state, so their prices can honestly be set side by side. Bell
+  names the observed spread, the cheapest route and whether that route is also
+  the deepest
 - `DO NOT SHORTLIST` when a critical contradiction is observed
 - `INVESTIGATE` when evidence is incomplete or ambiguous
 - `FACTS OPEN` when observed fields can be inspected without creating a winner
@@ -17,6 +21,33 @@ stable identifiers, then routes each reference into the honest workflow:
 
 The product is not a safety score, investment recommendation or proof of
 backing, redemption, custody, solvency or executable liquidity.
+
+## How often is a comparison safe at all?
+
+A monitor that refuses is only worth reading if you know how often it refuses,
+so the rate is measured over the whole catalogue rather than argued from
+examples. `bell/base_rate.py` states its method in its own docstring, above the
+number, so the method cannot be tuned to the result afterwards. Reproduce it
+with `make base-rate`, offline, with no API key:
+
+```
+    791  references in the catalogue
+    547  have one representation - nothing to compare, excluded rather than
+         counted against the rate
+    244  carry two or more, so a comparison is something a user could attempt
+
+    157  of those are refused by a coded rule
+     87  are published with the comparison performed
+
+  Refusal rate  64.3%   (95% CI 58.2% to 70.1%, n = 244)
+```
+
+The interval is a Wilson score interval, which stays honest near the edges of
+the distribution where the normal approximation does not. The single-
+representation majority is excluded from the denominator rather than scored as
+a pass, because there was never a comparison to refuse. The rate is a statement
+about the data on one dated observation, not a verdict on any issuer.
+
 
 For a selected reference, the public page also makes the immediate review
 consequence visible: an illustrative amount can be kept uncommitted, held for
@@ -31,8 +62,8 @@ The single public page combines the monitor, the RWA explorer and published
 dossiers. It searches the 7,811-entry dated CMC map snapshot, while keeping
 that catalogue separate from the live integrity receipt.
 
-The latest public receipt observed on 22 September 2026 contained 791
-tokenised references and 1,440 representation rows as observed on 23 September 2026. The receipt is published
+The receipt observed on 21 September 2026 contained 791 tokenised references
+and 1,440 representation rows. The receipt is published
 server-side and exposes observation time, publication time, freshness state,
 rule evidence and source fingerprints without exposing the CMC credential.
 
