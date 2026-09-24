@@ -113,3 +113,32 @@ class TheReleaseGateRunsOutsideACheckout(unittest.TestCase):
         import importlib
         gate = importlib.import_module('verify_submission')
         self.assertGreater(len(gate.tracked_files()), 50)
+
+
+class EveryVerifierIsAccountedFor(unittest.TestCase):
+    """Eight scripts named verify_* invites "is this one job split eight ways?".
+
+    A reviewer said that necessity versus overlap was not established, and it
+    was not. The source map now names each one's question; this asserts the two
+    cannot drift apart, so adding a ninth verifier without saying what it is
+    for fails the build.
+    """
+
+    def test_the_source_map_names_every_verifier_that_ships(self):
+        bell_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        scripts = sorted(name for name in os.listdir(bell_dir)
+                         if name.startswith('verify_') and name.endswith('.py'))
+        self.assertTrue(scripts, 'no verifiers found')
+        with open(os.path.join(bell_dir, 'SOURCE-MAP.md'), encoding='utf-8') as handle:
+            source_map = handle.read()
+        undocumented = [name for name in scripts if f'`{name}`' not in source_map]
+        self.assertEqual(undocumented, [],
+                         'these verifiers ship without the source map saying what they are for')
+
+    def test_the_source_map_does_not_name_a_verifier_that_was_deleted(self):
+        bell_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        with open(os.path.join(bell_dir, 'SOURCE-MAP.md'), encoding='utf-8') as handle:
+            source_map = handle.read()
+        named = set(re.findall(r'`(verify_[a-z_]+\.py)`', source_map))
+        missing = sorted(name for name in named if not os.path.exists(os.path.join(bell_dir, name)))
+        self.assertEqual(missing, [], 'the source map describes verifiers that no longer exist')
