@@ -521,3 +521,18 @@ test('the outcome key on the first screen includes the affirmative', () => {
   assert.ok(key < affirmative && affirmative < refusal,
     'the affirmative does not lead the outcome key');
 });
+
+test('the reference index does not render a third of the page before you search', () => {
+  // Twelve rows at ~350px each made the index 4,200px of a 13,896px page,
+  // rendered before a first-time visitor had asked anything. The index is
+  // where you go for the population; the search box above it is where you go
+  // with a question.
+  const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
+  const size = integrity.match(/const pageSize = (\d+);/);
+  assert.ok(size, 'the index no longer declares a page size');
+  assert.ok(Number(size[1]) <= 8,
+    `the index renders ${size[1]} full rows by default, which is most of a screenful each`);
+  // Pagination has to still exist, or this is removal rather than deferral.
+  assert.match(integrity, /alert-pagination/);
+  assert.match(integrity, /Math\.ceil\(matching\.length \/ pageSize\)/);
+});

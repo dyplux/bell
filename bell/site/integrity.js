@@ -20,7 +20,12 @@
   let query = initialReference.trim();
   let searchAttempted = Boolean(query);
   let pageNumber = 0;
-  const pageSize = 12;
+  // Twelve rows at ~350px each made the reference index 4,200px - a third of
+  // the whole page - rendered before a first-time visitor had searched for
+  // anything. The index is where you go when you want the population; the
+  // search box above it is where you go when you have a question. Six rows,
+  // same pagination, nothing removed.
+  const pageSize = 6;
 
   labelDatedReplayLinks();
 
