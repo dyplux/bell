@@ -536,3 +536,21 @@ test('the reference index does not render a third of the page before you search'
   assert.match(integrity, /alert-pagination/);
   assert.match(integrity, /Math\.ceil\(matching\.length \/ pageSize\)/);
 });
+
+test('population counts on the page are derived from the receipt, never written into it', () => {
+  // An auditor read "1,440" on the live page and "1,435" in the documents and
+  // could not tell which was authoritative. Both are right - they are two
+  // observations - but the guarantee that makes that safe is that the page
+  // never states a count of its own. Pin the guarantee.
+  const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
+  assert.match(integrity, /universe\.tokens_scanned/);
+  // No population-scale figure may be hardcoded into the served HTML.
+  const receipt = JSON.parse(fs.readFileSync(
+    path.join(site, 'proof', 'rwa-surface-integrity-latest-replay-2026-09-21.json'), 'utf8'));
+  for (const value of [receipt.universe.tokens_scanned, receipt.universe.tokenised_references_scanned]) {
+    for (const spelling of [String(value), Number(value).toLocaleString('en-US')]) {
+      assert.ok(!page.includes(`>${spelling}<`),
+        `the page hardcodes the population figure ${spelling}; it must render it from the receipt`);
+    }
+  }
+});
