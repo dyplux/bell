@@ -147,3 +147,32 @@ class ApiFeedbackMatchesTheReceipt(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class TheReadmeDoesNotOversellTheGate(unittest.TestCase):
+    """`make check` was advertised as offline. Half of it is not.
+
+    It drives the deployed site with a real browser when one is present, which
+    is the point of it - but the word "offline" sat directly above the command,
+    so a reader in a hermetic environment would have run it expecting no
+    network and been surprised. The credential-free claim is true of every
+    variant; the offline claim is only true of one.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        with open(README, encoding='utf-8') as handle:
+            cls.text = handle.read()
+
+    def test_the_offline_promise_is_attached_to_the_offline_target(self):
+        block = self.text.split('## Verify the release')[1].split('###')[0]
+        headline = block.split('```')[0]
+        self.assertNotIn('offline', headline.lower(),
+                         'the one-line promise above `make check` still says offline')
+        self.assertIn('make check-offline', block,
+                      'the hermetic variant is not offered where the promise is made')
+
+    def test_the_credential_free_promise_is_still_made(self):
+        block = self.text.split('## Verify the release')[1].split('###')[0]
+        self.assertTrue('no API key' in block or 'credential' in block,
+                        'the credential-free guarantee, which IS true of every variant, is gone')

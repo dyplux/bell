@@ -98,7 +98,7 @@ The key remains in the server process and is never sent to the browser.
 
 ## Verify the release
 
-One command, no API key, no account, offline:
+One command, no API key and no account:
 
 ```bash
 make check
@@ -106,7 +106,10 @@ make check
 
 That runs every suite, re-hashes the published receipt against the shipped
 credential-free input package, re-runs the scan asserting structural equality,
-and audits the public surface. The offline part takes about a second.
+and audits the public surface. That part is offline and takes about a second.
+`make check` is then **not** offline: if a browser is present it goes on to
+drive the deployed site. Use `make check-offline` for the hermetic run. No
+variant ever needs a credential.
 
 If a browser is present, `make check` then drives the deployed site with
 Playwright and verifies the interface rather than describing it: search, the

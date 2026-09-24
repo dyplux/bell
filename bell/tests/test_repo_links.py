@@ -142,3 +142,54 @@ class EveryVerifierIsAccountedFor(unittest.TestCase):
         named = set(re.findall(r'`(verify_[a-z_]+\.py)`', source_map))
         missing = sorted(name for name in named if not os.path.exists(os.path.join(bell_dir, name)))
         self.assertEqual(missing, [], 'the source map describes verifiers that no longer exist')
+
+
+class NoTwoReceiptsDescribeOneObservationDifferently(unittest.TestCase):
+    """Bell's subject is surfaces that quietly disagree. It had two.
+
+    `docs/proof/` and `site/proof/` both held a 959 KB receipt for the
+    observation of 2026-09-15. Their publication metadata differed for good
+    reason - one was served live, one is the dated static copy - but their
+    `method.rules[0]` did not match: the same observation described its own
+    denomination rule two different ways, one of them predating a correction
+    that made the threshold's inclusivity explicit. Nothing caught it because
+    nothing compared them.
+    """
+
+    def _receipts(self):
+        import json
+        root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        found = {}
+        for folder in ('docs/proof', 'site/proof'):
+            directory = os.path.join(root, *folder.split('/'))
+            if not os.path.isdir(directory):
+                continue
+            for name in os.listdir(directory):
+                if not name.endswith('.json'):
+                    continue
+                path = os.path.join(directory, name)
+                try:
+                    with open(path, encoding='utf-8') as handle:
+                        payload = json.load(handle)
+                except (ValueError, OSError):
+                    continue
+                if not isinstance(payload, dict):
+                    continue
+                observed = payload.get('observed_at')
+                method = payload.get('method')
+                rules = method.get('rules') if isinstance(method, dict) else None
+                if observed and rules and 'superseded' not in name:
+                    found.setdefault(observed, []).append((f'{folder}/{name}', rules))
+        return found
+
+    def test_receipts_of_the_same_observation_state_the_same_rules(self):
+        for observed, entries in self._receipts().items():
+            if len(entries) < 2:
+                continue
+            first_name, first_rules = entries[0]
+            for other_name, other_rules in entries[1:]:
+                self.assertEqual(
+                    first_rules, other_rules,
+                    f'{first_name} and {other_name} both describe the observation at '
+                    f'{observed} and state different rules. Rename one to carry '
+                    f'"superseded", or delete it.')

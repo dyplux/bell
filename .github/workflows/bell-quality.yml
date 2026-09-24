@@ -1,6 +1,9 @@
 name: Bell quality gate
 
 on:
+  schedule:
+    - cron: '17 6 * * *'
+  workflow_dispatch:
   push:
   pull_request:
 
@@ -29,6 +32,31 @@ jobs:
         # receipt re-derivation from the shipped inputs, and the release gate.
         # CI runs the offline variant deliberately - a red build should mean
         # this repository is wrong, never that a deployed site was briefly
-        # unreachable. The browser audit runs in `make check` locally and in
-        # the release job below.
+        # unreachable.
+        #
+        # So CI enforces strictly LESS than the local gate: the deployed
+        # interface is never verified here. `make check` covers it locally and
+        # the job below covers it on a schedule. An earlier version of this
+        # comment claimed a release job that did not exist in this file - a
+        # comment describing a job nobody had written, in a repository whose
+        # subject is surfaces that quietly disagree.
         run: make check-offline
+
+  deployed-interface:
+    # The gap CI would otherwise leave: the offline job above never touches the
+    # deployed site. This drives it with a real browser on a schedule and on
+    # demand, and never on a push, so a site outage cannot redden a commit that
+    # is fine.
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install Playwright and a browser
+        run: |
+          python -m pip install --quiet playwright
+          python -m playwright install --with-deps chromium
+      - name: Audit the deployed interface
+        run: PYTHONPATH=bell python bell/verify_public_browser.py --channel ""
