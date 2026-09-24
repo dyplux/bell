@@ -67,8 +67,31 @@ class UpstreamEnvelopeContract(unittest.TestCase):
         if not self.payloads:
             self.skipTest('no captured live payloads shipped in bell/site/proof/')
 
-    def test_a_captured_payload_exists_to_test_against(self):
-        self.assertTrue(self.payloads, 'this suite is meaningless with no captured payload')
+    def test_the_captures_cover_every_endpoint_family_the_product_reads(self):
+        """The old test here asserted `self.payloads` is non-empty, immediately
+        after setUp had skipped the whole class when it was empty. It could not
+        fail in any run that reached it, so it reported a green result for
+        having been scheduled. In a project whose claim is evidence, a test that
+        cannot fail is worse than no test: it inflates the count and reassures
+        the reader about nothing.
+
+        What is worth asserting is that the captures are not all of one shape -
+        the contract below is only meaningful if the payloads span both endpoint
+        families whose disagreement caused the incident.
+        """
+        import re as _re
+        names = [name for name, _ in self.payloads]
+        references = {name.split('-')[0].lower() for name in names}
+        dates = {match.group(0) for name in names
+                 for match in [_re.search(r'\d{4}-\d{2}-\d{2}', name)] if match}
+        self.assertGreaterEqual(
+            len(references), 2,
+            f'the contract reads captures of a single reference, so a shape that is wrong '
+            f'only for other references would pass: {sorted(references)}')
+        self.assertGreaterEqual(
+            len(dates), 2,
+            f'the contract reads captures from a single date, so it cannot tell a stable '
+            f'contract from one lucky response: {sorted(dates)}')
 
     def test_error_code_is_never_assumed_to_be_an_integer(self):
         # The incident: `if status.get("error_code")` passed the key probe and

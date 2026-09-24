@@ -159,7 +159,7 @@ python3 bell/verify_integrity_receipt.py
 python3 bell/verify_catalogue_receipt.py
 python3 bell/verify_public_surface.py
 python3 bell/verify_submission.py
-python3 bell/verify_doc_links.py
+make check  # includes the documentation link check
 ```
 
 Offline mode reads `tests/fixtures/offline.json`, emits a versioned receipt and demonstrates how

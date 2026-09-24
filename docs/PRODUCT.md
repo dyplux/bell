@@ -95,7 +95,7 @@ Replay the dated calculation without credentials:
 
 ```bash
 python3 bell/integrity_review.py
-python3 bell/verify_public_integrity.py
+python3 bell/verify_public_surface.py
 ```
 
 Run the public test surface:

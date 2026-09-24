@@ -73,6 +73,33 @@ def main() -> int:
             f"the live receipt was produced under {live_rules!r} but this repository is {RULES_VERSION!r}: "
             "the scheduled publisher is running a different version of the rules")
 
+    # Folded in from a second public verifier that checked the same endpoint
+    # with a different set of assertions. Two scripts auditing one surface meant
+    # neither was the answer to "how do I check this", and the union of what
+    # they checked was in nobody's head.
+    calibration = receipt.get("rule_calibration") or {}
+    for field in ("reference_count", "observed_ratio_bands", "thresholds"):
+        require(field in calibration, f"receipt does not publish rule calibration: {field}")
+    thresholds = calibration.get("thresholds") or {}
+    for rule in ("price_dispersion", "price_denomination_break"):
+        require((thresholds.get(rule) or {}).get("inclusive") is True,
+                f"receipt does not publish inclusive threshold semantics for {rule}")
+    attribution = receipt.get("population_attribution") or {}
+    concentration = attribution.get("concentration") or {}
+    for field in ("top_1_share", "top_3_share", "top_5_share", "hhi", "effective_issuer_count"):
+        require(isinstance(concentration.get(field), (int, float)),
+                f"population concentration is missing {field}")
+    reconciliation = attribution.get("asset_level_reconciliation") or {}
+    for field in ("matched_reference_rows", "exact_within_usd_cent", "non_exact_rows", "residual_sum"):
+        require(isinstance(reconciliation.get(field), (int, float)),
+                f"population reconciliation is missing {field}")
+    alerts = receipt.get("alerts") or []
+    require(bool(alerts), "receipt has no alert queue")
+    require(bool(receipt.get("alert_index")), "receipt has no population alert index")
+    first_decision = alerts[0].get("decision") or {}
+    require(bool(first_decision.get("label")) and bool(first_decision.get("allocation_effect")),
+            "the first alert states no decision or no allocation effect")
+
     comparisons = sum(1 for row in receipt.get("alert_index") or [] if row.get("comparison"))
     require(comparisons > 0,
             "no reference on the live surface carries a published comparison: the monitor can only refuse")

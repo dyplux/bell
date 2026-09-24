@@ -392,7 +392,10 @@ test('the one control the product asks you to use is reachable on a phone', () =
   // below the fold. Source order stays as written for readers and crawlers;
   // the phone layout orders the box above the prose.
   const css = fs.readFileSync(path.join(site, 'visual-overrides.css'), 'utf8');
-  const phone = css.split('@media(max-width:620px)').pop();
+  // Take every phone block, not the last one: a second block was added later
+  // and this test started reading only that, which is how a passing test
+  // stops covering what it was written for.
+  const phone = css.split('@media(max-width:620px)').slice(1).join('\n');
   assert.match(phone, /\.hero>div:first-of-type\{display:flex;flex-direction:column\}/);
   const order = name => {
     const rule = new RegExp(`\\.hero>div:first-of-type>${name}\\{order:(\\d+)`);
@@ -426,4 +429,21 @@ test('the signature strip offers an affirmative, not only ways to be refused', (
   assert.match(strip, /comparison published/);
   const css = fs.readFileSync(path.join(site, 'visual-overrides.css'), 'utf8');
   assert.match(css, /\.thesis-metrics\{grid-template-columns:repeat\(4,1fr\)\}/);
+});
+
+test('the page defines its three words before it uses its numbers', () => {
+  // A first-time reader met 791, 244, 157, 64.3% and a confidence interval
+  // before anyone had said what a representation or an issuer is. The glossary
+  // existed, far enough down the page that you reached it only after the
+  // numbers had already lost you.
+  const words = page.indexOf('id="hero-words"');
+  assert.ok(words > 0, 'the hero no longer defines its vocabulary');
+  for (const term of ['Reference', 'Representation', 'Issuer']) {
+    assert.ok(page.includes(`<dt>${term}</dt>`), `the hero vocabulary lost ${term}`);
+  }
+  // It has to come before the population figures, not after them.
+  const monitor = page.indexOf('id="monitor"');
+  assert.ok(words < monitor, 'the vocabulary sits below the population index');
+  const css = fs.readFileSync(path.join(site, 'visual-overrides.css'), 'utf8');
+  assert.match(css, /\.hero>div:first-of-type>#hero-words\{order:4\}/);
 });

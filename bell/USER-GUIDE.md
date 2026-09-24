@@ -157,7 +157,7 @@ python3 bell/integrity_review.py
 The public receipt can be checked without credentials:
 
 ```sh
-python3 bell/verify_public_integrity.py
+python3 bell/verify_public_surface.py
 ```
 
 The live publisher is an operator command and reads the CMC key only from the

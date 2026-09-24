@@ -4,7 +4,7 @@ Run this before exporting or submitting the repository:
 
 ```sh
 python3 bell/verify_submission.py
-python3 bell/verify_doc_links.py
+make check  # includes the documentation link check
 ```
 
 Run it from the clean public export or clone that will be submitted. The
