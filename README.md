@@ -124,6 +124,20 @@ make check-live     # force the browser audit and fail if it cannot run
 `make check-offline` is what CI runs: a red build should mean this repository is
 wrong, never that a deployed site was briefly unreachable.
 
+### Is the upstream contract still intact today?
+
+Every contract test here reads payloads captured on 13, 17 and 21 September, so
+it catches a regression against those captures and cannot notice that CMC
+changed afterwards. `make liveness` calls the API and writes a dated receipt of
+what it observed — status, a response fingerprint and whether each property the
+code depends on still holds. It records no payload, no row of data and no
+credential, so the receipt ships in this repository and is readable by someone
+with no account:
+
+    bell/site/proof/upstream-liveness-<date>.json
+
+The probe needs a key. Reading its result does not.
+
 Two more, also keyless:
 
 ```bash

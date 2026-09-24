@@ -11,13 +11,14 @@ WORKER := cloudflare
 
 .DEFAULT_GOAL := help
 
-.PHONY: help install test test-py test-js test-worker demo base-rate verify check check-offline check-live browser-audit clean
+.PHONY: help install test test-py test-js test-worker demo base-rate liveness verify check check-offline check-live browser-audit clean
 
 help: ## Show the targets a reviewer needs
 	@echo "make demo     - answer one comparability question, keyless, ~1s"
 	@echo "make base-rate- how often a comparison is safe at all, whole catalogue"
 	@echo "make test     - every suite (Python + browser-independent JS + worker)"
 	@echo "make verify   - re-hash the published receipt against its shipped inputs"
+	@echo "make liveness - ask today's CMC API if it still answers in the shape we read"
 	@echo "make check    - the full gate; drives a real browser if one is installed"
 	@echo "make check-offline - the same gate with no network and no browser"
 	@echo "make check-live- force the browser audit and fail if it cannot run"
@@ -48,6 +49,11 @@ demo: ## The judged capability: one reference, resolved and explained, no key
 
 base-rate: ## How often a comparison is safe at all, over the whole catalogue
 	PYTHONPATH=$(PKG) $(PY) $(PKG)/base_rate.py
+
+liveness: ## Does today's CMC API still answer in the shape this build reads?
+	# The only check here that calls CMC. Needs CMC_API_KEY; the dated receipt
+	# it writes does not, and carries no payload, no row and no credential.
+	PYTHONPATH=$(PKG) $(PY) $(PKG)/live_contract_probe.py
 
 verify: ## Recompute the published receipt from the shipped inputs
 	$(PY) $(PKG)/verify_integrity_receipt.py

@@ -1,0 +1,85 @@
+{
+  "schema_version": "bell.upstream_liveness.v1",
+  "observed_at": "2026-09-24T09:02:12Z",
+  "question": "Does the CMC API still answer in the shape this build reads?",
+  "method": "One small call per endpoint family the scan depends on, checking only the properties the code relies on. No payload, no row of data and no credential is recorded here - only status, a response fingerprint and whether each property held.",
+  "credential_free": true,
+  "surfaces": {
+    "map": {
+      "endpoint": "/v5/real-world-assets/map",
+      "params": {
+        "start": 1,
+        "limit": 5
+      },
+      "reachable": true,
+      "response_sha256": "61325f2829d5150852cdfa0f9ecf7a2f19a188bbc2057598778affa474a002a9",
+      "status": "0",
+      "properties": {
+        "error_code_is_not_a_boolean_test": {
+          "holds": true,
+          "observed": "error_code arrived as ['str']; any truthiness test on it is a bug either way"
+        },
+        "quotes_is_a_list_not_a_map": {
+          "holds": true,
+          "observed": "no quotes block on this endpoint (expected for map and issuers)"
+        },
+        "absent_market_cap_stays_null": {
+          "holds": true,
+          "observed": "no market_cap field on this endpoint"
+        }
+      }
+    },
+    "asset_list": {
+      "endpoint": "/v5/real-world-assets/assets/list",
+      "params": {
+        "start": 1,
+        "limit": 5,
+        "convert": "USD"
+      },
+      "reachable": true,
+      "response_sha256": "7ce9233850567021821bbb8c2d5a121e645a2ab787043501f8ec02c823ea576a",
+      "status": "0",
+      "properties": {
+        "error_code_is_not_a_boolean_test": {
+          "holds": true,
+          "observed": "error_code arrived as ['str']; any truthiness test on it is a bug either way"
+        },
+        "quotes_is_a_list_not_a_map": {
+          "holds": true,
+          "observed": "quotes arrived as ['list'], expected ['list']"
+        },
+        "absent_market_cap_stays_null": {
+          "holds": true,
+          "observed": "no market_cap field on this endpoint"
+        }
+      }
+    },
+    "issuers": {
+      "endpoint": "/v5/real-world-assets/issuers/list",
+      "params": {
+        "start": 1,
+        "limit": 5
+      },
+      "reachable": true,
+      "response_sha256": "31f3328089b850917677cc26e05b8175950417573d15c451a29f78c5d661a280",
+      "status": "0",
+      "properties": {
+        "error_code_is_not_a_boolean_test": {
+          "holds": true,
+          "observed": "error_code arrived as ['str']; any truthiness test on it is a bug either way"
+        },
+        "quotes_is_a_list_not_a_map": {
+          "holds": true,
+          "observed": "no quotes block on this endpoint (expected for map and issuers)"
+        },
+        "absent_market_cap_stays_null": {
+          "holds": true,
+          "observed": "no market_cap field on this endpoint"
+        }
+      }
+    }
+  },
+  "contract_intact": true,
+  "failures": [],
+  "limits": "A dated observation of the response shape, not a guarantee about any other endpoint, plan tier or moment. It says nothing about the correctness of the values returned."
+}
