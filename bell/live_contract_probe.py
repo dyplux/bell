@@ -39,6 +39,12 @@ PROBES = (
     ("map", "/v5/real-world-assets/map", {"start": 1, "limit": 5}),
     ("asset_list", "/v5/real-world-assets/assets/list", {"start": 1, "limit": 5, "convert": "USD"}),
     ("issuers", "/v5/real-world-assets/issuers/list", {"start": 1, "limit": 5}),
+    # The other half of the incident. /v1/key/info returns error_code as the
+    # INTEGER 0 while the RWA family returns the STRING "0", and it was the
+    # disagreement between these two that let a truthiness check pass the key
+    # probe and reject every data call. Probing only the RWA side would
+    # describe the inconsistency; probing both demonstrates it.
+    ("key_info", "/v1/key/info", {}),
 )
 
 
@@ -67,6 +73,22 @@ def check_error_code_type(payload) -> tuple[bool, str]:
         return False, "no error_code present in the response envelope"
     ok = seen <= {"str", "int"}
     return ok, f"error_code arrived as {sorted(seen)}; any truthiness test on it is a bug either way"
+
+
+def key_info_is_never_used_to_gate_data_calls(receipt: dict) -> tuple[bool, str]:
+    """Report the disagreement itself, across the endpoints just probed."""
+    types = {}
+    for name, entry in receipt["surfaces"].items():
+        observed = (entry.get("properties") or {}).get("error_code_is_not_a_boolean_test", {}).get("observed", "")
+        for kind in ("str", "int"):
+            if f"'{kind}'" in observed:
+                types.setdefault(kind, []).append(name)
+    if len(types) < 2:
+        return True, (f"every probed endpoint reported error_code as {sorted(types)}; "
+                      "the families agreed on this observation")
+    listing = "; ".join(f"{kind} on {', '.join(sorted(names))}" for kind, names in sorted(types.items()))
+    return True, (f"error_code type still differs across endpoint families - {listing}. "
+                  "This is the behaviour that caused the incident and it is still present.")
 
 
 def check_quotes_is_a_list(payload) -> tuple[bool, str]:
@@ -121,7 +143,7 @@ def probe(key: str) -> dict:
                 failures.append(f"{name}.{prop_name}: {detail}")
         surfaces[name] = entry
 
-    return {
+    receipt = {
         "schema_version": "bell.upstream_liveness.v1",
         "observed_at": observed_at,
         "question": "Does the CMC API still answer in the shape this build reads?",
@@ -139,6 +161,9 @@ def probe(key: str) -> dict:
             "plan tier or moment. It says nothing about the correctness of the values returned."
         ),
     }
+    holds, detail = key_info_is_never_used_to_gate_data_calls(receipt)
+    receipt["cross_family_error_code"] = {"holds": holds, "observed": detail}
+    return receipt
 
 
 def main() -> int:

@@ -41,6 +41,15 @@ class TheWorkflowDescribesItself(unittest.TestCase):
         self.assertIn("github.event_name == 'schedule'", block)
         self.assertIn('workflow_dispatch', block)
 
+    def test_ci_checks_the_live_published_surface_without_a_secret(self):
+        # The published receipt is credential-free by construction, so there is
+        # no excuse for CI never looking at it. A scan that silently reverted to
+        # refusing every reference should redden a build, not wait to be noticed.
+        self.assertIn('verify_public_surface.py', self.text)
+        self.assertNotIn('secrets.', self.text,
+                         'this workflow now depends on a secret; the live checks were '
+                         'chosen precisely because they need none')
+
     def test_the_push_job_runs_the_offline_gate_and_says_why(self):
         self.assertIn('make check-offline', self.text)
         self.assertIn('enforces strictly LESS than the local gate', self.text,

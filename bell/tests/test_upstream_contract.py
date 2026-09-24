@@ -34,6 +34,18 @@ PROOF = os.path.join(os.path.dirname(HERE), 'site', 'proof')
 
 
 def captured_payloads() -> list[tuple[str, dict]]:
+    """Every captured upstream response this repository ships.
+
+    This used to read only the per-case `*payload*.json` files, which record a
+    provenance summary rather than whole envelopes - so two of the three
+    properties below had nothing with a `quotes` block or an identity-bearing
+    row to check, and skipped themselves in every run. The suite reported a
+    green result for questions it had never asked.
+
+    The credential-free input package shipped for the replay contains the full
+    captured surfaces. Reading it too costs nothing extra - `make check`
+    already loads it - and turns two permanent skips into real assertions.
+    """
     out = []
     for path in sorted(glob.glob(os.path.join(PROOF, '*payload*.json'))):
         try:
@@ -41,6 +53,19 @@ def captured_payloads() -> list[tuple[str, dict]]:
                 out.append((os.path.basename(path), json.load(handle)))
         except (OSError, json.JSONDecodeError):
             continue
+    for path in sorted(glob.glob(os.path.join(PROOF, '*-inputs-*.json'))):
+        try:
+            with open(path, encoding='utf-8') as handle:
+                package = json.load(handle)
+        except (OSError, json.JSONDecodeError):
+            continue
+        surfaces = package.get('surfaces')
+        if not isinstance(surfaces, dict):
+            continue
+        name = os.path.basename(path)
+        for surface, payload in sorted(surfaces.items()):
+            if isinstance(payload, (dict, list)):
+                out.append((f'{name}#{surface}', payload))
     return out
 
 

@@ -58,5 +58,15 @@ jobs:
         run: |
           python -m pip install --quiet playwright
           python -m playwright install --with-deps chromium
+      - name: Verify the published surface, credential-free
+        # No secret is configured for this workflow and none is needed: the
+        # receipt Bell publishes is credential-free by construction, so CI can
+        # check it the same way any reader can. This asserts the live receipt
+        # was produced by THIS repository's rule version and that at least one
+        # reference carries a published comparison - so a scan that silently
+        # reverted to refusing everything reddens CI rather than waiting to be
+        # noticed.
+        run: PYTHONPATH=bell python bell/verify_public_surface.py
+
       - name: Audit the deployed interface
         run: PYTHONPATH=bell python bell/verify_public_browser.py --channel ""
