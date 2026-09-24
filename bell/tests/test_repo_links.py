@@ -193,3 +193,45 @@ class NoTwoReceiptsDescribeOneObservationDifferently(unittest.TestCase):
                     f'{first_name} and {other_name} both describe the observation at '
                     f'{observed} and state different rules. Rename one to carry '
                     f'"superseded", or delete it.')
+
+
+class OneNameMeansOneBehaviour(unittest.TestCase):
+    """`cmc_shapes` was introduced to end a name collision, and left one behind.
+
+    Three modules had grown a `_records` with different fallbacks, so a reader
+    who understood one had not understood the others. The shared definition
+    fixed two of them - and the largest file in the project kept its own
+    narrower `records` under the same name, while the shared module's docstring
+    claimed to be "the single definition". An auditor found it; no test did.
+    """
+
+    def test_no_module_defines_a_function_the_shared_module_already_names(self):
+        import ast
+        bell_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        with open(os.path.join(bell_dir, 'cmc_shapes.py'), encoding='utf-8') as handle:
+            shared = {node.name for node in ast.parse(handle.read()).body
+                      if isinstance(node, ast.FunctionDef)}
+        clashes = []
+        for name in sorted(os.listdir(bell_dir)):
+            if not name.endswith('.py') or name == 'cmc_shapes.py':
+                continue
+            with open(os.path.join(bell_dir, name), encoding='utf-8') as handle:
+                try:
+                    tree = ast.parse(handle.read())
+                except SyntaxError:
+                    continue
+            for node in tree.body:
+                if isinstance(node, ast.FunctionDef) and node.name in shared:
+                    clashes.append(f'{name}:{node.name}')
+        self.assertEqual(clashes, [],
+                         'these define a function under a name cmc_shapes already uses, so one '
+                         'name means two behaviours again')
+
+    def test_the_shared_module_does_not_overclaim(self):
+        bell_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        with open(os.path.join(bell_dir, 'cmc_shapes.py'), encoding='utf-8') as handle:
+            text = handle.read()
+        if 'single definition' in text:
+            self.assertIn('rwa_asset_rows', text,
+                          'cmc_shapes claims to be the single definition without naming the '
+                          'reader that deliberately is not one')

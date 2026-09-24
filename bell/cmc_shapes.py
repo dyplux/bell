@@ -7,8 +7,15 @@ needed the same tolerance, and each had grown its own copy under the same name
 with slightly different fallbacks - which is worse than duplication, because a
 reader who has understood one has not understood the others.
 
-This module is the single definition. It performs no I/O, so the replay path
-can import it without a key or a network.
+This module is the single definition of that permissive reading, and every
+caller that wants it imports it from here. It performs no I/O, so the replay
+path can import it without a key or a network.
+
+One reader deliberately does not use it. `rwa_integrity.rwa_asset_rows` accepts
+only `data.rwa_assets` and returns nothing otherwise, because a scanner that
+guesses which field held the rows would carry on over the wrong ones if the
+envelope changed. That is a different contract, not a leftover copy, and it is
+named differently so nobody has to read both to find out.
 """
 from __future__ import annotations
 

@@ -60,7 +60,20 @@ def utc_now() -> str:
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
 
 
-def records(payload: dict) -> list[dict]:
+def rwa_asset_rows(payload: dict) -> list[dict]:
+    """The RWA map's own envelope, and only that.
+
+    This is deliberately NOT `cmc_shapes.records`. That one is permissive - it
+    will read an id-keyed object or a bare list as a collection - which is right
+    for the endpoints it serves and wrong here: if the RWA family ever stopped
+    returning `data.rwa_assets`, a permissive reader would quietly find
+    something else to iterate and the scan would carry on over the wrong rows.
+    Refusing to guess is the behaviour this scanner wants.
+
+    It was called `records`, the same name as the shared helper, while doing
+    something narrower - the exact collision `cmc_shapes` was introduced to
+    remove, left in the largest file in the project.
+    """
     data = payload.get("data", payload)
     if isinstance(data, dict) and isinstance(data.get("rwa_assets"), list):
         return [item for item in data["rwa_assets"] if isinstance(item, dict)]
@@ -137,8 +150,8 @@ def collect_live(key: str, surface_times: dict | None = None) -> tuple[dict, dic
         list_pages.append(page)
         if not page.get("data", {}).get("has_more"):
             break
-    map_rows = records({"data": {"rwa_assets": sum((records(page) for page in map_pages), [])}})
-    list_rows = records({"data": {"rwa_assets": sum((records(page) for page in list_pages), [])}})
+    map_rows = rwa_asset_rows({"data": {"rwa_assets": sum((rwa_asset_rows(page) for page in map_pages), [])}})
+    list_rows = rwa_asset_rows({"data": {"rwa_assets": sum((rwa_asset_rows(page) for page in list_pages), [])}})
     token_ids = [str(row["rwa_id"]) for row in map_rows if row.get("has_tokens") is True and row.get("rwa_id") is not None]
     info_pages = []
     quote_pages = []
@@ -146,7 +159,7 @@ def collect_live(key: str, surface_times: dict | None = None) -> tuple[dict, dic
     for index in range(0, len(token_ids), 250):
         info_pages.append(api_get("/v5/real-world-assets/info", {"rwa_id": ",".join(token_ids[index:index + 250])}, key, "info", surface_times))
         quote_pages.append(api_get("/v5/real-world-assets/quotes/latest", {"rwa_id": ",".join(token_ids[index:index + 250]), "convert": "USD", "skip_invalid": "true"}, key, "quotes", surface_times))
-    crypto_ids = sorted({str(token.get("crypto_id")) for page in quote_pages for asset in records(page) for token in asset.get("tokens", []) if isinstance(token, dict) and token.get("crypto_id") is not None})
+    crypto_ids = sorted({str(token.get("crypto_id")) for page in quote_pages for asset in rwa_asset_rows(page) for token in asset.get("tokens", []) if isinstance(token, dict) and token.get("crypto_id") is not None})
     crypto_info_invalid_ids = []
     for index in range(0, len(crypto_ids), 100):
         batch = crypto_ids[index:index + 100]
@@ -171,8 +184,8 @@ def collect_live(key: str, surface_times: dict | None = None) -> tuple[dict, dic
         issuer_pages.append(page)
         if not page.get("data", {}).get("has_more"):
             break
-    info_rows = records({"data": {"rwa_assets": sum((records(page) for page in info_pages), [])}})
-    quote_rows = records({"data": {"rwa_assets": sum((records(page) for page in quote_pages), [])}})
+    info_rows = rwa_asset_rows({"data": {"rwa_assets": sum((rwa_asset_rows(page) for page in info_pages), [])}})
+    quote_rows = rwa_asset_rows({"data": {"rwa_assets": sum((rwa_asset_rows(page) for page in quote_pages), [])}})
     issuer_rows = [issuer for page in issuer_pages for issuer in (page.get("data", {}).get("issuers", []) if isinstance(page.get("data", {}).get("issuers", []), list) else [])]
     crypto_info_rows = {str(crypto_id): item for page in crypto_info_pages for crypto_id, item in (page.get("data", {}) if isinstance(page.get("data", {}), dict) else {}).items() if isinstance(item, dict)}
     return (
@@ -616,10 +629,10 @@ def scan(map_payload: dict, list_payload: dict, quotes_payload: dict, info_paylo
     required_surfaces = {"map": map_payload, "asset_list": list_payload, "quotes": quotes_payload}
     input_issues = [name for name, payload in required_surfaces.items() if not surface_has_records(payload)]
     scan_status = "incomplete" if input_issues else "ready"
-    map_rows = records(map_payload)
-    list_rows = records(list_payload)
-    quote_rows = records(quotes_payload)
-    info_rows = records(info_payload or {})
+    map_rows = rwa_asset_rows(map_payload)
+    list_rows = rwa_asset_rows(list_payload)
+    quote_rows = rwa_asset_rows(quotes_payload)
+    info_rows = rwa_asset_rows(info_payload or {})
     issuer_data = (issuers_payload or {}).get("data", {})
     issuer_rows = issuer_data.get("issuers", []) if isinstance(issuer_data.get("issuers", []), list) else []
     crypto_data = (crypto_info_payload or {}).get("data", {})
