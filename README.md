@@ -106,7 +106,23 @@ make check
 
 That runs every suite, re-hashes the published receipt against the shipped
 credential-free input package, re-runs the scan asserting structural equality,
-and audits the public surface. It takes about a second.
+and audits the public surface. The offline part takes about a second.
+
+If a browser is present, `make check` then drives the deployed site with
+Playwright and verifies the interface rather than describing it: search, the
+decision brief, the case-receipt download, the two-wrapper comparison, the
+watchlist, the mobile layout and the network-failure fallback. If no browser is
+present it prints exactly which of those it did not verify and continues, so
+the gate degrades honestly instead of quietly checking less than it claims.
+
+```bash
+make install        # installs Playwright and a browser, so check can verify the UI
+make check-offline  # the same gate with no network and no browser
+make check-live     # force the browser audit and fail if it cannot run
+```
+
+`make check-offline` is what CI runs: a red build should mean this repository is
+wrong, never that a deployed site was briefly unreachable.
 
 Two more, also keyless:
 

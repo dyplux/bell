@@ -16,6 +16,13 @@ def require(condition: bool, message: str) -> None:
         raise RuntimeError(message)
 
 
+# The states the public page is allowed to show. A reference may move between
+# them as the data moves; it may never render something outside this set.
+PUBLIC_STATES = frozenset({
+    "COMPARABLE", "FACTS OPEN", "INVESTIGATE", "DO NOT SHORTLIST", "SINGLE REPRESENTATION",
+})
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--base", default="https://bell.dyplux.com", help="public Bell origin")
@@ -103,6 +110,12 @@ def main() -> int:
                 item = next((candidate for candidate in candidates if str(candidate.get("name", "")).lower() == needle), None)
                 item = item or next((candidate for candidate in candidates if needle in str(candidate.get("name", "")).lower()), None)
                 require(item is not None, f"{name} is not present in the current published receipt")
+                # A reference carrying a published comparison is labelled by what
+                # the reader is holding, not by the state that let it through.
+                # Asserting the state alone made this check demand INVESTIGATE
+                # on a page correctly showing COMPARABLE.
+                if item.get("comparison"):
+                    return "COMPARABLE"
                 if item.get("state") == "no_flags" and int(item.get("token_count") or 0) == 1:
                     return "SINGLE REPRESENTATION"
                 return expected_states.get(item.get("state"), "REFERENCE ONLY")
@@ -117,6 +130,16 @@ def main() -> int:
                 require(expected in result_text, f"{name} did not mirror receipt state {expected!r}: {result_text[:500]!r}")
                 if expected != "SINGLE REPRESENTATION":
                     require("observed quote" in result_text.lower(), f"{name} did not expose observed evidence: {result_text[:500]!r}")
+                if expected == "COMPARABLE":
+                    # The affirmative has to carry its consequence, or the badge
+                    # is decoration. The page said COMPARABLE while the capital
+                    # check underneath still read "not ready for a clean
+                    # shortlist" - one screen, two answers.
+                    lowered = result_text.lower()
+                    require("bps" in lowered and "cheapest route" in lowered,
+                            f"{name} shows COMPARABLE without naming the spread and cheapest route: {result_text[:500]!r}")
+                    require("not ready for a clean shortlist" not in lowered,
+                            f"{name} shows COMPARABLE and the unresolved copy at the same time: {result_text[:500]!r}")
                 return expected
 
             silver_state = search_and_check("Silver")
@@ -172,8 +195,15 @@ def main() -> int:
             require("72H OVERLAP" in temporal_text, "temporal check did not disclose the overlap")
             require("not independent validation" in temporal_text.lower(), "temporal check did not preserve its repeat-observation boundary")
 
+            # Pinning a named reference to a named verdict asserts today's market
+            # data, not the product: this line demanded INVESTIGATE and failed the
+            # moment Tesla's representations became comparable. `search_and_check`
+            # already proves the page mirrors the current receipt, so what is
+            # worth asserting here is that whatever state it lands in is one the
+            # public vocabulary defines.
             tesla_state = search_and_check("Tesla")
-            require(tesla_state == "INVESTIGATE", f"Tesla integrity case did not preserve its investigation state: {tesla_state!r}")
+            require(tesla_state in PUBLIC_STATES,
+                    f"Tesla rendered a state outside the published vocabulary: {tesla_state!r}")
 
             marvell_state = search_and_check("Marvell")
             marvell_details = page.locator("#alert-list .alert-details").first

@@ -180,9 +180,36 @@ test('flagged Gold and Tesla cases expose dated temporal proof without turning i
 test('browser verifier checks a second multi-wrapper reference', () => {
   const verifier = fs.readFileSync(path.resolve(__dirname, '../verify_public_browser.py'), 'utf8');
   assert.match(verifier, /tesla_state = search_and_check\("Tesla"\)/);
-  assert.match(verifier, /tesla_state == "INVESTIGATE"/);
   assert.match(verifier, /\(320, 800\)/);
   assert.match(verifier, /\(375, 812\)/);
+});
+
+test('the browser verifier pins the product, not one day of market data', () => {
+  // This test used to require the source contain `tesla_state == "INVESTIGATE"`,
+  // so it defended a brittle assertion instead of a guarantee: the moment
+  // Tesla's representations became comparable, the live check failed and this
+  // test insisted the failure was correct. A reference may move between states
+  // as the data moves; what it may never do is render a state outside the
+  // published vocabulary.
+  const verifier = fs.readFileSync(path.resolve(__dirname, '../verify_public_browser.py'), 'utf8');
+  assert.ok(!/tesla_state == "INVESTIGATE"/.test(verifier),
+    'the verifier pins a named reference to a named verdict again');
+  assert.match(verifier, /PUBLIC_STATES/);
+  for (const state of ['COMPARABLE', 'FACTS OPEN', 'INVESTIGATE', 'DO NOT SHORTLIST', 'SINGLE REPRESENTATION']) {
+    assert.ok(verifier.includes(`"${state}"`), `the published vocabulary lost ${state}`);
+  }
+});
+
+test('an affirmative on the page has to carry its consequence', () => {
+  // The live site showed COMPARABLE while the capital check underneath still
+  // read "not ready for a clean shortlist" - one screen, two answers, which is
+  // the exact failure this product exists to catch in other people's data.
+  const verifier = fs.readFileSync(path.resolve(__dirname, '../verify_public_browser.py'), 'utf8');
+  assert.match(verifier, /shows COMPARABLE without naming the spread and cheapest route/);
+  assert.match(verifier, /shows COMPARABLE and the unresolved copy at the same time/);
+  const capital = fs.readFileSync(path.join(site, 'capital-impact.js'), 'utf8');
+  assert.match(capital, /mode: 'comparable'/);
+  assert.match(capital, /cheapest route/);
 });
 
 test('hero search lands on the result it just generated', () => {

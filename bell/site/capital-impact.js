@@ -105,6 +105,30 @@
       };
     }
 
+    // A reference whose comparison was published hands the reader a cheapest
+    // route, a spread and a depth. Reading its state alone said "the grouping
+    // is not ready for a clean shortlist" on the same screen as the COMPARABLE
+    // badge - the page contradicting itself, which is the exact failure this
+    // product exists to catch in other people's data.
+    const comparison = alert && alert.comparison;
+    if (comparison) {
+      const cheapest = comparison.cheapest || {};
+      const spread = Number(comparison.spread_bps);
+      const open = (comparison.unresolved || []).length;
+      return {
+        mode: 'comparable',
+        budget: value,
+        metrics,
+        headline: `Compare ${comparison.route_count} routes for ${value.toLocaleString(undefined, { maximumFractionDigits: 0 })}`,
+        copy: `The representations share an identity, a unit and a market state, so their prices can be set side by side. `
+          + `Observed spread ${Number.isFinite(spread) ? spread.toFixed(1) : '?'} bps; cheapest route ${cheapest.symbol || 'unknown'}`
+          + `${comparison.cheapest_is_deepest ? ', which also carries the most 24h volume' : `, though ${(comparison.deepest || {}).symbol || 'another route'} carries more 24h volume`}.`,
+        note: open
+          ? `A price comparison, not an allocation. ${open} check${open === 1 ? '' : 's'} remain open, and backing, redemption, eligibility and custody are not observed here.`
+          : 'A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed here.',
+      };
+    }
+
     if (state === 'investigate') {
       return {
         mode: 'review',

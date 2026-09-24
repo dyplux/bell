@@ -21,19 +21,14 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Run Python tests
-        # bell/tests import modules that live in bell/ (prepare_demo,
-        # verify_demo_manifest, verify_case_receipt), so bell/ must be on the
-        # import path. This is the command the README documents; omitting
-        # PYTHONPATH made the gate fail on every push with ModuleNotFoundError.
-        run: PYTHONPATH=bell python -m unittest discover -s bell/tests -p 'test_*.py' -q
+      - name: Compile every module
+        run: python -m py_compile bell/*.py bell/tests/*.py
 
-      - name: Run browser-independent JavaScript tests
-        run: node --test bell/tests/*.cjs
-
-      - name: Check syntax and public receipts
-        run: |
-          python -m py_compile bell/*.py bell/tests/*.py
-          python bell/verify_integrity_receipt.py
-          python bell/verify_catalogue_receipt.py
-          python bell/verify_submission.py
+      - name: Run the offline gate
+        # `make check-offline` is the whole gate minus the browser: suites,
+        # receipt re-derivation from the shipped inputs, and the release gate.
+        # CI runs the offline variant deliberately - a red build should mean
+        # this repository is wrong, never that a deployed site was briefly
+        # unreachable. The browser audit runs in `make check` locally and in
+        # the release job below.
+        run: make check-offline
