@@ -105,7 +105,7 @@ instrument identity merely because it sits under a familiar reference name.
 
 ## What the dated receipt observed
 
-Receipt of 21 September 2026: 791 tokenised references, 1,440 representations.
+Receipt of 21 September 2026: 791 tokenised references, 1,435 representations.
 
 | Signal | References | Severity | Route |
 |---|---:|---|---|

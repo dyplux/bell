@@ -176,3 +176,59 @@ class TheReadmeDoesNotOversellTheGate(unittest.TestCase):
         block = self.text.split('## Verify the release')[1].split('###')[0]
         self.assertTrue('no API key' in block or 'credential' in block,
                         'the credential-free guarantee, which IS true of every variant, is gone')
+
+
+class EveryPublishedCountIsPinnedToAnArtefact(unittest.TestCase):
+    """Two figures were stated as facts with nothing checking them, and one was
+    wrong.
+
+    The documents said the receipt of 21 September contained "1,440
+    representation rows". That receipt contains 1,435. The 1,440 came from a
+    later, different observation and was copied across three files. The
+    base-rate block had a test and stayed correct for days; these two numbers
+    had none and drifted. A reviewer spotted it before any of this project's
+    own machinery did.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        import glob
+        root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        cls.root = root
+        proof = os.path.join(root, 'bell', 'site', 'proof')
+        with open(os.path.join(proof, 'rwa-surface-integrity-latest-replay-2026-09-21.json'),
+                  encoding='utf-8') as handle:
+            cls.receipt = json.load(handle)
+        with open(os.path.join(root, 'bell', 'site', 'catalog.json'), encoding='utf-8') as handle:
+            catalogue = json.load(handle)
+        rows = catalogue if isinstance(catalogue, list) else (
+            catalogue.get('assets') or catalogue.get('rwa_assets') or catalogue.get('entries') or [])
+        cls.catalogue_entries = len(rows)
+        cls.documents = {}
+        for name in ('README.md', 'bell/README.md', 'bell/API-FEEDBACK.md'):
+            with open(os.path.join(root, *name.split('/')), encoding='utf-8') as handle:
+                cls.documents[name] = handle.read()
+
+    def test_the_representation_row_count_is_the_one_in_the_receipt(self):
+        stated = f"{self.receipt['universe']['tokens_scanned']:,}"
+        for name, text in self.documents.items():
+            if 'representation' not in text:
+                continue
+            for wrong in re.findall(r'([\d,]+) representation(?:s| rows)', text):
+                self.assertEqual(wrong, stated,
+                                 f'{name} states {wrong} representation rows; the receipt says {stated}')
+
+    def test_the_catalogue_size_is_the_one_in_the_shipped_snapshot(self):
+        stated = f'{self.catalogue_entries:,}'
+        for name, text in self.documents.items():
+            for claimed in re.findall(r'([\d,]{4,}) ?(?:-entry|RWAs|records|references, including)', text):
+                if claimed.replace(',', '').isdigit() and len(claimed.replace(',', '')) == 4:
+                    self.assertEqual(claimed, stated,
+                                     f'{name} states a catalogue size of {claimed}; the snapshot has {stated}')
+
+    def test_a_wrong_row_count_would_be_caught(self):
+        # Guard against a check that passes on anything.
+        stated = f"{self.receipt['universe']['tokens_scanned']:,}"
+        self.assertNotEqual(stated, '1,440',
+                            'the receipt now reports the figure the documents used to claim, '
+                            'so this test no longer proves anything')

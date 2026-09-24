@@ -63,7 +63,7 @@ dossiers. It searches the 7,811-entry dated CMC map snapshot, while keeping
 that catalogue separate from the live integrity receipt.
 
 The receipt observed on 21 September 2026 contained 791 tokenised references
-and 1,440 representation rows. The receipt is published
+and 1,435 representation rows. The receipt is published
 server-side and exposes observation time, publication time, freshness state,
 rule evidence and source fingerprints without exposing the CMC credential.
 
