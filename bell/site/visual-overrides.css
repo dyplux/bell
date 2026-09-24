@@ -345,19 +345,31 @@ footer{max-width:2200px;padding-left:64px;padding-right:64px;font-size:12px}
 /* On a 390px screen the search box sat below an eyebrow, a headline, a measured
    lede, a coverage fact and three more paragraphs: the one control the product
    asks you to use was roughly a full screen below the fold. The prose is worth
-   reading, but not before you can do anything. Order it after the box. */
+   reading, but not before you can do anything. Order it after the box.
+
+   Every child needs an explicit order. A flex child without one defaults to 0,
+   so the first version of this rule silently hoisted the four-step task panel
+   and the results container above the headline - a reader met a checklist
+   before learning what the page was for. The baseline below makes an
+   unlisted child land at the end rather than the top. */
 @media(max-width:620px){
   .hero>div:first-of-type{display:flex;flex-direction:column}
+  .hero>div:first-of-type>*{order:50}
   .hero>div:first-of-type>.eyebrow{order:1}
   .hero>div:first-of-type>#finding-headline{order:2}
   .hero>div:first-of-type>.hero-search{order:3;margin-top:22px}
-  .hero>div:first-of-type>#hero-example{order:4;margin-top:12px}
-  .hero>div:first-of-type>#finding-lede{order:5;margin-top:26px}
-  .hero>div:first-of-type>#coverage-fact{order:6}
-  .hero>div:first-of-type>.lede{order:7}
-  .hero>div:first-of-type>.lede-contrast{order:8}
-  .hero>div:first-of-type>.hero-meta{order:9}
-  .hero h1{font-size:44px}
+  .hero>div:first-of-type>#search-result{order:4}
+  .hero>div:first-of-type>#hero-words{order:5;margin-top:14px}
+  .hero>div:first-of-type>#hero-example{order:6;margin-top:12px}
+  .hero>div:first-of-type>#finding-lede{order:7;margin-top:26px}
+  .hero>div:first-of-type>#coverage-fact{order:8}
+  .hero>div:first-of-type>.lede{order:9}
+  .hero>div:first-of-type>.lede-contrast{order:10}
+  .hero>div:first-of-type>.hero-meta{order:11}
+  .hero>div:first-of-type>.investor-task{order:12}
+  .hero h1{font-size:40px}
+  .hero-words{grid-template-columns:1fr;margin-top:14px}
+  .hero-words>div{padding:9px 12px}
 }
 
 /* The strip showed blocked / investigate / facts open and no affirmative, so a
@@ -368,22 +380,50 @@ footer{max-width:2200px;padding-left:64px;padding-right:64px;font-size:12px}
 .thesis-metric.comparable strong{color:var(--gold)}
 @media(max-width:760px){.thesis-metrics{grid-template-columns:repeat(2,1fr)}}
 
-/* A first-time reader met 791, 244, 157, 64.3% and a confidence interval before
-   anyone had told them what a representation or an issuer is. Three words, at
-   first use, above the fold - not in a glossary further down the page that you
-   reach only after the numbers have already lost you. */
-.hero-words{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin:18px 0 0}
-.hero-words>div{background:#0d141e;padding:11px 13px}
-.hero-words dt{color:var(--gold);font:500 10px var(--font);letter-spacing:.09em;text-transform:uppercase}
-.hero-words dd{margin:5px 0 0;color:var(--muted);font-size:11px;line-height:1.45}
+/* On a phone this note was the first prose on the page: two lines about which
+   receipt is byte-verifiable, before the reader had been told what the product
+   is or seen a single control. It belongs with the receipt status it explains,
+   so on a phone it follows the status row instead of preceding everything. */
 @media(max-width:620px){
-  .hero-words{grid-template-columns:1fr;margin-top:14px}
-  .hero-words>div{padding:9px 12px}
-  .hero>div:first-of-type>#hero-words{order:4}
-  .hero>div:first-of-type>#hero-example{order:5}
-  .hero>div:first-of-type>#finding-lede{order:6}
-  .hero>div:first-of-type>#coverage-fact{order:7}
-  .hero>div:first-of-type>.lede{order:8}
-  .hero>div:first-of-type>.lede-contrast{order:9}
-  .hero>div:first-of-type>.hero-meta{order:10}
+  .topbar{flex-wrap:wrap;height:auto;padding-top:10px;padding-bottom:10px}
+  .topbar .replay-receipt-note{order:4;width:100%;margin-top:8px;font-size:9px;line-height:1.45;max-width:none}
+  .topbar nav{order:3}
 }
+
+/* The headline ran to 84px and five lines, so on a 1440x900 screen it filled
+   the entire left column: the search box, the three definitions and the
+   affirmative all sat below the fold, and a first-time visitor's first screen
+   contained a number and no way to act on it. Smaller type, same words, the
+   control in view. */
+@media(min-width:900px){
+  .hero h1{font:520 clamp(40px,4.1vw,56px)/1.04 var(--font);letter-spacing:-.05em;margin:18px 0 20px}
+  .hero .lede{font-size:14px;line-height:1.7}
+  .hero-search{margin-top:20px}
+}
+
+/* Same reasoning as the phone rule, one screen size up: the measured lede and
+   the API-coverage panel are worth reading, but not before the reader can do
+   anything. The control goes directly under the finding; the caveats follow
+   it. Every child is placed explicitly and the baseline sends an unlisted one
+   to the end, so nothing can float to the top by accident. */
+@media(min-width:900px){
+  .hero>div:first-of-type{display:flex;flex-direction:column}
+  .hero>div:first-of-type>*{order:50}
+  .hero>div:first-of-type>.eyebrow{order:1}
+  .hero>div:first-of-type>#finding-headline{order:2}
+  .hero>div:first-of-type>#finding-lede{order:3}
+  .hero>div:first-of-type>.hero-search{order:4}
+  .hero>div:first-of-type>#search-result{order:5}
+  .hero>div:first-of-type>#hero-words{order:6}
+  .hero>div:first-of-type>#hero-example{order:7}
+  .hero>div:first-of-type>#coverage-fact{order:8}
+  .hero>div:first-of-type>.lede{order:9}
+  .hero>div:first-of-type>.lede-contrast{order:10}
+  .hero>div:first-of-type>.hero-meta{order:11}
+  .hero>div:first-of-type>.investor-task{order:12}
+}
+
+/* The key listed three ways to be refused and no way to be answered, on the
+   first screen, under a headline that already leads with a refusal count. The
+   affirmative goes first and is the only one in gold. */
+.outcome-affirmative b{color:var(--gold)}

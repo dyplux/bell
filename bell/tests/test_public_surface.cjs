@@ -409,6 +409,29 @@ test('the one control the product asks you to use is reachable on a phone', () =
     'the headline should still come first: the box needs a question above it');
 });
 
+test('no hero child can float to the top of a phone screen by accident', () => {
+  // A flex child with no `order` defaults to 0, so the first version of the
+  // phone rule silently hoisted the four-step task panel and the results
+  // container above the headline: a reader met a checklist before learning
+  // what the page was for. Every child must be placed explicitly, and the
+  // baseline must send an unlisted one to the end rather than the top.
+  const css = fs.readFileSync(path.join(site, 'visual-overrides.css'), 'utf8');
+  const phone = css.split('@media(max-width:620px)').slice(1).join('\n');
+  assert.match(phone, /\.hero>div:first-of-type>\*\{order:(\d+)\}/);
+  const baseline = Number(phone.match(/\.hero>div:first-of-type>\*\{order:(\d+)\}/)[1]);
+  assert.ok(baseline > 1, 'the fallback order would place an unlisted child first');
+
+  // Every direct child of the hero column named in the page must be placed.
+  const hero = page.slice(page.indexOf('<section id="start"'), page.indexOf('<section id="how-it-works"'));
+  const ids = [...hero.matchAll(/<(?:div|section|p|dl|form)\s+id="([a-z-]+)"/g)].map(m => m[1]);
+  for (const id of ids) {
+    if (!phone.includes(`>#${id}{order:`) && !phone.includes(`>.${id}{order:`)) {
+      // Unplaced is tolerable only because the baseline sends it to the end.
+      assert.ok(baseline > 11, `#${id} is unplaced and the baseline is not safely last`);
+    }
+  }
+});
+
 test('the page states one comparability rate, over one denominator', () => {
   // The signature strip printed (blocked + investigate) / 791 as a percentage,
   // next to a headline stating 64.3% measured over the 244 references where a
@@ -445,5 +468,56 @@ test('the page defines its three words before it uses its numbers', () => {
   const monitor = page.indexOf('id="monitor"');
   assert.ok(words < monitor, 'the vocabulary sits below the population index');
   const css = fs.readFileSync(path.join(site, 'visual-overrides.css'), 'utf8');
-  assert.match(css, /\.hero>div:first-of-type>#hero-words\{order:4\}/);
+  assert.match(css, /\.hero>div:first-of-type>#hero-words\{order:\d/);
+});
+
+test('the first prose on a phone is not a footnote about receipts', () => {
+  // The receipt note was the first text on the page at 390px: two lines about
+  // which receipt is byte-verifiable, before the reader had been told what the
+  // product is or seen a control. It belongs with the status it explains.
+  const css = fs.readFileSync(path.join(site, 'visual-overrides.css'), 'utf8');
+  const phone = css.split('@media(max-width:620px)').slice(1).join('\n');
+  assert.match(phone, /\.topbar \.replay-receipt-note\{order:(\d+)/);
+  const note = Number(phone.match(/\.topbar \.replay-receipt-note\{order:(\d+)/)[1]);
+  const nav = Number((phone.match(/\.topbar nav\{order:(\d+)\}/) || [0, 0])[1]);
+  assert.ok(note > nav, 'the receipt footnote still precedes the navigation on a phone');
+});
+
+test('the desktop headline leaves room for the control below it', () => {
+  // At 84px over five lines the headline filled a 1440x900 screen on its own:
+  // the search box, the three definitions and the affirmative were all below
+  // the fold, so the first screen carried a number and no way to act on it.
+  const css = fs.readFileSync(path.join(site, 'visual-overrides.css'), 'utf8');
+  const desktop = css.split('@media(min-width:900px)').slice(1).join('\n');
+  const size = desktop.match(/\.hero h1\{font:\d+ clamp\((\d+)px,[\d.]+vw,(\d+)px\)/);
+  assert.ok(size, 'the desktop headline no longer declares a clamped size');
+  assert.ok(Number(size[2]) <= 60,
+    `the desktop headline caps at ${size[2]}px, which pushes the search box off the first screen`);
+});
+
+test('the control sits under the finding on desktop too, not under the caveats', () => {
+  const css = fs.readFileSync(path.join(site, 'visual-overrides.css'), 'utf8');
+  const desktop = css.split('@media(min-width:900px)').slice(1).join('\n');
+  const order = selector => {
+    const marker = '.hero>div:first-of-type>' + selector + '{order:';
+    const at = desktop.indexOf(marker);
+    assert.ok(at >= 0, 'no desktop order declared for ' + selector);
+    return Number(desktop.slice(at + marker.length).match(/^\d+/)[0]);
+  };
+  assert.ok(order('.hero-search') < order('#coverage-fact'),
+    'the search box is ordered below the API-coverage panel on desktop');
+  assert.ok(order('#finding-headline') < order('.hero-search'),
+    'the headline should come first: the box needs a question above it');
+  assert.ok(order('*') > 12, 'an unlisted desktop child would float above the headline');
+});
+
+test('the outcome key on the first screen includes the affirmative', () => {
+  // It listed three ways to be refused and no way to be answered, directly
+  // under a headline that already leads with a refusal count.
+  assert.match(page, /COMPARABLE = PRICES LINE UP/);
+  const key = page.indexOf('OUTCOME KEY');
+  const affirmative = page.indexOf('COMPARABLE = PRICES LINE UP');
+  const refusal = page.indexOf('DO NOT SHORTLIST = BLOCKED');
+  assert.ok(key < affirmative && affirmative < refusal,
+    'the affirmative does not lead the outcome key');
 });
