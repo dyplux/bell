@@ -568,3 +568,14 @@ test('the live page is pinned to the receipt it is reading, not only the archive
   assert.match(verifier, /tokens_scanned/);
   assert.match(verifier, /not in its own current receipt/);
 });
+
+test('the mobile preview is pinned to the vocabulary, not to one verdict', () => {
+  // It required the literal words "DO NOT SHORTLIST" and broke the moment the
+  // hero started opening on a comparable reference. A named verdict is a fact
+  // about today's data; the vocabulary is a property of the product.
+  const verifier = fs.readFileSync(path.resolve(__dirname, '../verify_public_browser.py'), 'utf8');
+  const block = verifier.split('hero-mobile-decision')[1] || '';
+  assert.ok(!/"DO NOT SHORTLIST" in mobile_decision/.test(block),
+    'the mobile assertion pins one verdict again');
+  assert.match(block, /PUBLIC_STATES/);
+});

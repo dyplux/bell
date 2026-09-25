@@ -476,8 +476,15 @@
       // only ones where a comparison is a thing anyone could attempt. Saying
       // "two thirds of tokenised assets" applied it to all 791 and overstated
       // the finding threefold. State the counts; do not band them into a word.
-      headline.innerHTML = `<strong>${r.refused.toLocaleString()}</strong> of the <strong>${n.toLocaleString()}</strong> comparable-looking<br>`
-        + `tokenised assets <em>cannot honestly be compared</em>`;
+      // The headline stated only the refusal, and every reviewer read it the
+      // same way: this tool tells me no. The refusal is the majority and stays
+      // in the sentence - but the product's output is the comparison it DOES
+      // publish, and that went unmentioned above the fold. Lead with what a
+      // reader can act on, keep the denominator in the same breath.
+      headline.innerHTML = `<strong>${r.comparable.toLocaleString()}</strong> tokenised assets have a `
+        + `<em>cheapest route worth naming</em>.<br>`
+        + `<span class="finding-counter">${r.refused.toLocaleString()} of the ${n.toLocaleString()} `
+        + `comparable-looking ones cannot honestly be compared at all.</span>`;
       lede.innerHTML = `The catalogue holds <strong>${r.population.toLocaleString()}</strong> tokenised references. `
         + `<strong>${r.excluded_single_representation.toLocaleString()}</strong> carry a single representation, so there is nothing to compare and they are excluded. `
         + `Of the remaining <strong>${n.toLocaleString()}</strong> `
@@ -1410,11 +1417,34 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     byId('differentiation').innerHTML = `<div class="diff-column"><span>CMC AND SCREENS SHOW THE CANDIDATES</span><strong>References, wrappers, issuers and latest quote fields</strong><p>That is the discovery and comparison layer. A row being grouped under one reference does not prove that its economic claim, unit or market data is equivalent.</p></div><div class="diff-arrow">→</div><div class="diff-column accent"><span>BELL STRESS-TESTS THE GROUPING</span><strong>A gate across the scanned references before a wrapper enters your shortlist</strong><p>${formatNumber(receipt.universe.states.do_not_compare)} blocked groups, ${formatNumber(receipt.universe.signals.PRICE_DENOMINATION_BREAK || 0)} denomination breaks and ${formatNumber((identity.quote_issuer_ids_missing_from_catalogue || []).length)} unresolved issuer joins in this receipt. This is an integrity decision, not a token ranking.</p></div>`;
   }
 
+  // The affirmative case the hero opens on, chosen by a published rule so the
+  // choice can be checked rather than trusted: the reference with the most
+  // comparable routes, ties broken by the widest spread still inside the
+  // publishable ceiling.
+  const HERO_RULE = 'most comparable routes, then widest publishable spread';
+
+  function heroComparable() {
+    const withComparison = (receipt.alerts || []).filter(item => item && item.comparison
+      && Number(item.comparison.route_count) >= 2);
+    if (!withComparison.length) return null;
+    return withComparison.slice().sort((a, b) =>
+      (b.comparison.route_count - a.comparison.route_count)
+      || (b.comparison.spread_bps - a.comparison.spread_bps))[0];
+  }
+
   function renderDecisionStory() {
     const normalizedQuery = query.trim().toLowerCase();
     const focused = normalizedQuery ? preferredSearchMatch(normalizedQuery) : null;
     const focusedDetail = focused && (receipt.alerts || []).find(item => String(item.rwa_id) === String(focused.rwa_id));
-    const alert = focusedDetail || focused || (!normalizedQuery && !searchAttempted && (receipt.alerts.find(item => item.state === 'do_not_compare') || receipt.alerts.find(item => item.state === 'investigate')));
+    // With nothing searched, this opened on the first blocked reference, so the
+    // first thing a visitor met was the product declining. The gate has a door:
+    // 83 references carry a published comparison, and none of them was ever
+    // shown above the fold. Lead with one, by a stated rule rather than by
+    // taste - most routes, ties broken by the widest publishable spread, which
+    // selects the case where choosing the wrong wrapper costs the most. The
+    // refusal is still one search away and still the honest majority.
+    const alert = focusedDetail || focused
+      || (!normalizedQuery && !searchAttempted && (heroComparable() || receipt.alerts.find(item => item.state === 'do_not_compare') || receipt.alerts.find(item => item.state === 'investigate')));
     const publication = receipt._publication || {};
     if (!alert) {
       byId('hero-case').textContent = normalizedQuery ? 'No reference found' : 'Search a reference';
@@ -1456,15 +1486,38 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     if (alert.issuer_count) caseFacts.push(`${formatNumber(alert.issuer_count)} issuers`);
     if (primaryEvidence.max_min_ratio) caseFacts.push(`${formatNumber(primaryEvidence.max_min_ratio)}× observed price spread`);
     byId('hero-case').textContent = alert.name || 'Current flagged case';
+    // A reference carrying a published comparison was still described by the
+    // rule that let it through, so the card read as a problem report even when
+    // the product had produced its answer. Lead the card with the answer: how
+    // many routes, how far apart, which is cheapest, and whether the cheapest
+    // is the one you can actually fill.
+    const heroComparison = alert.comparison;
+    if (heroComparison) {
+      const cheapest = heroComparison.cheapest || {};
+      const deepest = heroComparison.deepest || {};
+      caseFacts.unshift(`${formatNumber(heroComparison.route_count)} comparable routes`);
+      caseFacts.push(`${Number(heroComparison.spread_bps).toFixed(1)} bps apart`);
+      caseFacts.push(cheapest.symbol
+        ? `cheapest ${cheapest.symbol}${heroComparison.cheapest_is_deepest
+            ? ', also the deepest' : `, but ${deepest.symbol || 'another route'} trades more`}`
+        : 'cheapest route published');
+    }
     byId('hero-case-fact').textContent = caseFacts.join(' · ') || signals || 'Published rule hit';
     const proofReason = byId('hero-proof-reason');
-    const reasonPrefix = alert.state === 'do_not_compare' ? 'Unit or market compatibility needs review' : alert.state === 'investigate' ? 'Identity or market fields need review' : '';
+    const reasonPrefix = heroComparison
+      ? `Prices can be set side by side${(heroComparison.unresolved || []).length
+          ? `, with ${(heroComparison.unresolved || []).length} check${(heroComparison.unresolved || []).length === 1 ? '' : 's'} still open`
+          : ''}`
+      : alert.state === 'do_not_compare' ? 'Unit or market compatibility needs review' : alert.state === 'investigate' ? 'Identity or market fields need review' : '';
     const reasonSignals = significantSignals.slice(0, 3).map(signal => signalLabels[signal.code] || signal.code).join(' · ');
     if (proofReason) proofReason.textContent = [reasonPrefix, reasonSignals].filter(Boolean).join(' · ') || 'No published contradiction in the current rule set';
     const signalList = byId('hero-signal-list');
-    if (signalList) signalList.innerHTML = significantSignals.length
+    const comparableRow = heroComparison
+      ? `<div><span class="hero-signal-severity comparable">COMPARABLE</span><strong>${formatNumber(heroComparison.route_count)} routes share an identity, a unit and a market state</strong><small>${Number(heroComparison.spread_bps).toFixed(1)} bps between cheapest and dearest · selected by rule: ${escapeHTML(HERO_RULE)}</small></div>`
+      : '';
+    if (signalList) signalList.innerHTML = comparableRow + (significantSignals.length
       ? significantSignals.slice(0, 3).map(signal => `<div><span class="hero-signal-severity ${signal.severity === 'critical' ? 'critical' : 'warning'}">${escapeHTML(String(signal.severity || 'signal').toUpperCase())}</span><strong>${escapeHTML(signalLabels[signal.code] || signal.code)}</strong><small>${escapeHTML(signalEvidenceSummary(signal))} · ${escapeHTML(signalSourceLabel(signal.code))}</small></div>`).join('')
-      : '<div><span class="hero-signal-severity checked">CLEAR</span><strong>No published rule hit</strong><small>Observed fields remain descriptive and require external diligence</small></div>';
+      : (comparableRow ? '' : '<div><span class="hero-signal-severity checked">CLEAR</span><strong>No published rule hit</strong><small>Observed fields remain descriptive and require external diligence</small></div>'));
     const quoteContrast = byId('hero-quote-contrast');
     const capitalSignal = byId('hero-capital-signal');
     const pricedTokens = (alert.tokens || []).filter(token => typeof token.price === 'number').sort((a, b) => a.price - b.price);

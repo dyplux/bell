@@ -427,3 +427,9 @@ footer{max-width:2200px;padding-left:64px;padding-right:64px;font-size:12px}
    first screen, under a headline that already leads with a refusal count. The
    affirmative goes first and is the only one in gold. */
 .outcome-affirmative b{color:var(--gold)}
+
+/* O contrapeso da manchete: a recusa continua na frase, em corpo menor,
+   porque e a maioria honesta mas nao e o que o leitor pode accionar. */
+.finding-counter{display:block;margin-top:10px;font:500 clamp(17px,1.7vw,23px)/1.25 var(--font);letter-spacing:-.03em;color:var(--muted)}
+@media(max-width:620px){.finding-counter{font-size:16px;margin-top:8px}}
+.hero-signal-severity.comparable{background:rgba(240,185,66,.14);color:var(--gold);border-color:var(--gold)}

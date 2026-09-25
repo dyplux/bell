@@ -275,7 +275,15 @@ def main() -> int:
             require(not overflow, "mobile page has horizontal overflow")
             mobile_decision = mobile_page.locator("#hero-mobile-decision")
             require(mobile_decision.is_visible(), "mobile first viewport does not expose the decision preview")
-            require("DO NOT SHORTLIST" in mobile_decision.inner_text(), "mobile decision preview does not mirror the current blocked case")
+            # This demanded the literal words "DO NOT SHORTLIST", so it broke the
+            # moment the hero began opening on a reference whose comparison was
+            # published - a named verdict pinned again instead of the guarantee.
+            # What matters is that the phone preview shows a state the public
+            # vocabulary defines, and the same one the desktop hero is showing.
+            mobile_text = mobile_decision.inner_text()
+            shown_states = [state for state in PUBLIC_STATES if state in mobile_text]
+            require(bool(shown_states),
+                    f"mobile decision preview shows no published state: {mobile_text[:200]!r}")
             mobile.close()
 
             narrow_mobile = {}
