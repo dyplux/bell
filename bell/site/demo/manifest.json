@@ -1,0 +1,63 @@
+{
+  "schema_version": "bell.demo-capture.v1",
+  "base": "https://bell.dyplux.com",
+  "frames": [
+    {
+      "file": "01-hero-live.png",
+      "label": "Live first viewport with current case",
+      "reference": null,
+      "viewport": {
+        "width": 1440,
+        "height": 1100
+      }
+    },
+    {
+      "file": "02-silver-blocked.png",
+      "label": "Silver blocked case and observed quote endpoints",
+      "reference": "5",
+      "viewport": {
+        "width": 1440,
+        "height": 1100
+      }
+    },
+    {
+      "file": "03-silver-mobile.png",
+      "label": "Silver blocked case on mobile",
+      "reference": "5",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      }
+    },
+    {
+      "file": "04-marvell-facts-open.png",
+      "label": "Facts-open contrast case",
+      "reference": "70",
+      "viewport": {
+        "width": 1440,
+        "height": 1100
+      }
+    },
+    {
+      "file": "05-gold-repeat-window.png",
+      "label": "Gold repeat-window check",
+      "reference": "1",
+      "viewport": {
+        "width": 1440,
+        "height": 1100
+      }
+    },
+    {
+      "file": "06-population-shape.png",
+      "label": "Published population shape and observed quote spread bands",
+      "reference": null,
+      "viewport": {
+        "width": 1440,
+        "height": 1100
+      }
+    }
+  ],
+  "console_errors": [],
+  "observed_at": "2026-09-25T20:18:53Z",
+  "published_at": "2026-09-25T20:19:15.969Z"
+}

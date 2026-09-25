@@ -647,3 +647,21 @@ test('the boundary is stated, once in full and short thereafter', () => {
   const inline = integrity.split('Backing, redemption, eligibility and custody are not observed here and remain').length - 1;
   assert.ok(inline <= 1, `the full boundary sentence is inlined ${inline} times; use the constant`);
 });
+
+test('every styled hero block keeps a base rule, not only a media override', () => {
+  // The glossary lost its base rule when a CSS block was replaced "from this
+  // marker to end of file", taking the rules that followed with it. It then
+  // rendered as a default <dl> on the first screen, and no test noticed
+  // because none of them look at layout. This asserts the base rules exist
+  // outside any media query.
+  const css = fs.readFileSync(path.join(site, 'visual-overrides.css'), 'utf8');
+  const outsideMedia = css.split('@media')[0] + css.split(/@media[^{]*\{/).map(chunk => {
+    // keep only what follows the closing brace of each media block
+    const parts = chunk.split('\n}\n');
+    return parts.length > 1 ? parts.slice(1).join('\n}\n') : '';
+  }).join('\n');
+  for (const rule of ['.hero-words{display:grid', '.thesis-metrics{grid-template-columns:repeat(4,1fr)}']) {
+    assert.ok(outsideMedia.includes(rule) || css.includes('\n' + rule),
+      `${rule} exists only inside a media query, or not at all`);
+  }
+});

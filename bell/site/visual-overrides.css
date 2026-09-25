@@ -448,3 +448,12 @@ footer{max-width:2200px;padding-left:64px;padding-right:64px;font-size:12px}
 .single-wrapper dd{margin:0;font:12px var(--font);word-break:break-all}
 .single-wrapper code{font:11px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--gold)}
 @media(max-width:620px){.single-wrapper>div{grid-template-columns:1fr;gap:3px}}
+
+/* Regra base do glossario. Existiu, e desapareceu quando substitui um bloco
+   "deste marcador ate ao fim do ficheiro" — o mesmo erro que ja tinha feito
+   com os thesis-metric. Sem ela o glossario renderiza como <dl> por omissao,
+   na primeira dobra, e nenhum teste olhava para estilo renderizado. */
+.hero-words{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin:18px 0 0}
+.hero-words>div{background:#0d141e;padding:11px 13px}
+.hero-words dt{color:var(--gold);font:500 10px var(--font);letter-spacing:.09em;text-transform:uppercase}
+.hero-words dd{margin:5px 0 0;color:var(--muted);font-size:11px;line-height:1.45}
