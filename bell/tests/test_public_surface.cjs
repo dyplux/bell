@@ -665,3 +665,18 @@ test('every styled hero block keeps a base rule, not only a media override', () 
       `${rule} exists only inside a media query, or not at all`);
   }
 });
+
+test('the boundary is not abbreviated by whoever renders first', () => {
+  // The first fix kept a flag and abbreviated whichever call came second. The
+  // order was not what I assumed - the hero copy and the panel under it are
+  // written in two passes that do not share the flag - so both kept printing
+  // the sentence in full. Abbreviating belongs to the place, not to timing.
+  const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
+  assert.ok(!/let boundaryShown/.test(integrity),
+    'the order-dependent flag is back; it did not work the first time');
+  assert.match(integrity, /const shortenBoundary =/);
+  // The full sentence must still exist somewhere, and the short form must be
+  // used where the panel repeats it.
+  assert.match(integrity, /NOT_OBSERVED_FULL/);
+  assert.match(integrity, /shortenBoundary\(assessment\.note\)/);
+});

@@ -13,14 +13,14 @@
   // and stopped being read. Say it in full the first time it is needed in a
   // render, and abbreviate after that. Reset per render, never across renders,
   // so a reader who lands mid-page still meets the full sentence once.
-  let boundaryShown = false;
-  const boundary = text => {
-    const carriesIt = /backing/i.test(String(text || ''));
-    if (!carriesIt) return String(text || '');
-    if (!boundaryShown) { boundaryShown = true; return String(text); }
-    return String(text).replace(
-      /(?:Backing|backing)[^.]*?(?:custody|diligence)[^.]*\./g, NOT_OBSERVED_SHORT);
-  };
+  // First attempt keyed this on render order, and the order is not what I
+  // assumed: the hero copy and the panel below it are written in two passes
+  // that do not share the flag, so both kept printing the sentence in full.
+  // Abbreviating is a property of the PLACE, not of who happened to render
+  // first - the hero states it, anything repeating it underneath shortens it.
+  const shortenBoundary = text => String(text || '').replace(
+    /(?:Backing|backing)[^.]*?(?:custody|diligence)[^.]*\./g, NOT_OBSERVED_SHORT);
+  const boundary = text => String(text || '');
 
   const escapeHTML = value => String(value ?? '').replace(/[&<>'"]/g, character => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[character]));
   const byId = id => document.getElementById(id);
@@ -702,9 +702,9 @@
       <div class="capital-panel-head"><span>CAPITAL CHECK</span><b>Make the financial consequence visible</b></div>
       <label class="capital-budget">Amount under consideration <span>$</span><input type="number" min="1" max="1000000000" step="100" value="${assessment.budget}" inputmode="decimal" data-capital-budget aria-label="Amount under consideration"></label>
       <strong data-capital-headline>${escapeHTML(assessment.headline)}</strong>
-      <p data-capital-copy>${escapeHTML(boundary(assessment.copy))}</p>
+      <p data-capital-copy>${escapeHTML(shortenBoundary(assessment.copy))}</p>
       <div data-capital-metrics>${metrics}</div>
-      <small data-capital-note>${escapeHTML(assessment.note)}</small>
+      <small data-capital-note>${escapeHTML(shortenBoundary(assessment.note))}</small>
     </section>`;
   }
 
@@ -1492,7 +1492,6 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
   }
 
   function renderDecisionStory() {
-    boundaryShown = false;
     const normalizedQuery = query.trim().toLowerCase();
     const focused = normalizedQuery ? preferredSearchMatch(normalizedQuery) : null;
     const focusedDetail = focused && (receipt.alerts || []).find(item => String(item.rwa_id) === String(focused.rwa_id));
