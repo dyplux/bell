@@ -623,7 +623,20 @@
     proof.textContent = reportedValue > 0
       ? `The top five issuer labels hold ${(topFive / reportedValue * 100).toFixed(1)}% of positive reported market cap across ${positiveRows.toLocaleString()} rows. ${nonPositiveRows.toLocaleString()} rows have no positive market-cap field`
       : 'No positive market-cap fields were available for the population concentration check';
-    metrics.innerHTML = `<div class="thesis-metric blocked"><strong>${blocked.toLocaleString()}</strong><span>do not shortlist</span></div><div class="thesis-metric investigate"><strong>${investigate.toLocaleString()}</strong><span>investigate first</span></div><div class="thesis-metric clear"><strong>${clear.toLocaleString()}</strong><span>facts open</span></div><div class="thesis-metric comparable"><strong>${comparable.toLocaleString()}</strong><span>comparison published</span></div>`;
+    // Four tiles of equal weight read as four parts of one whole. Three of
+    // these are: every reference is blocked, investigate or facts-open, and
+    // they sum to the population. The fourth is not a fourth state - it is a
+    // slice across the other three (0 of the blocked, 42 of the investigate,
+    // 41 of the facts-open on one observation), so presenting it alongside
+    // them made the page appear to count past its own population. Say which
+    // it is, on the tile.
+    const partition = blocked + investigate + clear;
+    metrics.innerHTML = `<div class="thesis-metric blocked"><strong>${blocked.toLocaleString()}</strong><span>do not shortlist</span></div>`
+      + `<div class="thesis-metric investigate"><strong>${investigate.toLocaleString()}</strong><span>investigate first</span></div>`
+      + `<div class="thesis-metric clear"><strong>${clear.toLocaleString()}</strong><span>facts open</span></div>`
+      + `<div class="thesis-metric comparable subset"><strong>${comparable.toLocaleString()}</strong>`
+      + `<span>comparison published</span>`
+      + `<small>not a fourth state &mdash; a slice across the ${partition.toLocaleString()} above</small></div>`;
   }
 
   function renderCompactEvidence(item) {

@@ -111,6 +111,27 @@ def _no_route_reason(representations: list) -> str:
     return 'FEWER_THAN_TWO_SPOT_REPRESENTATIONS'
 
 
+COVERAGE_CODES = {'REPRESENTATIONS_WITHOUT_A_PRICE', 'REPRESENTATIONS_QUOTED_BUT_UNTRADED'}
+
+
+def _split_refusals(reasons) -> dict:
+    """Source incompleteness versus data that contradicts itself.
+
+    Anything unrecognised counts as a contradiction, so a rule added later is
+    never quietly filed under "not our problem".
+    """
+    coverage = sum(n for code, n in reasons.items() if code in COVERAGE_CODES)
+    contradiction = sum(n for code, n in reasons.items() if code not in COVERAGE_CODES)
+    total = coverage + contradiction
+    return {
+        'source_coverage': coverage,
+        'data_contradiction': contradiction,
+        'coverage_share': round(coverage / total, 4) if total else 0.0,
+        'coverage_codes': sorted(COVERAGE_CODES),
+        'counts': 'reasons, not references: one reference can fail more than one rule',
+    }
+
+
 def measure(receipt: dict) -> dict:
     index = receipt.get('alert_index') or []
     population = len(index)
@@ -160,6 +181,13 @@ def measure(receipt: dict) -> dict:
         'refusal_rate': (len(refused) / len(considered)) if considered else 0.0,
         'refusal_rate_ci95': [lo, hi],
         'refusal_reasons': dict(reasons.most_common()),
+        # Two different things were being added into one rate. A refusal because
+        # CoinMarketCap publishes no price for the second wrapper is a COVERAGE
+        # fact about the source; a refusal because the rows that exist disagree
+        # is a CONTRADICTION found in the data. Reported as one 64.3%, it reads
+        # as an indictment of the market when most of it is an incomplete
+        # catalogue. Publish the split so nobody has to re-derive it.
+        'refusal_split': _split_refusals(reasons),
         'method': {
             'population': 'every reference in the captured RWA map',
             'denominator': f'references with >= {MIN_REPRESENTATIONS} token representations',
@@ -207,9 +235,25 @@ def main() -> int:
     print(f"  Refusal rate  {rate:.1f}%   (95% CI {lo:.1f}% to {hi:.1f}%, "
           f"n = {result['denominator_two_or_more_representations']})")
     print()
+    split = result['refusal_split']
+    reason_total = split['source_coverage'] + split['data_contradiction']
+    print(f"  the {reason_total} reasons behind those {result['refused']} refusals:")
+    print(f"    {split['source_coverage']:>4}  the catalogue offers no second number to compare "
+          f"({split['coverage_share']:.0%})")
+    print(f"    {split['data_contradiction']:>4}  the rows that do exist contradict each other")
+    if reason_total != result['refused']:
+        # Say it rather than let the arithmetic look wrong: a reference can fail
+        # more than one rule, so reasons outnumber references.
+        print(f"    (reasons exceed references by {reason_total - result['refused']}: "
+              f"a reference can fail more than one rule)")
+    print()
+    print('  The first group is CoinMarketCap coverage, not a finding about the market.')
+    print('  The second is a contradiction this scanner located in the published data.')
+    print()
     print('  why the refusals fire:')
     for code, count in result['refusal_reasons'].items():
-        print(f'    {count:>4}  {code}')
+        marker = '  (coverage)' if code in COVERAGE_CODES else ''
+        print(f'    {count:>4}  {code}{marker}')
     print()
     print('  Comparable means the prices can honestly be set side by side. It says')
     print('  nothing about backing, redemption, eligibility or custody. A refusal is')

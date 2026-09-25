@@ -232,3 +232,46 @@ class EveryPublishedCountIsPinnedToAnArtefact(unittest.TestCase):
         self.assertNotEqual(stated, '1,440',
                             'the receipt now reports the figure the documents used to claim, '
                             'so this test no longer proves anything')
+
+
+class TheRefusalSplitIsPublishedAndAddsUp(unittest.TestCase):
+    """64.3% read as a verdict on the market. Most of it is a verdict on the
+    catalogue, and the product had the breakdown all along without printing it.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        cls.result = measured()
+        with open(README, encoding='utf-8') as handle:
+            cls.text = handle.read()
+
+    def test_the_split_separates_coverage_from_contradiction(self):
+        split = self.result['refusal_split']
+        self.assertGreater(split['source_coverage'], 0)
+        self.assertGreater(split['data_contradiction'], 0)
+        self.assertEqual(
+            split['source_coverage'] + split['data_contradiction'],
+            sum(self.result['refusal_reasons'].values()),
+            'the split drops or double-counts a reason')
+
+    def test_the_readme_states_the_measured_split(self):
+        split = self.result['refusal_split']
+        self.assertIn(str(split['source_coverage']), self.text)
+        self.assertIn(str(split['data_contradiction']), self.text)
+
+    def test_the_readme_admits_reasons_outnumber_references(self):
+        # Reasons sum past the reference count because a reference can fail more
+        # than one rule. Printing both without saying so would be exactly the
+        # unreconciled arithmetic this project corrects elsewhere.
+        reasons = sum(self.result['refusal_reasons'].values())
+        if reasons != self.result['refused']:
+            self.assertIn(str(reasons), self.text)
+            self.assertIn('more than one rule', self.text)
+
+    def test_an_unknown_code_counts_as_a_contradiction_not_coverage(self):
+        # A rule added later must not be quietly filed under "not our problem".
+        from collections import Counter
+        from base_rate import _split_refusals
+        split = _split_refusals(Counter({'A_BRAND_NEW_RULE': 5}))
+        self.assertEqual(split['data_contradiction'], 5)
+        self.assertEqual(split['source_coverage'], 0)

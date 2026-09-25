@@ -579,3 +579,13 @@ test('the mobile preview is pinned to the vocabulary, not to one verdict', () =>
     'the mobile assertion pins one verdict again');
   assert.match(block, /PUBLIC_STATES/);
 });
+
+test('the fourth tile says it is a slice, not a fourth state', () => {
+  // Three states partition the population; "comparison published" cuts across
+  // all three. Shown as a fourth equal tile, the band appeared to count past
+  // its own population - 38 + 91 + 663 = 792, then 83 more.
+  const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
+  assert.match(integrity, /thesis-metric comparable subset/);
+  assert.match(integrity, /not a fourth state/);
+  assert.match(integrity, /const partition = blocked \+ investigate \+ clear/);
+});

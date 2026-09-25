@@ -49,6 +49,24 @@ with `make base-rate`, offline, with no API key:
   Refusal rate  64.3%   (95% CI 58.2% to 70.1%, n = 244)
 ```
 
+Read on its own, 64.3% sounds like a verdict on the market. It is mostly a
+verdict on the catalogue. The 157 refusals break down into two very different
+things:
+
+```
+    120  the catalogue offers no second number to compare   (76%)
+     38  the rows that do exist contradict each other
+```
+
+The first group is CoinMarketCap coverage: no price published for the second
+wrapper, or a quote with no traded volume behind it. There is nothing to
+compare against, so nothing can be compared — that is a fact about the source,
+not a finding about the assets. The second group is the part this scanner
+actually found: rows that exist and disagree, including 4 references quoted in
+different units and 30 reporting traded volume against a zero market cap.
+
+(158 reasons against 157 references: one reference fails more than one rule.)
+
 The interval is a Wilson score interval, which stays honest near the edges of
 the distribution where the normal approximation does not. The single-
 representation majority is excluded from the denominator rather than scored as
