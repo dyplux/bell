@@ -699,7 +699,30 @@
   function referenceConcentrationPanel(alert) {
     const tokens = alert?.tokens || alert?.representations || [];
     if (tokens.length < 2) {
-      return `<section class="reference-concentration-panel"><div class="reference-concentration-head"><span>ISSUER CONCENTRATION</span><b>SINGLE REPRESENTATION</b></div><p>This reference has one observed representation, so there is no issuer concentration comparison to make.</p><small>Check the instrument, issuer, backing, redemption and execution terms directly.</small></section>`;
+      // 545 of 791 references carry one representation, and for all of them the
+      // page used to say only that there was nothing to compare. That is 69% of
+      // the catalogue receiving a non-answer while the data to answer sat in
+      // the same row: which wrapper it is, who issues it, on what chain, at what
+      // contract, and whether anyone traded it. "No comparison" is a true
+      // statement about the ranking; it is not an answer to the question a
+      // holder actually arrived with.
+      const only = tokens[0] || {};
+      const place = (only.platforms || [])[0] || {};
+      const traded = Number(only.volume_24h) > 0;
+      const facts = [
+        ['WRAPPER', `${escapeHTML(only.symbol || '—')}${only.name ? ` · ${escapeHTML(only.name)}` : ''}`],
+        ['ISSUER', escapeHTML(only.issuer_name || 'not resolved in the issuer catalogue')],
+        ['CHAIN', place.name ? escapeHTML(place.name) : 'not published for this row'],
+        ['CONTRACT', place.contract_address
+          ? `<code>${escapeHTML(String(place.contract_address))}</code>` : 'not published for this row'],
+        ['24H VOLUME', traded
+          ? `${formatNumber(only.volume_24h)} observed`
+          : 'none observed — quoted, but nobody traded it in the window'],
+      ];
+      return `<section class="reference-concentration-panel"><div class="reference-concentration-head"><span>THE ONE WRAPPER</span><b>SINGLE REPRESENTATION</b></div>`
+        + `<p>One representation, so there is no wrapper ranking to perform. This is what you would be holding.</p>`
+        + `<dl class="single-wrapper">${facts.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('')}</dl>`
+        + `<small>Identity, chain and venue as CoinMarketCap published them. Backing, redemption, eligibility and custody are not observed here and remain your diligence.</small></section>`;
     }
     const groups = new Map();
     let missing = 0;

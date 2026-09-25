@@ -128,6 +128,8 @@ def main() -> int:
                 "single_representation": "SINGLE REPRESENTATION",
             }
 
+            matched_item = None
+
             def expected_for(name: str) -> str:
                 needle = name.lower()
                 candidates = receipt.get("alert_index", [])
@@ -138,6 +140,8 @@ def main() -> int:
                 # the reader is holding, not by the state that let it through.
                 # Asserting the state alone made this check demand INVESTIGATE
                 # on a page correctly showing COMPARABLE.
+                nonlocal matched_item
+                matched_item = item
                 if item.get("comparison"):
                     return "COMPARABLE"
                 if item.get("state") == "no_flags" and int(item.get("token_count") or 0) == 1:
@@ -152,8 +156,17 @@ def main() -> int:
                 result_text = result.inner_text()
                 expected = expected_for(name)
                 require(expected in result_text, f"{name} did not mirror receipt state {expected!r}: {result_text[:500]!r}")
-                if expected != "SINGLE REPRESENTATION":
-                    require("observed quote" in result_text.lower(), f"{name} did not expose observed evidence: {result_text[:500]!r}")
+                # A quote band needs two rows to compare. This asked for one
+                # whenever the STATE was not "SINGLE REPRESENTATION", which is a
+                # different question: a reference can carry one representation
+                # and still be blocked by a contradiction inside that row, and
+                # then there is no band to show and none should be demanded.
+                # Assert on what exists, not on the label.
+                rows = int((matched_item or {}).get("token_count") or 0)
+                if rows >= 2:
+                    require("observed quote" in result_text.lower(),
+                            f"{name} has {rows} representations and exposes no observed evidence: "
+                            f"{result_text[:400]!r}")
                 if expected == "COMPARABLE":
                     # The affirmative has to carry its consequence, or the badge
                     # is decoration. The page said COMPARABLE while the capital
@@ -225,6 +238,24 @@ def main() -> int:
             # already proves the page mirrors the current receipt, so what is
             # worth asserting here is that whatever state it lands in is one the
             # public vocabulary defines.
+            # A reference with ONE representation - 545 of 791 - exercises a branch
+            # that every search in this audit used to miss, because Silver,
+            # Marvell and Tesla all carry several. A ReferenceError lived in it
+            # undetected for exactly that reason, aborting the render and leaving
+            # the panel above showing a previous case.
+            single = next((row for row in receipt.get("alert_index", [])
+                           if int(row.get("token_count") or 0) == 1
+                           and any(str(row.get("name", "")).lower() == str(item.get("name", "")).lower()
+                                   for item in receipt.get("alerts", []))), None)
+            if single:
+                single_state = search_and_check(single["name"])
+                body = page.locator("#decision-hero").inner_text()
+                require("THE ONE WRAPPER" in body,
+                        f"a single-representation reference ({single['name']}) renders no wrapper "
+                        f"card: {body[:200]!r}")
+                require("ISSUER" in body and "CHAIN" in body,
+                        "the single-wrapper card omits the issuer or the chain")
+
             tesla_state = search_and_check("Tesla")
             require(tesla_state in PUBLIC_STATES,
                     f"Tesla rendered a state outside the published vocabulary: {tesla_state!r}")

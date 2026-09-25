@@ -589,3 +589,39 @@ test('the fourth tile says it is a slice, not a fourth state', () => {
   assert.match(integrity, /not a fourth state/);
   assert.match(integrity, /const partition = blocked \+ investigate \+ clear/);
 });
+
+test('a single-representation reference gets an answer, not only a refusal', () => {
+  // 545 of 791 references carry one representation. The page told all of them
+  // "nothing to compare" while the answer sat in the same row.
+  //
+  // The first version of this test grepped the source for the field names and
+  // passed while the code threw a ReferenceError on every call - it referred to
+  // a variable that does not exist in that scope, so the whole render aborted
+  // and the panel above it silently kept stale content. `node --check` saw
+  // valid syntax and the browser audit searched only references with two or
+  // more representations, so nothing exercised the branch. This runs it.
+  const src = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
+  const start = src.indexOf('function referenceConcentrationPanel');
+  assert.ok(start > 0, 'the single-representation branch is gone');
+  let depth = 0, i = src.indexOf('{', start), end = i;
+  for (; i < src.length; i++) {
+    if (src[i] === '{') depth++;
+    else if (src[i] === '}' && --depth === 0) { end = i; break; }
+  }
+  const fn = new Function('escapeHTML', 'formatNumber',
+    'return ' + src.slice(start, end + 1))(v => String(v ?? ''), v => String(v));
+
+  const html = fn({ representations: [{
+    symbol: 'wICEx', name: 'Wrapped ICE', issuer_name: 'Backed Assets',
+    volume_24h: 83943, platforms: [{ name: 'X Layer', contract_address: '0xabc123' }],
+  }] });
+  for (const shown of ['THE ONE WRAPPER', 'wICEx', 'Backed Assets', 'X Layer', '0xabc123']) {
+    assert.ok(html.includes(shown), `the single-wrapper card does not state ${shown}`);
+  }
+  assert.match(html, /Backing, redemption, eligibility and custody are not observed/);
+
+  // An untraded wrapper must say so rather than print a silent zero.
+  const untraded = fn({ representations: [{ symbol: 'DEAD', volume_24h: 0, platforms: [] }] });
+  assert.match(untraded, /nobody traded it/);
+  assert.match(untraded, /not published for this row/);
+});
