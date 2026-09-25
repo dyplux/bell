@@ -7,6 +7,7 @@ const site = path.resolve(__dirname, '../site');
 const page = fs.readFileSync(path.join(site, 'index.html'), 'utf8');
 const explorer = fs.readFileSync(path.join(site, 'explorer.js'), 'utf8');
 const visualOverrides = fs.readFileSync(path.join(site, 'visual-overrides.css'), 'utf8');
+const integrityCss = fs.readFileSync(path.join(site, 'integrity.css'), 'utf8');
 const catalogue = JSON.parse(fs.readFileSync(path.join(site, 'catalog.json'), 'utf8'));
 
 test('public page exposes the single-URL RWA discovery and evidence path', () => {
@@ -234,7 +235,23 @@ test('a query outside the live receipt is routed to the complete RWA map', () =>
 
 test('mobile navigation keeps every primary destination visible', () => {
   assert.match(visualOverrides, /\.topbar nav\{overflow-x:visible;gap:7px\}/);
-  assert.match(visualOverrides, /\.topbar nav a\{font-size:10px/);
+  assert.match(visualOverrides, /\.topbar nav a\{font-size:1[2-9]px/);
+});
+
+// This assertion used to pin `font-size:10px`, which meant the suite was
+// guarding the defect: 79% of declared sizes sat at 12px or below and three
+// rules rendered at 7px. A floor is the thing worth pinning, not one number.
+test('no declared font size falls below the legibility floor', () => {
+  const FLOOR = 11;
+  const offenders = [];
+  for (const [name, sheet] of [['integrity.css', integrityCss], ['visual-overrides.css', visualOverrides]]) {
+    for (const decl of sheet.match(/(?:font|font-size)\s*:[^;}]+/g) || []) {
+      for (const px of decl.match(/\b(\d+(?:\.\d+)?)px/g) || []) {
+        if (parseFloat(px) < FLOOR) offenders.push(`${name}: ${decl.trim().slice(0, 60)}`);
+      }
+    }
+  }
+  assert.deepEqual(offenders, [], `font sizes below ${FLOOR}px: ${offenders.join(' | ')}`);
 });
 
 test('mobile evidence text wraps instead of hiding the source line', () => {
