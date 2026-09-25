@@ -680,3 +680,72 @@ test('the boundary is not abbreviated by whoever renders first', () => {
   assert.match(integrity, /NOT_OBSERVED_FULL/);
   assert.match(integrity, /shortenBoundary\(assessment\.note\)/);
 });
+
+// ---------------------------------------------------------------------------
+// Running the code, not reading it.
+//
+// An auditor counted this file: 50 tests, 123 assertions matching regexes
+// against source text, and exactly one that executed anything. That is not a
+// stylistic preference - a render function in this same file shipped throwing
+// a ReferenceError on every call while its grep-based test passed, because a
+// string being present in a file says nothing about whether the code runs.
+// This helper extracts a function by name and executes it against stubs, so
+// the assertions below are about behaviour.
+function runFromSource(name, deps = {}) {
+  const src = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
+  const at = src.indexOf(`function ${name}(`);
+  assert.ok(at > 0, `${name} no longer exists in integrity.js`);
+  let depth = 0, i = src.indexOf('{', at), end = i;
+  for (; i < src.length; i++) {
+    if (src[i] === '{') depth++;
+    else if (src[i] === '}' && --depth === 0) { end = i; break; }
+  }
+  const names = Object.keys(deps);
+  return new Function(...names, `return ${src.slice(at, end + 1)}`)(...names.map(k => deps[k]));
+}
+
+test('the public label follows the decision, executed not grepped', () => {
+  const label = runFromSource('displayDecisionLabel');
+  // A published comparison outranks the state that let it through.
+  assert.equal(label({ state: 'investigate', comparison: { route_count: 3 } }), 'COMPARABLE');
+  assert.equal(label({ state: 'no_flags', comparison: { route_count: 2 } }), 'COMPARABLE');
+  // A blocked reference is never labelled comparable, even with a comparison.
+  assert.equal(label({ state: 'do_not_compare', comparison: { route_count: 5 } }), 'DO NOT SHORTLIST');
+  // One representation is not a comparison.
+  assert.equal(label({ state: 'no_flags', token_count: 1 }), 'SINGLE REPRESENTATION');
+  assert.equal(label({ state: 'no_flags', token_count: 4 }), 'FACTS OPEN');
+  assert.equal(label({ state: 'investigate' }), 'INVESTIGATE');
+  // Every label it can return must be in the published vocabulary.
+  const vocabulary = new Set(['COMPARABLE', 'DO NOT SHORTLIST', 'INVESTIGATE', 'FACTS OPEN', 'SINGLE REPRESENTATION']);
+  for (const item of [{ state: 'investigate', comparison: {} }, { state: 'no_flags', token_count: 1 },
+                      { state: 'do_not_compare' }, { state: 'no_flags' }]) {
+    assert.ok(vocabulary.has(label(item)), `${label(item)} is outside the published vocabulary`);
+  }
+});
+
+test('the hero picks by the published rule, executed not grepped', () => {
+  // The rule is "most comparable routes, ties broken by widest spread". If it
+  // silently became "first in the list", the page would still look right and
+  // the choice would no longer be checkable.
+  const alerts = [
+    { name: 'few', comparison: { route_count: 2, spread_bps: 900 } },
+    { name: 'most', comparison: { route_count: 7, spread_bps: 10 } },
+    { name: 'tie-loser', comparison: { route_count: 7, spread_bps: 5 } },
+    { name: 'no comparison' },
+    { name: 'single route', comparison: { route_count: 1, spread_bps: 999 } },
+  ];
+  const pick = runFromSource('heroComparable', { receipt: { alerts } });
+  assert.equal(pick().name, 'most', 'route count must win over a wider spread');
+
+  const tied = runFromSource('heroComparable', {
+    receipt: { alerts: [alerts[2], alerts[1]] } });
+  assert.equal(tied().name, 'most', 'a tie on routes must break on the wider spread');
+
+  // A reference with one route is not a comparison and must never be chosen.
+  const onlySingle = runFromSource('heroComparable', {
+    receipt: { alerts: [alerts[4], alerts[3]] } });
+  assert.equal(onlySingle(), null, 'a one-route reference was offered as a comparison');
+
+  // No comparisons at all must yield null so the caller can fall back.
+  assert.equal(runFromSource('heroComparable', { receipt: { alerts: [] } })(), null);
+});
