@@ -5,6 +5,20 @@ import worker from '../src/index.js';
 
 const assets = { fetch: async () => new Response('asset', { status: 200 }) };
 
+// A map containing one reference. The refresh branch asks the published map
+// whether a slug exists, so a test of that branch has to serve a map - the
+// previous stubs answered two queries against ONE table with a miss and a hit,
+// which is a database state that cannot occur, and the branch they covered was
+// unreachable in production.
+// One map, as in production. The worker caches it in the isolate, so handing
+// different tests different maps made them depend on execution order - a
+// fragility that would have hidden a real bug rather than revealed one.
+const mapWith = (...slugs) => ({
+  fetch: async request => (new URL(request.url).pathname === '/catalog.json'
+    ? new Response(JSON.stringify({ assets: slugs.map(slug => ({ slug })) }), { status: 200 })
+    : new Response('asset', { status: 200 })),
+});
+
 test('health endpoint is public and JSON', async () => {
   const response = await worker.fetch(new Request('https://example.test/api/health'), { ASSETS: assets });
   assert.equal(response.status, 200);
@@ -77,11 +91,10 @@ test('a reference in the published map queues a refresh; an unknown one does not
   // credential-holding publisher performs against the CoinMarketCap API, so an
   // unauthenticated GET with an arbitrary slug could spend our credits without
   // bound. Only a reference the map actually contains may queue.
-  const known = { ASSETS: assets, DB: { prepare(sql) { return {
+  const known = { ASSETS: mapWith('nvidia', 'silver'), DB: { prepare(sql) { return {
     bind() { return this; },
     async first() {
       if (/SELECT \* FROM dossiers/.test(sql)) return null;      // nothing published yet
-      if (/SELECT 1 AS hit FROM dossiers/.test(sql)) return { hit: 1 };  // but it is in the map
       if (/status IN \('queued', 'leased'\)/.test(sql)) return null;
       if (/COUNT\(\*\)/.test(sql)) return { queued: 0 };
       return null;
@@ -168,11 +181,12 @@ test('integrity publication requires the publisher token', async () => {
 
 test('the refresh queue has a hard hourly ceiling', async () => {
   const inserts = [];
-  const env = { ASSETS: assets, DB: { prepare(sql) { return {
+  // The slug must be in the map, or it is declined before the cap is reached -
+  // the cap is what this test is about.
+  const env = { ASSETS: mapWith('nvidia', 'silver'), DB: { prepare(sql) { return {
     bind() { return this; },
     async first() {
       if (/SELECT \* FROM dossiers/.test(sql)) return null;
-      if (/SELECT 1 AS hit FROM dossiers/.test(sql)) return { hit: 1 };
       if (/status IN \('queued', 'leased'\)/.test(sql)) return null;
       if (/COUNT\(\*\)/.test(sql)) return { queued: 50 };        // cap already reached
       return null;

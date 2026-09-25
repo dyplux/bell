@@ -54,9 +54,37 @@ async function withinGlobalRefreshCap(env) {
   return Number(row?.queued || 0) < REFRESH_JOBS_PER_HOUR;
 }
 
+// The published map, cached in the isolate. Rebuilt at most once an hour.
+let mapSlugs = null;
+let mapSlugsAt = 0;
+const MAP_SLUG_TTL_MS = 60 * 60 * 1000;
+
 async function knownSlug(env, slug) {
-  const row = await env.DB.prepare('SELECT 1 AS hit FROM dossiers WHERE slug = ?1').bind(slug).first();
-  return Boolean(row);
+  // This asked `SELECT 1 FROM dossiers WHERE slug = ?1` - the same table whose
+  // miss is the only reason we are here. It could never be true, so the refresh
+  // branch below it was dead, `refresh_queued` was always false, and the page
+  // told the reader "A request is queued automatically" for work that was never
+  // scheduled. The worker test passed only because its stub answered one query
+  // with null and the other with a row, against one table: a database state
+  // that cannot exist.
+  //
+  // The question is whether the MAP contains this reference, and the map is
+  // catalog.json, which this worker already serves.
+  const now = Date.now();
+  if (!mapSlugs || now - mapSlugsAt > MAP_SLUG_TTL_MS) {
+    try {
+      const res = await env.ASSETS.fetch(new Request('https://assets.local/catalog.json'));
+      if (!res.ok) return false;
+      const catalogue = await res.json();
+      const rows = Array.isArray(catalogue) ? catalogue : (catalogue.assets || []);
+      mapSlugs = new Set(rows.map(row => String(row && row.slug || '').toLowerCase()).filter(Boolean));
+      mapSlugsAt = now;
+    } catch (error) {
+      // Unreadable map: decline rather than queue work we cannot justify.
+      return false;
+    }
+  }
+  return mapSlugs.has(String(slug).toLowerCase());
 }
 
 async function enqueueRefresh(env, slug) {
