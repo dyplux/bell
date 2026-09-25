@@ -608,8 +608,13 @@ test('a single-representation reference gets an answer, not only a refusal', () 
     if (src[i] === '{') depth++;
     else if (src[i] === '}' && --depth === 0) { end = i; break; }
   }
-  const fn = new Function('escapeHTML', 'formatNumber',
-    'return ' + src.slice(start, end + 1))(v => String(v ?? ''), v => String(v));
+  // The card reads the shared boundary constants, so the harness has to supply
+  // them - running the function in isolation is what caught that coupling.
+  const fn = new Function('escapeHTML', 'formatNumber', 'NOT_OBSERVED_FULL', 'NOT_OBSERVED_SHORT',
+    'return ' + src.slice(start, end + 1))(
+      v => String(v ?? ''), v => String(v),
+      'Backing, redemption, eligibility and custody are not observed here and remain your diligence.',
+      'Not observed: backing · redemption · eligibility · custody');
 
   const html = fn({ representations: [{
     symbol: 'wICEx', name: 'Wrapped ICE', issuer_name: 'Backed Assets',
@@ -624,4 +629,21 @@ test('a single-representation reference gets an answer, not only a refusal', () 
   const untraded = fn({ representations: [{ symbol: 'DEAD', volume_24h: 0, platforms: [] }] });
   assert.match(untraded, /nobody traded it/);
   assert.match(untraded, /not published for this row/);
+});
+
+test('the boundary is stated, once in full and short thereafter', () => {
+  // The same four words appeared five times on one screen. The monitor really
+  // does not observe backing, redemption, eligibility or custody, so the
+  // sentence has to be there - but said five times it stops being read and
+  // crowds out the answer the reader came for.
+  const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
+  assert.match(integrity, /const NOT_OBSERVED_FULL =/);
+  assert.match(integrity, /const NOT_OBSERVED_SHORT =/);
+  // The boundary must still name all four things somewhere.
+  for (const word of ['Backing', 'redemption', 'eligibility', 'custody']) {
+    assert.ok(integrity.includes(word), `the boundary no longer names ${word}`);
+  }
+  // And the full sentence must not be pasted inline again.
+  const inline = integrity.split('Backing, redemption, eligibility and custody are not observed here and remain').length - 1;
+  assert.ok(inline <= 1, `the full boundary sentence is inlined ${inline} times; use the constant`);
 });

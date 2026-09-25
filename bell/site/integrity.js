@@ -1,4 +1,27 @@
 (() => {
+  // The same boundary was spelled out five times on one screen. It has to be
+  // said - the monitor genuinely does not observe any of it - but said five
+  // times it stops being read, and it crowds out the answer the reader came
+  // for. Full sentence once, where the decision is stated; a compact marker
+  // everywhere else, pointing at the same four words.
+  const NOT_OBSERVED_FULL = 'Backing, redemption, eligibility and custody are not observed here and remain your diligence.';
+  const NOT_OBSERVED_SHORT = 'Not observed: backing · redemption · eligibility · custody';
+
+  // The receipt carries this boundary on several fields, correctly - a receipt
+  // should state its own limits wherever it is read. The page then printed
+  // every one of them, so the same four words landed five times on one screen
+  // and stopped being read. Say it in full the first time it is needed in a
+  // render, and abbreviate after that. Reset per render, never across renders,
+  // so a reader who lands mid-page still meets the full sentence once.
+  let boundaryShown = false;
+  const boundary = text => {
+    const carriesIt = /backing/i.test(String(text || ''));
+    if (!carriesIt) return String(text || '');
+    if (!boundaryShown) { boundaryShown = true; return String(text); }
+    return String(text).replace(
+      /(?:Backing|backing)[^.]*?(?:custody|diligence)[^.]*\./g, NOT_OBSERVED_SHORT);
+  };
+
   const escapeHTML = value => String(value ?? '').replace(/[&<>'"]/g, character => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[character]));
   const byId = id => document.getElementById(id);
   const labelDatedReplayLinks = () => {
@@ -679,7 +702,7 @@
       <div class="capital-panel-head"><span>CAPITAL CHECK</span><b>Make the financial consequence visible</b></div>
       <label class="capital-budget">Amount under consideration <span>$</span><input type="number" min="1" max="1000000000" step="100" value="${assessment.budget}" inputmode="decimal" data-capital-budget aria-label="Amount under consideration"></label>
       <strong data-capital-headline>${escapeHTML(assessment.headline)}</strong>
-      <p data-capital-copy>${escapeHTML(assessment.copy)}</p>
+      <p data-capital-copy>${escapeHTML(boundary(assessment.copy))}</p>
       <div data-capital-metrics>${metrics}</div>
       <small data-capital-note>${escapeHTML(assessment.note)}</small>
     </section>`;
@@ -722,7 +745,7 @@
       return `<section class="reference-concentration-panel"><div class="reference-concentration-head"><span>THE ONE WRAPPER</span><b>SINGLE REPRESENTATION</b></div>`
         + `<p>One representation, so there is no wrapper ranking to perform. This is what you would be holding.</p>`
         + `<dl class="single-wrapper">${facts.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('')}</dl>`
-        + `<small>Identity, chain and venue as CoinMarketCap published them. Backing, redemption, eligibility and custody are not observed here and remain your diligence.</small></section>`;
+        + `<small>Identity, chain and venue as CoinMarketCap published them. ${NOT_OBSERVED_FULL}</small></section>`;
     }
     const groups = new Map();
     let missing = 0;
@@ -858,7 +881,7 @@
     const open = (c.unresolved || []).length
       ? `<p class="comparison-open"><span>STILL OPEN</span> ${escapeHTML((c.unresolved || []).join(' · '))}. The route filter drops derivatives, keys on the token id rather than the ticker, and excludes rows without both a price and traded volume, so these do not block the comparison - but they are not resolved.</p>`
       : '';
-    return `<div class="comparison-block"><div class="comparison-head"><span>COMPARABLE</span><strong>${Number(c.spread_bps).toFixed(1)} bps</strong><small>${c.route_count} tradable representations</small></div><p class="comparison-fill">${fill}</p><table class="comparison-table"><thead><tr><th>route</th><th>issuer</th><th class="num">price</th><th class="num">vs cheapest</th><th class="num">share of volume</th></tr></thead><tbody>${rows}</tbody></table>${open}<p class="comparison-limits">A price comparison of the representations CoinMarketCap returned. Backing, redemption, eligibility and custody are not observed here.</p></div>`;
+    return `<div class="comparison-block"><div class="comparison-head"><span>COMPARABLE</span><strong>${Number(c.spread_bps).toFixed(1)} bps</strong><small>${c.route_count} tradable representations</small></div><p class="comparison-fill">${fill}</p><table class="comparison-table"><thead><tr><th>route</th><th>issuer</th><th class="num">price</th><th class="num">vs cheapest</th><th class="num">share of volume</th></tr></thead><tbody>${rows}</tbody></table>${open}<p class="comparison-limits">A price comparison of the representations CoinMarketCap returned. ${NOT_OBSERVED_SHORT}</p></div>`;
   }
 
   function renderAlertRow(alert) {
@@ -1469,6 +1492,7 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
   }
 
   function renderDecisionStory() {
+    boundaryShown = false;
     const normalizedQuery = query.trim().toLowerCase();
     const focused = normalizedQuery ? preferredSearchMatch(normalizedQuery) : null;
     const focusedDetail = focused && (receipt.alerts || []).find(item => String(item.rwa_id) === String(focused.rwa_id));
@@ -1578,7 +1602,10 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
       const capitalHeadline = byId('hero-capital-headline');
       const capitalCopy = byId('hero-capital-copy');
       if (capitalHeadline) capitalHeadline.textContent = capital.headline;
-      if (capitalCopy) capitalCopy.textContent = capital.note;
+      // The hero and the panel below render the same capital assessment, so the
+      // same boundary sentence landed twice within one screen. The first one to
+      // render states it; the second points back at it.
+      if (capitalCopy) capitalCopy.textContent = boundary(capital.note);
     }
     const tokenCount = byId('hero-token-count');
     const issuerCount = byId('hero-issuer-count');
@@ -1621,7 +1648,7 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     if (proofHint) proofHint.textContent = hint;
     const decisionHeading = query.trim() ? 'SEARCHED REFERENCE' : (isClean ? 'CURRENT REFERENCE' : 'FLAGGED REFERENCE');
     const signalLabel = signals || (isClean ? 'no published rule hit' : 'published rule hit');
-      byId('decision-hero').innerHTML = `<div class="decision-hero-top"><span class="eyebrow">${decisionHeading}</span><span class="decision-case">${escapeHTML(alert.symbol || 'RWA')}</span></div><h3>${escapeHTML(alert.name)}</h3><p class="decision-signal">${escapeHTML(signalLabel)}</p><div class="decision-outcome"><span>OUTPUT</span><strong>${escapeHTML(displayDecisionLabel(alert, 'HOLD COMPARISON'))}</strong><p>${escapeHTML(decision.consequence || alert.next_action || '')}</p><b class="allocation-gate">${escapeHTML(decision.allocation_effect || 'No allocation status is produced by this monitor')}</b></div><div class="decision-actions"><button class="brief-button" type="button" data-brief-id="${escapeHTML(alert.rwa_id)}">Save decision brief ↓</button><button class="brief-button" type="button" data-case-receipt="${escapeHTML(alert.rwa_id)}">Download case JSON ↓</button><button class="brief-button" type="button" data-copy-case="${escapeHTML(alert.rwa_id)}">Copy case link ↗</button>${watchButton(alert)}<a class="decision-action-link" href="#monitor">Inspect representation rows ↘</a></div>${capitalPanel(alert)}${temporalPanel(alert)}${referenceConcentrationPanel(alert)}${referenceActivityPanel(alert)}${resolutionRoute(alert)}<div class="decision-receipt"><span>${escapeHTML(publication.status ? String(publication.status).toUpperCase() : 'DATED')} · ${escapeHTML(publication.observed_at || receipt.observed_at || 'N/A')}</span><a href="/api/integrity" target="_blank" rel="noopener">Open credential-free receipt ↗</a></div>`;
+      byId('decision-hero').innerHTML = `<div class="decision-hero-top"><span class="eyebrow">${decisionHeading}</span><span class="decision-case">${escapeHTML(alert.symbol || 'RWA')}</span></div><h3>${escapeHTML(alert.name)}</h3><p class="decision-signal">${escapeHTML(signalLabel)}</p><div class="decision-outcome"><span>OUTPUT</span><strong>${escapeHTML(displayDecisionLabel(alert, 'HOLD COMPARISON'))}</strong><p>${escapeHTML(decision.consequence || alert.next_action || '')}</p><b class="allocation-gate">${escapeHTML(boundary(decision.allocation_effect) || 'No allocation status is produced by this monitor')}</b></div><div class="decision-actions"><button class="brief-button" type="button" data-brief-id="${escapeHTML(alert.rwa_id)}">Save decision brief ↓</button><button class="brief-button" type="button" data-case-receipt="${escapeHTML(alert.rwa_id)}">Download case JSON ↓</button><button class="brief-button" type="button" data-copy-case="${escapeHTML(alert.rwa_id)}">Copy case link ↗</button>${watchButton(alert)}<a class="decision-action-link" href="#monitor">Inspect representation rows ↘</a></div>${capitalPanel(alert)}${temporalPanel(alert)}${referenceConcentrationPanel(alert)}${referenceActivityPanel(alert)}${resolutionRoute(alert)}<div class="decision-receipt"><span>${escapeHTML(publication.status ? String(publication.status).toUpperCase() : 'DATED')} · ${escapeHTML(publication.observed_at || receipt.observed_at || 'N/A')}</span><a href="/api/integrity" target="_blank" rel="noopener">Open credential-free receipt ↗</a></div>`;
       loadTemporalEvidence(alert);
   }
 
