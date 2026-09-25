@@ -554,3 +554,17 @@ test('population counts on the page are derived from the receipt, never written 
     }
   }
 });
+
+test('the live page is pinned to the receipt it is reading, not only the archive', () => {
+  // Two independent reviewers reached the same conclusion: the README's numbers
+  // were guarded from the start and stayed correct, while the live page's were
+  // guarded by nothing. A reader seeing "1,440 representation rows" could not
+  // tell a fresh observation from the stale figure this project had already
+  // corrected once - the exact failure it exists to catch, on its own surface.
+  const verifier = fs.readFileSync(path.resolve(__dirname, '../verify_public_browser.py'), 'utf8');
+  assert.match(verifier, /#metric-references/);
+  assert.match(verifier, /#metric-tokens/);
+  assert.match(verifier, /tokenised_references_scanned/);
+  assert.match(verifier, /tokens_scanned/);
+  assert.match(verifier, /not in its own current receipt/);
+});

@@ -95,6 +95,30 @@ def main() -> int:
             require(receipt_response.ok, f"integrity receipt request failed: {receipt_response.status}")
             receipt = receipt_response.json()
             page.wait_for_function("observed => document.querySelector('#publication-history')?.textContent?.includes(observed)", arg=receipt["observed_at"], timeout=30_000)
+            # Every population figure the page prints must equal the receipt it
+            # is reading AT THIS MOMENT, not a figure from any other observation.
+            #
+            # This is the one check the project did not have, and it sits inside
+            # the exact failure it exists to catch: two surfaces describing one
+            # observation and disagreeing. The README's numbers were pinned to
+            # the shipped inputs from the start and stayed correct; the live
+            # page's were pinned to nothing, and a reviewer reading "1,440" on
+            # screen could not tell a fresh observation from the stale figure
+            # the project had already corrected once.
+            universe = receipt["universe"]
+            rendered = {
+                "#metric-references": universe["tokenised_references_scanned"],
+                "#metric-tokens": universe["tokens_scanned"],
+            }
+            for selector, expected in rendered.items():
+                shown = page.locator(selector).inner_text().strip()
+                require(
+                    shown.replace(",", "").replace("\u00a0", "") == str(expected),
+                    f"{selector} shows {shown!r} but the receipt it just read says "
+                    f"{expected:,}. The page is stating a population figure that is "
+                    f"not in its own current receipt.",
+                )
+
             history_text = page.locator("#publication-history").inner_text()
             require(receipt["observed_at"] in history_text, "publication history does not end at the current live receipt")
             expected_states = {
