@@ -1141,3 +1141,53 @@ test('the map search behaves like the search one screen above it', () => {
     explorerSrc.indexOf("form.addEventListener('submit'"));
   assert.doesNotMatch(typed, /\bload\(/, 'typing opens a dossier instead of listing matches');
 });
+
+test('every example chip promises the word the product prints for it', () => {
+  // The chip read "Marvell facts open" and the hero printed OUTPUT: COMPARABLE.
+  // Both are defensible - the reference is no_flags AND carries a published
+  // comparison - but the advertised outcome was not the outcome. The judge
+  // page's two named examples are already pinned to the shipped replay; the
+  // three on the product page were not.
+  const replay = JSON.parse(fs.readFileSync(
+    path.join(site, 'proof', 'rwa-surface-integrity-latest-replay-2026-09-21.json'), 'utf8'));
+  const byName = new Map((replay.alert_index || []).map(item => [item.name, item]));
+  const label = runFromSource('displayDecisionLabel');
+
+  const chips = [...page.matchAll(/data-example-search="([^"]+)">[^<]*<em>([^<]+)<\/em>/g)];
+  assert.ok(chips.length >= 3, 'the example chips went missing');
+  for (const [, query, promised] of chips) {
+    // The chips search the way a reader does: "Silver" is a name, "SPY" is a
+    // symbol. Resolve either, as the product's own search does.
+    const needle = query.toLowerCase();
+    const match = [...byName.entries()].find(([name, item]) =>
+      name.toLowerCase().startsWith(needle) || String(item.symbol || '').toLowerCase() === needle);
+    assert.ok(match, `the example "${query}" matches nothing in the shipped replay`);
+    const printed = label(match[1]);
+    // The chips use the shorthand the page's own outcome key defines, so
+    // resolve through that key rather than comparing strings letter for letter.
+    const shorthand = {
+      blocked: 'DO NOT SHORTLIST',
+      comparable: 'COMPARABLE',
+      'facts open': 'FACTS OPEN',
+      'single representation': 'SINGLE REPRESENTATION',
+    }[promised.trim().toLowerCase()];
+    assert.ok(shorthand, `the chip for ${match[0]} uses "${promised.trim()}", which the outcome key does not define`);
+    assert.match(page, new RegExp(`${shorthand}(</b>| =)`),
+      `the outcome key stopped defining ${shorthand}`);
+    assert.equal(shorthand, printed,
+      `the chip promises "${promised.trim()}" for ${match[0]} but the product prints "${printed}"`);
+  }
+});
+
+test('no static placeholder asserts a live case over a dated one', () => {
+  // The decision aside shipped "LIVE CASE / Reading the current receipt" in the
+  // markup, so it sat over five-day-old data until a 3.4 MB fetch resolved.
+  assert.doesNotMatch(page, /LIVE CASE/);
+  assert.doesNotMatch(page, /Reading the current receipt/);
+  // The strip's sentence asserted the two counts came from different dates.
+  // On the dated replay they carry the same instant, so it states them instead.
+  assert.doesNotMatch(page, /on a different date/);
+  assert.match(page, /id="metric-strip-dates"/);
+  const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
+  assert.match(integrity, /scanAt !== findingObservedAt/);
+});

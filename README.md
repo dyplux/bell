@@ -12,7 +12,7 @@ that matters before a shortlist: can these representations be compared at all?
 | **Track** | Build with CMC API, Real World Assets. MIT licence |
 | **The output** | Of the 244 references carrying more than one representation, **87 have a cheapest route worth naming**; 157 are refused by a coded rule |
 | **Run it yourself** | `git clone https://github.com/dyplux/bell.git && cd bell && make base-rate` - 0.3s, no API key, no install |
-| **Verify the whole thing** | `make check-offline` - 235 tests in about 3 seconds, plus a recomputation of the published receipt from the shipped inputs |
+| **Verify the whole thing** | `make check-offline` - 237 tests in about 3 seconds, plus a recomputation of the published receipt from the shipped inputs |
 | **Rules as an executable spec** | `python3 bell/verify_rule_boundaries.py` - 0.2s, 8 boundary checks, no network |
 | **Receipts** | [live](https://bell.dyplux.com/api/integrity) · [dated replay](bell/site/proof/rwa-surface-integrity-latest-replay-2026-09-21.json) · [replay inputs](bell/site/proof/rwa-surface-integrity-inputs-2026-09-21.json) · [base rate](bell/site/proof/base-rate-2026-09-21.json) |
 

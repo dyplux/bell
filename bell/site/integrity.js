@@ -522,6 +522,21 @@
       const coverage = split.source_coverage;
       const contradiction = split.data_contradiction;
       const reasons = (coverage || 0) + (contradiction || 0);
+      findingObservedAt = r.observed_at || null;
+      // The strip's sentence claimed the two counts came from different dates.
+      // On the dated replay a judge is told to clone they carry the same
+      // instant, 2026-09-21T21:25:01Z, so the claim was false exactly where it
+      // was most likely to be checked. This runs here, not in renderMetrics,
+      // because renderMetrics runs first and would only ever see a null date
+      // and print the same-instant sentence whether or not it was true.
+      const stripDates = byId('metric-strip-dates');
+      if (stripDates) {
+        const scanAt = receipt?.observed_at || null;
+        const stamp = (value) => String(value).replace('T', ' ').slice(0, 16);
+        stripDates.textContent = (scanAt && findingObservedAt && scanAt !== findingObservedAt)
+          ? `The refusal count was observed ${stamp(findingObservedAt)} UTC and these four ${stamp(scanAt)} UTC.`
+          : 'Both were observed at the same instant, so only the question differs.';
+      }
       const measuredOn = new Date(r.observed_at).toLocaleDateString('en-GB', {
         day: 'numeric', month: 'long'
       });
@@ -1822,6 +1837,7 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
   // page actually ended up reading, whichever source it came from, so the two
   // halves of the page can never describe different data.
   let receiptSource = null;
+  let findingObservedAt = null;
   let announceReceipt;
   window.BellReceipt = new Promise(resolve => { announceReceipt = resolve; });
 
