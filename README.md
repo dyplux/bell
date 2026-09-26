@@ -3,7 +3,19 @@
 Bell turns CoinMarketCap RWA discovery into an evidence gate for the question
 that matters before a shortlist: can these representations be compared at all?
 
-Live product: [bell.dyplux.com](https://bell.dyplux.com/)
+## At a glance
+
+| | |
+|---|---|
+| **Live** | <https://bell.dyplux.com/> |
+| **For judges** | <https://bell.dyplux.com/judge> - the claim, the 30-second check and the receipts on one page, no auth |
+| **Track** | Build with CMC API, Real World Assets. MIT licence |
+| **The output** | Of the 244 references carrying more than one representation, **87 have a cheapest route worth naming**; 157 are refused by a coded rule |
+| **Run it yourself** | `git clone https://github.com/dyplux/bell.git && cd bell && make base-rate` - 0.3s, no API key, no install |
+| **Verify the whole thing** | `make check-offline` - 226 tests in 2.8s, plus a recomputation of the published receipt from the shipped inputs |
+| **Rules as an executable spec** | `python3 bell/verify_rule_boundaries.py` - 0.2s, six boundary checks, no network |
+| **Receipts** | [live](https://bell.dyplux.com/api/integrity) · [dated replay](bell/site/proof/rwa-surface-integrity-latest-replay-2026-09-21.json) · [replay inputs](bell/site/proof/rwa-surface-integrity-inputs-2026-09-21.json) · [base rate](bell/site/proof/base-rate-2026-09-21.json) |
+
 
 ## What the product does
 

@@ -610,6 +610,14 @@
         ? 'This receipt is the byte-verifiable replay receipt.'
         : 'This is the current receipt. The byte-verifiable replay receipt is the dated one linked below, and it is a different observation.';
     }
+    // The chip said "CURRENT RECEIPT" in the markup, so it kept saying it over
+    // five-day-old replay data while the banner above read "DATED REPLAY".
+    const populationChip = byId('population-receipt-chip');
+    if (populationChip) {
+      populationChip.textContent = publication?.source === 'dated_static'
+        ? `DATED REPLAY · ${observedStamp} UTC`
+        : `CURRENT RECEIPT · ${observedStamp} UTC`;
+    }
     const glossary = document.querySelector('.plain-words dl');
     if (glossary && !glossary.dataset.extended) {
       glossary.insertAdjacentHTML('beforeend', '<div><dt>HHI</dt><dd>A concentration index from 0 to 10,000; higher means reported value is held by fewer issuer labels</dd></div><div><dt>Effective issuer count</dt><dd>A simple equivalent count based only on positive reported market-cap shares, not a count of real issuers</dd></div>');
@@ -1030,7 +1038,11 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
       schema_version: 'bell.case-receipt.v1',
       observed_at: receipt?.observed_at || null,
       published_at: publication.published_at || null,
-      source: '/api/integrity',
+      // This was hard-coded to '/api/integrity' even when the page had fallen
+      // back to the dated replay file, so an exported case receipt could name a
+      // source that had not produced it. Wrong provenance on an evidence
+      // product is worse than no provenance.
+      source: receiptSource || '/api/integrity',
       credential_free: publication.credential_free === true,
       question: 'Do these representations deserve to be compared as if they represented the same investable thing?',
       reference: {
@@ -1758,7 +1770,16 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     : fetch('/api/integrity', { cache: 'no-cache', headers: { Accept: 'application/json' } })
         .then(response => (response.ok ? response.json() : null))
         .catch(() => null);
-  window.BellReceipt = liveReceiptRequest;
+  // Publishing the network request itself meant that on localhost, where there
+  // is no /api/integrity to call, explorer.js received null and its live-verdict
+  // cross-reference went dead: it told a reader that Gold "carried no token
+  // representation in the latest scan" while the replay receipt loaded on the
+  // same page held Gold with seven representations. Publish the receipt this
+  // page actually ended up reading, whichever source it came from, so the two
+  // halves of the page can never describe different data.
+  let receiptSource = null;
+  let announceReceipt;
+  window.BellReceipt = new Promise(resolve => { announceReceipt = resolve; });
 
   async function boot() {
     try {
@@ -1790,6 +1811,8 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
               };
             }
             receipt = candidate;
+            receiptSource = source;
+            announceReceipt(candidate);
             break;
           }
           throw new Error('unexpected receipt schema');
@@ -1816,6 +1839,10 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
       renderDifferentiation();
       renderDecisionStory();
     } catch (error) {
+      // Leave nothing awaiting a promise that will never settle: explorer.js
+      // blocks its live-verdict lookup on this, and a hung lookup shows no
+      // state at all rather than saying the receipt is unavailable.
+      announceReceipt(null);
       byId('alert-list').innerHTML = '<p class="section-note">The dated evidence receipt could not be loaded. Open the JSON receipt directly to inspect the source.</p>';
     }
   }

@@ -375,7 +375,14 @@ test('the dated map and the live receipt are joined, not kept apart', () => {
   // load, and cache:'no-cache' on both calls stopped the HTTP cache collapsing
   // them. Assert the shared handoff, and that the second request stays gone.
   const integritySrc = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
-  assert.match(integritySrc, /window\.BellReceipt = liveReceiptRequest/);
+  // Publishing the network request meant localhost, which has no /api/integrity,
+  // handed the explorer null and its cross-reference went dead: it told a reader
+  // that Gold carried no token representation while the replay loaded on the
+  // same page held Gold with seven. Publish the receipt the page actually read.
+  assert.match(integritySrc, /window\.BellReceipt = new Promise\(resolve => \{ announceReceipt = resolve; \}\)/);
+  assert.match(integritySrc, /announceReceipt\(candidate\)/);
+  // And it must settle even when no source answered, or the lookup hangs.
+  assert.match(integritySrc, /announceReceipt\(null\)/);
   assert.match(explorerSrc, /window\.BellReceipt/);
   assert.doesNotMatch(explorerSrc, /fetch\('\/api\/integrity'/);
   assert.match(explorerSrc, /function liveVerdictBlock/);
@@ -1018,4 +1025,48 @@ test('a phone gets fewer index cards without losing any reference', () => {
   for (const state of ['all', 'do_not_compare', 'investigate', 'no_flags', 'comparable']) {
     assert.match(page, new RegExp(`data-filter="${state}"`), `the ${state} filter went missing`);
   }
+});
+
+test('the judge page names examples that hold on the receipt it ships', () => {
+  // The page named Alphabet as its affirmative example. On the live receipt it
+  // is COMPARABLE; on the dated replay shipped in this repository it is
+  // DO NOT SHORTLIST, and localhost deliberately loads the replay. A judge
+  // following the README's own clone instructions saw the opposite of what the
+  // page promised, and nothing guarded it. Both named references must now hold
+  // on the artifact a reader can actually run.
+  const judge = fs.readFileSync(path.join(site, 'judge.html'), 'utf8');
+  const replay = JSON.parse(fs.readFileSync(
+    path.join(site, 'proof', 'rwa-surface-integrity-latest-replay-2026-09-21.json'), 'utf8'));
+  const byName = new Map((replay.alert_index || []).map(item => [item.name, item]));
+
+  const affirmative = judge.match(/<li><strong>([^<]+)<\/strong> returns <strong>COMPARABLE<\/strong>/);
+  assert.ok(affirmative, 'the judge page lost its affirmative example');
+  const comparable = byName.get(affirmative[1]);
+  assert.ok(comparable, `${affirmative[1]} is not in the shipped replay receipt`);
+  assert.ok(comparable.comparison,
+    `${affirmative[1]} publishes no comparison in the shipped replay, so the page promises an answer a local clone does not give`);
+
+  const refusal = judge.match(/<li><strong>([^<]+)<\/strong> returns <strong>DO NOT SHORTLIST<\/strong>/);
+  assert.ok(refusal, 'the judge page lost its refusal example');
+  const blocked = byName.get(refusal[1]);
+  assert.ok(blocked, `${refusal[1]} is not in the shipped replay receipt`);
+  assert.equal(blocked.state, 'do_not_compare',
+    `${refusal[1]} is not blocked in the shipped replay`);
+});
+
+test('nothing claims to be current while the page is reading a dated receipt', () => {
+  const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
+  // The chip was the literal string "CURRENT RECEIPT" in the markup, so it kept
+  // saying it over five-day-old replay data while the banner above the fold
+  // read "DATED REPLAY".
+  assert.doesNotMatch(page, /class="receipt-chip">CURRENT RECEIPT</,
+    'a chip hard-codes CURRENT RECEIPT again');
+  assert.match(page, /id="population-receipt-chip"/);
+  assert.match(integrity, /populationChip\.textContent = publication\?\.source === 'dated_static'/);
+
+  // An exported case receipt named /api/integrity even when the page had fallen
+  // back to the replay file. Wrong provenance on an evidence product is worse
+  // than none, so the field follows the source that actually answered.
+  assert.match(integrity, /source: receiptSource \|\| '\/api\/integrity'/);
+  assert.match(integrity, /receiptSource = source;/);
 });

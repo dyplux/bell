@@ -210,8 +210,12 @@
       renderDossier(payload, asset);
       appendLiveVerdict(asset);
     } catch (error) {
+      // renderMapOnly replaces the whole dossier, so appending the verdict
+      // first wrote it into markup that was about to be thrown away. It only
+      // ever survived by accident, when the receipt had not resolved yet and
+      // the append landed asynchronously after the wipe.
+      renderMapOnly(asset, 'No published dossier answered for this reference just now. The map entry below is the observed record, and the credential-free dossier endpoint is linked under it.');
       appendLiveVerdict(asset);
-      renderMapOnly(asset, `The dossier could not be loaded right now (${error.message}). The map entry remains available for inspection.`);
     }
   }
 
