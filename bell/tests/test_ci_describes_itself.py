@@ -56,9 +56,6 @@ class TheWorkflowDescribesItself(unittest.TestCase):
                       'the workflow no longer admits that it checks less than `make check`')
 
 
-if __name__ == '__main__':
-    unittest.main()
-
 
 class TheOtherWorkflowsDescribeThemselves(unittest.TestCase):
     """The quality gate proves the repository's claims about its own data. It
@@ -100,3 +97,7 @@ class TheOtherWorkflowsDescribeThemselves(unittest.TestCase):
                                  cwd=ROOT, capture_output=True, text=True)
         self.assertEqual(tracked.stdout.strip(), '',
                          f'a credential-shaped assignment is tracked: {tracked.stdout[:200]}')
+
+
+if __name__ == "__main__":
+    unittest.main()

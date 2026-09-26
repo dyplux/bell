@@ -145,9 +145,6 @@ class ApiFeedbackMatchesTheReceipt(unittest.TestCase):
         self.assertIn('string', head)
 
 
-if __name__ == '__main__':
-    unittest.main()
-
 
 class TheReadmeDoesNotOversellTheGate(unittest.TestCase):
     """`make check` was advertised as offline. Half of it is not.
@@ -275,3 +272,7 @@ class TheRefusalSplitIsPublishedAndAddsUp(unittest.TestCase):
         split = _split_refusals(Counter({'A_BRAND_NEW_RULE': 5}))
         self.assertEqual(split['data_contradiction'], 5)
         self.assertEqual(split['source_coverage'], 0)
+
+
+if __name__ == "__main__":
+    unittest.main()

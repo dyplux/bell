@@ -203,8 +203,7 @@ class CoverageIsReportedNotRestated(unittest.TestCase):
         ])
         self.assertEqual(scan["state"], "investigate")
         self.assertIn("DERIVATIVE_MIX", [s["code"] for s in scan["signals"]])
-if __name__ == "__main__":
-    unittest.main()
+
 
 
 class TheDecisionMatchesWhatTheReaderHolds(unittest.TestCase):
@@ -242,3 +241,7 @@ class TheDecisionMatchesWhatTheReaderHolds(unittest.TestCase):
         scan = self._scan([token("ONLY", 100.0, 50_000)])
         self.assertIsNone(scan["comparison"])
         self.assertNotEqual(scan["decision"]["label"], "COMPARABLE, NOT ENDORSED")
+
+
+if __name__ == "__main__":
+    unittest.main()

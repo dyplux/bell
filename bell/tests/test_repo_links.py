@@ -79,9 +79,6 @@ class RelativeLinksResolve(unittest.TestCase):
         self.assertFalse(os.path.exists(resolved))
 
 
-if __name__ == '__main__':
-    unittest.main()
-
 
 class TheReleaseGateRunsOutsideACheckout(unittest.TestCase):
     """`make check` is the one command the README asks a reviewer to run.
@@ -235,3 +232,7 @@ class OneNameMeansOneBehaviour(unittest.TestCase):
             self.assertIn('rwa_asset_rows', text,
                           'cmc_shapes claims to be the single definition without naming the '
                           'reader that deliberately is not one')
+
+
+if __name__ == "__main__":
+    unittest.main()

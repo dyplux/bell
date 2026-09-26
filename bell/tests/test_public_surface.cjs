@@ -1153,6 +1153,16 @@ test('every example chip promises the word the product prints for it', () => {
   const byName = new Map((replay.alert_index || []).map(item => [item.name, item]));
   const label = runFromSource('displayDecisionLabel');
 
+  // My first version of this test pinned the DECISION EFFECT and the card
+  // badge was computed somewhere else, so Coinbase advertised COMPARABLE on the
+  // judge page and wore an INVESTIGATE badge on the card. One function decides
+  // the word now, and this asserts that rather than assuming it.
+  const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
+  assert.equal((integrity.match(/const stateLabel = displayDecisionLabel\(/g) || []).length, 2,
+    'a card computes its badge somewhere other than displayDecisionLabel');
+  assert.doesNotMatch(integrity, /const stateLabel = \w+\.state === 'no_flags'/,
+    'the badge went back to reading the raw state');
+
   const chips = [...page.matchAll(/data-example-search="([^"]+)">[^<]*<em>([^<]+)<\/em>/g)];
   assert.ok(chips.length >= 3, 'the example chips went missing');
   for (const [, query, promised] of chips) {
@@ -1210,4 +1220,28 @@ test('the judge page counts the endpoints the repository actually calls', () => 
   // And the two outside the published loop must still be named with the reason.
   assert.match(judge, /market-pairs\/list<\/strong> is not returned on the Startup plan/);
   assert.match(judge, /single-issuer endpoint, is used by the per-reference audit path/);
+});
+
+test('the comparison spans the card and every anchor clears the sticky header', () => {
+  // At 320px the row stayed a two-column grid, so the comparison table - the
+  // product's central output - was forced into a 180px scroller beside an 82px
+  // stub, with the price column sliced mid-digit. At 1440 the same pinning gave
+  // it 353px of a 906px card with 500px empty to its right.
+  assert.match(integrityCss, /\.alert-row>\.comparison-block,\.compact-row>\.comparison-block/);
+  assert.match(integrityCss, /grid-column:1 \/ -1/);
+  // The table scrolls on a phone and nothing said so, so two of five columns
+  // looked absent rather than reachable.
+  assert.match(integrityCss, /\.comparison-scroll-hint\{display:block/);
+  const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
+  assert.match(integrity, /class="comparison-scroll-hint"/);
+
+  // scroll-margin-top was 0 on three of the five nav destinations against an
+  // 82px sticky header, so every jump parked the heading underneath it.
+  assert.match(integrityCss, /--header-height:82px/);
+  assert.match(integrityCss, /scroll-margin-top:calc\(var\(--header-height\) \+ 16px\)/);
+  for (const [, href] of page.matchAll(/<nav[^>]*>[\s\S]*?<\/nav>/g).next().value[0]
+    .matchAll(/href="#([^"]+)"/g)) {
+    assert.match(integrityCss, new RegExp(`#${href}[,{]`),
+      `the nav points at #${href}, which has no scroll offset`);
+  }
 });

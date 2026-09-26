@@ -77,3 +77,37 @@
 .reference-concentration-metrics>*,.reference-activity-metrics>*,
 .resolution-route-grid>*,.hero-proof-metrics>*,.hero-checks>*{min-width:0;overflow-wrap:anywhere}
 }
+.alert-state.comparable{color:var(--affirm)}
+@media(max-width:620px){
+/* The row stayed a two-column grid on phones, so at 320px the comparison
+   table - the product's central output - was forced into a 180px scroller
+   while an 82px column held a stub beside it. The price column sliced
+   mid-digit and "vs cheapest" and "share of volume" sat off-screen entirely.
+   The compact header keeps its two columns; everything wide spans the row. */
+.alert-row>.alert-signals,.alert-row>.alert-decision,.alert-row>.alert-action,
+.alert-row>.alert-tools,.alert-row>.alert-details,.alert-row>.research-worksheet,
+.alert-row>.comparison-block,.alert-row>.wrapper-compare,.alert-row>.single-wrapper,
+.compact-row>.alert-signals,.compact-row>.alert-decision,.compact-row>.alert-action,
+.compact-row>.alert-tools,.compact-row>.alert-details,.compact-row>.research-worksheet,
+.compact-row>.comparison-block{grid-column:1 / -1;min-width:0;max-width:100%}
+}
+/* The comparison is the output, not a sidebar: it spans the row at every width.
+   Pinned to one grid cell it rendered 353px wide inside a 906px card, wrapping
+   "vs cheapest" and "share of volume" onto two lines with 500px empty beside it. */
+.alert-row>.comparison-block,.compact-row>.comparison-block,
+.alert-row>.wrapper-compare,.alert-row>.alert-details,.compact-row>.alert-details,
+.alert-row>.research-worksheet,.compact-row>.research-worksheet{grid-column:1 / -1;min-width:0}
+.comparison-scroll-hint{display:none}
+@media(max-width:620px){
+/* The table scrolls on a phone and nothing said so, so two of its five columns
+   looked absent rather than reachable. The quote band already had this hint. */
+.comparison-scroll-hint{display:block;font:11px var(--font);letter-spacing:.08em;color:var(--dim);margin-bottom:8px}
+}
+/* The header is sticky and 82px tall, and scroll-margin-top was 0 on three of
+   the five nav destinations, 30 on one and 72 on another. Every jump parked the
+   section heading underneath the header, so the reader landed mid-panel with no
+   idea which section they were in. One value, derived from the header. */
+:root{--header-height:82px}
+#start,#how-it-works,#decision,#explorer,#monitor,#evidence,.metric-strip,#thesis-strip{
+scroll-margin-top:calc(var(--header-height) + 16px)}
+@media(max-width:620px){:root{--header-height:64px}}
