@@ -1280,3 +1280,19 @@ test('every filter returns the label it names, and they partition the population
     assert.ok(produced.has(button), `the filter bar offers ${button}, which the scan never produces`);
   }
 });
+
+test('the outcome key enumerates every state the product can print', () => {
+  // The key listed four of five. INVESTIGATE was missing while carrying a
+  // filter button, 47 live badges and a place in the vocabulary
+  // verify_submission.py declares. A reader met the word on a card with no
+  // definition anywhere above it.
+  const key = page.match(/<div class="outcome-key"[\s\S]*?<\/div>\s*<\/div>/);
+  assert.ok(key, 'the outcome key went missing');
+  const replay = JSON.parse(fs.readFileSync(
+    path.join(site, 'proof', 'rwa-surface-integrity-latest-replay-2026-09-21.json'), 'utf8'));
+  const label = runFromSource('displayDecisionLabel');
+  const produced = new Set((replay.alert_index || []).map(item => label(item, 'FACTS OPEN')));
+  for (const word of produced) {
+    assert.ok(key[0].includes(word), `the scan prints ${word} and the outcome key never defines it`);
+  }
+});

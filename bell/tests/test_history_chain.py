@@ -205,5 +205,38 @@ class TheAnchor(unittest.TestCase):
             self.ANCHOR.write_bytes(original)
 
 
+
+class TheSurfaceGuards(unittest.TestCase):
+    """A wrong-typed surface used to raise a bare AttributeError.
+
+    An empty surface was already refused by name and reported in the receipt.
+    A string where a payload belongs reached .get() and raised
+    "'str' object has no attribute 'get'", which names nothing a reader could
+    act on, in the one place that exists to say what is wrong with the input.
+    """
+
+    def test_a_mistyped_surface_is_refused_by_name(self):
+        import rwa_integrity
+        good = {"data": {"rwa_assets": []}}
+        for payloads, expected in (
+            (("not a dict", good, good, good), "map"),
+            ((good, [], good, good), "asset_list"),
+            ((good, good, 7, good), "quotes"),
+            ((good, good, good, "x"), "info"),
+        ):
+            with self.assertRaises(ValueError) as caught:
+                rwa_integrity.scan(*payloads)
+            self.assertIn(expected, str(caught.exception))
+            self.assertIn("is not an object", str(caught.exception))
+
+    def test_an_absent_optional_surface_is_still_allowed(self):
+        # None means "not collected", which is different from "handed the wrong
+        # thing", and the scan has always tolerated it.
+        import rwa_integrity
+        good = {"data": {"rwa_assets": []}}
+        receipt = rwa_integrity.scan(good, good, good, None, None, "2026-09-27T00:00:00Z", None)
+        self.assertEqual(receipt["schema_version"], "rwa_surface_integrity.v1")
+
+
 if __name__ == "__main__":
     unittest.main()

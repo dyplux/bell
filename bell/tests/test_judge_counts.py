@@ -96,8 +96,19 @@ class JudgeCounts(unittest.TestCase):
         # "About 3 seconds" was the fastest run on one machine. Reviewers
         # measured 3.67, 4.51 and 5.33 on theirs. A range is the honest shape of
         # a figure that depends on who is running it.
-        self.assertIn("2.8 and 5.3 seconds", judge)
-        self.assertIn("2.8 and 5.3 seconds", readme)
+        # This used to assert only that both files contained the same string,
+        # which is a check that cannot fail: when the gate slowed past the
+        # stated band, the two documents agreed with each other and disagreed
+        # with reality. Read the numbers and require the headline bound to
+        # cover the stated range with margin.
+        band = re.search(r"between (\d+\.\d+) and (\d+\.\d+) seconds", judge)
+        self.assertIsNotNone(band, "the judge page stopped stating a measured range")
+        self.assertIn(f"between {band.group(1)} and {band.group(2)} seconds", readme,
+                      "the README and the judge page disagree about the gate runtime")
+        tile = re.search(r"<strong>&lt;(\d+)s</strong>", judge)
+        self.assertIsNotNone(tile, "the gate runtime tile went missing")
+        self.assertGreaterEqual(float(tile.group(1)), float(band.group(2)),
+                                "the headline bound is below the range the page itself states")
         # The individual command timings stay precise - they are single
         # commands and they were measured. It is the gate, which varies with
         # the machine running it, that must not be quoted to a tenth.

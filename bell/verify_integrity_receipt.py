@@ -106,7 +106,21 @@ def verify_observation(observation: dict, receipt: dict, label: str) -> None:
         observation["signals"],
     )
 
+    # The source digests were shape-checked and never compared to the receipt,
+    # so all six could be replaced with zeroes on an observation this gate calls
+    # cross-checked and it still returned ok. A digest of an input payload does
+    # not depend on the rules that read it, so unlike the state counts these are
+    # comparable across every rule version and there is no reason to skip them.
+    recorded_hashes = observation.get("source_hashes")
+    receipt_hashes = receipt.get("source_hashes")
+    if not isinstance(recorded_hashes, dict) or not recorded_hashes:
+        raise ValueError(f"{label}.source_hashes is missing")
+    if not isinstance(receipt_hashes, dict) or not receipt_hashes:
+        raise ValueError(f"{label}: the bundled receipt carries no source_hashes to compare")
+    assert_equal(f"{label}.source_hashes", receipt_hashes, recorded_hashes)
+
     verify_observation_shape(observation, label)
+    return not rules_differ
 
 
 def verify_observation_shape(observation: dict, label: str) -> None:
@@ -192,12 +206,14 @@ def main() -> int:
     verify_public_inputs(args.inputs, args.latest)
     bundled = {dated_receipt.get("observed_at"): (dated_receipt, "dated receipt"), latest_receipt.get("observed_at"): (latest_receipt, "latest receipt")}
     bundled_matches = 0
+    fully_compared = 0
     for index, observation in enumerate(observations):
         label = f"history observation {index + 1}"
         verify_observation_shape(observation, label)
         match = bundled.get(observation["observed_at"])
         if match:
-            verify_observation(observation, match[0], match[1])
+            if verify_observation(observation, match[0], match[1]):
+                fully_compared += 1
             bundled_matches += 1
     if bundled_matches != len(bundled):
         raise ValueError("history is missing a bundled receipt observation")
@@ -225,7 +241,14 @@ def main() -> int:
             "the series was rewritten, or the anchor was not updated with it")
     print(f"history chain: verified ({len(observations)} linked observations)")
     print(f"integrity receipt verification: ok ({len(observations)} observations)")
-    print(f"bundled cross-checks: {bundled_matches}; remaining observations are public summaries")
+    # "bundled cross-checks: 2" read as "two observations fully verified" when
+    # the state comparison had been skipped on both, because neither records a
+    # rule version. Say which half was compared.
+    print(f"bundled cross-checks: {bundled_matches} "
+          f"({fully_compared} compared on state counts, "
+          f"{bundled_matches - fully_compared} on identity, totals, signals and source digests only "
+          f"because the recorded rule version differs from the current one); "
+          f"remaining observations are public summaries")
     print(f"history chain head: {head}")
     print(f"history sha256: {hashlib.sha256(args.history.read_bytes()).hexdigest()}")
     return 0

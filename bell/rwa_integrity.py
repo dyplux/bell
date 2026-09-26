@@ -627,6 +627,18 @@ def rule_calibration(assets: list[dict]) -> dict:
 
 def scan(map_payload: dict, list_payload: dict, quotes_payload: dict, info_payload: dict | None = None, issuers_payload: dict | None = None, observed_at: str | None = None, crypto_info_payload: dict | None = None) -> dict:
     required_surfaces = {"map": map_payload, "asset_list": list_payload, "quotes": quotes_payload}
+    # An empty surface was already refused by name. A wrong-typed one - a string
+    # where a payload belongs - reached .get() and raised a bare AttributeError
+    # with no surface in the message, which is the one failure mode that tells a
+    # reader nothing. Refuse it here, the same way and with the same words.
+    optional_surfaces = {"info": info_payload, "issuers": issuers_payload,
+                         "crypto_info": crypto_info_payload}
+    mistyped = sorted(name for name, payload in {**required_surfaces, **optional_surfaces}.items()
+                      if payload is not None and not isinstance(payload, dict))
+    if mistyped:
+        raise ValueError(
+            f"surface payload is not an object: {', '.join(mistyped)}. "
+            "A scan cannot read a surface it was not handed.")
     input_issues = [name for name, payload in required_surfaces.items() if not surface_has_records(payload)]
     scan_status = "incomplete" if input_issues else "ready"
     map_rows = rwa_asset_rows(map_payload)
