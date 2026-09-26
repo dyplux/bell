@@ -1191,3 +1191,23 @@ test('no static placeholder asserts a live case over a dated one', () => {
   const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
   assert.match(integrity, /scanAt !== findingObservedAt/);
 });
+
+test('the judge page counts the endpoints the repository actually calls', () => {
+  // The page named five RWA endpoints and the repository uses all seven, so it
+  // was under-reporting its own strongest criterion. Every count on that page
+  // is pinned to its source; this one was not pinned at all.
+  const judge = fs.readFileSync(path.join(site, 'judge.html'), 'utf8');
+  const dir = path.resolve(__dirname, '..');
+  const called = new Set();
+  for (const name of fs.readdirSync(dir).filter(file => file.endsWith('.py'))) {
+    for (const [, endpoint] of fs.readFileSync(path.join(dir, name), 'utf8')
+      .matchAll(/"(\/v\d\/[a-z0-9/_-]+)"/g)) called.add(endpoint);
+  }
+  const rwa = [...called].filter(endpoint => endpoint.startsWith('/v5/real-world-assets/'));
+  assert.equal(rwa.length, 7, `the RWA family count moved to ${rwa.length}: ${rwa.sort()}`);
+  assert.match(judge, new RegExp(`All <strong>${rwa.length}</strong> of the dedicated RWA endpoints`));
+  assert.match(judge, new RegExp(`<strong>${called.size}</strong> distinct CoinMarketCap endpoints`));
+  // And the two outside the published loop must still be named with the reason.
+  assert.match(judge, /market-pairs\/list<\/strong> is not returned on the Startup plan/);
+  assert.match(judge, /single-issuer endpoint, is used by the per-reference audit path/);
+});

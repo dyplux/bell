@@ -59,7 +59,7 @@
     <div class="judge-facts">
       <div><small>Comparisons published</small><strong>87</strong></div>
       <div><small>Refusals, by named rule</small><strong>157</strong></div>
-      <div><small>Tests in the offline gate</small><strong>237</strong></div>
+      <div><small>Tests in the offline gate</small><strong>238</strong></div>
       <div><small>Gate runtime</small><strong>~3s</strong></div>
     </div>
 
@@ -83,7 +83,7 @@ make base-rate</pre>
     35 refused, 10 comparable, 5 held for investigation, with the reasoning for each.</small>
 
 <pre>make check-offline</pre>
-    <small>About 3 seconds. 237 tests, 148 Python and 89 JavaScript, plus a re-derivation of
+    <small>About 3 seconds. 238 tests, 148 Python and 90 JavaScript, plus a re-derivation of
     the published receipt from the 16.5 MB of shipped inputs and a submission gate over 138 tracked files. Be precise about what that re-derivation proves: the inputs are verified
     byte for byte, and the scan is recomputed from them. Of the 12 dated observations, 2 ship their full payload and are cross-checked; the other 10 are published summaries. And where
     a receipt predates the current rule set, the recomputed state counts are reported beside
@@ -137,12 +137,19 @@ make base-rate</pre>
     </div>
 
     <h2>Which CMC surfaces it uses</h2>
-    <p>The dedicated RWA family is the backbone: <strong>map</strong>, <strong>assets
-    list</strong>, <strong>quotes latest</strong>, <strong>info</strong> and <strong>issuers
-    list</strong>, joined on stable identifiers rather than on tickers, because a ticker is
-    reused across representations. <strong>cryptocurrency/info</strong> resolves chain and
-    contract identity, which the RWA family does not carry. RWA market pairs is documented as
-    unavailable on the Startup plan rather than faked.</p>
+    <p>All <strong>7</strong> of the dedicated RWA endpoints are used by this repository, and
+    <strong>17</strong> distinct CoinMarketCap endpoints in total. The published population scan
+    calls five of the seven: <strong>map</strong>, <strong>assets list</strong>, <strong>quotes
+    latest</strong>, <strong>info</strong> and <strong>issuers list</strong>, joined on stable
+    identifiers rather than on tickers, because a ticker is reused across representations.
+    <strong>cryptocurrency/info</strong> resolves chain and contract identity, which the RWA
+    family does not carry.</p>
+    <p>The other two are deliberately outside that loop rather than missing.
+    <strong>market-pairs/list</strong> is not returned on the Startup plan, and the receipt says
+    so in words instead of filling the field with a zero. <strong>issuers</strong>, the
+    single-issuer endpoint, is used by the per-reference audit path in
+    <code>bell/rwa_audit.py</code>, which also reaches the DEX family, historical OHLCV and
+    <code>key/info</code>. Grep the repository and count: the list above is what you will find.</p>
     <p>The join is where the work is. Reconciling the 7,811 rows the map returns against the
     7,942 the asset list returns exposes 131 rows with no stable reference ID, which is the
     kind of surface disagreement a price-first tool never sees because it drops those rows

@@ -1546,7 +1546,17 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     const heroTrail = byId('hero-receipt-trail');
     if (heroTrail) {
       heroTrail.textContent = Array.isArray(observations) && observations.length
-        ? `RECEIPT TRAIL · ${observations.length} dated observations · live receipt included`
+        ? (() => {
+          // "12 dated observations" is true and it oversells: nine of them land
+          // in one afternoon. A reader counting receipts is really asking how
+          // many days this has been watched, so say both. The same sentence
+          // that refuses a delta across a rule change should not let a count
+          // imply a series that is not there.
+          const days = new Set(observations.map(item => String(item.observed_at || '').slice(0, 10)));
+          days.delete('');
+          return `RECEIPT TRAIL · ${observations.length} dated observations across `
+            + `${days.size} ${days.size === 1 ? 'day' : 'days'} · live receipt included`;
+        })()
         : 'RECEIPT TRAIL · no dated history available';
       if (!byId('hero-receipt-link')) {
         heroTrail.insertAdjacentHTML('afterend', '<a id="hero-receipt-link" class="hero-receipt-link" href="/api/integrity" target="_blank" rel="noopener">OPEN CREDENTIAL-FREE RECEIPT ↗</a>');
