@@ -74,3 +74,30 @@ class JudgeCounts(unittest.TestCase):
         self.assertIsNotNone(stated, "the judge page stopped stating the gate's scope")
         self.assertEqual(int(stated.group(1)), len(tracked),
                          "the judge page tracked-file count no longer matches git")
+
+    def test_the_pages_state_the_number_of_boundary_checks_that_exist(self):
+        # The page said "six checks" where the verifier publishes eight, on a
+        # page that opens "Every number on this page was produced by a command
+        # you can run yourself". The test count and the file count beside it
+        # were pinned; this one was not, so it was wrong in both files.
+        import json
+        receipt = json.loads((HERE.parent / "site" / "proof"
+                              / "rule-boundary-verifier-2026-09-22.json").read_text(encoding="utf-8"))
+        checks = len(receipt["checks"])
+        self.assertIn(f"All {checks} checks pass", JUDGE.read_text(encoding="utf-8"))
+        self.assertIn(f"{checks} boundary checks", README.read_text(encoding="utf-8"))
+
+    def test_the_two_pages_do_not_disagree_about_the_gate(self):
+        # judge.html said 2.9s and README said 2.8s, and a reviewer measured
+        # 3.39s on their machine. Runtime is not a property of this repository,
+        # so both files describe it the same way and neither invents precision.
+        judge = JUDGE.read_text(encoding="utf-8").lower()
+        readme = README.read_text(encoding="utf-8").lower()
+        self.assertIn("about 3 seconds", judge)
+        self.assertIn("about 3 seconds", readme)
+        # The individual command timings stay precise - they are single
+        # commands and they were measured. It is the gate, which varies with
+        # the machine running it, that must not be quoted to a tenth.
+        for text, name in ((judge, "judge.html"), (readme, "README.md")):
+            self.assertIsNone(re.search(r"check-offline[^.]{0,40}?\d\.\ds", text),
+                              f"{name} quotes the gate runtime to a tenth again")

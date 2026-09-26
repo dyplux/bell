@@ -109,6 +109,7 @@
       const rows = receipt.alert_index || receipt.alerts || [];
       liveIndex = new Map(rows.map(row => [String(row.rwa_id), row]));
       liveIndex.observed_at = receipt.observed_at || null;
+      liveIndex.dated = receipt?._publication?.source === 'dated_static';
       return liveIndex;
     })
     .catch(() => null);
@@ -123,7 +124,7 @@
     if (!row) {
       return '<div class="explorer-live explorer-live-absent"><span>NOT IN THE CURRENT SCAN</span>'
         + '<p>This reference is in the CoinMarketCap RWA map but carried no token representation in the '
-        + 'latest scan, so there is nothing to compare and no verdict to publish.</p></div>';
+        + 'receipt this page is reading, so there is nothing to compare and no verdict to publish.</p></div>';
     }
     const stateLabel = row.state === 'do_not_compare' ? 'DO NOT SHORTLIST'
       : row.state === 'investigate' ? 'INVESTIGATE'
@@ -135,7 +136,7 @@
         + `${cmp.cheapest_is_deepest ? ', which also carries the most volume' : `, but ${escapeHTML(cmp.deepest.symbol || '')} carries more volume`}.</p>`
       : '<p class="explorer-live-answer">No comparison is published for this reference: a coded rule refuses it.</p>';
     return `<div class="explorer-live explorer-live-${escapeHTML(row.state || 'unknown')}">`
-      + `<span>CURRENT VERDICT · OBSERVED ${escapeHTML(String(liveIndex.observed_at || '').replace('T', ' ').slice(0, 16))} UTC</span>`
+      + `<span>${liveIndex.dated ? 'DATED REPLAY VERDICT' : 'CURRENT VERDICT'} · OBSERVED ${escapeHTML(String(liveIndex.observed_at || '').replace('T', ' ').slice(0, 16))} UTC</span>`
       + `<strong>${escapeHTML(stateLabel)}</strong>${answer}`
       + `<small>${escapeHTML(row.next_action || '')}</small></div>`;
   }
@@ -232,6 +233,19 @@
   }
 
   renderMatches([], '');
+  // The hero search is live as you type; this one silently required Enter, so
+  // a reader who typed "Gold" and waited concluded the map had nothing. Match
+  // the behaviour they have already learned one screen above. Typing lists the
+  // matches; opening a dossier is still a deliberate click or Enter.
+  let typing = null;
+  input.addEventListener('input', () => {
+    window.clearTimeout(typing);
+    typing = window.setTimeout(() => {
+      const value = input.value.trim();
+      loadCatalogue().then(() => renderMatches(value ? find(value) : [], value)).catch(() => {});
+    }, 220);
+  });
+
   form.addEventListener('submit', event => {
     event.preventDefault();
     const mapQuery = input.value.trim();

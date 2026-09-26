@@ -59,8 +59,8 @@
     <div class="judge-facts">
       <div><small>Comparisons published</small><strong>87</strong></div>
       <div><small>Refusals, by named rule</small><strong>157</strong></div>
-      <div><small>Tests in the offline gate</small><strong>231</strong></div>
-      <div><small>Gate runtime</small><strong>2.9s</strong></div>
+      <div><small>Tests in the offline gate</small><strong>234</strong></div>
+      <div><small>Gate runtime</small><strong>~3s</strong></div>
     </div>
 
     <h2>Check it in 30 seconds, no key required</h2>
@@ -76,14 +76,14 @@ make base-rate</pre>
 <pre>python3 bell/verify_rule_boundaries.py</pre>
     <small>0.2s. An executable specification of the decision boundaries: 1.99x stays below
     the dispersion rule, 2x is an inclusive warning, 9.99x stays a warning, 10x is an
-    inclusive stop, and missing or zero prices do not fabricate a ratio. Six checks, all pass.</small>
+    inclusive stop, and missing or zero prices do not fabricate a ratio. All 8 checks pass.</small>
 
 <pre>make demo</pre>
     <small>0.13s. Recomputes 50 references from the dated replay receipt and prints
     35 refused, 10 comparable, 5 held for investigation, with the reasoning for each.</small>
 
 <pre>make check-offline</pre>
-    <small>2.9s. 231 tests, 145 Python and 86 JavaScript, plus a recomputation of the
+    <small>About 3 seconds. 234 tests, 147 Python and 87 JavaScript, plus a recomputation of the
     published receipt from the shipped inputs and a submission gate over 138 tracked files.</small>
 
     <h2>Two searches that show both halves</h2>

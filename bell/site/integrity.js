@@ -618,6 +618,23 @@
         ? `DATED REPLAY · ${observedStamp} UTC`
         : `CURRENT RECEIPT · ${observedStamp} UTC`;
     }
+    // One chip was fixed and three other places kept asserting currency over a
+    // five-day-old replay. A single label following publication.source is not a
+    // fix, it is one instance of a rule, so every label that dates the data
+    // reads from the same place.
+    const datedNow = publication?.source === 'dated_static';
+    const populationSource = byId('hero-population-source');
+    if (populationSource) {
+      populationSource.textContent = datedNow
+        ? `POPULATION LENS · DATED REPLAY · ${observedStamp} UTC`
+        : `POPULATION LENS · CURRENT RECEIPT · ${observedStamp} UTC`;
+    }
+    const stripScope = byId('metric-strip-scope');
+    if (stripScope) {
+      stripScope.textContent = datedNow
+        ? `These four are the dated replay observed ${observedStamp} UTC`
+        : `These four are the current scan, observed ${observedStamp} UTC`;
+    }
     const glossary = document.querySelector('.plain-words dl');
     if (glossary && !glossary.dataset.extended) {
       glossary.insertAdjacentHTML('beforeend', '<div><dt>HHI</dt><dd>A concentration index from 0 to 10,000; higher means reported value is held by fewer issuer labels</dd></div><div><dt>Effective issuer count</dt><dd>A simple equivalent count based only on positive reported market-cap shares, not a count of real issuers</dd></div>');
@@ -1055,6 +1072,13 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
         tradfi_market_count: item.tradfi_market_count ?? null,
       },
       decision: item.decision || null,
+      // The engine's own label is "DO NOT SELECT A WRAPPER", which is more
+      // precise about what is being refused, but the public vocabulary the
+      // page and verify_submission.py both declare is "DO NOT SHORTLIST". An
+      // exported artifact that disagrees with the screen it came from is the
+      // defect this product exists to find, so it carries both and says which
+      // is which.
+      public_label: displayDecisionLabel(item),
       next_action: item.next_action || null,
       signals: item.signals || [],
       tokens: item.tokens || item.representations || [],

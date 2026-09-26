@@ -392,7 +392,10 @@ test('the dated map and the live receipt are joined, not kept apart', () => {
   assert.match(explorerSrc, /NOT IN THE CURRENT SCAN/);
   assert.match(explorerSrc, /carried no token representation/);
   // The verdict must carry the observation time, not imply it is live-now.
-  assert.match(explorerSrc, /CURRENT VERDICT · OBSERVED/);
+  // The verdict must carry its observation time and must not imply it is
+  // live-now when the page has fallen back to the dated replay.
+  assert.match(explorerSrc, /'DATED REPLAY VERDICT' : 'CURRENT VERDICT'/);
+  assert.match(explorerSrc, /· OBSERVED \$\{escapeHTML\(String\(liveIndex\.observed_at/);
 });
 
 test('every column the population export offers is one Bell actually observed', () => {
@@ -1056,19 +1059,33 @@ test('the judge page names examples that hold on the receipt it ships', () => {
 
 test('nothing claims to be current while the page is reading a dated receipt', () => {
   const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
-  // The chip was the literal string "CURRENT RECEIPT" in the markup, so it kept
-  // saying it over five-day-old replay data while the banner above the fold
-  // read "DATED REPLAY".
-  assert.doesNotMatch(page, /class="receipt-chip">CURRENT RECEIPT</,
-    'a chip hard-codes CURRENT RECEIPT again');
-  assert.match(page, /id="population-receipt-chip"/);
-  assert.match(integrity, /populationChip\.textContent = publication\?\.source === 'dated_static'/);
+  const explorerSrc = fs.readFileSync(path.join(site, 'explorer.js'), 'utf8');
+
+  // The first version of this test asserted one chip. That is one instance of a
+  // rule, not the rule, and three other places kept asserting currency over a
+  // five-day-old replay: the population lens chip, the strip's scope sentence
+  // and the explorer's verdict header. Assert the rule.
+  const claims = /CURRENT RECEIPT|CURRENT VERDICT|current scan|latest scan/g;
+  const inMarkup = [...page.matchAll(claims)].map(match => match[0]);
+  assert.deepEqual(inMarkup, [],
+    `markup hard-codes a currency claim the page cannot honour on a dated receipt: ${inMarkup}`);
+
+  // Each of those strings may exist only in code that has read publication.source.
+  for (const [label, source] of [['integrity.js', integrity], ['explorer.js', explorerSrc]]) {
+    if (!claims.test(source)) continue;
+    assert.match(source, /dated_static/,
+      `${label} prints a currency claim without consulting the publication source`);
+  }
+  assert.match(integrity, /const datedNow = publication\?\.source === 'dated_static'/);
+  assert.match(integrity, /populationSource\.textContent = datedNow/);
+  assert.match(integrity, /stripScope\.textContent = datedNow/);
+  assert.match(explorerSrc, /liveIndex\.dated = receipt\?\._publication\?\.source === 'dated_static'/);
+  assert.match(explorerSrc, /liveIndex\.dated \? 'DATED REPLAY VERDICT' : 'CURRENT VERDICT'/);
 
   // An exported case receipt named /api/integrity even when the page had fallen
-  // back to the replay file. Wrong provenance on an evidence product is worse
-  // than none, so the field follows the source that actually answered.
+  // back to the replay file, and its decision label disagreed with the screen.
   assert.match(integrity, /source: receiptSource \|\| '\/api\/integrity'/);
-  assert.match(integrity, /receiptSource = source;/);
+  assert.match(integrity, /public_label: displayDecisionLabel\(item\)/);
 });
 
 test('narrow viewports shrink their grid tracks instead of cutting them off', () => {
@@ -1108,4 +1125,19 @@ test('an exported case pairs each hash with the endpoint and a way back', () => 
   }
   // And it must name the source it was actually read from, not a fixed one.
   assert.match(integrity, /This case was read from \$\{receiptSource\}/);
+});
+
+test('the map search behaves like the search one screen above it', () => {
+  // The hero search is live as you type. This one silently required Enter, so a
+  // reader who typed "Gold" and waited concluded the map held nothing. Two
+  // search boxes on one page may not answer to different rules.
+  const explorerSrc = fs.readFileSync(path.join(site, 'explorer.js'), 'utf8');
+  assert.match(explorerSrc, /input\.addEventListener\('input'/);
+  assert.match(explorerSrc, /renderMatches\(value \? find\(value\) : \[\], value\)/);
+  // Listing matches is not the same as opening a dossier: that stays deliberate,
+  // or every keystroke would fire a request for a published case.
+  assert.match(explorerSrc, /form\.addEventListener\('submit'/);
+  const typed = explorerSrc.slice(explorerSrc.indexOf("input.addEventListener('input'"),
+    explorerSrc.indexOf("form.addEventListener('submit'"));
+  assert.doesNotMatch(typed, /\bload\(/, 'typing opens a dossier instead of listing matches');
 });
