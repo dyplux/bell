@@ -238,8 +238,33 @@ test('a query outside the live receipt is routed to the complete RWA map', () =>
 });
 
 test('mobile navigation keeps every primary destination visible', () => {
-  assert.match(visualOverrides, /\.topbar nav\{overflow-x:visible;gap:7px\}/);
+  // This test used to assert that one CSS string existed, and passed happily
+  // while "Receipt" and "For judges" sat past the right edge at 390px: the nav
+  // scrolled horizontally with `scrollbar-width:none`, so it moved but nothing
+  // said it could. A judge on a phone never reached the page written for them.
+  // Pin the guarantee - the nav wraps, it does not hide overflow.
+  const navRules = visualOverrides.match(/\.topbar nav\{[^}]*\}/g) || [];
+  assert.ok(navRules.length, 'the topbar nav lost its responsive rules');
+  for (const rule of navRules) {
+    if (!/overflow-x:auto/.test(rule)) continue;
+    assert.fail(`the nav scrolls its overflow out of sight: ${rule}`);
+  }
+  const wrapping = navRules.filter(rule => /flex-wrap:wrap/.test(rule));
+  assert.ok(wrapping.length >= 2,
+    'the narrow-viewport nav no longer wraps, so entries can leave the screen');
   assert.match(visualOverrides, /\.topbar nav a\{font-size:1[2-9]px/);
+
+  // Every destination must lead somewhere that exists: an anchor on this page,
+  // or a route the site actually serves.
+  const routes = new Set(['/', '/judge']);
+  for (const [, href] of page.matchAll(/<nav[^>]*>[\s\S]*?<\/nav>/g).next().value[0]
+    .matchAll(/href="([^"]+)"/g)) {
+    if (href.startsWith('#')) {
+      assert.match(page, new RegExp(`id="${href.slice(1)}"`), `nav points at a missing section: ${href}`);
+    } else {
+      assert.ok(routes.has(href), `nav points at an unserved route: ${href}`);
+    }
+  }
 });
 
 // This assertion used to pin `font-size:10px`, which meant the suite was
