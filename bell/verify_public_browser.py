@@ -294,6 +294,33 @@ def main() -> int:
             require("Colgate-Palmolive" in map_text, "map-only route did not resolve the complete RWA catalogue entry")
             map_route = "DOSSIER PENDING" if "DOSSIER PENDING" in map_text else "REFERENCE ONLY"
 
+            # The judge page is the submitted demo URL, and it names two
+            # references and the word each one returns. That sentence also
+            # claims both hold "on the live one", which nothing verified: the
+            # offline test pins them against the shipped replay, and the live
+            # receipt moves. A named verdict on moving data is exactly the
+            # claim this product exists to refuse, so it is checked here, on
+            # whatever receipt is actually published.
+            #
+            # The names are read out of the page rather than written here. Two
+            # copies of a claim drift apart, and the one in this file would be
+            # the copy nobody reads.
+            judge_page = desktop.new_page()
+            judge_page.goto(args.base.rstrip("/") + "/judge", wait_until="domcontentloaded", timeout=30_000)
+            judge_html = judge_page.content()
+            judge_page.close()
+            promised = re.findall(r"<strong>([^<]+)</strong> returns <strong>([^<]+)</strong>", judge_html)
+            require(len(promised) == 2,
+                    f"the judge page no longer names two worked examples: found {len(promised)}")
+            judge_examples = {}
+            for name, word in promised:
+                require(word in PUBLIC_STATES,
+                        f"the judge page promises {word!r} for {name}, which is outside the public vocabulary")
+                shown = search_and_check(name)
+                require(shown == word,
+                        f"the judge page tells a judge {name} returns {word!r}; the live page shows {shown!r}")
+                judge_examples[name] = shown
+
             if args.screenshot:
                 page.screenshot(path=args.screenshot, full_page=True)
 
@@ -403,6 +430,7 @@ def main() -> int:
                 "single_representation": palladium_state,
                 "dossier_context": "Gold live dossier shows DEX coverage, surfaces and market-pair boundary",
                 "map_only": f"Colgate routed to complete RWA map as {map_route}",
+                "judge_page_examples": judge_examples,
                 "mobile_horizontal_overflow": False,
                 "narrow_mobile": narrow_mobile,
                 "tablet_horizontal_overflow": False,
