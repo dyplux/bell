@@ -1457,9 +1457,17 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
         rules_version: receipt.universe.rules_version || null,
       }
       : null;
-    const observations = liveObservation && storedObservations.at(-1)?.observed_at !== liveObservation.observed_at
+    // The live observation used to be pushed onto the end regardless of when it
+    // was observed. Once the series is appended by a scheduled job, a receipt
+    // that arrives out of order prints the delta backwards: "20:08 -> 13:44",
+    // with the signs inverted and nothing on the page saying so. Order by
+    // observation time instead of by arrival.
+    const observations = (liveObservation
+      && !storedObservations.some(item => item.observed_at === liveObservation.observed_at)
       ? [...storedObservations, liveObservation]
-      : storedObservations;
+      : storedObservations)
+      .slice()
+      .sort((left, right) => String(left.observed_at || '').localeCompare(String(right.observed_at || '')));
     const heroTrail = byId('hero-receipt-trail');
     if (heroTrail) {
       heroTrail.textContent = Array.isArray(observations) && observations.length

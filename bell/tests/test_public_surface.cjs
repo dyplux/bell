@@ -106,7 +106,11 @@ test('hero receipt label states the observation time, not a freshness adjective'
   assert.match(integrity, /RECEIPT TRAIL/);
   assert.match(integrity, /hero-receipt-link/);
   assert.match(integrity, /liveObservation = receipt\?\.observed_at/);
-  assert.match(integrity, /storedObservations\.at\(-1\)\?\.observed_at/);
+  // The live observation must never be duplicated into the series. This used
+  // to compare only against the last stored entry; it now checks every one,
+  // because the series is sorted by observation time rather than arrival.
+  assert.match(integrity, /storedObservations\.some\(item => item\.observed_at === liveObservation\.observed_at\)/);
+  assert.match(integrity, /\.sort\(\(left, right\) => String\(left\.observed_at/);
 });
 
 test('first case exposes the population concentration lens from the receipt', () => {
@@ -887,4 +891,66 @@ test('the 2 MB map snapshot is not fetched before anyone asks for it', () => {
   assert.ok(shown, 'the explorer count lost its static fallback');
   assert.equal(Number(shown[1].replace(/,/g, '')), total,
     'the static reference count no longer matches catalog.json');
+});
+
+test('an out-of-order receipt cannot print the delta backwards', () => {
+  // The live observation was pushed onto the end of the series regardless of
+  // when it was observed. Once a scheduled job appends the series, a receipt
+  // that arrives late prints "20:08 -> 13:44" with both signs inverted and
+  // nothing on the page saying so.
+  let html = '';
+  const trail = { textContent: '', insertAdjacentHTML() {} };
+  const target = { set innerHTML(value) { html = value; }, get innerHTML() { return html; } };
+  runFromSource('renderPublicationHistory', {
+    byId: (id) => (id === 'publication-history' ? target
+      : id === 'hero-receipt-trail' ? trail
+      : id === 'hero-receipt-link' ? {} : null),
+    escapeHTML: (value) => String(value ?? ''),
+    receipt: {
+      // Observed BEFORE the newest stored observation.
+      observed_at: '2026-09-26T13:44:13Z',
+      universe: {
+        tokenised_references_scanned: 792, tokens_scanned: 1442,
+        rules_version: 'bell.rules.v2',
+        states: { do_not_compare: 32, investigate: 96, no_flags: 664 },
+        signals: { PRICE_DENOMINATION_BREAK: 4 },
+      },
+    },
+  })({
+    observations: [{
+      observed_at: '2026-09-26T20:08:35Z', rules_version: 'bell.rules.v2',
+      tokenised_references_scanned: 792, tokens_scanned: 1442,
+      states: { do_not_compare: 30, investigate: 98, no_flags: 664 },
+      signals: { PRICE_DENOMINATION_BREAK: 4 },
+    }],
+  });
+
+  // The later observation must be on the right of the arrow, whichever arrived first.
+  assert.match(html, /2026-09-26T13:44:13Z[^→]*→[^<]*2026-09-26T20:08:35Z/);
+  // 32 blocked earlier, 30 later, so the delta reads -2 and never +2.
+  assert.match(html, /<strong>-2<\/strong><small>blocked groups<\/small>/);
+  assert.match(html, /<strong>\+2<\/strong><small>investigate groups<\/small>/);
+});
+
+test('the judge page states the JavaScript test count it actually runs', () => {
+  // A page that tells a judge "217 tests" has to be right about it, the same way
+  // the headline finding is read from the measurement instead of typed in. The
+  // Python half is pinned by test_judge_counts.py, which asks unittest what it
+  // collected rather than counting `def test_` - nine of those are helpers on
+  // classes the runner never collects.
+  const judge = fs.readFileSync(path.join(site, 'judge.html'), 'utf8');
+  const countTests = (dir, glob) => fs.readdirSync(dir)
+    .filter(name => glob.test(name))
+    .reduce((total, name) => total
+      + (fs.readFileSync(path.join(dir, name), 'utf8').match(/^test\(/gm) || []).length, 0);
+  const js = countTests(path.resolve(__dirname), /^test_.*\.cjs$/)
+    + countTests(path.resolve(__dirname, '../../cloudflare/tests'), /\.mjs$/);
+
+  const stated = judge.match(/(\d+) tests, (\d+) Python and (\d+) JavaScript/);
+  assert.ok(stated, 'the judge page stopped stating its test breakdown');
+  assert.equal(Number(stated[3]), js, 'the stated JavaScript test count is wrong');
+  assert.equal(Number(stated[1]), Number(stated[2]) + Number(stated[3]),
+    'the judge page total does not equal its own breakdown');
+  assert.match(judge, new RegExp(`<strong>${stated[1]}</strong>`),
+    'the headline number and the breakdown total disagree');
 });

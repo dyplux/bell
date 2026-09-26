@@ -70,3 +70,39 @@ jobs:
 
       - name: Audit the deployed interface
         run: PYTHONPATH=bell python bell/verify_public_browser.py --channel ""
+
+  dated-series:
+    # The history was eleven observations, nine of them on one day, because it
+    # was appended by hand from a machine that had to be awake. A series with
+    # that shape cannot answer "did this change last week", which is the whole
+    # point of a dated receipt.
+    #
+    # No secret is needed. The receipt Bell publishes is credential-free, so the
+    # series is built from the same bytes any reader can fetch. The script
+    # appends only when `observed_at` is new: if the publisher has not run, the
+    # live receipt still carries its previous timestamp, and writing that again
+    # would manufacture an observation nobody made.
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Append the published observation
+        run: PYTHONPATH=bell python bell/append_history.py
+
+      - name: Commit only when the series actually grew
+        run: |
+          if git diff --quiet -- bell/site/proof/rwa-surface-integrity-history.json; then
+            echo "no new observation today; nothing to commit"
+            exit 0
+          fi
+          git config user.name 'Dyplux'
+          git config user.email 'admin@dyplux.com'
+          git add bell/site/proof/rwa-surface-integrity-history.json
+          git commit -m "Record the published observation of $(date -u +%Y-%m-%d)"
+          git push

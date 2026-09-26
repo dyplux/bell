@@ -306,6 +306,35 @@
         "issuers": "5f7d087ed42ea139e9e01d4d6d71b62c54a946a4ed5dbcc73f60270992434db3",
         "crypto_info": "7075ab8e12cdb2ff040c32d6848080befc71aaeb524e6ba52908c6a196933a62"
       }
+    },
+    {
+      "observed_at": "2026-09-26T20:08:35Z",
+      "tokenised_references_scanned": 792,
+      "tokens_scanned": 1442,
+      "states": {
+        "do_not_compare": 30,
+        "investigate": 98,
+        "no_flags": 664
+      },
+      "signals": {
+        "PRICE_DENOMINATION_BREAK": 4,
+        "DERIVATIVE_MIX": 120,
+        "NO_TRADFI_MARKET": 13,
+        "ZERO_MCAP_POSITIVE_VOLUME": 27,
+        "SYMBOL_COLLISION": 62,
+        "MARKET_FIELDS_MISSING": 646,
+        "TOKEN_INFO_MISSING": 4,
+        "PRICE_DISPERSION": 3
+      },
+      "rules_version": "bell.rules.v2",
+      "source_hashes": {
+        "map": "5076a1fbca84e9899b8c9cd16ee7aec2dfb4260549338435f1c0fc13889a682d",
+        "asset_list": "d077a2fef21cbfd909640567b3f9444bdb12a53004f384980a0404f6b2d69188",
+        "quotes": "c552f99d2c152a74adbf6a73fbfe64d301dcccf965264d15a37d286f383578a7",
+        "info": "872c34799168ec34f416ec2d747a3be5311922d584512d29906e9278d5ab6028",
+        "issuers": "9f8f2a6b9dde140bfe5c2efbe26c1cc8937e1d1e0b3d815019539d6e3abb5175",
+        "crypto_info": "3ea93a373081d7bcde73816313132bca5f7b81a5f8a3eca96d16cd4f0b72cfcd"
+      }
     }
   ],
   "limits": [
