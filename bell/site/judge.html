@@ -59,7 +59,7 @@
     <div class="judge-facts">
       <div><small>Comparisons published</small><strong>87</strong></div>
       <div><small>Refusals, by named rule</small><strong>157</strong></div>
-      <div><small>Tests in the offline gate</small><strong>265</strong></div>
+      <div><small>Tests in the offline gate</small><strong>270</strong></div>
       <div><small>Gate runtime</small><strong>&lt;6s</strong></div>
     </div>
 
@@ -83,8 +83,8 @@ make base-rate</pre>
     35 refused, 10 comparable, 5 held for investigation, with the reasoning for each.</small>
 
 <pre>make check-offline</pre>
-    <small>Between 2.8 and 5.3 seconds across the machines it has been measured on. 265 tests, 173 Python and 92 JavaScript, plus a re-derivation of
-    the published receipt from the 16.5 MB of shipped inputs and a submission gate over 142 tracked files. Be precise about what that re-derivation proves: the inputs are verified
+    <small>Between 2.8 and 5.3 seconds across the machines it has been measured on. 270 tests, 178 Python and 92 JavaScript, plus a re-derivation of
+    the published receipt from the 16.5 MB of shipped inputs and a submission gate over 145 tracked files. Be precise about what that re-derivation proves: the inputs are verified
     byte for byte, and the scan is recomputed from them. Of the 13 dated observations, 2 ship their full payload and are cross-checked; the rest are published summaries, and every one of the 13 is chained to the one before it, so editing a single record invalidates every digest after it. And where
     a receipt predates the current rule set, the recomputed state counts are reported beside
     the recorded ones rather than compared, because they answer to different rules.</small>
@@ -132,6 +132,7 @@ make base-rate</pre>
       <a href="proof/rwa-surface-integrity-inputs-2026-09-21.json" target="_blank" rel="noopener">Replay inputs ↗</a>
       <a href="proof/base-rate-2026-09-21.json" target="_blank" rel="noopener">Base-rate measurement ↗</a>
       <a href="proof/rule-boundary-verifier-2026-09-22.json" target="_blank" rel="noopener">Rule-boundary verifier receipt ↗</a>
+      <a href="proof/transport-2026-09-21.json" target="_blank" rel="noopener">Transport record ↗</a>
       <a href="proof/rwa-surface-integrity-history.json" target="_blank" rel="noopener">Receipt history ↗</a>
       <a href="https://github.com/dyplux/bell" target="_blank" rel="noopener">Repository, MIT ↗</a>
     </div>
@@ -144,6 +145,12 @@ make base-rate</pre>
     identifiers rather than on tickers, because a ticker is reused across representations.
     <strong>cryptocurrency/info</strong> resolves chain and contract identity, which the RWA
     family does not carry.</p>
+    <p>An exported case receipt names, for each surface, the endpoint, the payload digest, how
+    many requests were made, how many returned, the HTTP status codes with their counts and the
+    request window. Those come from the replay package's collection manifest, so the artefact
+    states which observation they describe rather than implying they measured whatever scan is
+    loaded. Credentials and transport headers are recorded nowhere, which is the one thing that
+    cannot be published without breaking the credential-free claim.</p>
     <p>The other two are deliberately outside that loop rather than missing.
     <strong>market-pairs/list</strong> is not returned on the Startup plan, and the receipt says
     so in words instead of filling the field with a zero. <strong>issuers</strong>, the

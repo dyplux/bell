@@ -1,0 +1,84 @@
+{
+  "schema_version": "bell.transport_summary.v1",
+  "observed_at": "2026-09-21T21:25:01Z",
+  "provider": "CoinMarketCap Pro API",
+  "mode": "server_side_authenticated_collection",
+  "transport_headers_published": false,
+  "request_outcome": "all collected requests returned JSON successfully",
+  "extracted_from": "rwa-surface-integrity-inputs-2026-09-21.json",
+  "note": "Per-surface transport record, lifted verbatim from the replay input package's collection manifest. Status codes are counted, not listed; the per-request digests stay in the manifest. No credential, header or token is recorded here or there.",
+  "surfaces": {
+    "asset_list": {
+      "endpoint": "/v5/real-world-assets/assets/list",
+      "payload_sha256": "9efcdfd65ba6ae89f49896c4870c1b046bade779a0ab95d667f3e3fc18dbe3f1",
+      "first_request_at": "2026-09-21T21:25:08Z",
+      "last_response_at": "2026-09-21T21:25:17Z",
+      "request_count": 32,
+      "successful_response_count": 32,
+      "status_codes": {
+        "200": 32
+      },
+      "response_digest_count": 32
+    },
+    "crypto_info": {
+      "endpoint": "/v2/cryptocurrency/info",
+      "payload_sha256": "7075ab8e12cdb2ff040c32d6848080befc71aaeb524e6ba52908c6a196933a62",
+      "first_request_at": "2026-09-21T21:25:19Z",
+      "last_response_at": "2026-09-21T21:25:23Z",
+      "request_count": 15,
+      "successful_response_count": 15,
+      "status_codes": {
+        "200": 15
+      },
+      "response_digest_count": 15
+    },
+    "info": {
+      "endpoint": "/v5/real-world-assets/info",
+      "payload_sha256": "ed15deef81076f458de4a88c2421e31b39db087290a7a25bdce0497f3f8d8222",
+      "first_request_at": "2026-09-21T21:25:17Z",
+      "last_response_at": "2026-09-21T21:25:19Z",
+      "request_count": 4,
+      "successful_response_count": 4,
+      "status_codes": {
+        "200": 4
+      },
+      "response_digest_count": 4
+    },
+    "issuers": {
+      "endpoint": "/v5/real-world-assets/issuers/list",
+      "payload_sha256": "5f7d087ed42ea139e9e01d4d6d71b62c54a946a4ed5dbcc73f60270992434db3",
+      "first_request_at": "2026-09-21T21:25:23Z",
+      "last_response_at": "2026-09-21T21:25:23Z",
+      "request_count": 1,
+      "successful_response_count": 1,
+      "status_codes": {
+        "200": 1
+      },
+      "response_digest_count": 1
+    },
+    "map": {
+      "endpoint": "/v5/real-world-assets/map",
+      "payload_sha256": "48d6cd1bf2f8a40fad7fb815173e20c13789f90711d11c4ce0df626a83cf2b3c",
+      "first_request_at": "2026-09-21T21:25:01Z",
+      "last_response_at": "2026-09-21T21:25:08Z",
+      "request_count": 32,
+      "successful_response_count": 32,
+      "status_codes": {
+        "200": 32
+      },
+      "response_digest_count": 32
+    },
+    "quotes": {
+      "endpoint": "/v5/real-world-assets/quotes/latest",
+      "payload_sha256": "1afc711c6da9bfe1a9a4363e0c78d275c32faf4f8d9198832d7c72e917d9624f",
+      "first_request_at": "2026-09-21T21:25:17Z",
+      "last_response_at": "2026-09-21T21:25:19Z",
+      "request_count": 4,
+      "successful_response_count": 4,
+      "status_codes": {
+        "200": 4
+      },
+      "response_digest_count": 4
+    }
+  }
+}
