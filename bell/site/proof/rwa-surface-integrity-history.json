@@ -26,7 +26,10 @@
         "quotes": "746806b8e9c100fb2fec7900835bca02ba1b4916c0b7ab8fc826693ab11cc3e7",
         "info": "ac6cf878fb549f1252e6beec8bedfe602e1ae64499b0ef76409ce93a19223bc5",
         "issuers": "38d1fbcbc2d005351cf66161107f10ce79234040b05ba8648dd6463b9a750b2f"
-      }
+      },
+      "chain_version": "bell.history_chain.v1",
+      "prev_sha256": null,
+      "sha256": "accd099387a74049b16331f76dc5872709de641d1df72f7b827030b4ea3973c3"
     },
     {
       "observed_at": "2026-09-16T20:56:55Z",
@@ -53,7 +56,10 @@
         "quotes": "c5801357338ddc531c1a1c025559262c4c71548731353a81e5ed88800567b8e4",
         "info": "9e587f40e9b3412878180dddb78dae80abe3063a18cea02bb9a285e1665e2ef5",
         "issuers": "38d1fbcbc2d005351cf66161107f10ce79234040b05ba8648dd6463b9a750b2f"
-      }
+      },
+      "chain_version": "bell.history_chain.v1",
+      "prev_sha256": "accd099387a74049b16331f76dc5872709de641d1df72f7b827030b4ea3973c3",
+      "sha256": "9a5308b3616e8566dd334912148104255e7548bf1fb5aca8568d1932f03088ba"
     },
     {
       "observed_at": "2026-09-21T15:29:46Z",
@@ -81,7 +87,10 @@
         "info": "6bf5e3edeeada1f19b8598b590d7b5827c167d41f434a778aa7b6315e430e172",
         "issuers": "5f7d087ed42ea139e9e01d4d6d71b62c54a946a4ed5dbcc73f60270992434db3",
         "crypto_info": "f4766ba2f9f52c05a7511b556bd6c40e56c54e8880233aaf3d1d375e46dc2dab"
-      }
+      },
+      "chain_version": "bell.history_chain.v1",
+      "prev_sha256": "9a5308b3616e8566dd334912148104255e7548bf1fb5aca8568d1932f03088ba",
+      "sha256": "1a73b6170d66430c3b015a6407c8ebfd730a840f81065ff01bb02d62be5c2461"
     },
     {
       "observed_at": "2026-09-21T15:45:08Z",
@@ -109,7 +118,10 @@
         "info": "5d782449ebb4f188b164adf791bd77ed63845b16087797ab671c63f19b3ed0a4",
         "issuers": "5f7d087ed42ea139e9e01d4d6d71b62c54a946a4ed5dbcc73f60270992434db3",
         "crypto_info": "980ad31557f0c9521fb3197d4df1b8efd0f1b5fb054e66cd1c8f173781b41306"
-      }
+      },
+      "chain_version": "bell.history_chain.v1",
+      "prev_sha256": "1a73b6170d66430c3b015a6407c8ebfd730a840f81065ff01bb02d62be5c2461",
+      "sha256": "74fe5746195f745ef62d13d9c61de1d9a6f6235815b32ceca3a8750ad9ab1277"
     },
     {
       "observed_at": "2026-09-21T16:16:48Z",
@@ -137,7 +149,10 @@
         "info": "64f65b6c50039e931bab86d0ddea049947a2e12b04b288b23bc2336779f5c828",
         "issuers": "5f7d087ed42ea139e9e01d4d6d71b62c54a946a4ed5dbcc73f60270992434db3",
         "crypto_info": "5442dc26338533e502acc21666d5a135fabf8ed7a700f29dccac5623954f3939"
-      }
+      },
+      "chain_version": "bell.history_chain.v1",
+      "prev_sha256": "74fe5746195f745ef62d13d9c61de1d9a6f6235815b32ceca3a8750ad9ab1277",
+      "sha256": "17f97d61ffac202dc8d131329938948d9b4acbdc2043828abeba5fbc7be18161"
     },
     {
       "observed_at": "2026-09-21T17:01:00Z",
@@ -165,7 +180,10 @@
         "info": "f8ee0bacfaa796704106ad51f1b4836bc007402892ec87f31143657cc1ec9630",
         "issuers": "5f7d087ed42ea139e9e01d4d6d71b62c54a946a4ed5dbcc73f60270992434db3",
         "crypto_info": "a8af4c6c503c4aeebf4c4344a6fb2a21652e455ce56121f915ece2b136b20464"
-      }
+      },
+      "chain_version": "bell.history_chain.v1",
+      "prev_sha256": "17f97d61ffac202dc8d131329938948d9b4acbdc2043828abeba5fbc7be18161",
+      "sha256": "9f3496abed85182438b2669115e15940ae1bdfafc8543f7b37285dec1f9b72f5"
     },
     {
       "observed_at": "2026-09-21T17:06:21Z",
@@ -193,7 +211,10 @@
         "info": "633af1a997ee3891ac73019753d01b989965694f61f397a8979f7655db21b71a",
         "issuers": "5f7d087ed42ea139e9e01d4d6d71b62c54a946a4ed5dbcc73f60270992434db3",
         "crypto_info": "48da715b309949be9860370ef37300bd90bf63e84494087f203d3ced7b05a6e6"
-      }
+      },
+      "chain_version": "bell.history_chain.v1",
+      "prev_sha256": "9f3496abed85182438b2669115e15940ae1bdfafc8543f7b37285dec1f9b72f5",
+      "sha256": "c7a240fc06e1ebc924b4ec57650afa4fc9354c84106b7ecb3f7904554adb7fbf"
     },
     {
       "observed_at": "2026-09-21T17:42:51Z",
@@ -221,7 +242,10 @@
         "info": "d8e7cc36eec506e3d601366fccd42c386eb7a0473770df4c99044aa7cbdd13e1",
         "issuers": "5f7d087ed42ea139e9e01d4d6d71b62c54a946a4ed5dbcc73f60270992434db3",
         "crypto_info": "0ccd4ee50b25113dad96645932b9077eca7bfcbcf7fc790fdbb0e3d548d35ee2"
-      }
+      },
+      "chain_version": "bell.history_chain.v1",
+      "prev_sha256": "c7a240fc06e1ebc924b4ec57650afa4fc9354c84106b7ecb3f7904554adb7fbf",
+      "sha256": "097ef8b954e7ececd04993b5a134826e4512d8170fdfef2acaafecd1bc17aefc"
     },
     {
       "observed_at": "2026-09-21T18:28:48Z",
@@ -249,7 +273,10 @@
         "info": "764e06c2948274e1b1a79566f260daffdd1e6ea9b68f7a50af18a3f9a351c713",
         "issuers": "5f7d087ed42ea139e9e01d4d6d71b62c54a946a4ed5dbcc73f60270992434db3",
         "crypto_info": "db5061d888c2f00706e068ee426c11115e2af675539b6fcb04f0f8a93e1b4d78"
-      }
+      },
+      "chain_version": "bell.history_chain.v1",
+      "prev_sha256": "097ef8b954e7ececd04993b5a134826e4512d8170fdfef2acaafecd1bc17aefc",
+      "sha256": "47b16a056774c40d310e3d1269b0fad6e86895b600aef6b7cac316a1030cd2b4"
     },
     {
       "observed_at": "2026-09-21T19:19:31Z",
@@ -277,7 +304,10 @@
         "info": "425361b882f6a9e4f6c8e7c1e3d84811ee1918b4834c5e663518a02c5ad0c48c",
         "issuers": "5f7d087ed42ea139e9e01d4d6d71b62c54a946a4ed5dbcc73f60270992434db3",
         "crypto_info": "5228c35c6e0d16a529a8b6ce0707bfed2e3af96ed7954e1d969a1a1445155b4f"
-      }
+      },
+      "chain_version": "bell.history_chain.v1",
+      "prev_sha256": "47b16a056774c40d310e3d1269b0fad6e86895b600aef6b7cac316a1030cd2b4",
+      "sha256": "0529bcb7fe0af97bb0fd94577224f792cbd2aee9ad7792345d648391387ced55"
     },
     {
       "observed_at": "2026-09-21T21:25:01Z",
@@ -305,7 +335,10 @@
         "info": "ed15deef81076f458de4a88c2421e31b39db087290a7a25bdce0497f3f8d8222",
         "issuers": "5f7d087ed42ea139e9e01d4d6d71b62c54a946a4ed5dbcc73f60270992434db3",
         "crypto_info": "7075ab8e12cdb2ff040c32d6848080befc71aaeb524e6ba52908c6a196933a62"
-      }
+      },
+      "chain_version": "bell.history_chain.v1",
+      "prev_sha256": "0529bcb7fe0af97bb0fd94577224f792cbd2aee9ad7792345d648391387ced55",
+      "sha256": "7af7c0d9966e9effd49e7afb49b60d0289c2172a2d2d8cf29eca388987e371eb"
     },
     {
       "observed_at": "2026-09-26T20:08:35Z",
@@ -334,12 +367,50 @@
         "info": "872c34799168ec34f416ec2d747a3be5311922d584512d29906e9278d5ab6028",
         "issuers": "9f8f2a6b9dde140bfe5c2efbe26c1cc8937e1d1e0b3d815019539d6e3abb5175",
         "crypto_info": "3ea93a373081d7bcde73816313132bca5f7b81a5f8a3eca96d16cd4f0b72cfcd"
-      }
+      },
+      "chain_version": "bell.history_chain.v1",
+      "prev_sha256": "7af7c0d9966e9effd49e7afb49b60d0289c2172a2d2d8cf29eca388987e371eb",
+      "sha256": "838fd95f6de624a3ad8a32b75d0b0c17af6fa03a3c259938bf09929a362603fa"
+    },
+    {
+      "observed_at": "2026-09-26T21:25:28Z",
+      "tokenised_references_scanned": 792,
+      "tokens_scanned": 1442,
+      "states": {
+        "do_not_compare": 33,
+        "investigate": 95,
+        "no_flags": 664
+      },
+      "signals": {
+        "PRICE_DENOMINATION_BREAK": 4,
+        "DERIVATIVE_MIX": 120,
+        "NO_TRADFI_MARKET": 13,
+        "ZERO_MCAP_POSITIVE_VOLUME": 30,
+        "SYMBOL_COLLISION": 62,
+        "MARKET_FIELDS_MISSING": 646,
+        "TOKEN_INFO_MISSING": 4,
+        "PRICE_DISPERSION": 3
+      },
+      "rules_version": "bell.rules.v2",
+      "source_hashes": {
+        "map": "5076a1fbca84e9899b8c9cd16ee7aec2dfb4260549338435f1c0fc13889a682d",
+        "asset_list": "930d4c5187ef604fd7f51db11f1be1aef39c2b94fa2ac978c4c83503ee111e1d",
+        "quotes": "c64e5a2bd098a5a2deb55e4c491d4a189eb0a2533b3097dbbd648afbaf5b6da4",
+        "info": "872c34799168ec34f416ec2d747a3be5311922d584512d29906e9278d5ab6028",
+        "issuers": "9f8f2a6b9dde140bfe5c2efbe26c1cc8937e1d1e0b3d815019539d6e3abb5175",
+        "crypto_info": "5b99ca53e2cd37cea2bc79e4ae2c7f7344ec5a2b1fd066e33b26ae088d207760"
+      },
+      "chain_version": "bell.history_chain.v1",
+      "prev_sha256": "838fd95f6de624a3ad8a32b75d0b0c17af6fa03a3c259938bf09929a362603fa",
+      "sha256": "abec2c73c98f014412af61bdb1c006c7631114246473f496eaa55e663e7e8cce"
     }
   ],
   "limits": [
     "The latest receipt includes credential-free normalized inputs; authenticated HTTP headers and transport metadata are not included",
     "A changed count is a changed observation, not proof of cause or market impact",
     "The current public page may use a newer live receipt when the publication service is available"
-  ]
+  ],
+  "chain_version": "bell.history_chain.v1",
+  "chain_head": "abec2c73c98f014412af61bdb1c006c7631114246473f496eaa55e663e7e8cce",
+  "chain_note": "Each observation carries the digest of the one before it, so editing any record invalidates every digest after it. The head is committed here and in git, which is the external anchor: this is tamper-evidence, not a signature."
 }

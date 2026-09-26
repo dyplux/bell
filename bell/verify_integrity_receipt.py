@@ -8,6 +8,7 @@ prove that the upstream source data is correct.
 """
 
 from __future__ import annotations
+from history_chain import verify as verify_chain
 
 import argparse
 import hashlib
@@ -187,8 +188,19 @@ def main() -> int:
             bundled_matches += 1
     if bundled_matches != len(bundled):
         raise ValueError("history is missing a bundled receipt observation")
+    # Two observations ship their payload and are cross-checked against it. The
+    # other ten were only checked for shape, so a coherent forgery - an invented
+    # day with 791 references, every one no_flags - was accepted. The chain makes
+    # each record depend on the one before it, so a single quiet edit no longer
+    # verifies.
+    head = verify_chain(observations)
+    declared = history.get("chain_head")
+    if declared != head:
+        raise ValueError(f"history chain head is {head} but the file declares {declared!r}")
+    print(f"history chain: verified ({len(observations)} linked observations)")
     print(f"integrity receipt verification: ok ({len(observations)} observations)")
     print(f"bundled cross-checks: {bundled_matches}; remaining observations are public summaries")
+    print(f"history chain head: {head}")
     print(f"history sha256: {hashlib.sha256(args.history.read_bytes()).hexdigest()}")
     return 0
 

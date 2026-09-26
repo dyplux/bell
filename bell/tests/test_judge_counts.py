@@ -137,6 +137,11 @@ class JudgeCounts(unittest.TestCase):
         observations = re.search(r"ok \((\d+) observations\)", out.stdout)
         phrase = (f"Of the {observations.group(1)} dated observations, "
                   f"{bundled.group(1)} ship their full payload and are cross-checked")
+        chained = f"every one of the {observations.group(1)} is chained to the one before it"
         for text, name in ((JUDGE.read_text(encoding="utf-8"), "judge.html"),
                            (README.read_text(encoding="utf-8"), "README.md")):
             self.assertIn(phrase, text, f"{name} no longer states what the verifier verifies")
+        # The chain is the answer to the forgery that got through, so the page
+        # that describes the verification has to describe it.
+        self.assertIn(chained, JUDGE.read_text(encoding="utf-8"),
+                      "the judge page no longer states that the observations are chained")

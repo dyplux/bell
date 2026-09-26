@@ -28,6 +28,8 @@ from pathlib import Path
 import sys
 from urllib.request import Request, urlopen
 
+from history_chain import CHAIN_VERSION, link, verify
+
 HERE = Path(__file__).resolve().parent
 HISTORY = HERE / "site" / "proof" / "rwa-surface-integrity-history.json"
 LIVE = "https://bell.dyplux.com/api/integrity"
@@ -70,7 +72,18 @@ def append(history: dict, summary: dict) -> tuple[bool, str]:
                        f"{summary['observed_at']}, which is already in the series")
     observations.append(summary)
     observations.sort(key=lambda item: str(item.get("observed_at") or ""))
-    return True, f"appended {summary['observed_at']} under {summary['rules_version'] or 'an unrecorded rule set'}"
+    # Extending the chain, not appending beside it: a record added without a
+    # link is a record nothing depends on, which is the state that let a
+    # forged observation verify.
+    previous = None
+    for index, item in enumerate(observations):
+        observations[index] = link(item, previous)
+        previous = observations[index]["sha256"]
+    history["chain_version"] = CHAIN_VERSION
+    history["chain_head"] = verify(observations)
+    return True, (f"appended {summary['observed_at']} under "
+                  f"{summary['rules_version'] or 'an unrecorded rule set'}; "
+                  f"chain head {history['chain_head'][:16]}")
 
 
 def main(argv: list[str] | None = None) -> int:
