@@ -52,7 +52,7 @@ The current capture order is:
 1. `01-hero-live.png` for the first viewport and live freshness state
 2. `02-silver-blocked.png` for the observed contradiction and capital route
 3. `03-silver-mobile.png` for the mobile decision preview
-4. `04-marvell-facts-open.png` for the facts-only contrast route
+4. `04-marvell-comparable.png` for the published-comparison route
 5. `05-gold-repeat-window.png` for the dated temporal evidence
 6. `06-population-shape.png` for the full-scan route counts and observed spread bands
 

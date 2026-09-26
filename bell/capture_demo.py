@@ -47,7 +47,7 @@ def capture(base: str, output: Path, channel: str) -> dict:
         save_frame('03-silver-mobile', 'Silver blocked case on mobile', '5', {'width': 390, 'height': 844}, '#decision-hero h3')
         marvell = next((item for item in receipt.get('alert_index', []) if 'marvell' in str(item.get('name', '')).lower()), None)
         if marvell:
-            save_frame('04-marvell-facts-open', 'Facts-open contrast case', str(marvell['rwa_id']), wait_for='#decision-hero h3')
+            save_frame('04-marvell-comparable', 'Published comparison, the affirmative route', str(marvell['rwa_id']), wait_for='#decision-hero h3')
         save_frame('05-gold-repeat-window', 'Gold repeat-window check', '1', wait_for='#decision-hero h3')
         temporal = page.locator('#decision-hero [data-temporal-evidence]')
         if temporal.count():
