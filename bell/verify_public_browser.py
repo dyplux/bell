@@ -325,6 +325,37 @@ def main() -> int:
                 narrow_page.wait_for_function("document.querySelector('#receipt-status-label')?.textContent?.includes('LOADING') === false", timeout=30_000)
                 narrow_overflow = narrow_page.evaluate("document.documentElement.scrollWidth > window.innerWidth + 1")
                 require(not narrow_overflow, f"{width}px mobile page has horizontal overflow")
+                # Page-level overflow was false while forty-three leaf elements
+                # sat past the right edge: the overflow was CUT OFF rather than
+                # scrollable, so the document never grew and this check could
+                # not fail for the defect it was written to catch. A state badge
+                # and a representation count rendered at x=393..476 in a 390px
+                # viewport, and card bodies truncated mid-sentence. Count the
+                # leaves that leave the screen with nothing to scroll them back.
+                clipped = narrow_page.evaluate("""
+                    () => {
+                      const vw = window.innerWidth;
+                      const out = [];
+                      document.querySelectorAll('main *').forEach(node => {
+                        if (node.children.length) return;
+                        const box = node.getBoundingClientRect();
+                        if (!box.width || !box.height || box.right <= vw + 1) return;
+                        let parent = node.parentElement;
+                        while (parent) {
+                          const style = getComputedStyle(parent);
+                          if (/auto|scroll/.test(style.overflowX)
+                              && parent.scrollWidth > parent.clientWidth + 1) return;
+                          parent = parent.parentElement;
+                        }
+                        out.push(`${node.tagName}.${(node.className || '').toString().split(' ')[0]}`
+                                 + ` "${(node.innerText || '').trim().slice(0, 24)}"`);
+                      });
+                      return out;
+                    }
+                """)
+                require(not clipped,
+                        f"{width}px mobile cuts {len(clipped)} elements off the right edge "
+                        f"with nothing to scroll them back: {clipped[:4]}")
                 require(narrow_page.locator("#hero-search").is_visible(), f"{width}px mobile hides the primary search")
                 require(narrow_page.locator("#hero-mobile-decision").is_visible(), f"{width}px mobile hides the decision preview")
                 narrow_mobile[str(width)] = "no overflow; search and decision visible"

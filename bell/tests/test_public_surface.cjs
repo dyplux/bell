@@ -1070,3 +1070,22 @@ test('nothing claims to be current while the page is reading a dated receipt', (
   assert.match(integrity, /source: receiptSource \|\| '\/api\/integrity'/);
   assert.match(integrity, /receiptSource = source;/);
 });
+
+test('narrow viewports shrink their grid tracks instead of cutting them off', () => {
+  // Grid and flex children default to min-width:auto, so a long signal string
+  // pushed a track wider than the viewport. The page did not scroll sideways,
+  // so the overflow was cut off: at 390px the state badge and the
+  // representation count rendered at x=393..476, entirely off-canvas. The
+  // browser audit's existing check compared documentElement.scrollWidth to the
+  // viewport, which stayed false throughout, because nothing scrolled.
+  assert.match(integrityCss, /\.alert-row>\*,\.compact-row>\*\{min-width:0/);
+  assert.match(integrityCss, /\.output-grid,\.output-grid>article/);
+  // Tables are the exception: they own a scrollable wrapper and say "swipe
+  // horizontally". Forcing them to fit broke every cell into single letters.
+  assert.match(integrityCss, /\.token-table-wrap,\.quote-band-scroll[^}]*overflow-x:auto/);
+  assert.match(integrityCss, /\.token-table th,\.token-table td[^}]*white-space:nowrap/);
+  // And the audit now counts clipped leaves rather than trusting page overflow.
+  const browser = fs.readFileSync(path.resolve(__dirname, '../verify_public_browser.py'), 'utf8');
+  assert.match(browser, /cuts \{len\(clipped\)\} elements off the right edge/);
+  assert.match(browser, /parent\.scrollWidth > parent\.clientWidth \+ 1/);
+});

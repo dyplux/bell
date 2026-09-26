@@ -41,3 +41,39 @@
 .history-point.other-rules small{color:var(--dim)}
 .history-point.other-rules .history-stack i{filter:saturate(.25)}
 .metric-strip-note{margin:14px 0 0;font-size:13px;line-height:1.6;color:var(--muted);max-width:86ch}
+@media(max-width:620px){
+/* Grid children default to min-width:auto, so a long signal string or an
+   unbreakable token symbol pushed the row's track wider than the viewport.
+   The page itself did not scroll, so the overflow was simply cut off: the
+   state badge and the representation count rendered entirely off-canvas at
+   x=393..476 in a 390px viewport, and every card body truncated mid-sentence. */
+.alert-row,.compact-row{min-width:0;max-width:100%}
+.alert-row>*,.compact-row>*{min-width:0;max-width:100%;overflow-wrap:anywhere}
+.alert-details,.research-worksheet,.alert-decision,.alert-action,.alert-signals{min-width:0;max-width:100%}
+/* Not the tables. They already say "swipe horizontally" and own a scrollable
+   wrapper; forcing them to fit broke every cell into single letters instead
+   ("Backe d Asset s"). Let prose wrap and let the table scroll. */
+.alert-details>p,.alert-details>ul,.alert-details>ol,.alert-details>h4,.alert-details>div:not([class*=table]):not([class*=scroll]),
+.research-worksheet>p,.research-worksheet>ul,.research-worksheet>ol{max-width:100%;overflow-wrap:anywhere}
+.token-table-wrap,.quote-band-scroll,.temporal-table-scroll,.comparison-block{min-width:0;max-width:100%;overflow-x:auto}
+.token-table,.quote-band-table,.comparison-table{width:auto;min-width:100%}
+.token-table th,.token-table td,.quote-band-table th,.quote-band-table td,
+.comparison-table th,.comparison-table td{overflow-wrap:normal;word-break:normal;white-space:nowrap}
+}
+@media(max-width:620px){
+/* Same cause as the index rows, in every other grid and flex container on the
+   page: a child that will not shrink below its content forces the track wider
+   than a 320px viewport, and since the page does not scroll sideways the
+   overflow is cut off rather than reachable. */
+.output-grid,.output-grid>article,.hero-words,.hero-words>div,
+.investor-task,.investor-task ol,.investor-task li,.investor-task-head,
+.decision-hero,.decision-outcome,.capital-panel,.capital-metrics,
+.reference-concentration-panel,.reference-concentration-metrics,
+.reference-activity-panel,.reference-activity-metrics,
+.resolution-route,.resolution-route-grid,.thesis-metrics,.thesis-metric,
+.signal-grid,.signal-card,.hero-proof,.hero-proof-metrics,.hero-checks,
+.explorer-map-grid,.publication-history-grid,.judge-facts{min-width:0;max-width:100%}
+.output-grid>article>*,.decision-outcome>*,.capital-metrics>*,
+.reference-concentration-metrics>*,.reference-activity-metrics>*,
+.resolution-route-grid>*,.hero-proof-metrics>*,.hero-checks>*{min-width:0;overflow-wrap:anywhere}
+}
