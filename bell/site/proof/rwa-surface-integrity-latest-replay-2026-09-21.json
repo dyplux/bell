@@ -32,7 +32,14 @@
         "quotes"
       ],
       "invalid_or_missing_surfaces": [],
-      "decision_note": "Required RWA surfaces have the expected list shape."
+      "decision_note": "Required RWA surfaces have the expected list shape.",
+      "resolved_surfaces": {
+        "info": {
+          "expected": 791,
+          "resolved": 791,
+          "note": "Reference metadata only: it names issuers and links, and never moves a decision. Reported so an absent surface is visible rather than silent."
+        }
+      }
     }
   },
   "catalogue_integrity": {

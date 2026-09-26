@@ -206,5 +206,57 @@ class RwaIntegrityTests(unittest.TestCase):
         self.assertEqual(mocked.call_count, 1)
 
 
+
+class TheInfoSurfaceIsVisible(unittest.TestCase):
+    """Emptying the info surface used to produce a byte-identical universe.
+
+    One of the five endpoints the published scan names could not change any
+    output at all: the catalogue block saw the gap and no decision did, so a
+    reader had no way to tell whether collecting it was worth anything. It still
+    must not move a verdict - info carries names and links, not prices - but an
+    absent surface has to be visible rather than silent.
+    """
+
+    def payloads(self):
+        rows = {"data": {"rwa_assets": [
+            {"rwa_id": 1, "name": "Gold", "symbol": "GOLD", "has_tokens": True,
+             "tokens": [{"crypto_id": 11, "symbol": "XAU", "price": 1.0,
+                         "market_cap": 1.0, "volume_24h": 1.0}]},
+        ]}}
+        return rows
+
+    def test_coverage_is_reported_when_the_surface_resolves(self):
+        import rwa_integrity
+        rows = self.payloads()
+        receipt = rwa_integrity.scan(rows, rows, rows, rows, {"data": {"issuers": []}},
+                                     "2026-09-27T00:00:00Z", {"data": {}})
+        info = receipt["method"]["input_integrity"]["resolved_surfaces"]["info"]
+        self.assertEqual(info["expected"], 1)
+        self.assertEqual(info["resolved"], 1)
+
+    def test_an_absent_info_surface_is_visible_rather_than_silent(self):
+        import rwa_integrity
+        rows = self.payloads()
+        empty = {"data": {"rwa_assets": []}}
+        receipt = rwa_integrity.scan(rows, rows, rows, empty, {"data": {"issuers": []}},
+                                     "2026-09-27T00:00:00Z", {"data": {}})
+        info = receipt["method"]["input_integrity"]["resolved_surfaces"]["info"]
+        self.assertEqual(info["expected"], 1)
+        self.assertEqual(info["resolved"], 0)
+
+    def test_it_still_does_not_move_a_verdict(self):
+        # Reporting the gap must not become a rule. Info names issuers and
+        # links; turning its absence into a refusal would refuse on metadata.
+        import rwa_integrity
+        rows = self.payloads()
+        empty = {"data": {"rwa_assets": []}}
+        with_info = rwa_integrity.scan(rows, rows, rows, rows, {"data": {"issuers": []}},
+                                       "2026-09-27T00:00:00Z", {"data": {}})
+        without = rwa_integrity.scan(rows, rows, rows, empty, {"data": {"issuers": []}},
+                                     "2026-09-27T00:00:00Z", {"data": {}})
+        self.assertEqual(with_info["universe"]["states"], without["universe"]["states"])
+        self.assertEqual(with_info["universe"]["signals"], without["universe"]["signals"])
+
+
 if __name__ == "__main__":
     unittest.main()

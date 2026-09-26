@@ -734,6 +734,22 @@ def scan(map_payload: dict, list_payload: dict, quotes_payload: dict, info_paylo
                 "required_surfaces": list(required_surfaces),
                 "invalid_or_missing_surfaces": input_issues,
                 "decision_note": "Incomplete input is not a clean scan and must not be published as no rule hit." if input_issues else "Required RWA surfaces have the expected list shape.",
+                # Emptying the info surface entirely produced a byte-identical
+                # universe: the catalogue block saw it and no decision did, so
+                # one of the five endpoints the published scan names could not
+                # change an answer. It still does not change a verdict, and it
+                # should not - info carries names and links, not prices - but a
+                # reader is now told how much of it resolved, so collecting it
+                # is visibly worth something or visibly is not.
+                "resolved_surfaces": {
+                    "info": {
+                        "expected": len(tokenized_map_ids),
+                        "resolved": len(tokenized_map_ids & info_ids),
+                        "note": ("Reference metadata only: it names issuers and links, and never "
+                                 "moves a decision. Reported so an absent surface is visible "
+                                 "rather than silent."),
+                    },
+                },
             },
         },
         "catalogue_integrity": {
