@@ -31,3 +31,12 @@
 @media(max-width:620px){.capital-panel-head{display:block}.capital-panel-head b{display:block;margin-top:4px}.capital-budget{justify-content:space-between}.capital-budget span{margin-left:auto}.capital-budget input{width:105px}}
 .capital-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:#334152;margin-top:12px}.capital-metrics>div{background:#0a1018;padding:8px}.capital-metrics span{display:block;color:#718095;font:11px var(--font);letter-spacing:.06em}.capital-metrics strong{display:block;color:var(--paper);font:500 14px var(--font);margin-top:4px}.capital-metrics-note{display:block;color:#718095;font:11px/1.4 Arial;margin-top:6px}.capital-metrics-empty{display:block;background:transparent;border-top:1px solid #334152;padding-top:8px;color:#718095;font:12px Arial;margin-top:10px}.capital-metrics-empty span{font:12px Arial;letter-spacing:0}.search-result .capital-metrics strong{font-size:13px}.search-result .capital-metrics span{font-size:11px}
 @media(max-width:620px){.capital-metrics{grid-template-columns:repeat(2,1fr)}.capital-metrics>div{min-width:0}.capital-metrics span{font-size:11px;line-height:1.25}.capital-metrics strong{font-size:13px}.search-result .capital-metrics span{font-size:11px}}
+
+.rule-boundary{border:1px solid var(--line);border-left:2px solid var(--gold);background:var(--panel-inset);padding:18px 20px;margin-top:20px}
+.rule-boundary>span{display:block;font:600 12px var(--font);letter-spacing:.12em;color:var(--gold)}
+.rule-boundary p{margin:10px 0 0;font-size:13px;line-height:1.6;color:var(--paper);max-width:76ch}
+.rule-boundary .rule-boundary-detail{color:var(--muted)}
+.rule-boundary a{display:inline-block;margin-top:12px;font:12px var(--font);letter-spacing:.06em;color:var(--link);text-decoration:underline;text-decoration-color:var(--gold);text-underline-offset:3px;text-decoration-thickness:1px}
+.history-point.other-rules .history-stack{opacity:.42}
+.history-point.other-rules small{color:var(--dim)}
+.history-point.other-rules .history-stack i{filter:saturate(.25)}

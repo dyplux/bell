@@ -773,3 +773,59 @@ test('the hero picks by the published rule, executed not grepped', () => {
   // No comparisons at all must yield null so the caller can fall back.
   assert.equal(runFromSource('heroComparable', { receipt: { alerts: [] } })(), null);
 });
+
+test('the history refuses a delta across a rule boundary, executed not grepped', () => {
+  // The page used to print "-568 investigate groups, +570 clear groups" between
+  // 21 and 26 September. Nothing moved in the market: MARKET_FIELDS_MISSING
+  // stopped driving most of the catalogue to INVESTIGATE. The same instant,
+  // 2026-09-21T21:25:01Z, is published twice with different answers - 662
+  // investigate in the stored summary, 90 in the replay recomputed under
+  // bell.rules.v2. A product about surfaces that quietly disagree must not do
+  // it on its own front page.
+  const render = (history, rulesVersion) => {
+    let html = '';
+    const trail = { textContent: '', insertAdjacentHTML() {} };
+    const target = { set innerHTML(value) { html = value; }, get innerHTML() { return html; } };
+    runFromSource('renderPublicationHistory', {
+      byId: (id) => (id === 'publication-history' ? target
+        : id === 'hero-receipt-trail' ? trail
+        : id === 'hero-receipt-link' ? {} : null),
+      escapeHTML: (value) => String(value ?? ''),
+      receipt: {
+        observed_at: '2026-09-26T19:37:49Z',
+        universe: {
+          tokenised_references_scanned: 792, tokens_scanned: 1442,
+          rules_version: rulesVersion,
+          states: { do_not_compare: 34, investigate: 90, no_flags: 668 },
+          signals: { PRICE_DENOMINATION_BREAK: 4 },
+        },
+      },
+    })(history);
+    return html;
+  };
+
+  const stored = (observed_at, rules) => ({
+    observed_at, tokenised_references_scanned: 791, tokens_scanned: 1435,
+    ...(rules ? { rules_version: rules } : {}),
+    states: { do_not_compare: 35, investigate: 662, no_flags: 94 },
+    signals: { PRICE_DENOMINATION_BREAK: 4 },
+  });
+
+  // Across a boundary: no delta, and the reason is named.
+  const crossed = render({ observations: [stored('2026-09-21T21:25:01Z')] }, 'bell.rules.v2');
+  assert.match(crossed, /RULE CHANGE, NOT MARKET CHANGE/);
+  assert.match(crossed, /Two receipts, two rule sets/);
+  assert.doesNotMatch(crossed, /-572|\+574|investigate groups/,
+    'a delta was printed across a rule boundary');
+
+  // Same rule set on both sides: the delta is legitimate and must still appear.
+  const same = render({ observations: [stored('2026-09-26T05:00:00Z', 'bell.rules.v2')] }, 'bell.rules.v2');
+  assert.match(same, /investigate groups/);
+  assert.doesNotMatch(same, /RULE CHANGE/, 'a rule boundary was claimed where none exists');
+  assert.match(same, /-572/, 'the real delta between two v2 receipts went missing');
+
+  // Neither side records its rules: still refuse, but do not claim they differ.
+  const neither = render({ observations: [stored('2026-09-21T21:25:01Z')] }, null);
+  assert.match(neither, /RULE CHANGE, NOT MARKET CHANGE/);
+  assert.match(neither, /Neither summary records the rule set/);
+});

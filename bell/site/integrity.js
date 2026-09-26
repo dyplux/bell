@@ -1454,6 +1454,7 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
         tokens_scanned: receipt.universe.tokens_scanned,
         states: receipt.universe.states || {},
         signals: receipt.universe.signals || {},
+        rules_version: receipt.universe.rules_version || null,
       }
       : null;
     const observations = liveObservation && storedObservations.at(-1)?.observed_at !== liveObservation.observed_at
@@ -1473,14 +1474,34 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     const latest = observations[observations.length - 1];
     const delta = (key) => Number(latest.states?.[key] || 0) - Number(previous.states?.[key] || 0);
     const signed = (value) => `${value > 0 ? '+' : ''}${value.toLocaleString()}`;
+    // This panel used to print "-568 investigate groups, +570 clear groups" across
+    // a boundary where the rules were rewritten, not where the market moved:
+    // MARKET_FIELDS_MISSING stopped driving most of the catalogue to INVESTIGATE.
+    // The same observation instant, 2026-09-21T21:25:01Z, is published twice with
+    // different answers - 662 investigate in the stored summary, 90 in the replay
+    // recomputed under bell.rules.v2 - which is exactly the kind of silent
+    // disagreement between two surfaces that this product exists to catch. So it
+    // refuses its own delta here on the same grounds it refuses a wrapper
+    // comparison: the two numbers were not produced under the same rules, so
+    // subtracting them states something nobody observed.
+    const ruleOf = (item) => item?.rules_version || null;
+    const comparableRules = Boolean(ruleOf(previous)) && ruleOf(previous) === ruleOf(latest);
+    const ruleLabel = (item) => ruleOf(item) || 'rules not recorded';
     const visibleObservations = observations.slice(-9);
     // Several receipts can land on the same calendar day. Labelling every column
     // MM-DD then prints the same date repeatedly and reads as a broken axis.
     const distinctDays = new Set(visibleObservations.map(item => String(item.observed_at || '').slice(0, 10)));
     const labelByTime = distinctDays.size < visibleObservations.length;
+    const fadedCount = visibleObservations.filter(item => ruleOf(item) !== ruleOf(latest)).length;
+    // A faded column with no caption reads as a broken chart rather than a
+    // deliberate boundary, so name it.
+    const ruleNote = fadedCount
+      ? ` ${fadedCount} faded ${fadedCount === 1 ? 'column was' : 'columns were'} produced under an earlier rule set and cannot be read as a trend against the current one.`
+      : '';
     const spanNote = distinctDays.size <= 2
       ? `Short series: ${visibleObservations.length} receipts across ${distinctDays.size} calendar ${distinctDays.size === 1 ? 'day' : 'days'}. Columns are separate observations, not daily closes.`
       : `${visibleObservations.length} receipts across ${distinctDays.size} calendar days.`;
+    const chartNote = spanNote + ruleNote;
     const historyBars = visibleObservations.map(item => {
       const states = item.states || {};
       const total = Number(item.tokenised_references_scanned || 0) || 1;
@@ -1488,9 +1509,24 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
       const stamp = labelByTime
         ? `${observedAt.slice(8, 10)} ${observedAt.slice(11, 16)}`.trim()
         : observedAt.slice(5, 10);
-      return `<div class="history-point" title="${escapeHTML(item.observed_at || '')}"><div class="history-stack"><i class="blocked" style="height:${Math.max((Number(states.do_not_compare || 0) / total) * 100, 1)}%"></i><i class="investigate" style="height:${Math.max((Number(states.investigate || 0) / total) * 100, 1)}%"></i><i class="clear" style="height:${Math.max((Number(states.no_flags || 0) / total) * 100, 1)}%"></i></div><small>${escapeHTML(stamp)}</small></div>`;
+      const otherRules = ruleOf(item) !== ruleOf(latest);
+      return `<div class="history-point${otherRules ? ' other-rules' : ''}" title="${escapeHTML(`${item.observed_at || ''} · ${ruleLabel(item)}`)}"><div class="history-stack"><i class="blocked" style="height:${Math.max((Number(states.do_not_compare || 0) / total) * 100, 1)}%"></i><i class="investigate" style="height:${Math.max((Number(states.investigate || 0) / total) * 100, 1)}%"></i><i class="clear" style="height:${Math.max((Number(states.no_flags || 0) / total) * 100, 1)}%"></i></div><small>${escapeHTML(stamp)}</small></div>`;
     }).join('');
-    target.innerHTML = `<div class="publication-history-head"><div><span class="eyebrow">PUBLICATION HISTORY</span><h3>What changed between the two receipts</h3></div><span>${escapeHTML(previous.observed_at || 'prior')} → ${escapeHTML(latest.observed_at || 'latest')}</span></div><div class="publication-history-grid"><div><strong>${signed(delta('do_not_compare'))}</strong><small>blocked groups</small></div><div><strong>${signed(delta('investigate'))}</strong><small>investigate groups</small></div><div><strong>${signed(delta('no_flags'))}</strong><small>clear groups</small></div><div><strong>${signed(Number(latest.signals?.PRICE_DENOMINATION_BREAK || 0) - Number(previous.signals?.PRICE_DENOMINATION_BREAK || 0))}</strong><small>price spread signals</small></div></div><div class="history-chart" aria-label="State composition across published receipts"><div class="history-chart-label"><span>STATE COMPOSITION · LAST ${visibleObservations.length} OF ${observations.length} RECEIPTS</span><small>${escapeHTML(spanNote)}</small></div><div class="history-bars">${historyBars}</div></div><p>Counts are from the published summaries, not inferred market impact. The receipts cover ${Number(latest.tokenised_references_scanned || 0).toLocaleString()} tokenised references and ${Number(latest.tokens_scanned || 0).toLocaleString()} representations.</p>`;
+    // Three cases, and they are not the same refusal. Saying "the rules changed"
+    // when neither receipt recorded its rules would be the same kind of
+    // unsupported claim this panel exists to stop.
+    const boundaryDetail = (!ruleOf(previous) && !ruleOf(latest))
+      ? 'Neither summary records the rule set that produced it, so there is nothing to attribute the difference to. Receipts published from here on declare their rule set, and the dated replay package recomputes older observations under the current rules.'
+      : (!ruleOf(previous))
+        ? `The earlier summary predates rule-set recording; the later one declares ${escapeHTML(ruleOf(latest))}. The dated replay package recomputes that same observation instant under the current rules, and that recomputation is the honest comparison.`
+        : `The two receipts declare ${escapeHTML(ruleOf(previous))} and ${escapeHTML(ruleOf(latest))}. A count produced by one rule set is not a measurement of the other.`;
+    const historyHeadline = comparableRules
+      ? 'What changed between the two receipts'
+      : 'Two receipts, two rule sets';
+    const deltaBlock = comparableRules
+      ? `<div class="publication-history-grid"><div><strong>${signed(delta('do_not_compare'))}</strong><small>blocked groups</small></div><div><strong>${signed(delta('investigate'))}</strong><small>investigate groups</small></div><div><strong>${signed(delta('no_flags'))}</strong><small>clear groups</small></div><div><strong>${signed(Number(latest.signals?.PRICE_DENOMINATION_BREAK || 0) - Number(previous.signals?.PRICE_DENOMINATION_BREAK || 0))}</strong><small>price spread signals</small></div></div>`
+      : `<div class="rule-boundary"><span>RULE CHANGE, NOT MARKET CHANGE</span><p>These two receipts were produced by different rule sets, so the difference between their counts is not an observation about the market. Bell does not publish a delta it cannot attribute, for the same reason it refuses to rank two wrappers that do not share a unit.</p><p class="rule-boundary-detail">${boundaryDetail}</p><a href="proof/rwa-surface-integrity-latest-replay-2026-09-21.json" target="_blank" rel="noopener">Open the recomputed replay receipt ↗</a></div>`;
+    target.innerHTML = `<div class="publication-history-head"><div><span class="eyebrow">PUBLICATION HISTORY</span><h3>${escapeHTML(historyHeadline)}</h3></div><span>${escapeHTML(previous.observed_at || 'prior')} · ${escapeHTML(ruleLabel(previous))} → ${escapeHTML(latest.observed_at || 'latest')} · ${escapeHTML(ruleLabel(latest))}</span></div>${deltaBlock}<div class="history-chart" aria-label="State composition across published receipts"><div class="history-chart-label"><span>STATE COMPOSITION · LAST ${visibleObservations.length} OF ${observations.length} RECEIPTS</span><small>${escapeHTML(chartNote)}</small></div><div class="history-bars">${historyBars}</div></div><p>Counts are from the published summaries, not inferred market impact. The receipts cover ${Number(latest.tokenised_references_scanned || 0).toLocaleString()} tokenised references and ${Number(latest.tokens_scanned || 0).toLocaleString()} representations.</p>`;
   }
 
   async function loadPublicationHistory() {
