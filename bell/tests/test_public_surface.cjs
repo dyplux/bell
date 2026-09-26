@@ -341,7 +341,14 @@ test('the dated map and the live receipt are joined, not kept apart', () => {
   // A reader searching the map used to be told the answer lived somewhere else,
   // which read as a dated artefact even though the receipt is current. Where the
   // live scan covers a reference, its verdict belongs on the same screen.
-  assert.match(explorerSrc, /\/api\/integrity/);
+  // The receipt reaches the explorer through the promise integrity.js publishes.
+  // Fetching it here a second time downloaded 2.4 MB of identical bytes on every
+  // load, and cache:'no-cache' on both calls stopped the HTTP cache collapsing
+  // them. Assert the shared handoff, and that the second request stays gone.
+  const integritySrc = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
+  assert.match(integritySrc, /window\.BellReceipt = liveReceiptRequest/);
+  assert.match(explorerSrc, /window\.BellReceipt/);
+  assert.doesNotMatch(explorerSrc, /fetch\('\/api\/integrity'/);
   assert.match(explorerSrc, /function liveVerdictBlock/);
   assert.match(explorerSrc, /function appendLiveVerdict/);
   assert.match(explorerSrc, /appendLiveVerdict\(asset\)/);

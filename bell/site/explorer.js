@@ -87,9 +87,10 @@
   // it made the product look dated: a reader searching the map was told the
   // answer lived somewhere else. Where the live receipt covers the reference,
   // show its current verdict here instead of sending the reader away.
+  // integrity.js already fetches this receipt and publishes the promise. Asking
+  // for it again cost a second 2.4 MB download of identical bytes.
   let liveIndex = null;
-  const liveReady = fetch('/api/integrity', { cache: 'no-cache', headers: { Accept: 'application/json' } })
-    .then(response => (response.ok ? response.json() : null))
+  const liveReady = (window.BellReceipt || Promise.resolve(null))
     .then(receipt => {
       if (!receipt) return null;
       const rows = receipt.alert_index || receipt.alerts || [];

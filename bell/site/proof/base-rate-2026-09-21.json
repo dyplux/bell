@@ -18,6 +18,16 @@
     "PRICE_DISPERSION": 3,
     "SPREAD_ABOVE_PUBLISHABLE_CEILING": 1
   },
+  "refusal_split": {
+    "source_coverage": 120,
+    "data_contradiction": 38,
+    "coverage_share": 0.7595,
+    "coverage_codes": [
+      "REPRESENTATIONS_QUOTED_BUT_UNTRADED",
+      "REPRESENTATIONS_WITHOUT_A_PRICE"
+    ],
+    "counts": "reasons, not references: one reference can fail more than one rule"
+  },
   "method": {
     "population": "every reference in the captured RWA map",
     "denominator": "references with >= 2 token representations",

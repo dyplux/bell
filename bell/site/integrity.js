@@ -48,7 +48,10 @@
   // anything. The index is where you go when you want the population; the
   // search box above it is where you go when you have a question. Six rows,
   // same pagination, nothing removed.
-  const pageSize = 6;
+  const pageSize = 4;  // Six rows all carried the same state and the same
+  // sentence. Now that the first page interleaves states, each row is a
+  // different shape and a different length, so four of them show the whole
+  // range in less space than six identical ones took.
 
   labelDatedReplayLinks();
 
@@ -504,20 +507,34 @@
       // in the sentence - but the product's output is the comparison it DOES
       // publish, and that went unmentioned above the fold. Lead with what a
       // reader can act on, keep the denominator in the same breath.
+      // "cannot honestly be compared at all" was false, and base_rate.py already
+      // knew: 120 of the 158 reasons are a price CoinMarketCap never published,
+      // not a contradiction anyone found. Publishing the unsplit 157 reads as an
+      // indictment of the market when most of it is an incomplete catalogue.
+      // Also: the measurement is pinned to a dated input package, so it says 791
+      // while the live receipt re-scans and says 792. Date the sentence instead
+      // of aligning the digits - two observations are allowed to differ.
+      const split = r.refusal_split || {};
+      const coverage = split.source_coverage;
+      const contradiction = split.data_contradiction;
+      const reasons = (coverage || 0) + (contradiction || 0);
+      const measuredOn = new Date(r.observed_at).toLocaleDateString('en-GB', {
+        day: 'numeric', month: 'long'
+      });
       headline.innerHTML = `<strong>${r.comparable.toLocaleString()}</strong> tokenised assets have a `
-        + `<em>cheapest route worth naming</em>.<br>`
+        + `<em>cheapest route worth naming</em><br>`
         + `<span class="finding-counter">${r.refused.toLocaleString()} of the ${n.toLocaleString()} `
-        + `comparable-looking ones cannot honestly be compared at all.</span>`;
-      lede.innerHTML = `The catalogue holds <strong>${r.population.toLocaleString()}</strong> tokenised references. `
-        + `<strong>${r.excluded_single_representation.toLocaleString()}</strong> carry a single representation, so there is nothing to compare and they are excluded. `
-        + `Of the remaining <strong>${n.toLocaleString()}</strong> `
-        + `carrying more than one representation &mdash; the only ones where a comparison is something you could `
-        + `attempt &mdash; <strong>${r.refused.toLocaleString()}</strong> fail a coded comparability rule. `
-        + `That is <strong>${pct}%</strong>, 95% interval ${lo}&ndash;${hi}%, measured over the whole catalogue `
-        + `and not a sample. The other <strong>${r.comparable.toLocaleString()}</strong> are published with the `
-        + `comparison performed. `
-        + `<small>${r.excluded_single_representation.toLocaleString()} single-representation references are excluded `
-        + `rather than counted against the rate: there is nothing to compare, so the question does not arise.</small>`;
+        + `comparable-looking ones are refused, and most of that is a missing price `
+        + `rather than a contradiction</span>`;
+      lede.innerHTML = `Measured on ${measuredOn} over the whole catalogue, not a sample: `
+        + `<strong>${r.population.toLocaleString()}</strong> references, of which `
+        + `<strong>${r.excluded_single_representation.toLocaleString()}</strong> carry a single representation `
+        + `and cannot be compared at all. Of the <strong>${n.toLocaleString()}</strong> that remain, `
+        + `<strong>${r.refused.toLocaleString()}</strong> are refused, a rate of <strong>${pct}%</strong> `
+        + `(95% interval ${lo} to ${hi}%).`
+        + (reasons ? ` Behind those refusals are ${reasons} reasons: `
+          + `<strong>${coverage.toLocaleString()}</strong> are a second price the catalogue never published, `
+          + `and <strong>${contradiction.toLocaleString()}</strong> are rows that contradict each other.` : '');
     } catch (error) {
       // Say what is missing rather than leaving a number-shaped hole - and
       // leave the question standing rather than a claim the measurement has
@@ -1124,6 +1141,25 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     window.setTimeout(() => { button.textContent = original; }, 1400);
   }
 
+  function interleaveByState(items) {
+    const buckets = new Map();
+    items.forEach(item => {
+      const key = item.comparison ? 'comparable' : (item.state || 'unknown');
+      if (!buckets.has(key)) buckets.set(key, []);
+      buckets.get(key).push(item);
+    });
+    const lead = ['comparable', 'do_not_compare', 'investigate', 'no_flags'];
+    const queues = lead.filter(key => buckets.has(key)).map(key => buckets.get(key));
+    buckets.forEach((rows, key) => { if (!lead.includes(key)) queues.push(rows); });
+    const ordered = [];
+    while (ordered.length < items.length) {
+      let moved = false;
+      queues.forEach(queue => { if (queue.length) { ordered.push(queue.shift()); moved = true; } });
+      if (!moved) break;
+    }
+    return ordered;
+  }
+
   function renderAlerts() {
     if (!receipt) return;
     const indexed = receipt.alert_index || receipt.alerts || [];
@@ -1145,7 +1181,17 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     const exactMatches = normalizedQuery
       ? candidates.filter(item => [item.name, item.symbol, item.rwa_id].some(value => String(value || '').trim().toLowerCase() === normalizedQuery))
       : [];
-    const matching = exactMatches.length ? exactMatches : candidates;
+    const unordered = exactMatches.length ? exactMatches : candidates;
+    // The index arrives sorted by severity, so every reference on page one was
+    // do_not_compare: six cards with the same state, under a heading that
+    // promises "what to do next, by state", each repeating the same sentence
+    // because that sentence is a constant on every blocked row. Round-robin the
+    // state buckets on the default view so the first page shows the range the
+    // scan actually produces, and lead with the affirmative - a reader who
+    // opens on six refusals reads the product as "this tool tells me no".
+    // Nothing is dropped and nothing is hidden; only the order changes, and
+    // only while no filter or query is narrowing the list.
+    const matching = (filter === 'all' && !normalizedQuery) ? interleaveByState(unordered) : unordered;
     const totalPages = Math.max(1, Math.ceil(matching.length / pageSize));
     pageNumber = Math.min(pageNumber, totalPages - 1);
     const start = pageNumber * pageSize;
@@ -1651,18 +1697,38 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
       loadTemporalEvidence(alert);
   }
 
+  const isLocalHost = ['localhost', '127.0.0.1', '::1'].includes(window.location.hostname);
+
+  // explorer.js needs this same receipt and used to fetch it a second time:
+  // two independent IIFEs, 2.4 MB each, and cache:'no-cache' on both so the
+  // HTTP cache could not collapse them into one. That was 2.4 MB of the page's
+  // 7.2 MB, spent twice for the same bytes. Issue the request once here, at
+  // module scope so it exists before explorer.js evaluates, and publish the
+  // promise for it to read.
+  const liveReceiptRequest = isLocalHost
+    ? Promise.resolve(null)
+    : fetch('/api/integrity', { cache: 'no-cache', headers: { Accept: 'application/json' } })
+        .then(response => (response.ok ? response.json() : null))
+        .catch(() => null);
+  window.BellReceipt = liveReceiptRequest;
+
   async function boot() {
     try {
-      const localHost = ['localhost', '127.0.0.1', '::1'].includes(window.location.hostname);
-      const sources = localHost
+      const sources = isLocalHost
         ? ['proof/rwa-surface-integrity-latest-replay-2026-09-21.json']
         : ['/api/integrity', 'proof/rwa-surface-integrity-latest-replay-2026-09-21.json'];
       let lastError;
       for (const source of sources) {
         try {
-          const response = await fetch(source, { cache: 'no-cache', headers: { Accept: 'application/json' } });
-          if (!response.ok) throw new Error(`HTTP ${response.status}`);
-          const candidate = await response.json();
+          let candidate;
+          if (source === '/api/integrity') {
+            candidate = await liveReceiptRequest;
+            if (!candidate) throw new Error('live receipt unavailable');
+          } else {
+            const response = await fetch(source, { cache: 'no-cache', headers: { Accept: 'application/json' } });
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            candidate = await response.json();
+          }
           if (candidate.schema_version === 'rwa_surface_integrity.v1') {
             if (source !== '/api/integrity') {
               candidate._publication = {
