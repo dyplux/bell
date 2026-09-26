@@ -49,7 +49,7 @@ class JudgeCounts(unittest.TestCase):
         # opens with the same figure. One number, two places, both checked.
         judged = re.search(r"(\d+) tests, \d+ Python and \d+ JavaScript",
                            JUDGE.read_text(encoding="utf-8"))
-        readme = re.search(r"`make check-offline` - (\d+) tests in",
+        readme = re.search(r"`make check-offline` - (\d+) tests",
                            README.read_text(encoding="utf-8"))
         self.assertIsNotNone(readme, "the README stopped stating its test count")
         self.assertEqual(readme.group(1), judged.group(1),
@@ -93,8 +93,11 @@ class JudgeCounts(unittest.TestCase):
         # so both files describe it the same way and neither invents precision.
         judge = JUDGE.read_text(encoding="utf-8").lower()
         readme = README.read_text(encoding="utf-8").lower()
-        self.assertIn("about 3 seconds", judge)
-        self.assertIn("about 3 seconds", readme)
+        # "About 3 seconds" was the fastest run on one machine. Reviewers
+        # measured 3.67, 4.51 and 5.33 on theirs. A range is the honest shape of
+        # a figure that depends on who is running it.
+        self.assertIn("2.8 and 5.3 seconds", judge)
+        self.assertIn("2.8 and 5.3 seconds", readme)
         # The individual command timings stay precise - they are single
         # commands and they were measured. It is the gate, which varies with
         # the machine running it, that must not be quoted to a tenth.
@@ -121,3 +124,19 @@ class JudgeCounts(unittest.TestCase):
         judge = JUDGE.read_text(encoding="utf-8")
         self.assertIn(f"Of the {observations.group(1)} dated observations, {bundled.group(1)} ship", judge,
                       "the judge page no longer states the verification the verifier performs")
+
+    def test_the_readme_does_not_overstate_what_the_readme_verifies(self):
+        # The judge page was made precise about what make verify proves and the
+        # README kept the broad version, so the two documents disagreed about
+        # the same command. Whatever the verifier reports, both must say it.
+        import subprocess
+        out = subprocess.run(["python3", "bell/verify_integrity_receipt.py"],
+                             cwd=HERE.parent.parent, capture_output=True, text=True,
+                             env={"PYTHONPATH": "bell", "PATH": "/usr/bin:/bin:/usr/local/bin"})
+        bundled = re.search(r"bundled cross-checks: (\d+)", out.stdout)
+        observations = re.search(r"ok \((\d+) observations\)", out.stdout)
+        phrase = (f"Of the {observations.group(1)} dated observations, "
+                  f"{bundled.group(1)} ship their full payload and are cross-checked")
+        for text, name in ((JUDGE.read_text(encoding="utf-8"), "judge.html"),
+                           (README.read_text(encoding="utf-8"), "README.md")):
+            self.assertIn(phrase, text, f"{name} no longer states what the verifier verifies")

@@ -62,7 +62,8 @@ class ALivenessReceiptIsShipped(unittest.TestCase):
             self.assertTrue(self.receipt['failures'], 'failures are not named')
 
     def test_it_carries_no_payload_and_no_credential(self):
-        raw = open(self.path, encoding='utf-8').read()
+        with open(self.path, encoding='utf-8') as handle:
+            raw = handle.read()
         # Small by construction: status, a fingerprint and a sentence per
         # property. Anything large means a payload got in.
         self.assertLess(len(raw), 64_000,
@@ -77,7 +78,8 @@ class ALivenessReceiptIsShipped(unittest.TestCase):
         # Assert the property at the source too, so a future change to the probe
         # cannot start recording data and pass because today's receipt is clean.
         probe = os.path.join(os.path.dirname(PROOF), '..', 'live_contract_probe.py')
-        source = open(os.path.normpath(probe), encoding='utf-8').read()
+        with open(os.path.normpath(probe), encoding='utf-8') as handle:
+            source = handle.read()
         self.assertNotIn('"payload": payload', source)
         self.assertIn('response_sha256', source)
 
