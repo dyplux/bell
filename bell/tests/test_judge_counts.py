@@ -69,7 +69,7 @@ class JudgeCounts(unittest.TestCase):
         repo = HERE.parent.parent
         tracked = subprocess.run(["git", "ls-files"], cwd=repo, capture_output=True,
                                  text=True, check=True).stdout.split()
-        stated = re.search(r"a submission gate over (\d+) tracked files",
+        stated = re.search(r"a submission gate over (\d+)\s+tracked files",
                            JUDGE.read_text(encoding="utf-8"))
         self.assertIsNotNone(stated, "the judge page stopped stating the gate's scope")
         self.assertEqual(int(stated.group(1)), len(tracked),
@@ -101,3 +101,23 @@ class JudgeCounts(unittest.TestCase):
         for text, name in ((judge, "judge.html"), (readme, "README.md")):
             self.assertIsNone(re.search(r"check-offline[^.]{0,40}?\d\.\ds", text),
                               f"{name} quotes the gate runtime to a tenth again")
+
+    def test_the_page_describes_the_verification_the_verifier_performs(self):
+        # "A recomputation of the published receipt" promised more than it
+        # delivers: two of the twelve observations ship their payload and are
+        # cross-checked, the rest are summaries, and counts either side of a
+        # rule change are reported rather than compared. On this product, a
+        # claim about evidence has to be the claim the evidence supports.
+        import subprocess
+        repo = HERE.parent.parent
+        out = subprocess.run(["python3", "bell/verify_integrity_receipt.py"], cwd=repo,
+                             capture_output=True, text=True,
+                             env={"PYTHONPATH": "bell", "PATH": "/usr/bin:/bin:/usr/local/bin"})
+        self.assertEqual(out.returncode, 0, out.stderr[:400])
+        observations = re.search(r"ok \((\d+) observations\)", out.stdout)
+        bundled = re.search(r"bundled cross-checks: (\d+)", out.stdout)
+        self.assertIsNotNone(observations, out.stdout[:300])
+        self.assertIsNotNone(bundled, out.stdout[:300])
+        judge = JUDGE.read_text(encoding="utf-8")
+        self.assertIn(f"Of the {observations.group(1)} dated observations, {bundled.group(1)} ship", judge,
+                      "the judge page no longer states the verification the verifier performs")

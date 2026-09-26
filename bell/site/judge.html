@@ -59,7 +59,7 @@
     <div class="judge-facts">
       <div><small>Comparisons published</small><strong>87</strong></div>
       <div><small>Refusals, by named rule</small><strong>157</strong></div>
-      <div><small>Tests in the offline gate</small><strong>234</strong></div>
+      <div><small>Tests in the offline gate</small><strong>235</strong></div>
       <div><small>Gate runtime</small><strong>~3s</strong></div>
     </div>
 
@@ -83,8 +83,11 @@ make base-rate</pre>
     35 refused, 10 comparable, 5 held for investigation, with the reasoning for each.</small>
 
 <pre>make check-offline</pre>
-    <small>About 3 seconds. 234 tests, 147 Python and 87 JavaScript, plus a recomputation of the
-    published receipt from the shipped inputs and a submission gate over 138 tracked files.</small>
+    <small>About 3 seconds. 235 tests, 148 Python and 87 JavaScript, plus a re-derivation of
+    the published receipt from the 16.5 MB of shipped inputs and a submission gate over 138 tracked files. Be precise about what that re-derivation proves: the inputs are verified
+    byte for byte, and the scan is recomputed from them. Of the 12 dated observations, 2 ship their full payload and are cross-checked; the other 10 are published summaries. And where
+    a receipt predates the current rule set, the recomputed state counts are reported beside
+    the recorded ones rather than compared, because they answer to different rules.</small>
 
     <h2>Two searches that show both halves</h2>
     <p>On <a href="/">the product page</a>, search these two. They are the affirmative and
