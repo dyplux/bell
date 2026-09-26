@@ -25,6 +25,7 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
+import re
 import sys
 from urllib.request import Request, urlopen
 
@@ -33,6 +34,15 @@ from history_chain import CHAIN_VERSION, link, verify
 HERE = Path(__file__).resolve().parent
 HISTORY = HERE / "site" / "proof" / "rwa-surface-integrity-history.json"
 ANCHOR = HERE / "history-chain-head.txt"
+# Two prose sentences state the length of the series. Appending the fourteenth
+# observation left both reading thirteen, and the gate went red - correctly, but
+# the fix belongs here rather than in the two files, because a count that is
+# restated by hand drifts again on the next append.
+RESTATE = (HERE / "site" / "judge.html", HERE.parent / "README.md")
+COUNT_PHRASES = (
+    (re.compile(r"Of the \d+ dated observations"), "Of the {n} dated observations"),
+    (re.compile(r"every one of the \d+ is chained"), "every one of the {n} is chained"),
+)
 LIVE = "https://bell.dyplux.com/api/integrity"
 SUMMARY_FIELDS = ("tokenised_references_scanned", "tokens_scanned", "states", "signals")
 
@@ -87,6 +97,30 @@ def append(history: dict, summary: dict) -> tuple[bool, str]:
                   f"chain head {history['chain_head'][:16]}")
 
 
+def restate_counts(total: int) -> list[str]:
+    """Update the prose that states how long the series is.
+
+    Only the two phrases that carry the count are touched, and a file that does
+    not carry them is reported rather than silently skipped: a sentence that
+    stopped matching is a sentence that will drift.
+    """
+    touched: list[str] = []
+    for path in RESTATE:
+        if not path.exists():
+            continue
+        text = original = path.read_text(encoding="utf-8")
+        matched = 0
+        for pattern, template in COUNT_PHRASES:
+            text, hits = pattern.subn(template.format(n=total), text)
+            matched += hits
+        if not matched:
+            print(f"warning: {path.name} no longer carries the observation count", file=sys.stderr)
+        if text != original:
+            path.write_text(text, encoding="utf-8")
+            touched.append(path.name)
+    return touched
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--receipt", default=LIVE,
@@ -109,6 +143,9 @@ def main(argv: list[str] | None = None) -> int:
         ANCHOR.write_text(history["chain_head"] + "\n", encoding="utf-8")
         print(f"history: {before} -> {len(history['observations'])} observations")
         print(f"anchor: {ANCHOR.name} updated to {history['chain_head'][:16]}")
+        restated = restate_counts(len(history["observations"]))
+        if restated:
+            print(f"restated the series length in {', '.join(restated)}")
     elif changed:
         print(f"dry run: would take the series to {len(history['observations'])} observations")
     return 0

@@ -19,7 +19,8 @@ import unittest
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent))
 
-from append_history import append, summarise  # noqa: E402
+import append_history  # noqa: E402
+from append_history import append, restate_counts, summarise  # noqa: E402
 
 
 def receipt(observed_at: str, rules: str | None = "bell.rules.v2") -> dict:
@@ -80,6 +81,44 @@ class AppendHistory(unittest.TestCase):
         observations = json.loads(path.read_text(encoding="utf-8"))["observations"]
         self.assertIn("rules_version", observations[-1])
         self.assertEqual(observations[-1]["rules_version"], "bell.rules.v2")
+
+    def test_appending_restates_the_series_length_in_the_prose_that_claims_it(self):
+        # Appending the fourteenth observation left judge.html and README.md
+        # reading thirteen. The gate caught it, which is the gate working, and
+        # then the fix was applied to the two sentences rather than to the thing
+        # that writes them - which is how the same drift comes back on the
+        # fifteenth. So the appender restates them, and this checks it does.
+        with tempfile.TemporaryDirectory() as tmp:
+            page = Path(tmp) / "judge.html"
+            page.write_text("<p>Of the 13 dated observations, 2 ship their full payload, "
+                            "and every one of the 13 is chained to the one before it.</p>",
+                            encoding="utf-8")
+            readme = Path(tmp) / "README.md"
+            readme.write_text("| Of the 13 dated observations, 2 ship |\n", encoding="utf-8")
+            original = append_history.RESTATE
+            append_history.RESTATE = (page, readme)
+            try:
+                touched = restate_counts(14)
+            finally:
+                append_history.RESTATE = original
+            rewritten = page.read_text(encoding="utf-8")
+            self.assertEqual(sorted(touched), ["README.md", "judge.html"])
+            self.assertIn("Of the 14 dated observations", rewritten)
+            self.assertIn("every one of the 14 is chained", rewritten)
+            self.assertIn("Of the 14 dated observations", readme.read_text(encoding="utf-8"))
+            # Both counts move, not just the first: they are two separate
+            # phrases and the drift that started this updated neither.
+            self.assertNotIn("13", rewritten)
+
+    def test_the_shipped_prose_states_the_length_the_shipped_series_actually_has(self):
+        # The check above proves the mechanism; this one proves it was run. A
+        # rewriter nobody invoked leaves exactly the red gate it exists to stop.
+        history = json.loads((HERE.parent / "site" / "proof"
+                              / "rwa-surface-integrity-history.json").read_text(encoding="utf-8"))
+        total = len(history["observations"])
+        for path in (HERE.parent / "site" / "judge.html", HERE.parent.parent / "README.md"):
+            self.assertIn(f"Of the {total} dated observations", path.read_text(encoding="utf-8"),
+                          f"{path.name} states a series length the history does not have")
 
     def test_the_scheduled_job_only_commits_when_the_file_changed(self):
         workflow = (HERE.parent.parent / ".github" / "workflows" / "bell-quality.yml").read_text()
