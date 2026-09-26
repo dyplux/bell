@@ -38,8 +38,19 @@ def load_receipt() -> tuple[dict, str]:
     if not candidates:
         sys.exit('No shipped receipt found under bell/site/proof/.')
     path = candidates[-1]
-    with open(path, encoding='utf-8') as handle:
-        return json.load(handle), os.path.basename(path)
+    try:
+        with open(path, encoding='utf-8') as handle:
+            payload = json.load(handle)
+    except FileNotFoundError:
+        raise SystemExit(f'{path} is missing')
+    except json.JSONDecodeError as error:
+        raise SystemExit(f'{path} is not readable JSON: {error.msg.rstrip(" at")} '
+                         f'at line {error.lineno}, column {error.colno}') from None
+    if not isinstance(payload, dict):
+        raise SystemExit(f'{path} is not a JSON object')
+    if not isinstance(payload.get('alerts'), list):
+        raise SystemExit(f'{path} carries no alerts list to demonstrate')
+    return payload, os.path.basename(path)
 
 
 def money(value) -> str:

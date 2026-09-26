@@ -464,13 +464,25 @@
     single_representation: { label: 'SINGLE REPRESENTATION', route: 'No comparison route; verify instrument and issuer terms', steps: ['CMC returned one representation, so there is no wrapper ranking to perform', 'Verify instrument, issuer, backing, redemption, eligibility and custody', 'Confirm executable liquidity before treating it as investable'] },
     investigate: { label: 'INVESTIGATE', route: 'Classify the representation and verify missing fields', steps: ['Classify the representation and confirm the issuer', 'Fill the missing fields named on the card', 'Keep unresolved wrappers separate in the research memo'] },
     no_flags: { label: 'FACTS OPEN', route: 'Complete external backing and execution checks', steps: ['No published rule fired; this is not an approval', 'Inspect the observed rows for yourself', 'Run external backing, eligibility, redemption, custody and liquidity checks'] },
+    comparable: { label: 'COMPARABLE', route: 'Compare the published routes, then diligence outside this monitor', steps: ['The representations share an identity, a unit and a market state', 'Read the spread, the cheapest route and whether it is also the deepest', 'Backing, redemption, eligibility and custody are still unobserved here'] },
+  };
+
+  // The fifth place this label was decided separately. The legend filed every
+  // reference carrying a published comparison under INVESTIGATE or FACTS OPEN,
+  // so selecting the COMPARABLE filter produced a heading reading
+  // "INVESTIGATE - 4" above four cards badged COMPARABLE, and the word never
+  // appeared in the legend at all. Derive the key from the label the card
+  // shows, so the two cannot drift again.
+  const routeKeyByLabel = {
+    'DO NOT SHORTLIST': 'do_not_compare',
+    'SINGLE REPRESENTATION': 'single_representation',
+    INVESTIGATE: 'investigate',
+    'FACTS OPEN': 'no_flags',
+    COMPARABLE: 'comparable',
   };
 
   function routeKey(item) {
-    if (item.state === 'do_not_compare') return 'do_not_compare';
-    if (Number(item.token_count || 0) === 1) return 'single_representation';
-    if (item.state === 'investigate') return 'investigate';
-    return 'no_flags';
+    return routeKeyByLabel[displayDecisionLabel(item, 'FACTS OPEN')] || 'no_flags';
   }
 
   function renderRouteLegend(items) {
@@ -1870,6 +1882,7 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     setEvidenceCheck('hero-market-check', signalCodes.has('ZERO_MCAP_POSITIVE_VOLUME') || signalCodes.has('MARKET_FIELDS_MISSING') ? 'REVIEW' : 'OBSERVED', signalCodes.has('ZERO_MCAP_POSITIVE_VOLUME') || signalCodes.has('MARKET_FIELDS_MISSING') ? 'review' : 'checked');
     byId('hero-example').textContent = `${isDatedReplay ? 'Published replay' : 'Live example'}: search ${alert.name || 'the reference'} → inspect ${caseFacts.join(' · ') || 'the evidence'} → ${displayDecisionLabel(alert, 'HOLD COMPARISON')} → verify the next action before ranking a wrapper.`;
     byId('hero-proof-output').textContent = displayDecisionLabel(alert, 'HOLD COMPARISON');
+    byId('hero-proof-output').className = `state-${stateClass(displayDecisionLabel(alert, 'HOLD COMPARISON')) || 'blocked'}`;
     const mobileDecision = byId('hero-mobile-decision');
     if (mobileDecision) {
       mobileDecision.hidden = false;
@@ -1878,7 +1891,15 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
       byId('hero-mobile-note').textContent = caseFacts.join(' · ') || signals || 'Open the full evidence card for the supporting fields';
     }
     const isClean = alert.state === 'no_flags';
-    const hint = alert.state === 'do_not_compare' ? 'verify unit and market evidence' : alert.state === 'investigate' ? 'classify before shortlist' : Number(alert.token_count || 0) === 1 ? 'single representation · verify externally' : 'facts only · continue external diligence';
+    // The output was read from displayDecisionLabel and the hint from the raw
+    // state, so the hero printed COMPARABLE with "classify before shortlist"
+    // four pixels away. Same split, sixth place.
+    const output = displayDecisionLabel(alert, 'HOLD COMPARISON');
+    const hint = output === 'DO NOT SHORTLIST' ? 'verify unit and market evidence'
+      : output === 'COMPARABLE' ? 'routes published · diligence continues outside this monitor'
+      : output === 'INVESTIGATE' ? 'classify before shortlist'
+      : output === 'SINGLE REPRESENTATION' ? 'single representation · verify externally'
+      : 'facts only · continue external diligence';
     const proofHint = byId('hero-proof-hint');
     if (proofHint) proofHint.textContent = hint;
     const decisionHeading = query.trim() ? 'SEARCHED REFERENCE' : (isClean ? 'CURRENT REFERENCE' : 'FLAGGED REFERENCE');

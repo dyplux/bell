@@ -59,7 +59,7 @@
     <div class="judge-facts">
       <div><small>Comparisons published</small><strong>87</strong></div>
       <div><small>Refusals, by named rule</small><strong>157</strong></div>
-      <div><small>Tests in the offline gate</small><strong>280</strong></div>
+      <div><small>Tests in the offline gate</small><strong>281</strong></div>
       <div><small>Gate runtime</small><strong>&lt;8s</strong></div>
     </div>
 
@@ -83,9 +83,9 @@ make base-rate</pre>
     35 refused, 10 comparable, 5 held for investigation, with the reasoning for each.</small>
 
 <pre>make check-offline</pre>
-    <small>Between 2.8 and 6.7 seconds across the machines it has been measured on. 280 tests, 186 Python and 94 JavaScript, plus a re-derivation of
+    <small>between 2.8 and 7.0 seconds across the machines it has been measured on. 281 tests, 186 Python and 95 JavaScript, plus a re-derivation of
     the published receipt from the 16.5 MB of shipped inputs and a submission gate over 145 tracked files. Be precise about what that re-derivation proves: the inputs are verified
-    byte for byte, and the scan is recomputed from them. Of the 13 dated observations, 2 ship their full payload and are cross-checked; the rest are published summaries, and every one of the 13 is chained to the one before it, so editing a single record invalidates every digest after it. And where
+    byte for byte, and the scan is recomputed from them. Of the 13 dated observations, 2 ship their full payload and are cross-checked; the rest are published summaries, and every one of the 13 is chained to the one before it, so editing a single record invalidates every digest after it. Be exact about what that is and is not: it is tamper-evidence, not a signature. It defeats a quiet single-record edit, and it does not defeat anyone who can rewrite the whole file, the chain and the committed anchor together, because all three live in this repository. There is no external attestation and no date attestation, and the module says so in its own docstring. And where
     a receipt predates the current rule set, the recomputed state counts are reported beside
     the recorded ones rather than compared, because they answer to different rules.</small>
 
@@ -156,8 +156,8 @@ make base-rate</pre>
     <strong>market-pairs/list</strong> is not returned on the Startup plan, and the receipt says
     so in words instead of filling the field with a zero. <strong>issuers</strong>, the
     single-issuer endpoint, is used by the per-reference audit path in
-    <code>bell/rwa_audit.py</code>, which also reaches the DEX family, historical OHLCV and
-    <code>key/info</code>. Grep the repository and count: the list above is what you will find.</p>
+    <code>bell/rwa_audit.py</code>, which also reaches the DEX family. Historical OHLCV lives in
+    <code>bell/bell.py</code> and <code>key/info</code> in <code>bell/live_contract_probe.py</code>. Grep the repository and count: the list above is what you will find.</p>
     <p>The join is where the work is. Reconciling the 7,811 rows the map returns against the
     7,942 the asset list returns exposes 131 rows with no stable reference ID, which is the
     kind of surface disagreement a price-first tool never sees because it drops those rows

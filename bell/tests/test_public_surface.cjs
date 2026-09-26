@@ -1310,3 +1310,12 @@ test('the judge page states the number of API findings the document holds', () =
   assert.match(judge, new RegExp(`${words[findings]} API contract findings`, 'i'),
     `the document holds ${findings} findings and the judge page says otherwise`);
 });
+
+test('the panels say they count scan states, not card labels', () => {
+  // The population panel reports INVESTIGATE 90 and FACTS OPEN 666 from the raw
+  // scan states while the filters report 47 and 77 from the decision labels.
+  // Both are right about different questions, and a reader meeting 90 and 47 on
+  // one screen has no way to know that. Same shape as the 547 vs 545 note.
+  assert.match(page, /Scan states, not card labels/);
+  assert.match(page, /the state that let it through/);
+});

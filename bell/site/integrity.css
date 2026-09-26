@@ -111,3 +111,16 @@
 #start,#how-it-works,#decision,#explorer,#monitor,#evidence,.metric-strip,#thesis-strip{
 scroll-margin-top:calc(var(--header-height) + 16px)}
 @media(max-width:620px){:root{--header-height:64px}}
+/* The hero's output was unconditionally red, so COMPARABLE rendered in the
+   refusal colour there and in gold in the index. And --affirm equalled --gold,
+   so the affirmative and the warning were pixel-identical: four of five
+   outcomes looked the same. Gold is the affirmative; a warning is ivory, which
+   is inside the locked palette and distinct from both. */
+.proof-rule strong.state-comparable{color:var(--affirm)}
+.proof-rule strong.state-investigate{color:var(--paper)}
+.proof-rule strong.state-clear{color:var(--muted)}
+.alert-state.investigate{color:var(--paper)}
+.alert-state.clear{color:var(--muted)}
+.compact-row .alert-state.clear,.alert-row .alert-state.clear{color:var(--muted)}
+.compact-row .alert-state.investigate,.alert-row .alert-state.investigate{color:var(--paper)}
+.compact-row .alert-state.comparable,.alert-row .alert-state.comparable{color:var(--affirm)}

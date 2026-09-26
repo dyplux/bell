@@ -4,8 +4,8 @@
 A reviewer rewrote one summary-only observation into an invented day that was
 internally consistent - 791 references, every one no_flags, every signal zero -
 and the verifier returned ok. Swapping a source hash for sixty-four zeros passed
-too. Two of the twelve observations ship their full payload and are cross-checked
-against it; the other ten were only checked for shape, so a coherent forgery was
+too. Two of the thirteen observations ship their full payload and are cross-checked
+against it; the other eleven were only checked for shape, so a coherent forgery was
 indistinguishable from a record.
 
 The digest of the whole file was printed at the end of verification and pinned

@@ -52,7 +52,7 @@ from collections import Counter
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 
-from rwa_integrity import comparable_routes, scan  # noqa: E402
+from rwa_integrity import comparable_routes, number, scan  # noqa: E402
 
 INPUTS = os.path.join(HERE, 'site', 'proof',
                       'rwa-surface-integrity-inputs-2026-09-21.json')
@@ -132,9 +132,51 @@ def _split_refusals(reasons) -> dict:
     }
 
 
+def read_json(path):
+    """Read a JSON file and say what is wrong with it if it will not read.
+
+    verify_integrity_receipt.py was hardened and these two entry points were
+    not, though the README leads with them: a truncated or wrong-typed file
+    answered with a raw JSONDecodeError stack in the command a reader is told
+    to run first.
+    """
+    try:
+        with open(path, encoding='utf-8') as handle:
+            value = json.load(handle)
+    except FileNotFoundError:
+        raise SystemExit(f'{path} is missing')
+    except json.JSONDecodeError as error:
+        raise SystemExit(f'{path} is not readable JSON: {error.msg.rstrip(" at")} '
+                         f'at line {error.lineno}, column {error.colno}') from None
+    except UnicodeDecodeError as error:
+        raise SystemExit(f'{path} is not valid UTF-8: {error.reason}') from None
+    if not isinstance(value, dict):
+        raise SystemExit(f'{path} is not a JSON object')
+    return value
+
+
 def measure(receipt: dict) -> dict:
     index = receipt.get('alert_index') or []
     population = len(index)
+    if not population:
+        raise SystemExit(
+            'the receipt carries no alert_index, so there is no population to measure. '
+            'This is a broken input, not a refusal rate of 100%.')
+    # Poisoning every price with NaN made this command exit 0 and publish
+    # "Refusal rate 100.0%", because a non-numeric price is correctly read as no
+    # price and every comparison is correctly refused. Each step is right and
+    # the published sentence is not: that is a measurement of a broken input,
+    # not of the catalogue. The product refuses to compare when the evidence
+    # cannot carry the comparison; it has to hold itself to that here too.
+    priced = [row for row in index
+              if len([token for token in (row.get('representations') or [])
+                      if number(token.get('price')) is not None
+                      and number(token.get('price')) > 0]) >= MIN_REPRESENTATIONS]
+    if not priced:
+        raise SystemExit(
+            f'no reference in {population} carries two positive prices, so no comparison could '
+            'be attempted anywhere in the catalogue. That is a degenerate input, not a refusal '
+            'rate: check the quotes surface before reading a number off this.')
 
     single, considered = [], []
     for row in index:
@@ -205,8 +247,7 @@ def main() -> int:
 
     if not os.path.exists(INPUTS):
         sys.exit(f'input package not found: {INPUTS}')
-    with open(INPUTS, encoding='utf-8') as handle:
-        package = json.load(handle)
+    package = read_json(INPUTS)
     surfaces = package['surfaces']
     receipt = scan(
         surfaces['map'], surfaces['asset_list'], surfaces['quotes'],

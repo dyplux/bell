@@ -1,6 +1,6 @@
 # CMC API feedback from the Bell surface
 
-Six findings from building one RWA workflow against the CMC v5 real-world-asset
+Nine findings from building one RWA workflow against the CMC v5 real-world-asset
 family, ordered by what they cost. Each one is reproducible from the
 credential-free capture shipped in this repository, and each is pinned by a test
 that fails if CMC changes the behaviour. None of them is a complaint about
