@@ -16,15 +16,28 @@
   let assets = Array.isArray(window.BELL_CATALOGUE_LIVE?.assets) ? window.BELL_CATALOGUE_LIVE.assets : [];
   const initialURL = new URL(window.location.href);
   const initialMapQuery = initialURL.searchParams.get('map_reference') || '';
-  const catalogueReady = assets.length
-    ? Promise.resolve(window.BELL_CATALOGUE_LIVE)
-    : fetch('catalog.json', { cache: 'no-cache', headers: { Accept: 'application/json' } }).then(response => {
-      if (!response.ok) throw new Error(`catalogue HTTP ${response.status}`);
-      return response.json();
-    }).then(catalogue => {
-      assets = Array.isArray(catalogue.assets) ? catalogue.assets : [];
-      return catalogue;
-    });
+  // The map snapshot is 2 MB and it feeds one section most readers never reach.
+  // Fetching it at module evaluation made every visit pay for it, including the
+  // ones that only search a reference at the top of the page. It now loads on
+  // first need: when the explorer comes near the viewport, when someone touches
+  // its form, or immediately for a ?map_reference deep link. The reference count
+  // in the markup is the committed snapshot total, so nothing renders empty
+  // while it is still on the wire.
+  let cataloguePromise = null;
+  const loadCatalogue = () => {
+    if (cataloguePromise) return cataloguePromise;
+    count.textContent = 'Loading mapped references…';
+    cataloguePromise = assets.length
+      ? Promise.resolve(window.BELL_CATALOGUE_LIVE)
+      : fetch('catalog.json', { cache: 'no-cache', headers: { Accept: 'application/json' } }).then(response => {
+        if (!response.ok) throw new Error(`catalogue HTTP ${response.status}`);
+        return response.json();
+      }).then(catalogue => {
+        assets = Array.isArray(catalogue.assets) ? catalogue.assets : [];
+        return catalogue;
+      });
+    return cataloguePromise;
+  };
   const normalize = value => String(value || '').trim().toLowerCase();
   const slugFor = asset => asset.slug || String(asset.rwa_id || '');
   const explorer = byId('explorer');
@@ -214,7 +227,6 @@
     dossier.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
-  count.textContent = 'Loading mapped references…';
   renderMatches([], '');
   form.addEventListener('submit', event => {
     event.preventDefault();
@@ -223,7 +235,7 @@
     if (mapQuery) shareURL.searchParams.set('map_reference', mapQuery);
     else shareURL.searchParams.delete('map_reference');
     window.history.replaceState({}, '', shareURL);
-    catalogueReady.then(catalogue => {
+    loadCatalogue().then(catalogue => {
       const items = find(input.value);
       renderMatches(items, input.value);
       if (items.length) load(items[0]);
@@ -246,7 +258,7 @@
     input.value = button.dataset.explorerExample;
     form.requestSubmit();
   }));
-  catalogueReady.then(catalogue => {
+  const openCatalogue = () => loadCatalogue().then(catalogue => {
     applyCatalogueMeta(catalogue);
     renderMatches([], '');
     if (initialMapQuery) {
@@ -256,4 +268,16 @@
   }).catch(() => {
     count.textContent = 'Map unavailable';
   });
+  if (initialMapQuery || !('IntersectionObserver' in window)) {
+    openCatalogue();
+  } else {
+    const watcher = new IntersectionObserver(entries => {
+      if (!entries.some(entry => entry.isIntersecting)) return;
+      watcher.disconnect();
+      openCatalogue();
+    }, { rootMargin: '700px 0px' });
+    watcher.observe(explorer);
+    // Keyboard users can reach the field before it scrolls into view.
+    input.addEventListener('focus', () => { watcher.disconnect(); openCatalogue(); }, { once: true });
+  }
 })();

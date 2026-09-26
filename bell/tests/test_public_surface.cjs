@@ -861,3 +861,30 @@ test('the judge page carries the claim, a keyless check and links that exist', (
   // And the product page has to lead there, or nobody finds it.
   assert.match(page, /href="\/judge"/);
 });
+
+test('the 2 MB map snapshot is not fetched before anyone asks for it', () => {
+  // catalog.json is 2 MB and feeds one section far down the page. Fetching it at
+  // module evaluation made every visit pay for it, including the ones that only
+  // search a reference at the top.
+  const source = fs.readFileSync(path.join(site, 'explorer.js'), 'utf8');
+  assert.match(source, /const loadCatalogue = \(\) =>/);
+  assert.match(source, /IntersectionObserver/);
+  // The fetch must live inside the loader, never at the top level of the IIFE.
+  const loaderAt = source.indexOf('const loadCatalogue');
+  const fetchAt = source.indexOf("fetch('catalog.json'");
+  assert.ok(fetchAt > loaderAt, 'catalog.json is fetched outside the lazy loader');
+  assert.equal(source.split("fetch('catalog.json'").length - 1, 1, 'more than one catalogue fetch');
+  // A deep link has no section to scroll to, so it must load immediately.
+  assert.match(source, /if \(initialMapQuery \|\| !\('IntersectionObserver' in window\)\)/);
+  // Keyboard users can tab into the field before it scrolls into view.
+  assert.match(source, /input\.addEventListener\('focus'/);
+
+  // Nothing may render a loading state that the deferred fetch never resolves:
+  // the markup carries the committed snapshot total, and it has to be the real
+  // one, so a stale refresh cannot leave a wrong number on screen.
+  const total = JSON.parse(fs.readFileSync(path.join(site, 'catalog.json'), 'utf8')).total_size;
+  const shown = page.match(/id="explorer-count"[^>]*>([\d,]+) mapped references/);
+  assert.ok(shown, 'the explorer count lost its static fallback');
+  assert.equal(Number(shown[1].replace(/,/g, '')), total,
+    'the static reference count no longer matches catalog.json');
+});
