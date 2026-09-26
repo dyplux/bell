@@ -581,10 +581,16 @@ test('the reference index does not render a third of the page before you search'
   // where you go for the population; the search box above it is where you go
   // with a question.
   const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
-  const size = integrity.match(/const pageSize = (\d+);/);
-  assert.ok(size, 'the index no longer declares a page size');
-  assert.ok(Number(size[1]) <= 8,
-    `the index renders ${size[1]} full rows by default, which is most of a screenful each`);
+  // The size became viewport-dependent - two on a phone, four on a desktop -
+  // so check every branch of it rather than one literal.
+  const sizes = (integrity.match(/const pageSize = [^;]+;/) || [])[0];
+  assert.ok(sizes, 'the index no longer declares a page size');
+  const values = (sizes.match(/\b\d+\b/g) || []).map(Number).filter(value => value <= 32);
+  assert.ok(values.length, 'the page size no longer resolves to a number');
+  for (const value of values) {
+    assert.ok(value <= 8,
+      `the index renders ${value} full rows by default, which is most of a screenful each`);
+  }
   // Pagination has to still exist, or this is removal rather than deferral.
   assert.match(integrity, /alert-pagination/);
   assert.match(integrity, /Math\.ceil\(matching\.length \/ pageSize\)/);
@@ -997,4 +1003,19 @@ test('two counts that measure different things say so on the page', () => {
   // And the dated half must keep its date, or the note describes nothing.
   const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
   assert.match(integrity, /Measured on \$\{measuredOn\}/);
+});
+
+test('a phone gets fewer index cards without losing any reference', () => {
+  // Each index card is about 1.2 screens tall at 390px, so four of them made
+  // the reference index five and a half screens of scrolling on a phone.
+  const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
+  assert.match(integrity, /const pageSize = window\.matchMedia\('\(max-width: 760px\)'\)\.matches \? 2 : 4;/);
+  // Fewer cards is only acceptable because nothing becomes unreachable: the
+  // pager, the search and every state filter still cover the whole population.
+  assert.match(integrity, /Math\.ceil\(matching\.length \/ pageSize\)/);
+  assert.match(page, /id="alert-pagination"/);
+  assert.match(page, /id="alert-search"/);
+  for (const state of ['all', 'do_not_compare', 'investigate', 'no_flags', 'comparable']) {
+    assert.match(page, new RegExp(`data-filter="${state}"`), `the ${state} filter went missing`);
+  }
 });

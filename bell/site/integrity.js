@@ -48,10 +48,14 @@
   // anything. The index is where you go when you want the population; the
   // search box above it is where you go when you have a question. Six rows,
   // same pagination, nothing removed.
-  const pageSize = 4;  // Six rows all carried the same state and the same
-  // sentence. Now that the first page interleaves states, each row is a
-  // different shape and a different length, so four of them show the whole
-  // range in less space than six identical ones took.
+  // Six rows all carried the same state and the same sentence. Now that the
+  // first page interleaves states, each row is a different shape and a
+  // different length, so four show the whole range in less space than six
+  // identical ones took. On a phone each of those four is about 1.2 screens
+  // tall, which turned the index into five and a half screens of scrolling, so
+  // a narrow viewport gets two. Nothing is hidden: the search, the state
+  // filters and the pager all still reach every reference.
+  const pageSize = window.matchMedia('(max-width: 760px)').matches ? 2 : 4;
 
   labelDatedReplayLinks();
 
