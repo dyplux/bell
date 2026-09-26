@@ -829,3 +829,35 @@ test('the history refuses a delta across a rule boundary, executed not grepped',
   assert.match(neither, /RULE CHANGE, NOT MARKET CHANGE/);
   assert.match(neither, /Neither summary records the rule set/);
 });
+
+test('the judge page carries the claim, a keyless check and links that exist', () => {
+  // A judge with 48 submissions to read does not scroll fourteen screens. This
+  // page is the whole product in three: the claim, commands that need no key,
+  // and the receipts behind every number on it.
+  const judge = fs.readFileSync(path.join(site, 'judge.html'), 'utf8');
+
+  // The claim must lead with what the product produces, not only what it refuses.
+  assert.match(judge, /87 have a cheapest\s+route worth naming/);
+  assert.match(judge, /no API key/);
+
+  // Every command shown must be one the repository actually exposes.
+  const makefile = fs.readFileSync(path.resolve(__dirname, '../../Makefile'), 'utf8');
+  for (const target of ['base-rate', 'demo', 'check-offline']) {
+    assert.match(judge, new RegExp(`make ${target}`), `judge page stopped offering make ${target}`);
+    assert.match(makefile, new RegExp(`^${target}:`, 'm'), `make ${target} no longer exists`);
+  }
+  assert.match(judge, /python3 bell\/verify_rule_boundaries\.py/);
+  assert.ok(fs.existsSync(path.resolve(__dirname, '../verify_rule_boundaries.py')));
+
+  // A judge page that links to a missing receipt is worse than no judge page.
+  const hrefs = [...judge.matchAll(/href="((?:proof|assets)\/[^"]+)"/g)].map(m => m[1]);
+  assert.ok(hrefs.length >= 6, 'the judge page stopped linking its receipts');
+  for (const href of hrefs) {
+    assert.ok(fs.existsSync(path.join(site, href)), `judge page links a missing file: ${href}`);
+  }
+
+  // The boundary travels with the claim, never separately.
+  assert.match(judge, /does not prove backing, redemption/);
+  // And the product page has to lead there, or nobody finds it.
+  assert.match(page, /href="\/judge"/);
+});
