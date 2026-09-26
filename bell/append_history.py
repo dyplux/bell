@@ -32,6 +32,7 @@ from history_chain import CHAIN_VERSION, link, verify
 
 HERE = Path(__file__).resolve().parent
 HISTORY = HERE / "site" / "proof" / "rwa-surface-integrity-history.json"
+ANCHOR = HERE / "history-chain-head.txt"
 LIVE = "https://bell.dyplux.com/api/integrity"
 SUMMARY_FIELDS = ("tokenised_references_scanned", "tokens_scanned", "states", "signals")
 
@@ -102,7 +103,12 @@ def main(argv: list[str] | None = None) -> int:
     if changed and not args.dry_run:
         history_path.write_text(json.dumps(history, ensure_ascii=False, indent=2) + "\n",
                                 encoding="utf-8")
+        # The head is anchored outside the file it protects, so it has to be
+        # written with it. Leaving them apart would fail verification on the
+        # next run, which is the correct failure but a needless one.
+        ANCHOR.write_text(history["chain_head"] + "\n", encoding="utf-8")
         print(f"history: {before} -> {len(history['observations'])} observations")
+        print(f"anchor: {ANCHOR.name} updated to {history['chain_head'][:16]}")
     elif changed:
         print(f"dry run: would take the series to {len(history['observations'])} observations")
     return 0

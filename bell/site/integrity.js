@@ -529,6 +529,23 @@
       // was most likely to be checked. This runs here, not in renderMetrics,
       // because renderMetrics runs first and would only ever see a null date
       // and print the same-instant sentence whether or not it was true.
+      // The hero says 547 references carry a single representation; the
+      // SINGLE REPRESENTATION filter returns 545. Both are right and they
+      // count different things: the base rate asks how many have nothing to
+      // compare, the filter asks what the card says, and two of those 547
+      // also tripped a critical rule, so the card calls them DO NOT
+      // SHORTLIST. Say it rather than leave a reader to find the gap.
+      const singleNote = byId('single-rep-note');
+      if (singleNote && receipt?.alert_index) {
+        const singles = receipt.alert_index.filter(row => Number(row.token_count || 0) === 1);
+        const blocked = singles.filter(row => displayDecisionLabel(row, 'FACTS OPEN') === 'DO NOT SHORTLIST');
+        singleNote.textContent = blocked.length
+          ? `Of the ${singles.length.toLocaleString()} references carrying a single representation, `
+            + `${blocked.length} also tripped a critical rule, so the index labels them `
+            + `DO NOT SHORTLIST and the SINGLE REPRESENTATION filter returns `
+            + `${(singles.length - blocked.length).toLocaleString()}.`
+          : '';
+      }
       const stripDates = byId('metric-strip-dates');
       if (stripDates) {
         const scanAt = receipt?.observed_at || null;
@@ -1321,14 +1338,22 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
       result.innerHTML = `<span>SEARCH RESULT</span><strong>No live case found for “${escapeHTML(query)}”</strong><p>This reference may still exist in the full CMC RWA map, even when Bell has not published a dossier for it yet.</p><a href="#explorer" data-open-map-query="${escapeHTML(query)}">Search the full RWA map ↓</a>`;
       return;
     }
+    // The label was read from displayDecisionLabel and the next step from the
+    // raw scan state, so a reference that prints COMPARABLE was told to
+    // "classify the representation and keep unresolved wrappers separate" in
+    // the next line. That is 46 references in the live receipt: the ones the
+    // scan marks investigate AND that carry a published comparison. Branch on
+    // the word the reader just read.
     const state = displayDecisionLabel(item);
-    const next = item.state === 'do_not_compare'
+    const next = state === 'DO NOT SHORTLIST'
       ? 'Resolve the identity, unit and quote contradiction before comparing wrappers.'
-      : item.state === 'investigate'
-        ? 'Classify the representation and keep unresolved wrappers separate.'
-        : Number(item.token_count || 0) === 1
-          ? 'There is no wrapper ranking to perform; verify the instrument and issuer externally.'
-          : 'Open the rows for a factual side-by-side, then complete external diligence.';
+      : state === 'COMPARABLE'
+        ? 'Compare the routes below, then complete issuer, redemption and eligibility diligence outside this monitor.'
+        : state === 'INVESTIGATE'
+          ? 'Classify the representation and keep unresolved wrappers separate.'
+          : state === 'SINGLE REPRESENTATION'
+            ? 'There is no wrapper ranking to perform; verify the instrument and issuer externally.'
+            : 'Open the rows for a factual side-by-side, then complete external diligence.';
     result.hidden = false;
     const exact = [item.name, item.symbol, item.rwa_id].some(value => String(value || '').trim().toLowerCase() === normalizedQuery);
     const matchLabel = exact ? `${matches.filter(candidate => [candidate.name, candidate.symbol, candidate.rwa_id].some(value => String(value || '').trim().toLowerCase() === normalizedQuery)).length || 1} MATCH · EXACT MATCH` : `${matches.length} MATCH${matches.length === 1 ? '' : 'ES'} · SHOWING FIRST`;

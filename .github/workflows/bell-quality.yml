@@ -97,12 +97,12 @@ jobs:
 
       - name: Commit only when the series actually grew
         run: |
-          if git diff --quiet -- bell/site/proof/rwa-surface-integrity-history.json; then
+          if git diff --quiet -- bell/site/proof/rwa-surface-integrity-history.json bell/history-chain-head.txt; then
             echo "no new observation today; nothing to commit"
             exit 0
           fi
           git config user.name 'Dyplux'
           git config user.email 'admin@dyplux.com'
-          git add bell/site/proof/rwa-surface-integrity-history.json
+          git add bell/site/proof/rwa-surface-integrity-history.json bell/history-chain-head.txt
           git commit -m "Record the published observation of $(date -u +%Y-%m-%d)"
           git push

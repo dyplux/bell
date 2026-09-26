@@ -210,6 +210,19 @@ def main() -> int:
     declared = history.get("chain_head")
     if declared != head:
         raise ValueError(f"history chain head is {head} but the file declares {declared!r}")
+    # The declared head lived inside the file it protects, so rebuilding the
+    # whole chain and updating that one field passed. Anchor it outside: a
+    # forger now has to edit a second tracked file, which is a separate line in
+    # the diff, and anyone verifying a fixed commit is comparing against a value
+    # the history cannot rewrite for itself.
+    anchor_path = Path(__file__).resolve().parent / "history-chain-head.txt"
+    if not anchor_path.exists():
+        raise ValueError(f"{anchor_path} is missing: the chain head has no anchor outside the history")
+    anchored = anchor_path.read_text(encoding="utf-8").strip()
+    if anchored != head:
+        raise ValueError(
+            f"history chain head is {head} but {anchor_path.name} anchors {anchored}: "
+            "the series was rewritten, or the anchor was not updated with it")
     print(f"history chain: verified ({len(observations)} linked observations)")
     print(f"integrity receipt verification: ok ({len(observations)} observations)")
     print(f"bundled cross-checks: {bundled_matches}; remaining observations are public summaries")

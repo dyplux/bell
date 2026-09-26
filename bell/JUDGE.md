@@ -112,7 +112,9 @@ the receipt timestamps, population counts, expected judge steps, console-error
 list and the existence of the referenced video artifact.
 
 The check opens the public page, waits for the receipt, searches Silver and Marvell, confirms
-that both UI states mirror the published receipt (`DO NOT SHORTLIST` and `FACTS OPEN`),
+that both UI states mirror the published receipt (`DO NOT SHORTLIST` for Silver, and
+whatever the receipt supports for Marvell, which is `COMPARABLE` while it carries a published
+comparison),
 updates the Silver capital check with a $25,000 scenario, verifies the amount-to-reported-volume context, downloads both the decision brief and the compact JSON case receipt, verifies the shareable case-link action, and checks
 that the reference can be saved to the local watchlist and that the 390px mobile layout has
 no horizontal overflow. It also opens Marvell, selects two observed rows and confirms that

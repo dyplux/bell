@@ -149,5 +149,61 @@ class TheChain(unittest.TestCase):
         self.assertNotIn("Traceback", result.stderr)
 
 
+
+class TheAnchor(unittest.TestCase):
+    """Rebuilding the whole chain and updating the declared head used to pass.
+
+    The head lived inside the file it protects, so a forger who re-linked every
+    record and rewrote that one field verified clean. A reviewer did exactly
+    that and reported exit 0. The head is anchored in a second tracked file now:
+    the forgery has to edit both, which is a separate line in the diff, and a
+    reader verifying a fixed commit compares against a value the history cannot
+    rewrite for itself.
+    """
+
+    ANCHOR = HERE.parent / "history-chain-head.txt"
+
+    def test_the_anchor_matches_the_shipped_chain(self):
+        history = json.loads(HISTORY.read_text(encoding="utf-8"))
+        self.assertEqual(self.ANCHOR.read_text(encoding="utf-8").strip(),
+                         verify(history["observations"]))
+
+    def test_a_fully_rebuilt_chain_no_longer_verifies(self):
+        repo = HERE.parent.parent
+        original = HISTORY.read_bytes()
+        history = json.loads(original)
+        target = history["observations"][5]
+        target["states"] = {"do_not_compare": 0, "investigate": 0,
+                            "no_flags": target["tokenised_references_scanned"]}
+        target["signals"] = {key: 0 for key in target["signals"]}
+        history["observations"] = rebuild(history["observations"])
+        history["chain_head"] = verify(history["observations"])
+        try:
+            HISTORY.write_text(json.dumps(history, ensure_ascii=False, indent=2) + "\n",
+                               encoding="utf-8")
+            result = subprocess.run(["python3", "bell/verify_integrity_receipt.py"], cwd=repo,
+                                    capture_output=True, text=True,
+                                    env={"PYTHONPATH": "bell", "PATH": "/usr/bin:/bin:/usr/local/bin"})
+            self.assertEqual(result.returncode, 1,
+                             "a fully rebuilt chain with a matching head still verified")
+            self.assertIn("history-chain-head.txt anchors", result.stderr)
+            self.assertNotIn("Traceback", result.stderr)
+        finally:
+            HISTORY.write_bytes(original)
+
+    def test_a_missing_anchor_is_refused_rather_than_skipped(self):
+        repo = HERE.parent.parent
+        original = self.ANCHOR.read_bytes()
+        try:
+            self.ANCHOR.unlink()
+            result = subprocess.run(["python3", "bell/verify_integrity_receipt.py"], cwd=repo,
+                                    capture_output=True, text=True,
+                                    env={"PYTHONPATH": "bell", "PATH": "/usr/bin:/bin:/usr/local/bin"})
+            self.assertEqual(result.returncode, 1)
+            self.assertIn("has no anchor outside the history", result.stderr)
+        finally:
+            self.ANCHOR.write_bytes(original)
+
+
 if __name__ == "__main__":
     unittest.main()
