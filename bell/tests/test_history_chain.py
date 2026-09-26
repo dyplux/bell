@@ -121,6 +121,33 @@ class TheChain(unittest.TestCase):
         finally:
             HISTORY.write_bytes(original)
 
+    def test_a_truncated_file_is_explained_rather_than_traced(self):
+        # A half-written file raised JSONDecodeError and printed a raw stack. A
+        # verifier exists to say what is wrong with the evidence; the exit code
+        # was already right, the message was not.
+        repo = HERE.parent.parent
+        original = HISTORY.read_bytes()
+        try:
+            HISTORY.write_bytes(original[:900])
+            result = subprocess.run(["python3", "bell/verify_integrity_receipt.py"], cwd=repo,
+                                    capture_output=True, text=True,
+                                    env={"PYTHONPATH": "bell", "PATH": "/usr/bin:/bin:/usr/local/bin"})
+            self.assertEqual(result.returncode, 1)
+            self.assertIn("is not readable JSON", result.stderr)
+            self.assertNotIn("Traceback", result.stderr)
+        finally:
+            HISTORY.write_bytes(original)
+
+    def test_a_missing_file_says_which_one(self):
+        repo = HERE.parent.parent
+        result = subprocess.run(
+            ["python3", "bell/verify_integrity_receipt.py", "--history", "bell/nope.json"],
+            cwd=repo, capture_output=True, text=True,
+            env={"PYTHONPATH": "bell", "PATH": "/usr/bin:/bin:/usr/local/bin"})
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("nope.json is missing", result.stderr)
+        self.assertNotIn("Traceback", result.stderr)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -32,8 +32,21 @@ SHA256 = re.compile(r"^[0-9a-f]{64}$")
 
 
 def load(path: Path) -> dict:
-    with path.open(encoding="utf-8") as handle:
-        value = json.load(handle)
+    # A truncated or corrupted file raised JSONDecodeError and printed a raw
+    # traceback. A verifier exists to say what is wrong with the evidence, so
+    # a reader who feeds it a half-written file should be told that, not shown
+    # a stack. The exit code was already correct; the message was not.
+    if not path.exists():
+        raise ValueError(f"{path} is missing")
+    try:
+        with path.open(encoding="utf-8") as handle:
+            value = json.load(handle)
+    except json.JSONDecodeError as error:
+        raise ValueError(
+            f"{path} is not readable JSON: {error.msg.rstrip(' at')} at line {error.lineno}, column {error.colno}. "
+            "A truncated or edited file fails here rather than being partly trusted.") from None
+    except UnicodeDecodeError as error:
+        raise ValueError(f"{path} is not valid UTF-8: {error.reason}") from None
     if not isinstance(value, dict):
         raise ValueError(f"{path} is not a JSON object")
     return value
@@ -205,5 +218,13 @@ def main() -> int:
     return 0
 
 
+def cli() -> int:
+    try:
+        return main()
+    except ValueError as error:
+        print(f"receipt verification failed: {error}", file=sys.stderr)
+        return 1
+
+
 if __name__ == "__main__":
-    raise SystemExit(main())
+    raise SystemExit(cli())
