@@ -276,6 +276,14 @@ export default {
       if (['/integrity', '/integrity.html', '/guide.html'].includes(url.pathname) && request.method === 'GET') {
         return Response.redirect(new URL('/', request.url), 301);
       }
+      // The judge page is the one link in the nav that a reader follows from a
+      // phone, and it is the whole submission in three screens. Serve it here
+      // rather than relying on the asset layer's extensionless HTML handling,
+      // which is a default that can be reconfigured without anyone noticing the
+      // nav has started 404ing.
+      if ((url.pathname === '/judge' || url.pathname === '/judge/') && request.method === 'GET') {
+        return env.ASSETS.fetch(new Request(new URL('/judge.html', request.url), request));
+      }
       return env.ASSETS.fetch(request);
     } catch (error) {
       return json({ error: 'publication service error' }, 500);

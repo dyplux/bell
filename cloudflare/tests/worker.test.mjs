@@ -234,3 +234,31 @@ test('the receipt revalidates instead of re-downloading unchanged', async () => 
   assert.equal(third.status, 200, 'a republished receipt must not answer 304');
   assert.notEqual(third.headers.get('etag'), etag);
 });
+
+test('the judge page is served at /judge, not left to a default', async () => {
+  // /judge is the one nav link a reader follows from a phone, and it is the
+  // whole submission in three screens. Serving it depended on the asset
+  // layer's extensionless HTML handling, which is a default someone can
+  // reconfigure without noticing the nav has started 404ing.
+  const asked = [];
+  const env = {
+    ASSETS: {
+      fetch: async request => {
+        asked.push(new URL(request.url).pathname);
+        return new Response('<!doctype html>judge', { status: 200 });
+      },
+    },
+  };
+  for (const pathname of ['/judge', '/judge/']) {
+    asked.length = 0;
+    const response = await worker.fetch(new Request(`https://bell.dyplux.com${pathname}`), env, {});
+    assert.equal(response.status, 200, `${pathname} did not return the page`);
+    assert.deepEqual(asked, ['/judge.html'],
+      `${pathname} did not resolve to judge.html`);
+  }
+
+  // A POST is not a page request and must not be answered with one.
+  asked.length = 0;
+  await worker.fetch(new Request('https://bell.dyplux.com/judge', { method: 'POST' }), env, {});
+  assert.notDeepEqual(asked, ['/judge.html'], 'a POST was served the judge page');
+});
