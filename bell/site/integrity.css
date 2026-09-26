@@ -40,3 +40,4 @@
 .history-point.other-rules .history-stack{opacity:.42}
 .history-point.other-rules small{color:var(--dim)}
 .history-point.other-rules .history-stack i{filter:saturate(.25)}
+.metric-strip-note{margin:14px 0 0;font-size:13px;line-height:1.6;color:var(--muted);max-width:86ch}

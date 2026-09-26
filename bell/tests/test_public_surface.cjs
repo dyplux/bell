@@ -954,3 +954,22 @@ test('the judge page states the JavaScript test count it actually runs', () => {
   assert.match(judge, new RegExp(`<strong>${stated[1]}</strong>`),
     'the headline number and the breakdown total disagree');
 });
+
+test('two counts that measure different things say so on the page', () => {
+  // The hero reported 157 refusals and the strip below it reported 34 blocked,
+  // with nothing reconciling them. They are different questions on different
+  // dates: 157 is the dated base rate across the references carrying more than
+  // one representation and counts every coded refusal; 34 is the current scan
+  // across every reference and counts the critical rule alone. A product about
+  // figures that quietly disagree cannot leave two of its own unexplained.
+  assert.match(page, /Blocked by a critical rule/);
+  assert.match(page, /<span>in this scan<\/span>/);
+  assert.doesNotMatch(page, /<span>do not compare<\/span>/,
+    'the blocked tile went back to a label that reads like the refusal count');
+  assert.match(page, /class="metric-strip-note"/);
+  assert.match(page, /not meant to add up/);
+  assert.match(integrityCss, /\.metric-strip-note\{/);
+  // And the dated half must keep its date, or the note describes nothing.
+  const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
+  assert.match(integrity, /Measured on \$\{measuredOn\}/);
+});
