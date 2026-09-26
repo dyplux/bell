@@ -1063,6 +1063,26 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
         token_join_key: receipt?.method?.token_join_key || 'crypto_id',
         rules: receipt?.method?.rules || [],
       },
+      // A hash proves the payload did not change. It does not tell a reader
+      // which endpoint produced it, nor how to get back to it. Pair each hash
+      // with the surface it came from and the command that recomputes this
+      // whole receipt from the shipped inputs, so the artifact is checkable by
+      // someone who has no CoinMarketCap credential and never will.
+      provenance: {
+        surfaces: Object.fromEntries(Object.entries(receipt?.source_hashes || {})
+          .map(([surface, sha256]) => [surface, {
+            endpoint: receipt?.method?.[surface] || null,
+            sha256,
+          }])),
+        reproduce: [
+          'git clone https://github.com/dyplux/bell.git && cd bell',
+          'make verify   # recomputes this receipt from the shipped inputs, no API key',
+          'make demo     # re-derives the published decisions and prints the reasoning',
+        ],
+        note: receiptSource
+          ? `This case was read from ${receiptSource}.`
+          : 'This case was read from the live credential-free receipt.',
+      },
       source_hashes: receipt?.source_hashes || {},
       limits: [
         'Observed CMC fields do not prove backing, redemption, custody, eligibility, solvency, liquidity or executable size',

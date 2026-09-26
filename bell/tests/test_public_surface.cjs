@@ -1089,3 +1089,23 @@ test('narrow viewports shrink their grid tracks instead of cutting them off', ()
   assert.match(browser, /cuts \{len\(clipped\)\} elements off the right edge/);
   assert.match(browser, /parent\.scrollWidth > parent\.clientWidth \+ 1/);
 });
+
+test('an exported case pairs each hash with the endpoint and a way back', () => {
+  // A hash proves the payload did not change. It does not say which endpoint
+  // produced it, nor how a reader with no CoinMarketCap credential gets back to
+  // it. The rival this submission trails attaches endpoint, params, status and
+  // a reproducing call to every figure; this is the credential-free equivalent.
+  const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
+  assert.match(integrity, /provenance: \{/);
+  assert.match(integrity, /endpoint: receipt\?\.method\?\.\[surface\] \|\| null/);
+  assert.match(integrity, /reproduce: \[/);
+  // Every command the artifact promises must be a target that exists.
+  const makefile = fs.readFileSync(path.resolve(__dirname, '../../Makefile'), 'utf8');
+  const block = integrity.slice(integrity.indexOf('reproduce: ['), integrity.indexOf('reproduce: [') + 400);
+  for (const [, target] of block.matchAll(/make (\w[\w-]*)/g)) {
+    assert.match(makefile, new RegExp(`^${target}:`, 'm'),
+      `the case receipt promises make ${target}, which does not exist`);
+  }
+  // And it must name the source it was actually read from, not a fixed one.
+  assert.match(integrity, /This case was read from \$\{receiptSource\}/);
+});
