@@ -58,3 +58,45 @@ class TheWorkflowDescribesItself(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class TheOtherWorkflowsDescribeThemselves(unittest.TestCase):
+    """The quality gate proves the repository's claims about its own data. It
+    says nothing about whether the code is safe to run or whether a credential
+    ever entered the history, and those are the two questions a reader of a
+    credential-free receipt will ask next."""
+
+    def read(self, name: str) -> str:
+        path = os.path.join(ROOT, '.github', 'workflows', name)
+        self.assertTrue(os.path.exists(path), f'{name} is missing')
+        with open(path, encoding='utf-8') as handle:
+            return handle.read()
+
+    def test_codeql_analyses_both_languages_this_repository_ships(self):
+        text = self.read('codeql.yml')
+        self.assertIn('github/codeql-action/init', text)
+        self.assertIn('github/codeql-action/analyze', text)
+        # Bell is Python plus the browser bundle and the edge worker. Scanning
+        # one of the two would be a badge rather than a check.
+        self.assertIn('python', text)
+        self.assertIn('javascript-typescript', text)
+        self.assertIn('security-events: write', text)
+
+    def test_the_secret_scan_reads_history_not_only_the_diff(self):
+        text = self.read('secrets.yml')
+        self.assertIn('gitleaks', text)
+        # A key committed once and removed in the next commit is still in the
+        # history and still compromised, so a shallow checkout would miss the
+        # only case that matters.
+        self.assertIn('fetch-depth: 0', text)
+
+    def test_no_credential_shaped_string_is_tracked(self):
+        # The claim the whole product rests on is that the CMC key never leaves
+        # the publisher process. Assert it here too, so it holds even in a
+        # checkout where the scanner has not run.
+        import subprocess
+        tracked = subprocess.run(['git', 'grep', '-nIE',
+                                  r'(CMC_PRO_API_KEY|XAI_API_KEY)\s*[:=]\s*["\x27][A-Za-z0-9_-]{16,}'],
+                                 cwd=ROOT, capture_output=True, text=True)
+        self.assertEqual(tracked.stdout.strip(), '',
+                         f'a credential-shaped assignment is tracked: {tracked.stdout[:200]}')
