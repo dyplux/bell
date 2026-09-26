@@ -735,6 +735,12 @@
     return evidence || '<li>No compact numerical evidence was published for this index row</li>';
   }
 
+  // The label logic existed in three places: the card, the explorer's dossier
+  // header and the explorer's live verdict. Fixing the card left the other two
+  // printing INVESTIGATE for references the judge page promises are COMPARABLE.
+  // Publish the one function rather than keep three in step by hand.
+  window.BellDecisionLabel = (item, fallback) => displayDecisionLabel(item, fallback);
+
   function stateClass(label) {
     if (label === 'COMPARABLE') return 'comparable';
     if (label === 'INVESTIGATE') return 'investigate';
@@ -1258,11 +1264,11 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
       // actually wants: the references whose prices can honestly be set side by
       // side. Without it the affirmative half sits on page four behind the
       // refusals, which is where it was.
-      const stateMatches = filter === 'all'
-        ? true
-        : filter === 'comparable'
-          ? Boolean(item.comparison)
-          : item.state === filter;
+      // The filters matched the raw state while the cards showed the decision
+      // label, so FACTS OPEN returned 666 rows of which 545 were badged SINGLE
+      // REPRESENTATION and 44 COMPARABLE: 88% of what the button returned said
+      // something else. Filter by the word the reader can see.
+      const stateMatches = filter === 'all' || displayDecisionLabel(item, 'FACTS OPEN') === filter;
       const haystack = [item.name, item.symbol, item.asset_type, item.rwa_id].join(' ').toLowerCase();
       return stateMatches && (!normalizedQuery || haystack.includes(normalizedQuery));
     });

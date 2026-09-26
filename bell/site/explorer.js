@@ -86,8 +86,15 @@
     matches.innerHTML = `<div class="explorer-match-list">${items.map(asset => `<button type="button" class="explorer-match" data-explorer-slug="${escapeHTML(slugFor(asset))}"><span><strong>${escapeHTML(asset.name || 'Unnamed reference')}</strong><small>${escapeHTML(asset.symbol || '—')} · ${escapeHTML(asset.asset_type || 'RWA')} · rank ${escapeHTML(asset.rwa_rank || '—')}</small></span><b>${asset.has_tokens ? 'TOKENISED' : 'REFERENCE ONLY'} ↗</b></button>`).join('')}</div>`;
   }
 
-  function stateLabel(state, tokenCount) {
+  // One function decides the word, published by integrity.js. This file used to
+  // carry its own copy with no COMPARABLE branch, so every one of the 87
+  // references that DO publish a comparison - the product's headline number -
+  // was labelled INVESTIGATE or FACTS OPEN here, including the reference the
+  // judge page names as its worked example. The local fallback covers the
+  // map-only cases that integrity.js never sees.
+  function stateLabel(state, tokenCount, item) {
     if (!tokenCount) return 'REFERENCE ONLY';
+    if (item && window.BellDecisionLabel) return window.BellDecisionLabel(item, 'FACTS OPEN');
     if (state === 'do_not_compare') return 'DO NOT SHORTLIST';
     if (state === 'investigate') return 'INVESTIGATE';
     if (tokenCount === 1) return 'SINGLE REPRESENTATION';
@@ -126,9 +133,11 @@
         + '<p>This reference is in the CoinMarketCap RWA map but carried no token representation in the '
         + 'receipt this page is reading, so there is nothing to compare and no verdict to publish.</p></div>';
     }
-    const stateLabel = row.state === 'do_not_compare' ? 'DO NOT SHORTLIST'
-      : row.state === 'investigate' ? 'INVESTIGATE'
-      : Number(row.token_count || 0) === 1 ? 'SINGLE REPRESENTATION' : 'FACTS OPEN';
+    const stateLabel = window.BellDecisionLabel
+      ? window.BellDecisionLabel(row, 'FACTS OPEN')
+      : (row.state === 'do_not_compare' ? 'DO NOT SHORTLIST'
+        : row.state === 'investigate' ? 'INVESTIGATE'
+        : Number(row.token_count || 0) === 1 ? 'SINGLE REPRESENTATION' : 'FACTS OPEN');
     const cmp = row.comparison;
     const answer = cmp
       ? `<p class="explorer-live-answer"><strong>${Number(cmp.spread_bps).toFixed(1)} bps</strong> across `
@@ -179,7 +188,7 @@
       : tokens.length === 1
         ? 'One representation is available. Bell shows a dossier and does not rank a single wrapper.'
         : 'Rows are observed fields. Bell does not infer backing, redemption, eligibility, liquidity or executable size.';
-    dossier.innerHTML = `<div class="explorer-dossier-head"><div><span class="eyebrow">${freshnessLabel} · PUBLISHED RWA DOSSIER · ${escapeHTML(observed)}</span><h3>${escapeHTML(source.asset?.name || asset.name || 'Reference')}</h3><p>${escapeHTML(source.asset?.symbol || asset.symbol || '—')} · ${escapeHTML(source.asset?.asset_type || asset.asset_type || 'RWA')} · ${tokens.length} representation${tokens.length === 1 ? '' : 's'}</p></div><span class="explorer-state ${state === 'do_not_compare' ? 'blocked' : ''}">${escapeHTML(stateLabel(state, tokens.length))}</span></div><div class="explorer-metrics"><div><small>Tokenised market cap</small><strong>${money(source.asset?.tokenized_market_cap)}</strong></div><div><small>24h tokenised volume</small><strong>${money(source.asset?.tokenized_volume_24h)}</strong></div><div><small>Issuers observed</small><strong>${number(metrics.issuer_count || new Set(tokens.map(token => token.issuer_id).filter(Boolean)).size)}</strong></div><div><small>DEX evidence</small><strong>${escapeHTML(dexCoverage)}</strong></div><div><small>CMC market pairs</small><strong>${escapeHTML(pairStatus)}</strong></div></div><p class="explorer-freshness ${publicationStatus}">${escapeHTML(freshnessNote)}</p>${evidenceContext}${findingMarkup}<div class="explorer-table-wrap"><table class="explorer-table"><thead><tr><th>Representation</th><th>Issuer</th><th>Quote</th><th>MCap</th><th>24h volume</th></tr></thead><tbody>${rows || '<tr><td colspan="5">No token rows returned</td></tr>'}</tbody></table></div><p class="explorer-note">${dossierNote}</p><div class="explorer-actions"><a class="source-link" href="/api/published?slug=${encodeURIComponent(slugFor(asset))}" target="_blank" rel="noopener">Open full receipt ↗</a><button type="button" class="explorer-refresh" data-explorer-refresh="${escapeHTML(slugFor(asset))}">Refresh dossier ↻</button></div>`;
+    dossier.innerHTML = `<div class="explorer-dossier-head"><div><span class="eyebrow">${freshnessLabel} · PUBLISHED RWA DOSSIER · ${escapeHTML(observed)}</span><h3>${escapeHTML(source.asset?.name || asset.name || 'Reference')}</h3><p>${escapeHTML(source.asset?.symbol || asset.symbol || '—')} · ${escapeHTML(source.asset?.asset_type || asset.asset_type || 'RWA')} · ${tokens.length} representation${tokens.length === 1 ? '' : 's'}</p></div><span class="explorer-state ${state === 'do_not_compare' ? 'blocked' : ''}">${escapeHTML(stateLabel(state, tokens.length, liveVerdictFor(asset)))}</span></div><div class="explorer-metrics"><div><small>Tokenised market cap</small><strong>${money(source.asset?.tokenized_market_cap)}</strong></div><div><small>24h tokenised volume</small><strong>${money(source.asset?.tokenized_volume_24h)}</strong></div><div><small>Issuers observed</small><strong>${number(metrics.issuer_count || new Set(tokens.map(token => token.issuer_id).filter(Boolean)).size)}</strong></div><div><small>DEX evidence</small><strong>${escapeHTML(dexCoverage)}</strong></div><div><small>CMC market pairs</small><strong>${escapeHTML(pairStatus)}</strong></div></div><p class="explorer-freshness ${publicationStatus}">${escapeHTML(freshnessNote)}</p>${evidenceContext}${findingMarkup}<div class="explorer-table-wrap"><table class="explorer-table"><thead><tr><th>Representation</th><th>Issuer</th><th>Quote</th><th>MCap</th><th>24h volume</th></tr></thead><tbody>${rows || '<tr><td colspan="5">No token rows returned</td></tr>'}</tbody></table></div><p class="explorer-note">${dossierNote}</p><div class="explorer-actions"><a class="source-link" href="/api/published?slug=${encodeURIComponent(slugFor(asset))}" target="_blank" rel="noopener">Open full receipt ↗</a><button type="button" class="explorer-refresh" data-explorer-refresh="${escapeHTML(slugFor(asset))}">Refresh dossier ↻</button></div>`;
   }
 
   // Both render paths end in the same container, so the current verdict is

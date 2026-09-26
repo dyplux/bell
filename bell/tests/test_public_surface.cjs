@@ -17,7 +17,7 @@ test('public page exposes the single-URL RWA discovery and evidence path', () =>
   assert.match(page, /href="\/api\/integrity"/);
   assert.match(page, /separate from live receipt/);
   assert.match(page, /id="explorer-map-freshness"/);
-  assert.match(page, /data-filter="no_flags">FACTS OPEN<\/button>/);
+  assert.match(page, /data-filter="FACTS OPEN">FACTS OPEN<\/button>/);
 });
 
 test('public release includes a credential-free executable rule specification', () => {
@@ -71,9 +71,18 @@ test('public documentation points to receipts that exist in the export', () => {
 });
 
 test('explorer keeps all four RWA routes and the freshness boundary visible', () => {
-  for (const label of ['DO NOT SHORTLIST', 'INVESTIGATE', 'SINGLE REPRESENTATION', 'REFERENCE ONLY', 'DOSSIER PENDING']) {
+  // COMPARABLE was missing from this list, so the suite stayed green while the
+  // explorer printed INVESTIGATE for all 87 references that publish one - the
+  // product's headline number, and the reference the judge page names.
+  for (const label of ['COMPARABLE', 'DO NOT SHORTLIST', 'INVESTIGATE', 'SINGLE REPRESENTATION',
+    'REFERENCE ONLY', 'DOSSIER PENDING']) {
     assert.match(explorer, new RegExp(label.replaceAll(' ', '\\s+')));
   }
+  // And it must reach that word through the one published function, not a
+  // fourth private copy of the mapping.
+  assert.match(explorer, /window\.BellDecisionLabel/);
+  const integritySource = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
+  assert.match(integritySource, /window\.BellDecisionLabel = \(item, fallback\)/);
   assert.match(explorer, /publication\.status/);
   assert.match(explorer, /catalog\.json/);
   assert.match(explorer, /observed \$\{mapDate\(/);
@@ -358,9 +367,9 @@ test('the population list can be filtered to the references that have an answer'
   // The affirmative half sat at positions 35-47 of the list, so a reader saw
   // twelve refusals and left. "comparable" is not a state the scan emits; it is
   // the outcome a reader wants, and it must be reachable in one click.
-  assert.match(index, /data-filter="comparable"/);
-  assert.match(integrity, /filter === 'comparable'/);
-  assert.match(integrity, /Boolean\(item\.comparison\)/);
+  assert.match(index, /data-filter="COMPARABLE"/);
+  assert.match(integrity, /displayDecisionLabel\(item, 'FACTS OPEN'\) === filter/);
+  assert.match(integrity, /if \(item\?\.comparison\) return 'COMPARABLE'/);
   // The filter is useless unless the index carries the field it filters on.
   assert.match(engine, /"comparison": asset\.get\("comparison"\)/);
 });
@@ -1025,7 +1034,8 @@ test('a phone gets fewer index cards without losing any reference', () => {
   assert.match(integrity, /Math\.ceil\(matching\.length \/ pageSize\)/);
   assert.match(page, /id="alert-pagination"/);
   assert.match(page, /id="alert-search"/);
-  for (const state of ['all', 'do_not_compare', 'investigate', 'no_flags', 'comparable']) {
+  for (const state of ['all', 'COMPARABLE', 'DO NOT SHORTLIST', 'INVESTIGATE', 'FACTS OPEN',
+    'SINGLE REPRESENTATION']) {
     assert.match(page, new RegExp(`data-filter="${state}"`), `the ${state} filter went missing`);
   }
 });
@@ -1243,5 +1253,30 @@ test('the comparison spans the card and every anchor clears the sticky header', 
     .matchAll(/href="#([^"]+)"/g)) {
     assert.match(integrityCss, new RegExp(`#${href}[,{]`),
       `the nav points at #${href}, which has no scroll offset`);
+  }
+});
+
+test('every filter returns the label it names, and they partition the population', () => {
+  // The filters matched the raw scan state while the cards showed the decision
+  // label: FACTS OPEN returned 666 rows of which 545 were badged SINGLE
+  // REPRESENTATION and 44 COMPARABLE. The counts reconciled; the words did not.
+  const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
+  assert.match(integrity, /displayDecisionLabel\(item, 'FACTS OPEN'\) === filter/);
+  assert.doesNotMatch(integrity, /item\.state === filter/,
+    'a filter went back to matching the raw state');
+
+  // Every published label needs a button, or a reader cannot reach 545 of the
+  // 791 references. SINGLE REPRESENTATION had none.
+  const buttons = [...page.matchAll(/data-filter="([^"]+)"/g)].map(match => match[1]);
+  const label = runFromSource('displayDecisionLabel');
+  const replay = JSON.parse(fs.readFileSync(
+    path.join(site, 'proof', 'rwa-surface-integrity-latest-replay-2026-09-21.json'), 'utf8'));
+  const produced = new Set((replay.alert_index || []).map(item => label(item, 'FACTS OPEN')));
+  for (const word of produced) {
+    assert.ok(buttons.includes(word), `the scan produces ${word} and no filter offers it`);
+  }
+  // And the buttons must partition it: every one is a label, none is a state.
+  for (const button of buttons.filter(value => value !== 'all')) {
+    assert.ok(produced.has(button), `the filter bar offers ${button}, which the scan never produces`);
   }
 });
