@@ -89,6 +89,45 @@ rather than presenting absent venue data as zero liquidity — but it means the
 comparability answer stops at price and reported volume, and cannot reach
 executable size.
 
+## 7. Two surfaces of the same catalogue return different row counts
+
+`/v5/real-world-assets/map` returned **7,811** rows and
+`/v5/real-world-assets/assets/list` returned **7,942** for the same observation,
+with **7,811** distinct IDs between them. The extra **131** rows carry no
+`rwa_id` at all, so they cannot be joined back to the map, and they are not
+obscure: Alphabet Inc., Berkshire Hathaway Inc. and Honeywell International Inc
+are among them.
+
+A consumer joining the two families on `rwa_id` silently drops those rows; a
+consumer counting the asset list reports 7,942 references that the map says are
+7,811. Both numbers are defensible in isolation and only one of them can be the
+catalogue size.
+
+Bell reconciles the two and publishes the difference in `catalogue_integrity`
+rather than picking whichever is convenient.
+
+## 8. `skip_invalid=true` does not skip a batch that is entirely invalid
+
+`/v2/cryptocurrency/info` with `skip_invalid=true` returns rows for a batch that
+mixes known and unknown IDs, as documented. A batch in which **every** ID is
+unknown or retired returns **HTTP 400** instead of an empty result.
+
+The consumer cannot know in advance which batches those are, so the only safe
+shape is to catch the 400, split that batch, retry each ID alone and record the
+ones that fail. Bell does exactly that and keeps the unresolved IDs in the
+receipt instead of hiding the gap.
+
+## 9. Quoted IDs the identity family does not resolve
+
+`/v5/real-world-assets/quotes/latest` returned **1,435** distinct `crypto_id`
+values for the dated observation; `/v2/cryptocurrency/info` resolved **1,431**.
+Four IDs are quoted and unresolvable: **39002, 39318, 39839, 42326**.
+
+A price arrives for an instrument whose chain, contract and project links cannot
+be fetched. Bell keeps the quote and records the identity gap in
+`identity_integrity.quote_crypto_ids_missing_from_info` rather than dropping the
+row or presenting it as fully identified.
+
 ## The surfaces Bell reads, and what each one enables
 
 | CMC surface | What Bell uses it for | User consequence |

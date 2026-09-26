@@ -59,7 +59,7 @@
     <div class="judge-facts">
       <div><small>Comparisons published</small><strong>87</strong></div>
       <div><small>Refusals, by named rule</small><strong>157</strong></div>
-      <div><small>Tests in the offline gate</small><strong>276</strong></div>
+      <div><small>Tests in the offline gate</small><strong>280</strong></div>
       <div><small>Gate runtime</small><strong>&lt;8s</strong></div>
     </div>
 
@@ -83,7 +83,7 @@ make base-rate</pre>
     35 refused, 10 comparable, 5 held for investigation, with the reasoning for each.</small>
 
 <pre>make check-offline</pre>
-    <small>Between 2.8 and 6.7 seconds across the machines it has been measured on. 276 tests, 183 Python and 93 JavaScript, plus a re-derivation of
+    <small>Between 2.8 and 6.7 seconds across the machines it has been measured on. 280 tests, 186 Python and 94 JavaScript, plus a re-derivation of
     the published receipt from the 16.5 MB of shipped inputs and a submission gate over 145 tracked files. Be precise about what that re-derivation proves: the inputs are verified
     byte for byte, and the scan is recomputed from them. Of the 13 dated observations, 2 ship their full payload and are cross-checked; the rest are published summaries, and every one of the 13 is chained to the one before it, so editing a single record invalidates every digest after it. And where
     a receipt predates the current rule set, the recomputed state counts are reported beside
@@ -134,6 +134,7 @@ make base-rate</pre>
       <a href="proof/rule-boundary-verifier-2026-09-22.json" target="_blank" rel="noopener">Rule-boundary verifier receipt ↗</a>
       <a href="proof/transport-2026-09-21.json" target="_blank" rel="noopener">Transport record ↗</a>
       <a href="proof/rwa-surface-integrity-history.json" target="_blank" rel="noopener">Receipt history ↗</a>
+      <a href="https://github.com/dyplux/bell/blob/main/bell/API-FEEDBACK.md" target="_blank" rel="noopener">Nine API contract findings ↗</a>
       <a href="https://github.com/dyplux/bell" target="_blank" rel="noopener">Repository, MIT ↗</a>
     </div>
 

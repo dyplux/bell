@@ -274,5 +274,52 @@ class TheRefusalSplitIsPublishedAndAddsUp(unittest.TestCase):
         self.assertEqual(split['source_coverage'], 0)
 
 
+
+class TheNewApiFindingsMatchTheReceipt(unittest.TestCase):
+    """Every number in API-FEEDBACK.md has to come from the shipped receipt.
+
+    The document is the one artefact reviewers called "value returned to CMC".
+    A figure in it that nobody can reproduce would be worse than not writing it.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        with open(os.path.join(root, 'API-FEEDBACK.md'), encoding='utf-8') as handle:
+            cls.doc = handle.read()
+        with open(os.path.join(root, 'site', 'proof',
+                               'rwa-surface-integrity-latest-replay-2026-09-21.json'),
+                  encoding='utf-8') as handle:
+            cls.receipt = json.load(handle)
+
+    def test_the_row_count_disagreement_is_the_one_observed(self):
+        catalogue = self.receipt['catalogue_integrity']
+        self.assertIn(f"**{catalogue['map_rows']:,}** rows", self.doc)
+        self.assertIn(f"**{catalogue['asset_list_rows']:,}** for the same observation", self.doc)
+        self.assertIn(f"**{catalogue['asset_list_rows_without_rwa_id']}** rows carry no", self.doc)
+        for example in catalogue['unaddressable_examples'][:3]:
+            self.assertIn(example['name'], self.doc,
+                          'the named unjoinable references are not the observed ones')
+
+    def test_the_identity_gap_is_the_one_observed(self):
+        identity = self.receipt['identity_integrity']
+        self.assertIn(f"**{identity['quote_crypto_ids']:,}** distinct `crypto_id`", self.doc)
+        self.assertIn(f"resolved **{identity['crypto_info_rows']:,}**", self.doc)
+        missing = identity['quote_crypto_ids_missing_from_info']
+        self.assertIn(', '.join(missing), self.doc.replace('**', ''),
+                      'the unresolvable IDs listed are not the observed ones')
+
+    def test_the_batch_behaviour_is_the_one_the_collector_handles(self):
+        root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        with open(os.path.join(root, 'rwa_integrity.py'), encoding='utf-8') as handle:
+            source = handle.read()
+        # The document may only report a contract surprise the code actually
+        # copes with, or it is describing someone else's problem.
+        self.assertIn('skip_invalid', source)
+        self.assertIn('exc.code != 400', source)
+        self.assertIn('crypto_info_invalid_ids', source)
+        self.assertIn('HTTP 400', self.doc)
+
+
 if __name__ == "__main__":
     unittest.main()

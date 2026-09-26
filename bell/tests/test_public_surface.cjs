@@ -1296,3 +1296,17 @@ test('the outcome key enumerates every state the product can print', () => {
     assert.ok(key[0].includes(word), `the scan prints ${word} and the outcome key never defines it`);
   }
 });
+
+test('the judge page states the number of API findings the document holds', () => {
+  // The contract findings are the one artefact reviewers called value returned
+  // to CMC, and the page did not mention them. A count on a page has to be the
+  // count in the file, like every other number here.
+  const judge = fs.readFileSync(path.join(site, 'judge.html'), 'utf8');
+  const doc = fs.readFileSync(path.resolve(__dirname, '../API-FEEDBACK.md'), 'utf8');
+  const findings = (doc.match(/^## \d+\./gm) || []).length;
+  assert.ok(findings >= 6, 'the API feedback document lost its numbered findings');
+  const words = ['Zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight',
+    'Nine', 'Ten', 'Eleven', 'Twelve'];
+  assert.match(judge, new RegExp(`${words[findings]} API contract findings`, 'i'),
+    `the document holds ${findings} findings and the judge page says otherwise`);
+});
