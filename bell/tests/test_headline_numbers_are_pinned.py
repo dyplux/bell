@@ -189,5 +189,60 @@ class HeadlineNumbersArePinned(unittest.TestCase):
                       "zero market cap", flow,
                       "the README's zero-market-cap count is not the measured one")
 
+    def test_the_runtime_tile_cannot_drift_out_of_its_own_stated_band(self):
+        # The `<12s` tile sat beside a pinned "2.8 and 12.0 seconds" band and
+        # was free to say anything. A headline that contradicts the sentence
+        # under it is the defect this page is about.
+        page = flowed(judge_text())
+        band = re.search(r"between (\d+\.\d+) and (\d+\.\d+) seconds", page)
+        self.assertIsNotNone(band, "the judge page stopped stating a measured band")
+        tile = re.search(r"<small>Gate runtime</small><strong>&lt;(\d+)s</strong>", judge_text())
+        self.assertIsNotNone(tile, "the gate runtime tile went missing")
+        self.assertGreaterEqual(float(tile.group(1)), float(band.group(2)),
+                                "the runtime tile is below the band stated beside it")
+
+    def test_every_statement_of_the_published_count_agrees(self):
+        # "157 refused, 87 published" had 157 pinned and 87 free in the same
+        # sentence, so the page could print arithmetic that does not close. Both
+        # figures, everywhere they appear in that role, come from the receipt.
+        published = str(BASE_RATE["comparable"])
+        refused = str(BASE_RATE["refused"])
+        for label, text in (("judge.html", flowed(judge_text())),
+                            ("README.md", flowed(readme_text()))):
+            for found_refused, found_published in re.findall(
+                    r"(\d+)\s+refused,\s+(\d+)\s+published", text):
+                self.assertEqual((found_refused, found_published), (refused, published),
+                                 f"{label} states {found_refused} refused and {found_published} "
+                                 f"published; the measurement is {refused} and {published}")
+            for found in re.findall(r"Refusal rate ([\d.]+)%", text):
+                self.assertEqual(found, f"{BASE_RATE['refusal_rate'] * 100:.1f}",
+                                 f"{label} states a refusal rate the measurement does not produce")
+
+    def test_the_readme_states_one_runtime_band_not_two(self):
+        # README.md stated the band twice and pinned one of them, so the
+        # duplicate could drift away from its own pinned twin.
+        bands = set(re.findall(r"between (\d+\.\d+) and (\d+\.\d+) seconds",
+                               flowed(readme_text())))
+        bands |= set(re.findall(r"same (\d+\.\d+) to (\d+\.\d+)\s*\n?\s*seconds",
+                                readme_text()))
+        self.assertLessEqual(len(bands), 1,
+                             f"the README states more than one runtime band: {sorted(bands)}")
+
+    def test_the_change_panel_baseline_field_is_the_one_the_page_branches_on(self):
+        # renderReferenceChange branches on snapshot.baseline === 'recomputed'.
+        # Changing that string to anything else flips the panel to the claim a
+        # reviewer caught it making, and nothing read it.
+        snapshot = json.loads((PROOF / "reference-snapshot-2026-09-21.json")
+                              .read_text(encoding="utf-8"))
+        self.assertEqual(snapshot.get("baseline"), "recomputed",
+                         "the snapshot no longer declares that its states are a recomputation, so "
+                         "the page will call them the receipt published that day")
+        note = snapshot.get("baseline_note") or ""
+        self.assertIn("not the receipt published", note,
+                      "the snapshot's own note no longer states what it is a recomputation of")
+        source = (BELL / "site" / "integrity.js").read_text(encoding="utf-8")
+        self.assertIn("snapshot.baseline === 'recomputed'", source,
+                      "the page stopped branching on the field this test pins")
+
 if __name__ == "__main__":
     unittest.main()

@@ -338,5 +338,50 @@ class TheSourceMapCountsWhatShips(unittest.TestCase):
                 self.assertIn('superseded', line.lower(),
                               f'this line points at the superseded receipts without saying so: {line.strip()!r}')
 
+
+class EveryDocumentCountsTheSameEndpoints(unittest.TestCase):
+    """Four documents listed the CMC surfaces by hand and gave four answers.
+
+    ARCHITECTURE.md said 5 and omitted `cryptocurrency/info`, whose digest ships
+    in every receipt. JUDGE.md said 7 and omitted the same one. SOURCE-MAP.md,
+    titled "Exact CMC surfaces", said 8 and omitted four while including two the
+    population scan never calls. PUBLIC-SUBMISSION.md said JUDGE.md names them
+    and then listed a different 8. The pinning that protects the README and the
+    judge page did not read these files.
+
+    The list is generated from the source now, and this requires every document
+    that lists endpoints to carry the generated sentence verbatim.
+    """
+
+    CARRIERS = ('docs/ARCHITECTURE.md', 'bell/JUDGE.md', 'bell/SOURCE-MAP.md',
+                'bell/PUBLIC-SUBMISSION.md')
+
+    def test_every_document_carries_the_generated_sentence(self):
+        import sys
+        sys.path.insert(0, os.path.join(ROOT, 'bell'))
+        from list_endpoints import sentence, summarise
+        stated = sentence(summarise())
+        for name in self.CARRIERS:
+            text = open(os.path.join(ROOT, *name.split('/')), encoding='utf-8').read()
+            self.assertIn(stated, text,
+                          f'{name} does not carry the generated endpoint sentence. '
+                          f'Run `PYTHONPATH=bell python3 bell/list_endpoints.py` and paste it.')
+
+    def test_the_generator_reads_the_source_rather_than_a_list(self):
+        import sys
+        sys.path.insert(0, os.path.join(ROOT, 'bell'))
+        from list_endpoints import summarise
+        summary = summarise()
+        # The population scan's six are the ones a judge can exercise from the
+        # shipped receipt, and every one must have a call site in the module
+        # that performs it.
+        scan = open(os.path.join(ROOT, 'bell', 'rwa_integrity.py'), encoding='utf-8').read()
+        self.assertEqual(summary['published_scan_count'], 6)
+        for endpoint in summary['published_scan']:
+            self.assertIn(endpoint, scan, f'{endpoint} is claimed and not called')
+        self.assertEqual(summary['rwa_family_count'], 7,
+                         'the dedicated RWA family count changed; the judge page states it')
+        self.assertIn('/v5/real-world-assets/market-pairs/list', summary['plan_refused'])
+
 if __name__ == "__main__":
     unittest.main()

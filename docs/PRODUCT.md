@@ -35,6 +35,9 @@ It is not a token leaderboard, safety score or investment recommendation.
 
 The output is explicit:
 
+- `COMPARABLE, NOT ENDORSED`: the representations share an identity, a unit and a
+  market state, so Bell names the spread, the cheapest route and whether that route
+  is also the deepest. This is the output the product exists to produce;
 - `DO NOT SHORTLIST`: a critical identity, denomination or market contradiction
   fired; stop ranking the wrapper;
 - `INVESTIGATE`: a warning requires classification before
@@ -70,7 +73,9 @@ Bell adds the decision protocol around those surfaces:
 
 The live response is [`GET /api/integrity`](https://bell.dyplux.com/api/integrity).
 The dated replay and sanitized input manifest live in
-[`bell/docs/proof/`](../bell/docs/proof/). The manifest records surface counts,
+[`bell/site/proof/`](../bell/site/proof/), which is what the site serves and what
+`make verify` reads; `bell/docs/proof/` holds superseded copies and its own README
+says not to verify against it. The manifest records surface counts,
 stable-ID coverage and SHA-256 fingerprints. It deliberately does not publish
 raw authenticated CMC response bodies.
 

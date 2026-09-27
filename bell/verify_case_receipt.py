@@ -268,9 +268,11 @@ def verify(payload: Any) -> dict[str, Any]:
     recomputed = rederive(payload)
     published, published_name = find_published(payload)
     if published is None:
-        binding = ("not bound: no receipt in this repository describes "
-                   f"{payload['observed_at']}, so the rows were checked against each other and "
-                   "not against a published scan")
+        binding = ("not bound: no receipt in this repository carries these source fingerprints, "
+                   f"so the {len(payload['tokens'])} rows were checked against each other and the "
+                   "engine, and not against a published scan. A case exported from the live "
+                   "endpoint is always in this state, because the live scan's inputs are not "
+                   "shipped here")
     else:
         try:
             bind(payload, published, published_name)
@@ -297,6 +299,11 @@ def verify(payload: Any) -> dict[str, Any]:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("receipt", type=Path)
+    parser.add_argument(
+        "--require-binding", action="store_true",
+        help=("exit non-zero unless the rows were bound to a receipt shipped in this repository. "
+              "Without it an unbound receipt exits 0 with a status saying so, which a reader sees "
+              "and `verify_case_receipt.py x.json && echo ok` does not."))
     args = parser.parse_args()
     try:
         with args.receipt.open(encoding="utf-8") as handle:
@@ -305,6 +312,17 @@ def main() -> int:
         print(f"case receipt verification failed: {exc}", file=sys.stderr)
         return 1
     print(json.dumps(result, ensure_ascii=False, indent=2))
+    bound = str(result.get("rows_binding", "")).startswith("bound")
+    if args.require_binding and not bound:
+        print(f"case receipt verification failed: {result['rows_binding']}", file=sys.stderr)
+        return 1
+    if not bound:
+        # Said on stderr as well as in the JSON, because the difference between
+        # "these rows are the published ones" and "these rows agree with each
+        # other" is the whole value of the artefact, and a reader piping stdout
+        # into jq should still see it.
+        print("note: rows were not bound to a published scan; pass --require-binding to make "
+              "that a failure", file=sys.stderr)
     return 0
 
 

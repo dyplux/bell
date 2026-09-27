@@ -22,8 +22,8 @@ credentials. It uses the committed map snapshot and published evidence files.
 ## Product flow
 
 1. Search a published reference such as Silver, Gold, Tesla or SPY
-2. Read the route: `DO NOT SHORTLIST`, `INVESTIGATE`, `FACTS OPEN`,
-   `SINGLE REPRESENTATION` or `REFERENCE ONLY`
+2. Read the route: `COMPARABLE, NOT ENDORSED`, `DO NOT SHORTLIST`, `INVESTIGATE`,
+   `FACTS OPEN`, `SINGLE REPRESENTATION` or `REFERENCE ONLY`
 3. Read the observed quote endpoints, ratio and boundary note before opening deeper evidence
 4. Open the representation rows, issuer and market evidence
 5. Follow the next diligence step and inspect the dated receipt
@@ -85,9 +85,11 @@ separate live integrity receipt over 791 tokenised references and 1,435
 representation rows. These are different datasets with different timestamps.
 
 The deployed page was checked in Chrome at mobile, tablet and desktop widths.
-The Silver flow returned `DO NOT SHORTLIST`, while Marvell returned `FACTS
-OPEN`; both searches completed without horizontal overflow at a 390px mobile
-viewport.
+The Silver flow returned `DO NOT SHORTLIST`, while Marvell returned `COMPARABLE,
+NOT ENDORSED`; both searches completed without horizontal overflow at a 390px
+mobile viewport. This line said `FACTS OPEN` until a reviewer checked it against
+the shipped receipt, where Marvell is `no_flags` with a published comparison. The
+screenshot beside it has been named `04-marvell-comparable.png` the whole time.
 
 ## Boundary
 

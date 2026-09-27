@@ -25,7 +25,7 @@ badge says `LIVE RECEIPT · FRESH`; otherwise the page labels the fallback as da
 
 The flagship build is the **RWA Surface Integrity Monitor**. It scans the full
 CMC RWA population before a user compares tokenised representations and returns
-an evidence-backed decision. The public UI presents four plain-language
+an evidence-backed decision. The public UI presents five plain-language
 routes: `DO NOT SHORTLIST`, `INVESTIGATE`,
 `FACTS OPEN` or `SINGLE REPRESENTATION`. The receipt also keeps
 the lower-level rule decision for audit traceability.

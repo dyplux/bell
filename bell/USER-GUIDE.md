@@ -72,6 +72,7 @@ stable identifiers, and turns contradictions into a visible next action.
 
    | State | Meaning | What the user may do |
    |---|---|---|
+   | `COMPARABLE, NOT ENDORSED` | Identity, unit and market checks cleared, so the prices can honestly be set side by side. | Read the named spread, cheapest route and depth. Not an endorsement of any wrapper. |
    | `DO NOT SHORTLIST` | A critical contradiction fired, such as an observed quote ratio above the 10x review threshold or positive volume with zero market cap. | Stop ranking or substituting a wrapper until the identity, unit or quote issue is resolved. |
    | `INVESTIGATE` | A warning fired, such as derivative mixing, symbol collision or missing fields. | Continue research, but do not present the rows as equivalent exposure. |
    | `FACTS OPEN` | No published Bell rule fired for a reference with multiple representations. | Inspect the observed rows and compare facts, then complete external diligence. This is not approval. |

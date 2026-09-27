@@ -1252,7 +1252,14 @@ test('the judge page counts the endpoints the repository actually calls', () => 
   const called = new Set();
   for (const name of fs.readdirSync(dir).filter(file => file.endsWith('.py'))) {
     for (const [, endpoint] of fs.readFileSync(path.join(dir, name), 'utf8')
-      .matchAll(/"(\/v\d\/[a-z0-9/_-]+)"/g)) called.add(endpoint);
+      .matchAll(/"(\/v\d\/[a-z0-9/_-]+)"/g)) {
+      // A trailing slash is a base path the code concatenates onto, not an
+      // endpoint. bell/list_endpoints.py had the same bug and counted 18 and 8;
+      // adding that file, which holds the family prefix as a constant, made
+      // this count 8 too. Two implementations of one rule, wrong the same way.
+      if (endpoint.endsWith('/')) continue;
+      called.add(endpoint);
+    }
   }
   const rwa = [...called].filter(endpoint => endpoint.startsWith('/v5/real-world-assets/'));
   assert.equal(rwa.length, 7, `the RWA family count moved to ${rwa.length}: ${rwa.sort()}`);
