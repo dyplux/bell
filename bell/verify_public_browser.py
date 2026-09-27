@@ -43,6 +43,19 @@ def main() -> int:
                 permissions=["clipboard-read", "clipboard-write"],
             )
             page = desktop.new_page()
+            # The two heaviest things this page can fetch are the receipt and
+            # the 1.98 MiB explorer catalogue. The catalogue is deferred until
+            # the explorer is on screen and the receipt is fetched once, and
+            # together those took the first load from 6.98 MiB to 2.91 MiB.
+            # Neither saving was pinned by anything: an IntersectionObserver is
+            # one line to delete, and the duplicate fetch had already shipped
+            # once. A saving nothing measures is a saving that comes back.
+            catalogue_requests = []
+            receipt_requests = []
+            page.on("request", lambda request: (
+                catalogue_requests.append(request.url) if "catalog.json" in request.url
+                else receipt_requests.append(request.url) if "/api/integrity" in request.url
+                else None))
             page.goto(args.base.rstrip("/") + "/", wait_until="domcontentloaded", timeout=30_000)
             page.locator("#receipt-status-label").wait_for(state="visible", timeout=30_000)
             page.wait_for_function("document.querySelector('#receipt-status-label')?.textContent?.includes('LOADING') === false", timeout=30_000)
@@ -58,6 +71,15 @@ def main() -> int:
                 "OBSERVED" in status or "DATED REPLAY" in status,
                 f"receipt status did not name an observation time: {status!r}",
             )
+            # Asserted here, before the refresh below navigates and legitimately
+            # fetches the receipt a second time.
+            require(not catalogue_requests,
+                    f"the {len(catalogue_requests)} explorer catalogue fetch(es) are no longer "
+                    "deferred: 1.98 MiB is back on the first screen")
+            require(len(receipt_requests) == 1,
+                    f"the receipt was fetched {len(receipt_requests)} times on one load; "
+                    "the shared promise is gone and the page is paying for it twice")
+
             refresh_requests = []
             page.on("request", lambda request: refresh_requests.append(request.url) if "/api/integrity" in request.url else None)
             with page.expect_navigation(wait_until="domcontentloaded", timeout=30_000):
@@ -282,6 +304,12 @@ def main() -> int:
             require("DEX CONTRACT COVERAGE" in gold_dossier, "Gold dossier did not expose contract coverage context")
             require("DEX SURFACES" in gold_dossier, "Gold dossier did not expose resolved DEX surfaces")
             require("CMC MARKET PAIRS" in gold_dossier, "Gold dossier did not expose the market-pair boundary")
+            # The pair that makes "deferred" mean anything. Without this, an
+            # explorer that never loads its catalogue at all would pass the
+            # check above and look like a 1.98 MiB saving.
+            require(catalogue_requests,
+                    "the explorer resolved a dossier without ever fetching its catalogue, so the "
+                    "deferral check above is measuring a broken explorer rather than a saving")
 
             page.locator("#hero-search").fill("Colgate")
             page.locator("#hero-search-form button[type=submit]").click()
