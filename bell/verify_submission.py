@@ -32,6 +32,12 @@ REQUIRED_FILES = (
     "bell/site/proof/rwa-surface-integrity-latest-replay-2026-09-21.json",
     "bell/site/proof/rwa-surface-integrity-inputs-2026-09-21.json",
     "bell/site/proof/rule-boundary-verifier-2026-09-22.json",
+    # The guard-coverage receipt. Its own test stands down when the file is
+    # absent, because a sweep cannot be run to produce it while the gate is red
+    # about its absence. This is the check that does not stand down: a
+    # published tree without it is a published tree whose coverage claim rests
+    # on nothing.
+    "bell/site/proof/guard-coverage.json",
     "bell/verify_integrity_receipt.py",
     "bell/verify_public_surface.py",
     "bell/verify_rule_boundaries.py",

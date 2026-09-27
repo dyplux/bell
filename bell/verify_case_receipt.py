@@ -153,10 +153,14 @@ def bind(payload: dict, published: dict, name: str) -> None:
         # reference outside it cannot be row-checked here. Say that rather than
         # passing it off as bound.
         raise LookupError("not carried in full by the published receipt")
-    if payload["observed_at"] != published.get("observed_at"):
-        raise ValueError(
-            f"the receipt is dated {payload['observed_at']} and carries the source fingerprints "
-            f"{name} records for {published.get('observed_at')}")
+    # `if payload["observed_at"] != published.get("observed_at")` stood here a
+    # second time, with a second message about source fingerprints. It is the
+    # condition checked thirteen lines above, nothing between the two touches
+    # either side, and so the message below it could never be printed. It is
+    # the reason the guard survived every mutation sweep: neutering unreachable
+    # code changes nothing, and the tool was right to say nothing defends it.
+    # Nothing can.
+    #
     # A live endpoint moves. Saying "your fingerprints are wrong" to someone
     # whose case is simply older is a true sentence that sends them looking for
     # a forgery that is not there.

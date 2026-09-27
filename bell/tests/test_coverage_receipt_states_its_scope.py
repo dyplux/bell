@@ -25,6 +25,7 @@ was measured against a source that has since changed.
 
 from __future__ import annotations
 
+import copy
 import json
 from pathlib import Path
 import sys
@@ -73,11 +74,37 @@ class TheCoverageReceiptStatesItsScope(unittest.TestCase):
         missing = [name for name in mutate.GUARDED
                    if (BELL / name).exists() and name not in self.receipt["files"]]
         self.assertEqual(self.receipt["files_not_measured"], missing)
-        stale = [name for name, record in self.receipt["files"].items()
-                 if record["source_digest"] != mutate.digest_of(BELL / name)]
-        self.assertEqual(self.receipt["complete"], not missing and not stale,
+        self.assertEqual(self.receipt["complete"], not missing,
                          "the receipt's own claim about its coverage disagrees with what it "
                          "contains")
+
+    def test_a_record_measured_against_another_tree_is_reported_as_outdated(self):
+        # Currency is reported, not gated. A sweep takes twenty minutes and
+        # cannot be the price of editing a test, and gating on it deadlocks the
+        # repository: the receipt only becomes current by running `make
+        # mutate`, which refuses to start on a red gate, which is red because
+        # the receipt is not current. So what is under test here is the
+        # function that decides currency, driven on records built for it, and
+        # `make mutate` prints its answer on every run.
+        #
+        # A record with no digests at all is reported outdated by the same
+        # rule, which is why their presence is not asserted separately:
+        # stripping the fields does not hide the record, it condemns it.
+        current = {name: {"guards_mutated": 1, "survivors": [],
+                          "source_digest": mutate.digest_of(BELL / name),
+                          "suite_digest": mutate.suite_digest(),
+                          "measured_at": "2026-09-27T00:00:00Z"}
+                   for name in sorted(self.receipt["files"])}
+        self.assertEqual(mutate.outdated(current), [],
+                         "records measured against this tree are being called outdated")
+        for field in ("source_digest", "suite_digest"):
+            name = sorted(current)[0]
+            moved = copy.deepcopy(current)
+            moved[name][field] = "0" * 64
+            with self.subTest(changed=field):
+                self.assertEqual(mutate.outdated(moved), [name],
+                                 f"a record whose {field} no longer describes this tree is "
+                                 "being passed off as current coverage")
 
     def test_the_scope_line_names_what_the_numbers_leave_out(self):
         # Deliberately not a skip when the receipt is complete: a test that
@@ -91,26 +118,13 @@ class TheCoverageReceiptStatesItsScope(unittest.TestCase):
             self.assertIn(name, self.receipt["scope"],
                           "a reader cannot tell which files this number leaves out")
 
-    def test_a_stale_entry_is_not_counted_as_coverage(self):
-        # Proving the check above can fail without leaving a forged receipt in
-        # the repository: hand the assembler a record whose digest does not
-        # describe the file it names.
-        name = sorted(self.receipt["files"])[0]
-        forged = mutate.assemble({name: {"guards_mutated": 99, "survivors": [],
-                                         "source_digest": "0" * 64,
-                                         "measured_at": "2026-01-01T00:00:00Z"}})
-        self.assertFalse(forged["complete"],
-                         "a measurement of a file that has since changed is being published as "
-                         "current coverage")
-        self.assertIn(name, forged["scope"])
-        self.assertTrue(forged["files"][name]["stale"])
-
     def test_one_file_alone_is_never_called_a_sweep(self):
         # The exact shape that shipped: the guarded set has five files and the
         # receipt was written from one of them.
         one = sorted(mutate.GUARDED)[0]
         forged = mutate.assemble({one: {"guards_mutated": 41, "survivors": [12],
                                         "source_digest": mutate.digest_of(BELL / one),
+                                        "suite_digest": mutate.suite_digest(),
                                         "measured_at": "2026-09-27T00:00:00Z"}})
         self.assertFalse(forged["complete"])
         self.assertEqual(forged["guards_mutated"], 41,

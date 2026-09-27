@@ -51,13 +51,31 @@ def guards(path: Path) -> list:
     tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
     found = []
     for node in ast.walk(tree):
-        if not isinstance(node, ast.If):
+        if not isinstance(node, ast.If) or is_entrypoint(node):
             continue
         refuses = any(isinstance(inner, (ast.Raise, ast.Return))
                       for inner in ast.walk(node) if inner is not node)
         if refuses and node.test.col_offset >= 0:
             found.append((node.lineno, node.test.col_offset, node.end_lineno))
     return sorted(set(found))
+
+
+def is_entrypoint(node: ast.If) -> bool:
+    """`if __name__ == "__main__": raise SystemExit(main())` is not a refusal.
+
+    It was counted as one, because its body contains a `raise`, and no test can
+    ever defend it: neutering it stops the file being runnable as a script and
+    the offline gate does not run it as a script. So it survived every sweep
+    and will survive every future one, holding the number one higher than the
+    truth for a reason that has nothing to do with coverage. One file writes it
+    with `raise SystemExit` and three with `sys.exit`, which is why only one of
+    the five ever showed up: the count was measuring a style difference.
+    """
+    test = node.test
+    return (isinstance(test, ast.Compare)
+            and isinstance(test.left, ast.Name) and test.left.id == "__name__"
+            and any(isinstance(value, ast.Constant) and value.value == "__main__"
+                    for value in test.comparators))
 
 
 def neuter(path: Path, lineno: int) -> str:
@@ -89,6 +107,26 @@ def digest_of(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def suite_digest() -> str:
+    """One digest over the suite, because a survivor is a statement about it.
+
+    "This guard is defended" is never a property of the guard alone: it means
+    some test in this suite goes red when the guard stops refusing. Delete that
+    test and the sentence becomes false while the guarded file, and therefore
+    its digest, is untouched. That is the shape this repository keeps finding -
+    a guard that vanishes when the evidence is removed - and the coverage
+    receipt had it too.
+
+    So a record is current only while both sources are: the file it mutated and
+    the suite that judged it.
+    """
+    digest = hashlib.sha256()
+    for path in sorted((HERE / "tests").rglob("*.py")):
+        digest.update(path.relative_to(HERE).as_posix().encode("utf-8"))
+        digest.update(path.read_bytes())
+    return digest.hexdigest()
+
+
 def assemble(measured: dict) -> dict:
     """Build the receipt from the per-file records, and say what it did not measure.
 
@@ -104,25 +142,27 @@ def assemble(measured: dict) -> dict:
     the sweep takes twenty - so the fix is not to forbid it. It is to merge it
     into what is already known, keep each file's own count beside its own
     digest, and refuse to call the total a sweep while a file is missing.
+
+    `complete` says what this receipt covers, not whether it is still current.
+    The first version conflated the two and deadlocked the repository inside an
+    hour: editing a test changed the suite digest, which made the stored
+    `complete: true` a lie, which turned the gate red, and `make mutate`
+    refuses to start on a red gate. A twenty-minute sweep cannot be the price
+    of editing a test. So the receipt stores the facts that decide currency -
+    the digest of each file it mutated and of the suite that judged it - and
+    leaves the comparison against today to whoever reads it, which the tool
+    does out loud on every run.
     """
     files = dict(sorted(measured.items()))
-    for name, record in files.items():
-        path = ROOT / "bell" / name
-        record["stale"] = path.exists() and record.get("source_digest") != digest_of(path)
     missing = [name for name in GUARDED
                if (ROOT / "bell" / name).exists() and name not in files]
-    stale = sorted(name for name, record in files.items() if record["stale"])
     survivors = sorted(
         ({"file": name, "line": line}
          for name, record in files.items() for line in record["survivors"]),
         key=lambda entry: (entry["file"], entry["line"]))
-    complete = not missing and not stale
-    scope = ("every guarded file, measured against its current source"
-             if complete else
-             "part of the guarded set: "
-             + "; ".join(filter(None, [
-                 f"{', '.join(missing)} never measured" if missing else "",
-                 f"{', '.join(stale)} measured against an older source" if stale else ""])))
+    complete = not missing
+    scope = ("every guarded file" if complete else
+             "part of the guarded set: " + ", ".join(missing) + " not measured")
     return {
         "schema_version": SCHEMA,
         "complete": complete,
@@ -135,9 +175,22 @@ def assemble(measured: dict) -> dict:
                  "gate was run. A survivor is a refusal no test notices, whatever its docstring "
                  "says. Three reviewers found these by hand before this existed. The totals are "
                  "the sum of the per-file records below and cover exactly the files listed "
-                 "there, which is why `scope` and `complete` are part of the receipt: one "
-                 "file's run is not the repository's coverage."),
+                 "there, which is why `scope` and `complete` are in the receipt: one file's run "
+                 "is not the repository's coverage. `complete` is about what was measured, not "
+                 "about when. Whether a record still describes this tree is decided by its two "
+                 "digests: source_digest is the file it mutated, suite_digest is the suite that "
+                 "judged it, because 'this guard is defended' means a test in that suite goes "
+                 "red when the guard stops refusing. Recompute both and you know."),
     }
+
+
+def outdated(files: dict) -> list:
+    """Records whose source or suite has moved since they were measured."""
+    suite = suite_digest()
+    return sorted(name for name, record in files.items()
+                  if ((ROOT / "bell" / name).exists()
+                      and record.get("source_digest") != digest_of(ROOT / "bell" / name))
+                  or record.get("suite_digest") != suite)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -198,6 +251,7 @@ def main(argv: list[str] | None = None) -> int:
                 "guards_mutated": len(found),
                 "survivors": sorted(here),
                 "source_digest": digest_of(path),
+                "suite_digest": suite_digest(),
                 "measured_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
             }
 
@@ -209,6 +263,10 @@ def main(argv: list[str] | None = None) -> int:
           f"{len(receipt['files'])} file(s), {len(survivors)} survived")
     if not receipt["complete"]:
         print(f"this receipt is not a sweep: {receipt['scope']}", file=sys.stderr)
+    behind = outdated(receipt["files"])
+    if behind:
+        print(f"measured against a source or a suite that has since changed, so these numbers "
+              f"no longer describe this tree: {', '.join(behind)}", file=sys.stderr)
     if survivors:
         print("these refusals are defended by nothing:", file=sys.stderr)
         for entry in survivors:

@@ -319,7 +319,18 @@ def verify_public_inputs(inputs_path: Path, receipt_path: Path) -> None:
     names = ("map", "asset_list", "quotes", "info", "issuers", "crypto_info")
     if not isinstance(surfaces, dict) or any(name not in surfaces for name in names):
         raise ValueError("public input package is missing a required surface")
-    if package.get("observed_at") != receipt.get("observed_at"):
+    # `package.get(...) != receipt.get(...)` alone let two absences agree with
+    # each other: strip observed_at from both and the package binds to the
+    # receipt, passing the one guard that ties a package to the observation it
+    # claims to recompute. It failed later, in the recompute, with a message
+    # about the receipt rather than about the binding - the same shape as the
+    # boolean that passed request_count and failed two lines on. Absence is not
+    # a match.
+    observed_at = package.get("observed_at")
+    if not isinstance(observed_at, str) or not observed_at:
+        raise ValueError("public input package carries no observed_at, so nothing binds it to "
+                         "an observation")
+    if observed_at != receipt.get("observed_at"):
         raise ValueError("public input timestamp does not match the receipt")
     manifest = package.get("collection_manifest")
     verify_collection_manifest(surfaces, manifest, names)

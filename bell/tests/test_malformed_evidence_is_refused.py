@@ -71,18 +71,43 @@ class TheIntegrityVerifierRefusesMalformedEvidence(unittest.TestCase):
         self.verify_shape = verify_observation_shape
 
     def test_a_receipt_of_the_wrong_shape_is_refused(self):
+        # Each row names the message its own guard raises. This accepted
+        # `(ValueError, KeyError)` and any message, so neutering `if not
+        # isinstance(states, dict)` left the comparison two lines below to
+        # raise a ValueError of its own and the row passed anyway. Four of the
+        # guards this table exists to defend survived `make mutate` because of
+        # it - the same defect as the rest of the table, in the rows written to
+        # fix the rest of the table.
         cases = {
-            "universe missing": lambda r: r.pop("universe"),
-            "universe not an object": lambda r: r.__setitem__("universe", []),
-            "states not an object": lambda r: r["universe"].__setitem__("states", []),
-            "signals not an object": lambda r: r["universe"].__setitem__("signals", []),
-            "receipt carries no source_hashes": lambda r: r.__setitem__("source_hashes", {}),
+            "universe missing": (lambda r: r.pop("universe"),
+                                 r"\.universe is missing"),
+            "universe not an object": (lambda r: r.__setitem__("universe", []),
+                                       r"\.universe is missing"),
+            "states not an object": (lambda r: r["universe"].__setitem__("states", []),
+                                     r"\.universe\.states is missing"),
+            "signals not an object": (lambda r: r["universe"].__setitem__("signals", []),
+                                      r"\.universe\.signals is missing"),
+            "receipt carries no source_hashes": (lambda r: r.__setitem__("source_hashes", {}),
+                                                 r"carries no source_hashes to compare"),
+            "receipt source_hashes not an object": (
+                lambda r: r.__setitem__("source_hashes", []),
+                r"carries no source_hashes to compare"),
         }
-        for label, break_it in cases.items():
+        for label, (break_it, expected) in cases.items():
             receipt = copy.deepcopy(DATED)
             break_it(receipt)
-            with self.subTest(case=label), self.assertRaises((ValueError, KeyError)):
+            with self.subTest(case=label), self.assertRaisesRegex(ValueError, expected):
                 self.verify_observation(observation_for(DATED), receipt, label)
+
+    def test_a_record_that_carries_no_source_hashes_is_refused(self):
+        # The observation side of the same comparison. Its shape check lives in
+        # a different function, so this guard was reached by no test at all.
+        for value in ({}, [], "", None):
+            observation = observation_for(DATED)
+            observation["source_hashes"] = value
+            with self.subTest(value=repr(value)), \
+                    self.assertRaisesRegex(ValueError, r"\.source_hashes is missing"):
+                self.verify_observation(observation, copy.deepcopy(DATED), "record")
 
     def test_an_observation_of_the_wrong_shape_is_refused(self):
         required = ("observed_at", "tokenised_references_scanned", "tokens_scanned",
@@ -170,42 +195,65 @@ class TheCaseVerifierRefusesMalformedEvidence(unittest.TestCase):
                 self.verify(payload)
 
     def test_the_collection_of_wrong_types_is_refused(self):
+        # Two rounds of the same defect. The first version accepted
+        # (ValueError, TypeError, AttributeError), so removing a guard still
+        # blew up further along and the row passed: nine were undefended. The
+        # second asserted the field NAME appeared in the message, and four of
+        # these still survived, because `tokens must be an array` and
+        # `reference.token_count does not match tokens length` both contain the
+        # word "tokens". The guard below it was answering for it.
+        #
+        # So each row names the message of its own guard and nothing else.
         cases = {
-            "tokens not an array": ("tokens", {}),
-            "signals not an array": ("signals", {}),
-            "source_hashes not an object": ("source_hashes", []),
-            "limits empty": ("limits", []),
-            "limits not an array": ("limits", "none"),
-            "method not an object": ("method", []),
-            "reference not an object": ("reference", []),
-            "question empty": ("question", "   "),
-            "question not a string": ("question", 7),
+            "tokens not an array": ("tokens", {}, r"^tokens must be an array$"),
+            "signals not an array": ("signals", {}, r"^signals must be an array$"),
+            "source_hashes not an object": ("source_hashes", [],
+                                            r"^source_hashes must be an object$"),
+            "limits empty": ("limits", [], r"^limits must be a non-empty array$"),
+            "limits not an array": ("limits", "none", r"^limits must be a non-empty array$"),
+            "method not an object": ("method", [], r"^method must be an object$"),
+            "reference not an object": ("reference", [], r"^reference must be an object$"),
+            "question empty": ("question", "   ", r"^question must be a non-empty string$"),
+            "question not a string": ("question", 7, r"^question must be a non-empty string$"),
         }
-        # The first version accepted (ValueError, TypeError, AttributeError),
-        # so removing the guard still blew up further along and the test still
-        # passed: `make mutate` reported nine of these as undefended. Accepting
-        # a crash as a check is the same defect in different clothes. A guard's
-        # value is the NAMED refusal, so the message has to carry the field.
-        for label, (field, value) in cases.items():
+        for label, (field, value, expected) in cases.items():
             payload = case_for(self.alert)
             payload[field] = value
-            with self.subTest(case=label), self.assertRaises(ValueError) as raised:
+            with self.subTest(case=label), self.assertRaisesRegex(ValueError, expected):
                 self.verify(payload)
-            self.assertIn(field.split("_")[0], str(raised.exception).lower(),
-                          f"{label} was refused without naming {field}")
+
+    def test_a_rule_list_that_is_not_a_list_is_refused(self):
+        for value in ({}, "rule", 1, None):
+            payload = case_for(self.alert)
+            payload["method"]["rules"] = value
+            with self.subTest(value=repr(value)), \
+                    self.assertRaisesRegex(ValueError, r"^method\.rules must be an array$"):
+                self.verify(payload)
 
     def test_a_token_count_that_is_not_a_positive_integer_is_refused(self):
         for value in (0, -1, True, "5", None):
             payload = case_for(self.alert)
             payload["reference"]["token_count"] = value
-            with self.subTest(value=repr(value)), self.assertRaisesRegex(ValueError, "token_count"):
+            with self.subTest(value=repr(value)), self.assertRaisesRegex(
+                    ValueError, r"^reference\.token_count must be a positive integer$"):
                 self.verify(payload)
         # And a count that is a valid positive integer and still wrong, which
-        # is a different guard from the type check above.
+        # is a different guard from the type check above and has its own
+        # message: asserting only "token_count" let either one answer for both.
         payload = case_for(self.alert)
         payload["reference"]["token_count"] = len(payload["tokens"]) + 3
-        with self.assertRaisesRegex(ValueError, "token_count"):
+        with self.assertRaisesRegex(
+                ValueError, r"^reference\.token_count does not match tokens length$"):
             self.verify(payload)
+
+    def test_a_source_hash_that_is_not_a_fingerprint_is_refused(self):
+        for bad in ("", "abc", "0" * 63, "0" * 65, 64, None, ["a" * 64]):
+            payload = case_for(self.alert)
+            name = sorted(payload["source_hashes"])[0]
+            payload["source_hashes"][name] = bad
+            with self.subTest(value=repr(bad)[:16]), self.assertRaisesRegex(
+                    ValueError, rf"^source_hashes\.{name} is not a SHA-256 fingerprint$"):
+                self.verify(payload)
 
     def test_a_decision_that_is_not_an_object_is_refused(self):
         for value in ("comparable", [], None, {}):
@@ -383,6 +431,171 @@ class TheHistoryFileIsRefusedWhenItIsMalformed(unittest.TestCase):
         result = self.run_verifier(history)
         self.assertEqual(result.returncode, 1)
         self.assertIn("at least two", result.stderr)
+
+
+class ThePackageHeaderIsRefusedBeforeAnythingIsRecomputed(unittest.TestCase):
+    """The four guards at the top of verify_public_inputs, and two beside them.
+
+    All four refuse before `scan` is reached, so each row is a pair of small
+    files rather than a copy of the 16.5 MB package: the point is the refusal,
+    and a test that has to read sixteen megabytes to assert one message is a
+    test that gets deleted.
+
+    Their shape is worth naming. Three of them - the schema version, the
+    credential-free declaration, the six required surfaces - decide whether a
+    package is the thing it says it is, and the fourth binds it to the receipt
+    it claims to recompute. Without that fourth, a real package from one day
+    recomputes a receipt from another and the mismatch reads as a rules change.
+    """
+
+    def setUp(self):
+        import tempfile
+        from verify_integrity_receipt import load, verify_public_inputs
+        self.load = load
+        self.verify = verify_public_inputs
+        self.directory = tempfile.TemporaryDirectory()
+        self.addCleanup(self.directory.cleanup)
+        self.root = Path(self.directory.name)
+
+    def write(self, name: str, value) -> Path:
+        path = self.root / name
+        path.write_text(json.dumps(value), encoding="utf-8")
+        return path
+
+    def check(self, package, expected, receipt=None):
+        package_path = self.write("inputs.json", package)
+        receipt_path = self.write("receipt.json", receipt or {"observed_at": "2026-09-21"})
+        with self.assertRaisesRegex(ValueError, expected):
+            self.verify(package_path, receipt_path)
+
+    def test_a_package_of_another_schema_is_refused(self):
+        for version in (None, "", "bell.rwa_surface_integrity.inputs.v2", "anything"):
+            with self.subTest(version=repr(version)):
+                self.check({"schema_version": version}, "unexpected public input package schema")
+
+    def test_a_package_that_does_not_declare_itself_credential_free_is_refused(self):
+        # `is not True` and not a truthy test: "credential_free": "yes" is a
+        # string someone wrote, not a declaration the verifier can act on.
+        for value in (None, False, "true", 1, {}):
+            with self.subTest(value=repr(value)):
+                self.check({"schema_version": "bell.rwa_surface_integrity.inputs.v1",
+                            "credential_free": value},
+                           "must be credential-free")
+
+    def test_a_package_missing_any_required_surface_is_refused(self):
+        names = ("map", "asset_list", "quotes", "info", "issuers", "crypto_info")
+        header = {"schema_version": "bell.rwa_surface_integrity.inputs.v1",
+                  "credential_free": True}
+        for dropped in names:
+            surfaces = {name: {} for name in names if name != dropped}
+            with self.subTest(missing=dropped):
+                self.check({**header, "surfaces": surfaces}, "missing a required surface")
+        for value in (None, [], "", 0):
+            with self.subTest(surfaces=repr(value)):
+                self.check({**header, "surfaces": value}, "missing a required surface")
+
+    def test_a_package_describing_another_observation_is_refused(self):
+        names = ("map", "asset_list", "quotes", "info", "issuers", "crypto_info")
+        package = {"schema_version": "bell.rwa_surface_integrity.inputs.v1",
+                   "credential_free": True,
+                   "surfaces": {name: {} for name in names},
+                   "observed_at": "2026-09-20"}
+        self.check(package, "timestamp does not match",
+                   receipt={"observed_at": "2026-09-21"})
+
+    def test_a_package_with_no_observation_binds_to_no_receipt(self):
+        # Writing the row above found this: the guard was a bare `!=`, so two
+        # absences agreed with each other and a package with no observed_at
+        # passed the only check that ties it to an observation.
+        names = ("map", "asset_list", "quotes", "info", "issuers", "crypto_info")
+        package = {"schema_version": "bell.rwa_surface_integrity.inputs.v1",
+                   "credential_free": True,
+                   "surfaces": {name: {} for name in names}}
+        for value in (None, "", 0, {}):
+            with self.subTest(value=repr(value)):
+                self.check({**package, "observed_at": value},
+                           "carries no observed_at", receipt={"other": 1})
+        self.check(package, "carries no observed_at", receipt={"other": 1})
+
+    def test_a_file_whose_top_level_is_not_an_object_is_refused(self):
+        for value in ([], "text", 3, None, True):
+            path = self.write("thing.json", value)
+            with self.subTest(value=repr(value)), \
+                    self.assertRaisesRegex(ValueError, "is not a JSON object"):
+                self.load(path)
+
+    def test_a_bundled_receipt_with_no_observation_is_refused(self):
+        from verify_integrity_receipt import bundle
+        with self.assertRaisesRegex(ValueError, "carries no observed_at"):
+            bundle([({"observed_at": "2026-09-21"}, "dated"), ({}, "latest")])
+
+
+class AnEndpointThatDoesNotAnswerIsNotEvidence(unittest.TestCase):
+    """The two loaders that can read a URL, driven without touching a network.
+
+    Both were undefended, in both files, and for the same reason: every test in
+    the suite passes a path. The HTTP branch and the status check are the only
+    place either tool trusts something it did not ship, which makes them the
+    branches most worth a test and the ones easiest to leave without one.
+
+    `urlopen` is replaced, not called. The rule this repository already has for
+    its browser audits - never talk to a server you did not start - applies
+    just as well to a test that would otherwise depend on somebody's uptime.
+    """
+
+    class Response:
+        def __init__(self, status, body):
+            self.status = status
+            self._body = body
+
+        def read(self):
+            return json.dumps(self._body).encode("utf-8")
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_):
+            return False
+
+    def answering(self, status, body=None):
+        from unittest import mock
+        return mock.patch.object(self.module, self.opener,
+                                 lambda *_args, **_kwargs: self.Response(status, body or {}))
+
+    def test_the_case_verifier_refuses_an_endpoint_that_does_not_answer_200(self):
+        import verify_case_receipt
+        import urllib.request
+        self.module, self.opener = urllib.request, "urlopen"
+        for status in (404, 500, 301, 204):
+            with self.subTest(status=status), self.answering(status), \
+                    self.assertRaisesRegex(ValueError, f"answered HTTP {status}"):
+                verify_case_receipt.fetch_receipt("https://bell.dyplux.com/api/published")
+
+    def test_the_case_verifier_reads_a_url_as_a_url(self):
+        # Neuter the `startswith("http")` dispatch and this source becomes a
+        # filename, which is the only way to notice the dispatch is gone.
+        import verify_case_receipt
+        import urllib.request
+        self.module, self.opener = urllib.request, "urlopen"
+        with self.answering(200, {"observed_at": "2026-09-21"}):
+            payload, name = verify_case_receipt.fetch_receipt("https://bell.dyplux.com/x.json")
+        self.assertEqual(payload["observed_at"], "2026-09-21")
+        self.assertEqual(name, "https://bell.dyplux.com/x.json")
+
+    def test_the_history_job_refuses_an_endpoint_that_does_not_answer_200(self):
+        import append_history
+        self.module, self.opener = append_history, "urlopen"
+        for status in (404, 500, 503):
+            with self.subTest(status=status), self.answering(status), \
+                    self.assertRaisesRegex(SystemExit, f"returned HTTP {status}"):
+                append_history.load_receipt("https://bell.dyplux.com/api/integrity")
+
+    def test_the_history_job_reads_a_url_as_a_url(self):
+        import append_history
+        self.module, self.opener = append_history, "urlopen"
+        with self.answering(200, {"observed_at": "2026-09-21"}):
+            receipt = append_history.load_receipt("https://bell.dyplux.com/api/integrity")
+        self.assertEqual(receipt["observed_at"], "2026-09-21")
 
 
 if __name__ == "__main__":
