@@ -132,6 +132,37 @@ def _split_refusals(reasons) -> dict:
     }
 
 
+def _single_representation_lens(single: list) -> dict:
+    """What CMC does and does not report about the references that cannot be compared.
+
+    547 of 791 references carry one representation, so the comparison rate
+    excludes 69% of the catalogue - correctly, because there was never a
+    comparison to refuse. But excluding them was the only thing the product
+    said about them, and a reviewer was right that a research desk holding one
+    of those 547 is handed nothing.
+
+    There is a real finding here and it is the same discipline the refusal
+    split already uses: the reason most of them cannot be compared is that the
+    source does not report the fields. Publishing that is a coverage fact about
+    CoinMarketCap, measured over the majority of the catalogue, and it is not
+    a verdict on any issuer.
+    """
+    codes = Counter(code for row in single for code in (row.get('signal_codes') or []))
+    flagged = sum(1 for row in single if row.get('signal_codes'))
+    total = len(single)
+    return {
+        'references': total,
+        'with_a_named_gap_or_finding': flagged,
+        'fully_reported': total - flagged,
+        'reasons': dict(codes.most_common()),
+        'incomplete_market_fields': codes.get('MARKET_FIELDS_MISSING', 0),
+        'incomplete_share': round(codes.get('MARKET_FIELDS_MISSING', 0) / total, 4) if total else 0.0,
+        'counts': ('reasons, not references: one reference can carry more than one. '
+                   'These references are excluded from the refusal rate because there was '
+                   'never a comparison to refuse, not because they were approved.'),
+    }
+
+
 def read_json(path):
     """Read a JSON file and say what is wrong with it if it will not read.
 
@@ -236,6 +267,7 @@ def measure(receipt: dict) -> dict:
         # as an indictment of the market when most of it is an incomplete
         # catalogue. Publish the split so nobody has to re-derive it.
         'refusal_split': _split_refusals(reasons),
+        'single_representation_lens': _single_representation_lens(single),
         'method': {
             'population': 'every reference in the captured RWA map',
             'denominator': f'references with >= {MIN_REPRESENTATIONS} token representations',
@@ -301,6 +333,21 @@ def main() -> int:
     print()
     print('  The first group is CoinMarketCap coverage, not a finding about the market.')
     print('  The second is a contradiction this scanner located in the published data.')
+    print()
+    # The 547 excluded references were 69% of the catalogue and the only thing
+    # the product said about them was that they were excluded. Excluding them
+    # from the RATE is right; saying nothing about them is not.
+    lens = result['single_representation_lens']
+    print(f"  the {lens['references']} references excluded above, because one representation "
+          f"is nothing to compare:")
+    print(f"    {lens['incomplete_market_fields']:>4}  carry at least one field CoinMarketCap "
+          f"does not report ({lens['incomplete_share']:.0%})")
+    print(f"    {lens['fully_reported']:>4}  report price, market cap and volume in full")
+    print()
+    print('  So the majority of the catalogue cannot be compared, and for most of that')
+    print('  majority the reason is the source rather than the asset. That is a coverage')
+    print('  fact about CoinMarketCap, not a verdict on any issuer, and these references')
+    print('  are excluded from the rate above rather than counted as passes.')
     print()
     print('  why the refusals fire:')
     for code, count in result['refusal_reasons'].items():

@@ -268,5 +268,25 @@ class HeadlineNumbersArePinned(unittest.TestCase):
         self.assertTrue(float(band.group(1)) <= float(cold.group(1)) <= float(band.group(2)),
                         f"the cold run figure {cold.group(1)} is outside the band it justifies")
 
+    def test_the_excluded_majority_is_measured_and_stated(self):
+        # 547 references - 69% of the catalogue - were excluded from the rate,
+        # correctly, and that exclusion was everything the product said about
+        # them. The measurement is published now, so it is pinned like every
+        # other number on that page.
+        lens = BASE_RATE.get("single_representation_lens")
+        self.assertIsNotNone(lens, "base_rate no longer measures the excluded majority")
+        self.assertEqual(lens["references"], BASE_RATE["excluded_single_representation"],
+                         "the lens and the exclusion count describe different populations")
+        self.assertEqual(lens["incomplete_market_fields"] + 0, lens["reasons"].get(
+            "MARKET_FIELDS_MISSING", 0))
+        self.assertEqual(lens["fully_reported"],
+                         lens["references"] - lens["with_a_named_gap_or_finding"])
+        flow = flowed(judge_text())
+        self.assertRegex(
+            flow, rf"\b{lens['incomplete_market_fields']} of the {lens['references']} carry at "
+                  r"least one field",
+            "the judge page states a different count for the excluded majority")
+        self.assertRegex(flow, rf"\b{lens['fully_reported']} report price, market cap and volume")
+
 if __name__ == "__main__":
     unittest.main()

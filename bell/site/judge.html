@@ -59,7 +59,7 @@
     <div class="judge-facts">
       <div><small>Comparisons published</small><strong>87</strong></div>
       <div><small>Refusals, by named rule</small><strong>157</strong></div>
-      <div><small>Tests in the offline gate</small><strong>386</strong></div>
+      <div><small>Tests in the offline gate</small><strong>389</strong></div>
       <div><small>Gate runtime</small><strong>&lt;12s</strong></div>
     </div>
 
@@ -97,7 +97,7 @@ make base-rate</pre>
       <h3>What that gate proves, and what it does not</h3>
       <dl>
         <dt>The suite</dt>
-        <dd>386 tests, 288 Python and 98 JavaScript. One Python test needs a network and a
+        <dd>389 tests, 291 Python and 98 JavaScript. One Python test needs a network and a
         CoinMarketCap key; without them it is skipped and the runner says so.</dd>
 
         <dt>The re-derivation</dt>
@@ -163,6 +163,14 @@ make base-rate</pre>
     CoinMarketCap never published</strong>, a coverage fact about the source, and 38 are rows
     that contradict each other. Reported as one number it would read as an indictment of the
     market when most of it is an incomplete catalogue.</p>
+    <p>The same discipline applies to the 547 references the rate excludes. One
+    representation is nothing to compare, so they are not scored as passes and not counted
+    against the rate. But excluding them was the only thing this product said about 69% of
+    the catalogue. So it measures them too: <strong>464 of the 547 carry at least one field
+    CoinMarketCap does not report</strong>, and 77 report price, market cap and volume in
+    full. The majority of the catalogue cannot be compared, and for most of that majority
+    the reason is the source rather than the asset. That is a coverage fact, not a verdict
+    on any issuer.</p>
     <p>The same discipline applies to Bell's own history. Where two published receipts were
     produced under different rule sets, the page refuses to print a delta between them and
     says so, because subtracting them would state a market change nobody observed.</p>

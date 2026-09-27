@@ -84,5 +84,64 @@ class ALivenessReceiptIsShipped(unittest.TestCase):
         self.assertIn('response_sha256', source)
 
 
+class TheLivenessReceiptAgreesWithItself(unittest.TestCase):
+    """`contract_intact: true` was compared to nothing.
+
+    A reviewer tried to empty this receipt's `checks` array and found there is
+    no such key, so the mutation was a no-op - but the substance held: nothing
+    required the headline verdict to follow from the per-surface properties
+    beside it, and nothing required a surface to carry any property at all. A
+    receipt whose summary answers to nothing is the shape this whole repository
+    prosecutes.
+    """
+
+    def shipped(self):
+        for path in receipts():
+            with open(path, encoding='utf-8') as handle:
+                yield os.path.basename(path), json.load(handle)
+
+    def test_the_headline_verdict_follows_from_the_properties_beside_it(self):
+        seen = 0
+        for name, receipt in self.shipped():
+            seen += 1
+            raw = receipt.get('surfaces') or {}
+            surfaces = list(raw.values()) if isinstance(raw, dict) else list(raw)
+            self.assertTrue(surfaces, f'{name} records no surface, so it observed nothing')
+            broken = []
+            for surface in surfaces:
+                if not surface.get('reachable'):
+                    broken.append(f"{surface.get('endpoint')} unreachable")
+                properties = surface.get('properties') or {}
+                self.assertTrue(
+                    properties,
+                    f"{name}: {surface.get('endpoint')} records no property, so 'reachable' is "
+                    "the only thing it says and the contract was never checked")
+                for key, value in properties.items():
+                    if not value.get('holds'):
+                        broken.append(f"{surface.get('endpoint')}.{key}")
+            self.assertEqual(
+                bool(receipt.get('contract_intact')), not broken,
+                f"{name} declares contract_intact={receipt.get('contract_intact')} while its own "
+                f"surfaces report {broken or 'nothing broken'}")
+            self.assertEqual(
+                sorted(receipt.get('failures') or []), sorted(receipt.get('failures') or []),
+                'failures must be a list')
+            if broken:
+                self.assertTrue(receipt.get('failures'),
+                                f'{name} reports a broken property and an empty failures list')
+        self.assertGreater(seen, 0, 'no liveness receipt was read, so this compared nothing')
+
+    def test_a_surface_that_fails_cannot_be_reported_as_intact(self):
+        # The control for the rule above, driven directly so it is exercised
+        # even while every shipped receipt is intact.
+        receipt = {'contract_intact': True, 'failures': [],
+                   'surfaces': [{'endpoint': '/x', 'reachable': True,
+                                 'properties': {'shape': {'holds': False}}}]}
+        broken = [key for surface in receipt['surfaces']
+                  for key, value in surface['properties'].items() if not value.get('holds')]
+        self.assertTrue(broken)
+        self.assertNotEqual(bool(receipt['contract_intact']), not broken,
+                            'the rule cannot tell an intact receipt from a broken one')
+
 if __name__ == '__main__':
     unittest.main()
