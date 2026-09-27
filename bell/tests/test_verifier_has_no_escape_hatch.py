@@ -73,22 +73,38 @@ class Forgery(unittest.TestCase):
                 return copy.deepcopy(item)
         self.fail(f"{DATED} is not in the shipped history, so nothing cross-checks it")
 
-    def test_a_bumped_rule_version_cannot_excuse_a_rewritten_distribution(self):
-        receipt = copy.deepcopy(self.dated)
-        receipt["universe"]["states"] = {"do_not_compare": 0, "investigate": 0, "no_flags": 791}
-        receipt["universe"]["rules_version"] = "bell.rules.v3"
-        with self.assertRaises(ValueError) as raised:
-            self.verify_observation(self.dated_observation(), receipt, "forged")
-        self.assertIn("bell.rules.v3", str(raised.exception))
+    def test_no_declared_rule_set_can_excuse_a_rewritten_distribution(self):
+        # The first version of this test only tried "bell.rules.v3", a version
+        # this repository never published, and the fix only refused unpublished
+        # ones. A reviewer then used "bell.rules.v1" - real, published, and
+        # never stamped by any publisher in this tree - and rewrote the whole
+        # distribution through a green 306-test gate. One value of a field is
+        # not the field, so every value that is not the current one is tried.
+        for declared in ("bell.rules.v1", "bell.rules.v2.1", "bell.rules.v3", ""):
+            receipt = copy.deepcopy(self.dated)
+            receipt["universe"]["states"] = {"do_not_compare": 0, "investigate": 0,
+                                             "no_flags": 790}
+            if declared:
+                receipt["universe"]["rules_version"] = declared
+            else:
+                receipt["universe"].pop("rules_version", None)
+            with self.subTest(declared=declared or "absent"), \
+                    self.assertRaises(ValueError, msg=f"{declared!r} switched the check off"):
+                self.verify_observation(self.dated_observation(), receipt, "forged")
 
-    def test_a_known_rule_version_is_still_reported_rather_than_refused(self):
-        # The fix must not turn the rule boundary into a wall. v1 is a rule set
-        # this repository really published, and a receipt carrying it must stay
-        # readable, with its counts reported instead of compared.
+    def test_the_current_rule_set_is_accepted_and_still_compared(self):
+        # The control: refusing every version would also refuse every forgery.
+        # A receipt stamped by this tree's publisher must be accepted, and its
+        # states must actually be compared rather than waved through.
+        from rwa_integrity import RULES_VERSION
+        observation = self.dated_observation()
         receipt = copy.deepcopy(self.dated)
-        receipt["universe"]["rules_version"] = "bell.rules.v1"
-        compared = self.verify_observation(self.dated_observation(), receipt, "older rules")
-        self.assertFalse(compared, "a receipt from another rule set was compared on state counts")
+        receipt["universe"]["rules_version"] = RULES_VERSION
+        observation["rules_version"] = RULES_VERSION
+        self.assertTrue(self.verify_observation(observation, receipt, "current"))
+        receipt["universe"]["states"] = {"do_not_compare": 0, "investigate": 0, "no_flags": 790}
+        with self.assertRaises(ValueError):
+            self.verify_observation(observation, receipt, "current but rewritten")
 
     def test_deleting_the_provenance_does_not_delete_the_check(self):
         manifest = self.manifest_copy()

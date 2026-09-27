@@ -3,7 +3,9 @@
 Nine findings from building one RWA workflow against the CMC v5 real-world-asset
 family, ordered by what they cost. Each one is reproducible from the
 credential-free capture shipped in this repository, and each is pinned by a test
-that fails if CMC changes the behaviour. None of them is a complaint about
+that fails if this repository stops reproducing it. Be exact about the limit, which
+the README also states: those tests read captures from 13, 17 and 21 September, so
+they catch a regression here and cannot notice that CMC changed afterwards. None of them is a complaint about
 coverage; they are places where the contract surprised a careful caller.
 
 ## 1. `status.error_code` changes type between endpoint families

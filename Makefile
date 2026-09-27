@@ -61,6 +61,10 @@ liveness: ## Does today's CMC API still answer in the shape this build reads?
 verify: ## Recompute the published receipt from the shipped inputs
 	$(PY) $(PKG)/verify_integrity_receipt.py
 	$(PY) $(PKG)/verify_catalogue_receipt.py
+# judge.html states "All 8 checks pass" and the JS suite asserted that against
+# the committed receipt, so the claim was verified against a file rather than
+# against the code. Nothing in the gate ran the verifier itself. It costs 0.09s.
+	$(PY) $(PKG)/verify_rule_boundaries.py
 
 check-offline: test verify ## The gate with no network and no browser
 	$(PY) $(PKG)/verify_submission.py

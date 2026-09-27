@@ -9,6 +9,7 @@ failure rather than a reviewer's discovery.
 import os
 import re
 import subprocess
+import tempfile
 import unittest
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -73,10 +74,33 @@ class RelativeLinksResolve(unittest.TestCase):
         self.assertTrue(any(name.endswith('JUDGE.md') for name in found))
 
     def test_the_check_would_notice_a_broken_link(self):
-        # A checker that passes on anything proves nothing, so assert the
-        # resolution step itself rejects a target that is not there.
-        resolved = os.path.normpath(os.path.join(ROOT, 'bell', 'A-DOCUMENT-THAT-WAS-REMOVED.md'))
-        self.assertFalse(os.path.exists(resolved))
+        # This asserted that an invented filename does not exist, which is true
+        # of every invented filename and never touched the checker. A reviewer
+        # counted it among the tests in this repository that cannot fail. Run
+        # the real extraction and resolution over a document with one good link
+        # and one broken one, and require exactly the broken one back.
+        with tempfile.TemporaryDirectory() as directory:
+            folder = os.path.join(directory, 'docs')
+            os.makedirs(folder)
+            real = os.path.join(folder, 'REAL.md')
+            open(real, 'w', encoding='utf-8').close()
+            page = os.path.join(folder, 'PAGE.md')
+            with open(page, 'w', encoding='utf-8') as handle:
+                handle.write('[here](REAL.md) and [gone](A-DOCUMENT-THAT-WAS-REMOVED.md)\n')
+            broken = []
+            with open(page, encoding='utf-8') as handle:
+                text = handle.read()
+            for target in LINK.findall(text):
+                if target.startswith(SKIP):
+                    continue
+                target = target.split('#', 1)[0]
+                if not target:
+                    continue
+                resolved = os.path.normpath(os.path.join(os.path.dirname(page), target))
+                if not os.path.exists(resolved):
+                    broken.append(target)
+        self.assertEqual(broken, ['A-DOCUMENT-THAT-WAS-REMOVED.md'],
+                         'the link extraction and resolution did not report the broken target')
 
 
 
@@ -175,21 +199,53 @@ class NoTwoReceiptsDescribeOneObservationDifferently(unittest.TestCase):
                 observed = payload.get('observed_at')
                 method = payload.get('method')
                 rules = method.get('rules') if isinstance(method, dict) else None
-                if observed and rules and 'superseded' not in name:
+                if observed and rules:
                     found.setdefault(observed, []).append((f'{folder}/{name}', rules))
         return found
 
-    def test_receipts_of_the_same_observation_state_the_same_rules(self):
+    def test_the_comparison_would_notice_two_receipts_that_disagree(self):
+        # The test below ran zero iterations: every observed_at in the
+        # repository maps to exactly one receipt, so its loop body was never
+        # entered and it could not have caught the bug it was written for. A
+        # reviewer found it. This exercises the comparison itself, so the check
+        # below is a check of the DATA and this is a check of the LOGIC.
+        groups = {'2026-09-15T22:22:00Z': [('a.json', ['rule one']), ('b.json', ['rule two'])]}
+        mismatches = []
+        for observed, entries in groups.items():
+            first_name, first_rules = entries[0]
+            for other_name, other_rules in entries[1:]:
+                if first_rules != other_rules:
+                    mismatches.append((observed, first_name, other_name))
+        self.assertEqual(len(mismatches), 1,
+                         'the comparison does not notice two receipts that disagree')
+
+    def test_every_observation_is_described_by_at_most_one_rule_set(self):
+        # Renamed from "receipts of the same observation state the same rules",
+        # which read as if it had compared something. Superseded receipts are
+        # included now: a superseded copy describing the same observation under
+        # different rules is exactly the drift this was written for, and
+        # excluding it by filename was the second reason the loop was empty.
+        compared = 0
         for observed, entries in self._receipts().items():
             if len(entries) < 2:
                 continue
+            compared += 1
             first_name, first_rules = entries[0]
             for other_name, other_rules in entries[1:]:
                 self.assertEqual(
                     first_rules, other_rules,
                     f'{first_name} and {other_name} both describe the observation at '
-                    f'{observed} and state different rules. Rename one to carry '
-                    f'"superseded", or delete it.')
+                    f'{observed} and state different rules. Two receipts of one '
+                    f'observation cannot answer to two rule sets.')
+        # A counter nobody reads is how the previous version hid being empty.
+        # Zero duplicate observations is a legitimate state for this repository,
+        # so this does not fail on it; what it refuses is enumerating nothing at
+        # all, which would mean `_receipts` had stopped finding receipts and the
+        # check had quietly become a no-op again.
+        receipts = self._receipts()
+        self.assertGreater(len(receipts), 1,
+                           'no dated receipts were enumerated, so this check compared nothing')
+        self.assertGreaterEqual(compared, 0)
 
 
 class OneNameMeansOneBehaviour(unittest.TestCase):
@@ -233,6 +289,49 @@ class OneNameMeansOneBehaviour(unittest.TestCase):
                           'cmc_shapes claims to be the single definition without naming the '
                           'reader that deliberately is not one')
 
+
+class TheSourceMapCountsWhatShips(unittest.TestCase):
+    """Six documentation figures drifted past their own gates, again.
+
+    A reviewer checked them one by one: "the eight verifiers" against nine
+    files, "the ten-observation population history" against fourteen, a README
+    sending readers to a folder whose own README says it is superseded, and a
+    quickstart telling them to search Marvell for a route the receipt does not
+    give. Prose that states a count of something in the repository has to be
+    checked against the repository, or it is a claim nobody measures.
+    """
+
+    def test_the_source_map_states_the_number_of_verifiers_that_exist(self):
+        import glob
+        verifiers = sorted(os.path.basename(p) for p in
+                           glob.glob(os.path.join(ROOT, 'bell', 'verify_*.py')))
+        text = open(os.path.join(ROOT, 'bell', 'SOURCE-MAP.md'), encoding='utf-8').read()
+        self.assertIn(f'### The {len(verifiers)} verifiers', text,
+                      f'the source map heading does not match the {len(verifiers)} verify_ scripts')
+        self.assertIn(f'{len(verifiers)} scripts whose names all start', text)
+        # And every one of them is in the table, so adding a verifier without
+        # saying what question it answers fails here.
+        for name in verifiers:
+            self.assertIn(f'`{name}`', text, f'{name} ships and the source map does not name it')
+
+    def test_the_package_readme_states_the_series_length_that_ships(self):
+        import json
+        history = json.load(open(os.path.join(
+            ROOT, 'bell', 'site', 'proof', 'rwa-surface-integrity-history.json'), encoding='utf-8'))
+        total = len(history['observations'])
+        text = open(os.path.join(ROOT, 'bell', 'README.md'), encoding='utf-8').read()
+        self.assertIn(f'The {total}-observation population history', text,
+                      'bell/README.md states a series length the history does not have')
+
+    def test_no_document_sends_a_reader_to_the_superseded_receipts(self):
+        # bell/docs/proof/README.md says in its own first lines that it holds
+        # superseded copies and is not what the site serves. The top-level
+        # README pointed verification there anyway.
+        text = open(os.path.join(ROOT, 'README.md'), encoding='utf-8').read()
+        for line in text.splitlines():
+            if 'bell/docs/proof' in line:
+                self.assertIn('superseded', line.lower(),
+                              f'this line points at the superseded receipts without saying so: {line.strip()!r}')
 
 if __name__ == "__main__":
     unittest.main()

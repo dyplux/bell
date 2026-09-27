@@ -71,7 +71,12 @@ def build(inputs_path: Path) -> dict:
         "note": ("Per-surface transport record, lifted verbatim from the replay input "
                  "package's collection manifest. Status codes are counted, not listed; the "
                  "per-request digests stay in the manifest. No credential, header or token "
-                 "is recorded here or there."),
+                 "is recorded here or there. What can be checked and what cannot: "
+                 "payload_sha256 is recomputable, because the payload ships with this "
+                 "repository. request_count, successful_response_count, status_codes and the "
+                 "per-response digests are SELF-DECLARED - the individual HTTP responses are "
+                 "not published, so nothing here can recompute them. They describe the "
+                 "collection; they do not prove it."),
         "surfaces": summarise(manifest),
     }
 

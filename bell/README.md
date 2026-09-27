@@ -11,7 +11,9 @@ fairly, then records the next diligence action.
 
 1. Open the [live monitor](https://bell.dyplux.com/)
 2. Search `Silver` and read the `DO NOT SHORTLIST` route, observed endpoints and capital hold
-3. Search `Marvell` and see the `FACTS OPEN` route without a winner being invented
+3. Search `Marvell` and see the `COMPARABLE` route: the representations clear the
+   identity, unit and market checks, so the spread and cheapest route are named
+   without a wrapper being ranked
 4. Search `Gold` and open the repeat-window evidence
 5. Scroll to `POPULATION SHAPE` to see the full-scan route counts and observed spread bands
 6. Open `Receipt` or `Inspect credential-free receipt` to verify the dated source evidence
@@ -80,7 +82,7 @@ The receipt comparison utility in [`receipt_compare.py`](receipt_compare.py)
 compares two dated windows and reports flat-bar diagnostics without treating them as liquidity.
 The public integrity receipt also has a [sanitized input manifest](docs/proof/rwa-surface-integrity-input-manifest-2026-09-15.json)
 with surface counts, stable-ID join coverage and source fingerprints.
-The ten-observation population history is at
+The 14-observation population history is at
 [`site/proof/rwa-surface-integrity-history.json`](site/proof/rwa-surface-integrity-history.json),
 and the latest credential-free normalized input package is at
 [`site/proof/rwa-surface-integrity-inputs-2026-09-21.json`](site/proof/rwa-surface-integrity-inputs-2026-09-21.json).

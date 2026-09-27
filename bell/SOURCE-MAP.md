@@ -16,10 +16,10 @@ credential-free proof for a reviewer who wants to inspect the build quickly.
 - `population_attribution()` reconciles positive token-level market caps with CMC's asset-level `tokenized_market_cap` field and computes issuer concentration without converting missing values to zero
 - `rule_calibration()` publishes the observed population around Bell's 2x dispersion and 10x denomination boundaries, so the thresholds can be inspected rather than treated as unexplained constants
 - `integrity_publisher.py` publishes only the normalized credential-free receipt
-### The eight verifiers, and why each one exists
+### The 9 verifiers, and why each one exists
 
-Eight scripts whose names all start with `verify_` invites a fair question: is
-this one job split eight ways? Each answers a different question, about a
+9 scripts whose names all start with `verify_` invites a fair question: is
+this one job split 9 ways? Each answers a different question, about a
 different artefact, for a different reader. Two that did not are gone — one
 duplicated the documentation-link check that already runs inside `make check`,
 and one audited the same public endpoint as `verify_public_surface.py` with a
@@ -37,8 +37,8 @@ different set of assertions, so neither was the answer to "how do I check this".
 | `verify_public_browser.py` | does the deployed interface still behave? | `bell.dyplux.com` | network + browser |
 | `verify_deployment_matches.py` | is the deployed site the same bytes as this commit? | `bell.dyplux.com` | network |
 
-The first six need no network and no key. The last two are the only ones that
-leave the machine, and both run without credentials.
+The first six need no network and no key. The last three are the only ones that
+leave the machine, and all three run without credentials.
 
 - `verify_integrity_receipt.py` recomputes the public population summary from committed normalized inputs
 - `verify_catalogue_receipt.py` checks the complete-map catalogue refresh

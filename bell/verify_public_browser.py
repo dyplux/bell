@@ -111,6 +111,29 @@ def main() -> int:
             require(attribution_download.suggested_filename.startswith("bell-rwa-population-attribution-") and attribution_download.suggested_filename.endswith(".csv"), f"unexpected attribution filename: {attribution_download.suggested_filename!r}")
             attribution_text = open(attribution_download.path(), encoding="utf-8").read()
             require(attribution_text.startswith("rwa_id,reference_name"), "attribution export does not expose its stable reference header")
+
+            # A sentence on the product page names the number the COMPARABLE
+            # filter shows. It was hardcoded to 87 while the filter showed 78,
+            # on a page whose README promises every figure is derived from the
+            # receipt. Both are on screen, so both are read.
+            stated = page.locator("#population-comparable-count")
+            require(stated.count() == 1,
+                    "the population sentence no longer renders its count from the receipt; it is "
+                    "written into the page again, which is what put a stale 87 beside a filter "
+                    "showing 78")
+            stated_comparable = stated.inner_text().strip()
+            page.locator("[data-filter='COMPARABLE']").first.click()
+            page.wait_for_timeout(1_000)
+            monitor = page.locator("#monitor").inner_text()
+            filtered = re.search(r"of ([\d,]+) matching", monitor)
+            require(filtered is not None,
+                    f"the reference index stopped reporting its match count: {monitor[:200]!r}")
+            require(filtered.group(1).replace(",", "") == stated_comparable.replace(",", ""),
+                    f"the page says the COMPARABLE filter shows {stated_comparable} and the "
+                    f"filter shows {filtered.group(1)}")
+            page.locator("[data-filter='all']").first.click()
+            page.wait_for_timeout(500)
+
             require("market_cap_status" in attribution_text and "missing" in attribution_text and "zero_or_non_positive" in attribution_text, "attribution export collapsed missing and non-positive market-cap states")
 
             receipt_response = page.request.get(args.base.rstrip("/") + "/api/integrity", timeout=30_000)

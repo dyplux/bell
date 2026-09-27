@@ -61,8 +61,14 @@ class RulesVersionIsPublished(unittest.TestCase):
 
 class ComparisonRespectsTheVersion(unittest.TestCase):
     def test_same_version_still_compares_states_strictly(self):
+        # Had no assertion at all: it called the function and discarded the
+        # answer, so it passed whatever the function did. A reviewer counted
+        # three tests in this file in that shape. What it means to "compare" is
+        # that the function reports having compared, so that is asserted.
         states = {"do_not_compare": 1, "investigate": 2, "no_flags": 7}
-        verify_observation(observation(states, RULES_VERSION), receipt(states), "same")
+        self.assertTrue(
+            verify_observation(observation(states, RULES_VERSION), receipt(states), "same"),
+            "a matching pair under one rule set was not compared on state counts")
 
     def test_same_version_still_fails_on_a_real_mismatch(self):
         # Version awareness must not become a blanket excuse: within one version
@@ -74,17 +80,47 @@ class ComparisonRespectsTheVersion(unittest.TestCase):
                 "same-version-mismatch")
 
     def test_a_version_change_is_reported_not_failed(self):
-        verify_observation(
+        # Also had no assertion. The guarantee is that the counts are reported
+        # rather than compared, so the return value says so.
+        compared = verify_observation(
             observation({"do_not_compare": 1, "investigate": 8, "no_flags": 1}, "bell.rules.v1"),
-            receipt({"do_not_compare": 1, "investigate": 2, "no_flags": 7}),
+            receipt({"do_not_compare": 1, "investigate": 2, "no_flags": 7}, RULES_VERSION),
             "changed")
+        self.assertFalse(compared, "counts from two rule sets were compared as if comparable")
 
     def test_an_unversioned_history_entry_counts_as_a_different_version(self):
         # Everything recorded before versioning existed predates these rules.
-        verify_observation(
+        compared = verify_observation(
             observation({"do_not_compare": 1, "investigate": 8, "no_flags": 1}),
-            receipt({"do_not_compare": 1, "investigate": 2, "no_flags": 7}),
+            receipt({"do_not_compare": 1, "investigate": 2, "no_flags": 7}, RULES_VERSION),
             "unversioned")
+        self.assertFalse(compared)
+
+    def test_a_receipt_cannot_declare_a_rule_set_the_publisher_never_stamps(self):
+        # The attack this file previously helped hide. A receipt that declares
+        # any version other than the current one switched the state comparison
+        # off, so two lines of JSON rewrote a whole distribution through a green
+        # gate. The publisher stamps RULES_VERSION or nothing; anything else is
+        # an edit.
+        for declared in ("bell.rules.v1", "bell.rules.v3", "anything"):
+            with self.subTest(declared=declared), self.assertRaises(ValueError) as raised:
+                verify_observation(
+                    observation({"do_not_compare": 1, "investigate": 2, "no_flags": 7}),
+                    receipt({"do_not_compare": 0, "investigate": 0, "no_flags": 10}, declared),
+                    "forged")
+            self.assertIn(declared, str(raised.exception))
+
+    def test_an_unversioned_pair_is_compared_rather_than_excused(self):
+        # Both sides carry no version, which means one unversioned rule set,
+        # which means they are comparable. Treating "absent" as "different" was
+        # what let a declared version escape the comparison.
+        states = {"do_not_compare": 1, "investigate": 2, "no_flags": 7}
+        self.assertTrue(
+            verify_observation(observation(states), receipt(states, None), "both unversioned"))
+        with self.assertRaises(ValueError):
+            verify_observation(observation(states),
+                               receipt({"do_not_compare": 0, "investigate": 0, "no_flags": 10}, None),
+                               "both unversioned, mismatched")
 
 
 if __name__ == "__main__":

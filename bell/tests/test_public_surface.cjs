@@ -1343,3 +1343,33 @@ test('the panels say they count scan states, not card labels', () => {
   assert.match(page, /Scan states, not card labels/);
   assert.match(page, /the state that let it through/);
 });
+
+test('a receipt past its freshness contract can say STALE', () => {
+  // The recomputation existed and was assigned to a local nothing read, while
+  // the chip printed the cached `status`. A reviewer saw "PUBLISHED 10H AGO"
+  // and "FRESH" four lines apart. Dead code is not a fix, so this drives the
+  // shared function and requires it to be able to say both words.
+  const freshness = runFromSource('freshnessStatus');
+  const now = Date.now();
+  const inside = new Date(now - 60_000).toISOString();
+  const outside = new Date(now - 10 * 3600_000).toISOString();
+
+  assert.equal(freshness({ status: 'fresh', published_at: inside, stale_after_seconds: 900 }),
+    'fresh', 'a receipt inside its window is not fresh');
+  assert.equal(freshness({ status: 'fresh', published_at: outside, stale_after_seconds: 900 }),
+    'stale', 'a receipt ten hours past a 900 second contract still says fresh');
+  // The exact shape a reviewer was served: published inside the window, so the
+  // worker cached "fresh", read much later by a page that stayed open.
+  assert.equal(freshness({ status: 'fresh', published_at: outside, stale_after_seconds: 900,
+    age_seconds: 884 }), 'stale', 'the cached age_seconds overrode the real clock');
+  // Not a blanket downgrade: a receipt that never claimed freshness keeps its
+  // own word, and a dated replay is not silently relabelled.
+  assert.equal(freshness({ status: 'dated', published_at: outside, stale_after_seconds: 900 }),
+    'dated');
+  assert.equal(freshness(null), 'UNKNOWN');
+
+  // And the chip must read it, not the cached field. That was the actual bug.
+  const source = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
+  assert.doesNotMatch(source, /String\(publication\.status\)\.toUpperCase\(\)/,
+    'the decision receipt chip went back to printing the cached status');
+});

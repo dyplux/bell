@@ -24,10 +24,22 @@ if str(ROOT) not in sys.path:
 
 from rwa_integrity import RULES_VERSION, digest, scan
 
-# Every rule set this repository has published. A bundled receipt declaring
-# anything else was not produced by any code in this tree. v1 is the set that
-# ran before the current one and is still recorded on older observations.
-KNOWN_RULES_VERSIONS = frozenset({"bell.rules.v1", RULES_VERSION})
+# What a bundled receipt is allowed to declare: the rule set the publisher
+# stamps today, or nothing, which is what receipts written before versioning
+# existed carry. Nothing else.
+#
+# The first version of this allowlist also admitted "bell.rules.v1", on the
+# reasoning that it is a set this repository really published. That reasoning
+# closed the hole for a version we never shipped and left it open for one we
+# did: a reviewer added `"rules_version": "bell.rules.v1"` to a receipt whose
+# history record carries none, which made the versions "differ", skipped the
+# state comparison, and let a completely rewritten distribution through a green
+# 306-test gate. Fixing one value of a field is not fixing the field.
+#
+# No code in this tree stamps v1. `integrity_publisher` writes RULES_VERSION,
+# and receipts older than the field have it absent. A bundled receipt carrying
+# any other value was edited after it was written.
+ALLOWED_RULES_VERSIONS = frozenset({RULES_VERSION})
 
 DEFAULT_HISTORY = ROOT / "site/proof/rwa-surface-integrity-history.json"
 DEFAULT_RECEIPT = ROOT / "site/proof/rwa-surface-integrity-2026-09-15.json"
@@ -82,21 +94,15 @@ def verify_observation(observation: dict, receipt: dict, label: str) -> None:
     # version.
     recorded_rules = observation.get("rules_version")
     current_rules = universe.get("rules_version")
-    # The escape hatch: the skip below is decided by a field inside the file
-    # being audited. A reviewer rewrote this receipt's whole state distribution
-    # to 791 no_flags, added `rules_version: "bell.rules.v3"`, and the verifier
-    # exited 0 - the attacker simply declared the comparison inapplicable.
-    #
-    # A bundled receipt is a receipt THIS repository produced, so its rule set
-    # has to be one this repository has ever had. v3 does not exist here, and no
-    # code in this tree could have written it. Refusing that is not a guess: a
-    # legitimate new version arrives with the code that produces it, and adding
-    # it to this tuple is the commit that records the boundary moving.
-    if current_rules and current_rules not in KNOWN_RULES_VERSIONS:
+    # The escape hatch this closes: the skip below is decided by a field inside
+    # the file being audited, so an attacker who wants the state comparison
+    # switched off just writes a different version into the receipt.
+    if current_rules and current_rules not in ALLOWED_RULES_VERSIONS:
         raise ValueError(
-            f"{label}: the bundled receipt declares rule set {current_rules!r}, which this "
-            f"repository has never published (known: {', '.join(sorted(KNOWN_RULES_VERSIONS))}). "
-            "A receipt no code here could have produced is not evidence.")
+            f"{label}: the bundled receipt declares rule set {current_rules!r}. The publisher in "
+            f"this tree stamps {RULES_VERSION}, and receipts older than the field carry none, so "
+            "this one was edited after it was written. Declaring a rule set is not a way to "
+            "opt out of being checked.")
     # An observation recorded before rule versioning existed carries no version.
     # That is itself a different version from the one running now, so it is
     # reported rather than compared.
@@ -275,6 +281,18 @@ def main() -> int:
         if match:
             if verify_observation(observation, match[0], match[1]):
                 fully_compared += 1
+            elif observation["observed_at"] != latest_receipt.get("observed_at"):
+                # "Not compared, because the rule version differs" is an honest
+                # report only while something else proves the same thing. The
+                # latest receipt is recomputed byte for byte from its shipped
+                # input package a few lines above, so skipping its state
+                # comparison costs nothing. Any OTHER bundled receipt that
+                # skips has nothing behind it, and calling it cross-checked
+                # would be the claim this project exists to refuse.
+                raise ValueError(
+                    f"{match[1]} ({observation['observed_at']}) was not compared on state counts "
+                    "and ships no input package to recompute it from, so nothing verifies its "
+                    "distribution. Ship its inputs or stop bundling it as cross-checked.")
             bundled_matches += 1
     if bundled_matches != len(bundled):
         raise ValueError("history is missing a bundled receipt observation")

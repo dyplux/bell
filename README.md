@@ -12,7 +12,7 @@ that matters before a shortlist: can these representations be compared at all?
 | **Track** | Build with CMC API, Real World Assets. MIT licence |
 | **The output** | Of the 244 references carrying more than one representation, **87 have a cheapest route worth naming**; 157 are refused by a coded rule |
 | **Run it yourself** | `git clone https://github.com/dyplux/bell.git && cd bell && make base-rate` - 0.3s, no API key, no install |
-| **Verify the whole thing** | `make check-offline` - 306 tests, measured between 2.8 and 8.0 seconds across machines, plus a re-derivation of the published receipt from the shipped inputs. Of the 14 dated observations, 2 ship their full payload and are cross-checked; the rest are published summaries |
+| **Verify the whole thing** | `make check-offline` - 319 tests, measured between 2.8 and 8.0 seconds across machines, plus a re-derivation of the published receipt from the shipped inputs. Of the 14 dated observations, 2 ship their full payload and are cross-checked; the rest are published summaries |
 | **Rules as an executable spec** | `python3 bell/verify_rule_boundaries.py` - 0.2s, 8 boundary checks, no network |
 | **Receipts** | [live](https://bell.dyplux.com/api/integrity) · [dated replay](bell/site/proof/rwa-surface-integrity-latest-replay-2026-09-21.json) · [replay inputs](bell/site/proof/rwa-surface-integrity-inputs-2026-09-21.json) · [base rate](bell/site/proof/base-rate-2026-09-21.json) |
 
@@ -223,7 +223,9 @@ receipt and a published dossier without credentials.
 ## Evidence and limits
 
 Public normalized receipts and sanitized inputs are under
-[`bell/docs/proof/`](bell/docs/proof/). The browser never calls CMC directly.
+[`bell/site/proof/`](bell/site/proof/), which is what the site serves and what
+`make verify` reads. [`bell/docs/proof/`](bell/docs/proof/) holds superseded
+copies and says so in its own README; do not verify against it. The browser never calls CMC directly.
 The Mac mini publisher owns the credential, runs the deterministic scan and
 publishes normalized evidence through the authenticated Worker route.
 

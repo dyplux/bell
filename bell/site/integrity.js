@@ -618,15 +618,29 @@
       + `excluded from every comparison on this page.</p>`;
   }
 
+  // The published `status` is whatever the worker cached at publication time,
+  // so a receipt published inside its freshness window stays labelled "fresh"
+  // for as long as the page is open. This recomputation existed, assigned to a
+  // local that nothing read, while the chip printed the cached field: a
+  // reviewer saw "PUBLISHED 10H AGO" and "FRESH" four lines apart on a receipt
+  // with a 900 second contract. Dead code is not a fix. One function, and
+  // every consumer reads it.
+  function freshnessStatus(publication) {
+    if (!publication) return 'UNKNOWN';
+    const declared = publication.status || 'UNKNOWN';
+    if (declared !== 'fresh' || !publication.published_at || !publication.stale_after_seconds) {
+      return declared;
+    }
+    const age = Math.max(0, (Date.now() - Date.parse(publication.published_at)) / 1000);
+    return age <= Number(publication.stale_after_seconds) ? 'fresh' : 'stale';
+  }
+  window.BellFreshness = freshnessStatus;
+
   function renderMetrics() {
     const universe = receipt.universe;
     byId('observed-at').textContent = `OBSERVED ${receipt.observed_at}`;
     const publication = receipt._publication;
-    let status = publication?.status || 'UNKNOWN';
-    if (publication?.status === 'fresh' && publication.published_at && publication.stale_after_seconds) {
-      const age = Math.max(0, (Date.now() - Date.parse(publication.published_at)) / 1000);
-      status = age <= Number(publication.stale_after_seconds) ? 'fresh' : 'stale';
-    }
+    const status = freshnessStatus(publication);
     // "FRESH" was read as "measured just now" when it only meant "published
     // recently". The label now states when the population was OBSERVED, and names
     // the replay receipt separately so the displayed receipt is never mistaken
@@ -1453,6 +1467,16 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
   function renderPopulationVisual() {
     const target = byId('population-visual-grid');
     if (!target || !receipt) return;
+    // This sentence carried a hardcoded 87 while the filter it describes showed
+    // 78, on a page whose README says "every figure on it is derived from that
+    // receipt, never written into the page". Counted the same way the filter
+    // matches, so the two cannot disagree again.
+    const comparableCount = byId('population-comparable-count');
+    if (comparableCount) {
+      const labelled = (receipt.alert_index || [])
+        .filter(item => displayDecisionLabel(item, 'FACTS OPEN') === 'COMPARABLE').length;
+      comparableCount.textContent = labelled.toLocaleString();
+    }
     const states = receipt.universe?.states || {};
     const total = Object.values(states).reduce((sum, value) => sum + Number(value || 0), 0) || 1;
     const stateRows = [
@@ -1942,7 +1966,7 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     if (proofHint) proofHint.textContent = hint;
     const decisionHeading = query.trim() ? 'SEARCHED REFERENCE' : (isClean ? 'CURRENT REFERENCE' : 'FLAGGED REFERENCE');
     const signalLabel = signals || (isClean ? 'no published rule hit' : 'published rule hit');
-      byId('decision-hero').innerHTML = `<div class="decision-hero-top"><span class="eyebrow">${decisionHeading}</span><span class="decision-case">${escapeHTML(alert.symbol || 'RWA')}</span></div><h3>${escapeHTML(alert.name)}</h3><p class="decision-signal">${escapeHTML(signalLabel)}</p><div class="decision-outcome"><span>OUTPUT</span><strong>${escapeHTML(displayDecisionLabel(alert, 'HOLD COMPARISON'))}</strong><p>${escapeHTML(decision.consequence || alert.next_action || '')}</p><b class="allocation-gate">${escapeHTML(boundary(decision.allocation_effect) || 'No allocation status is produced by this monitor')}</b></div><div class="decision-actions"><button class="brief-button" type="button" data-brief-id="${escapeHTML(alert.rwa_id)}">Save decision brief ↓</button><button class="brief-button" type="button" data-case-receipt="${escapeHTML(alert.rwa_id)}">Download case JSON ↓</button><button class="brief-button" type="button" data-copy-case="${escapeHTML(alert.rwa_id)}">Copy case link ↗</button>${watchButton(alert)}<a class="decision-action-link" href="#monitor">Inspect representation rows ↘</a></div>${capitalPanel(alert)}${temporalPanel(alert)}${referenceConcentrationPanel(alert)}${referenceActivityPanel(alert)}${resolutionRoute(alert)}<div class="decision-receipt"><span>${escapeHTML(publication.status ? String(publication.status).toUpperCase() : 'DATED')} · ${escapeHTML(publication.observed_at || receipt.observed_at || 'N/A')}</span><a href="/api/integrity" target="_blank" rel="noopener">Open credential-free receipt ↗</a></div>`;
+      byId('decision-hero').innerHTML = `<div class="decision-hero-top"><span class="eyebrow">${decisionHeading}</span><span class="decision-case">${escapeHTML(alert.symbol || 'RWA')}</span></div><h3>${escapeHTML(alert.name)}</h3><p class="decision-signal">${escapeHTML(signalLabel)}</p><div class="decision-outcome"><span>OUTPUT</span><strong>${escapeHTML(displayDecisionLabel(alert, 'HOLD COMPARISON'))}</strong><p>${escapeHTML(decision.consequence || alert.next_action || '')}</p><b class="allocation-gate">${escapeHTML(boundary(decision.allocation_effect) || 'No allocation status is produced by this monitor')}</b></div><div class="decision-actions"><button class="brief-button" type="button" data-brief-id="${escapeHTML(alert.rwa_id)}">Save decision brief ↓</button><button class="brief-button" type="button" data-case-receipt="${escapeHTML(alert.rwa_id)}">Download case JSON ↓</button><button class="brief-button" type="button" data-copy-case="${escapeHTML(alert.rwa_id)}">Copy case link ↗</button>${watchButton(alert)}<a class="decision-action-link" href="#monitor">Inspect representation rows ↘</a></div>${capitalPanel(alert)}${temporalPanel(alert)}${referenceConcentrationPanel(alert)}${referenceActivityPanel(alert)}${resolutionRoute(alert)}<div class="decision-receipt"><span>${escapeHTML(publication.status ? freshnessStatus(publication).toUpperCase() : 'DATED')} · ${escapeHTML(publication.observed_at || receipt.observed_at || 'N/A')}</span><a href="/api/integrity" target="_blank" rel="noopener">Open credential-free receipt ↗</a></div>`;
       loadTemporalEvidence(alert);
   }
 
