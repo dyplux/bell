@@ -62,8 +62,21 @@ def codes_of(signals: Any) -> set:
 SHIPPED_RECEIPTS = sorted((ROOT / "site" / "proof").glob("rwa-surface-integrity-*.json"))
 
 
-def find_published(observed_at: str) -> tuple:
-    """A receipt in this repository describing the same observation, if there is one."""
+def find_published(payload: dict) -> tuple:
+    """A receipt in this repository that this case was exported from, if there is one.
+
+    This matched on `observed_at`, which is a field the forger edits: change it
+    to an unknown day and the binding switched itself off, after which rows
+    could be deleted freely. A guard the forger turns off by editing one
+    unvalidated field is the shape this repository has spent six reviews
+    removing.
+
+    Matched on the source fingerprints instead. Those are the digests of the
+    payloads the scan read, so a case can only claim a receipt whose inputs it
+    actually came from, and the timestamp is checked against it rather than
+    used to choose it.
+    """
+    digests = payload.get("source_hashes")
     for path in SHIPPED_RECEIPTS:
         if "history" in path.name or "inputs" in path.name:
             continue
@@ -71,7 +84,7 @@ def find_published(observed_at: str) -> tuple:
             candidate = json.loads(path.read_text(encoding="utf-8"))
         except (OSError, json.JSONDecodeError):
             continue
-        if isinstance(candidate, dict) and candidate.get("observed_at") == observed_at:
+        if isinstance(candidate, dict) and candidate.get("source_hashes") == digests:
             return candidate, path.name
     return None, None
 
@@ -98,6 +111,26 @@ def bind(payload: dict, published: dict, name: str) -> None:
         # reference outside it cannot be row-checked here. Say that rather than
         # passing it off as bound.
         raise LookupError("not carried in full by the published receipt")
+    if payload["observed_at"] != published.get("observed_at"):
+        raise ValueError(
+            f"the receipt is dated {payload['observed_at']} and carries the source fingerprints "
+            f"{name} records for {published.get('observed_at')}")
+    # The rows were bound and the SUBJECT was not: a reviewer kept Silver's real
+    # rows and digests, relabelled the reference "Tesla Inc / TSLA / stock", and
+    # the verifier printed a valid receipt about Tesla. Every field the contract
+    # requires of a reference is compared, so the case cannot be about something
+    # else.
+    for field in sorted(REQUIRED_REFERENCE):
+        if field == "rwa_id":
+            continue
+        claimed = payload["reference"].get(field)
+        actual = reference.get(field) if field != "token_count" else len(reference.get("tokens") or [])
+        if field == "issuer_count" and actual is None:
+            continue
+        if claimed != actual:
+            raise ValueError(
+                f"the receipt calls this reference {field}={claimed!r} and {name} publishes "
+                f"{actual!r}. A case receipt about the wrong subject is worse than no receipt.")
     published_rows = sorted(str(row.get("crypto_id")) for row in reference.get("tokens") or [])
     receipt_rows = sorted(str(row.get("crypto_id")) for row in payload["tokens"])
     if published_rows != receipt_rows:
@@ -145,6 +178,14 @@ def rederive(payload: dict) -> dict:
                 "does not follow from the evidence printed beside it is the one thing this file "
                 "exists to refuse.")
 
+    # The module docstring names "set next_action to Proceed to shortlist" as
+    # the forgery this file exists to refuse, and nothing compared it. The
+    # engine computes it deterministically and it was already in `recomputed`,
+    # unread.
+    if payload.get("next_action") != recomputed.get("next_action"):
+        raise ValueError(
+            f"the receipt's next action is {payload.get('next_action')!r} and its own rows produce "
+            f"{recomputed.get('next_action')!r}")
     claimed = codes_of(payload["signals"])
     recomputed_codes = codes_of(recomputed.get("signals"))
     invented = claimed - recomputed_codes - CONTEXT_SIGNALS
@@ -225,7 +266,7 @@ def verify(payload: Any) -> dict[str, Any]:
                 f"source_hashes.{name} is {digest[0] * 4}...: a single repeated character is a "
                 "placeholder, not the fingerprint of a payload")
     recomputed = rederive(payload)
-    published, published_name = find_published(payload["observed_at"])
+    published, published_name = find_published(payload)
     if published is None:
         binding = ("not bound: no receipt in this repository describes "
                    f"{payload['observed_at']}, so the rows were checked against each other and "

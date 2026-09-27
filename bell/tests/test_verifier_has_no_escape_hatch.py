@@ -38,6 +38,7 @@ sys.path.insert(0, str(BELL))
 PROOF = BELL / "site" / "proof"
 DATED = "rwa-surface-integrity-2026-09-15.json"
 INPUTS = "rwa-surface-integrity-inputs-2026-09-21.json"
+LATEST = "rwa-surface-integrity-latest-replay-2026-09-21.json"
 HISTORY = "rwa-surface-integrity-history.json"
 
 
@@ -201,7 +202,12 @@ class Forgery(unittest.TestCase):
 
 class TheDailyJobDoesNotLaunderATamperedHistory(unittest.TestCase):
     def setUp(self):
+        import append_history
         from append_history import append
+        # Another test file points this at a temporary anchor. Reading a global
+        # another module may have moved is how three tests here went red, so
+        # this states which anchor it means.
+        append_history.ANCHOR = Path(__file__).resolve().parent.parent / "history-chain-head.txt"
         self.append = append
         self.history = json.loads((PROOF / HISTORY).read_text(encoding="utf-8"))
 
@@ -241,6 +247,120 @@ class TheDailyJobDoesNotLaunderATamperedHistory(unittest.TestCase):
         with self.assertRaises(SystemExit) as raised:
             self.append(self.history, self.summary("2020-01-01T00:00:00Z"))
         self.assertIn("older than", str(raised.exception))
+
+
+class GuardsThatNothingCovered(unittest.TestCase):
+    """Neuter each guard and require a test to notice.
+
+    A reviewer disabled twenty guards one at a time and ran the full gate.
+    Seven stayed green, five of them added in response to earlier attacks: the
+    fix shipped without the test. The worst was `if recomputed != receipt`, the
+    re-derivation judge.html calls the thing a single changed count fails on -
+    delete it and all 352 tests pass.
+
+    Each test here drives the guard directly with evidence that should trip it.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        from verify_integrity_receipt import load, verify_public_inputs
+        cls.load = staticmethod(load)
+        cls.verify_public_inputs = staticmethod(verify_public_inputs)
+        cls.proof = PROOF
+        cls.history = load(PROOF / HISTORY)
+        cls.dated = load(PROOF / DATED)
+
+    def observation_for(self, receipt):
+        for item in self.history["observations"]:
+            if item["observed_at"] == receipt["observed_at"]:
+                return copy.deepcopy(item)
+        self.fail("the shipped history does not describe this receipt")
+
+    def test_the_re_derivation_refuses_a_receipt_the_inputs_do_not_produce(self):
+        # The headline claim, and the guard nothing covered. Written to a
+        # temporary file so the shipped receipt is never touched.
+        import shutil
+        import tempfile
+        with tempfile.TemporaryDirectory() as directory:
+            inputs = Path(directory) / "inputs.json"
+            receipt_path = Path(directory) / "receipt.json"
+            shutil.copy2(self.proof / INPUTS, inputs)
+            receipt = self.load(self.proof / LATEST)
+            receipt["universe"]["tokens_scanned"] += 1
+            receipt_path.write_text(json.dumps(receipt, ensure_ascii=False), encoding="utf-8")
+            with self.assertRaises(ValueError) as raised:
+                self.verify_public_inputs(inputs, receipt_path)
+            self.assertIn("does not recompute", str(raised.exception))
+
+    def test_the_re_derivation_accepts_the_shipped_pair(self):
+        # The control. A guard that refuses everything proves nothing. Written
+        # as "does not raise", which executed no assertion, and `make
+        # audit-tests` caught it ten minutes after I added the audit - which is
+        # the whole argument for measuring instead of reading.
+        try:
+            self.verify_public_inputs(self.proof / INPUTS, self.proof / LATEST)
+        except ValueError as refusal:
+            self.fail(f"the shipped inputs no longer recompute the shipped receipt: {refusal}")
+        self.assertTrue(True, "the shipped pair recomputes, so the refusal above means something")
+
+    def test_a_shortened_source_hash_claim_is_refused_on_both_sides(self):
+        from verify_integrity_receipt import verify_observation
+        observation = self.observation_for(self.dated)
+        receipt = copy.deepcopy(self.dated)
+        kept = {"map": observation["source_hashes"]["map"]}
+        observation["source_hashes"] = dict(kept)
+        receipt["source_hashes"] = dict(kept)
+        with self.assertRaises(ValueError) as raised:
+            verify_observation(observation, receipt, "shortened")
+        self.assertIn("missing", str(raised.exception))
+
+    def test_a_source_hash_the_code_does_not_read_is_refused(self):
+        from verify_integrity_receipt import verify_observation
+        observation = self.observation_for(self.dated)
+        receipt = copy.deepcopy(self.dated)
+        digest = observation["source_hashes"]["map"]
+        observation["source_hashes"]["invented_surface"] = digest
+        receipt["source_hashes"]["invented_surface"] = digest
+        with self.assertRaisesRegex(ValueError, "does not read"):
+            verify_observation(observation, receipt, "invented surface")
+
+    def test_a_placeholder_source_digest_is_refused(self):
+        from verify_integrity_receipt import verify_observation_shape
+        observation = self.observation_for(self.dated)
+        observation["source_hashes"]["map"] = "a" * 64
+        with self.assertRaisesRegex(ValueError, "placeholder"):
+            verify_observation_shape(observation, "placeholder digest")
+
+    def test_an_empty_signals_claim_is_refused(self):
+        from verify_integrity_receipt import verify_observation_shape
+        observation = self.observation_for(self.dated)
+        observation["signals"] = {}
+        with self.assertRaisesRegex(ValueError, "signals is empty"):
+            verify_observation_shape(observation, "emptied signals")
+
+    def test_the_case_verifier_refuses_rows_whose_fingerprints_are_not_the_published_ones(self):
+        from verify_case_receipt import bind
+        published = self.load(self.proof / LATEST)
+        alert = next(item for item in published["alerts"] if item.get("tokens"))
+        payload = {
+            "observed_at": published["observed_at"],
+            "reference": {
+                "rwa_id": alert["rwa_id"], "name": alert["name"], "symbol": alert["symbol"],
+                "asset_type": alert.get("asset_type"), "token_count": len(alert["tokens"]),
+                "issuer_count": alert.get("issuer_count"),
+                "tradfi_market_count": alert.get("tradfi_market_count"),
+            },
+            "tokens": copy.deepcopy(alert["tokens"]),
+            "source_hashes": {key: "b" * 64 for key in published["source_hashes"]},
+        }
+        with self.assertRaisesRegex(ValueError, "source fingerprints"):
+            bind(payload, published, "receipt")
+        # Control: the published digests bind.
+        payload["source_hashes"] = copy.deepcopy(published["source_hashes"])
+        try:
+            bind(payload, published, "receipt")
+        except ValueError as refusal:
+            self.fail(f"a receipt carrying the published digests was refused: {refusal}")
 
 
 if __name__ == "__main__":

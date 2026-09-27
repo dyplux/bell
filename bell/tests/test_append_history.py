@@ -21,6 +21,8 @@ sys.path.insert(0, str(HERE.parent))
 
 from history_chain import rebuild, verify as verify_chain  # noqa: E402
 import append_history  # noqa: E402
+
+REAL_ANCHOR = append_history.ANCHOR
 from append_history import append, restate_counts, summarise  # noqa: E402
 
 
@@ -34,7 +36,15 @@ def history_of(*stamps: str) -> dict:
     fixture has to be a chain.
     """
     observations = rebuild([{"observed_at": stamp} for stamp in stamps])
-    return {"observations": observations, "chain_head": observations[-1]["sha256"]}
+    head = observations[-1]["sha256"]
+    # append() reads the external anchor before writing it now, because the
+    # daily job was repairing a stale anchor over a forged chain. A synthetic
+    # history needs a synthetic anchor, pointed at the repository's real one
+    # only when a test means to use it.
+    anchor = Path(tempfile.mkdtemp()) / "history-chain-head.txt"
+    anchor.write_text(head + "\n", encoding="utf-8")
+    append_history.ANCHOR = anchor
+    return {"observations": observations, "chain_head": head}
 
 
 def receipt(observed_at: str, rules: str | None = "bell.rules.v2") -> dict:
@@ -51,6 +61,12 @@ def receipt(observed_at: str, rules: str | None = "bell.rules.v2") -> dict:
 
 
 class AppendHistory(unittest.TestCase):
+    def tearDown(self):
+        # history_of points the module's ANCHOR at a temporary file. Left set,
+        # it leaked into another test file and broke three tests there - a
+        # fixture with a side effect nobody restored.
+        append_history.ANCHOR = REAL_ANCHOR
+
     def test_a_new_observation_is_appended_with_its_rule_set(self):
         history = history_of("2026-09-21T21:25:01Z")
         changed, message = append(history, summarise(receipt("2026-09-26T20:08:35Z")))

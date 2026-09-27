@@ -165,10 +165,12 @@ class CaseReceiptTests(unittest.TestCase):
                             crypto_info_checked=True)
         payload["decision"] = honest["decision"]
         payload["signals"] = honest["signals"]
+        payload["next_action"] = honest["next_action"]
         with self.assertRaises(ValueError) as raised:
             verify(payload)
-        self.assertIn("representations", str(raised.exception))
-        self.assertIn("Removing a row changes the answer", str(raised.exception))
+        # Refused either by the subject check (token_count) or by the row set;
+        # both are the binding doing its job, and the message names which.
+        self.assertRegex(str(raised.exception), "token_count|representations")
 
     def test_an_edited_row_is_refused(self):
         payload = receipt_for(self.alert)
@@ -187,7 +189,12 @@ class CaseReceiptTests(unittest.TestCase):
         # repository to bind to. It used to print "valid public case receipt"
         # anyway. The status has to say which of the two questions was answered.
         payload = receipt_for(self.alert)
-        payload["observed_at"] = "2099-01-01T00:00:00Z"
+        # A live export carries the live scan's fingerprints, which no receipt
+        # in this repository records. Changing the timestamp is no longer the
+        # way to unbind: that is now a contradiction and is refused, which is
+        # the point of matching on the digests instead.
+        payload["source_hashes"] = {key: "0123456789abcdef" * 4
+                                    for key in payload["source_hashes"]}
         result = verify(payload)
         self.assertEqual(result["status"],
                          "internally consistent; rows not bound to a published receipt")

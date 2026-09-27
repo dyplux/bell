@@ -52,7 +52,7 @@ from collections import Counter
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 
-from rwa_integrity import comparable_routes, number, scan  # noqa: E402
+from rwa_integrity import BLOCKING_WARNINGS, comparable_routes, number, scan  # noqa: E402
 
 INPUTS = os.path.join(HERE, 'site', 'proof',
                       'rwa-surface-integrity-inputs-2026-09-21.json')
@@ -198,9 +198,15 @@ def measure(receipt: dict) -> dict:
             for code, sev in zip(codes, severities):
                 if sev == 'critical':
                     reasons[code] += 1
-        elif 'PRICE_DISPERSION' in codes:
+        elif BLOCKING_WARNINGS & set(codes):
+            # Was a hardcoded 'PRICE_DISPERSION', a second copy of a rule the
+            # engine already names. The two numbers this file produces are the
+            # headline figures on the judge page, so a divergence here would
+            # publish the old rules under the new ones.
+            blocked_by = sorted(BLOCKING_WARNINGS & set(codes))
             refused.append(row)
-            reasons['PRICE_DISPERSION'] += 1
+            for code in blocked_by:
+                reasons[code] += 1
         elif routes is None:
             refused.append(row)
             # `routes is None` has three distinct causes and lumping them

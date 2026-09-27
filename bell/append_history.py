@@ -115,6 +115,27 @@ def append(history: dict, summary: dict) -> tuple[bool, str]:
             raise SystemExit(
                 f"refusing to append: the history verifies to {head} but declares {declared!r}. "
                 "Resolve that before extending the series.")
+        # The anchor, which is the whole point. The previous fix checked the
+        # head declared INSIDE the file it protects and then overwrote the
+        # external anchor without ever reading it - so a forger who rebuilt the
+        # chain and left the anchor stale had `make verify` fail, waited for the
+        # 06:17 cron, and this job repaired the anchor and pushed it. The one
+        # defence the judge page names, that a forger must edit a second tracked
+        # file, was being carried out by the project on a schedule. Closing the
+        # in-file case and leaving this one is the same half-fix this repository
+        # has now recorded nine times.
+        if ANCHOR.exists():
+            anchored = ANCHOR.read_text(encoding="utf-8").strip()
+            if anchored != head:
+                raise SystemExit(
+                    f"refusing to append: the history verifies to {head} and {ANCHOR.name} anchors "
+                    f"{anchored}. They disagree, so either the series was rewritten or the anchor "
+                    "was not updated with it. Appending would resolve that disagreement by "
+                    "overwriting the anchor, which is the forgery this job must not perform.")
+        else:
+            raise SystemExit(
+                f"refusing to append: {ANCHOR.name} is missing, so the chain has no anchor outside "
+                "the file it protects and appending would create one over whatever is there.")
         newest = max(str(item.get("observed_at") or "") for item in observations)
         if summary["observed_at"] < newest:
             raise SystemExit(

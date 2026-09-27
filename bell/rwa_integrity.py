@@ -252,6 +252,13 @@ def index_evidence(evidence: dict) -> dict:
 # reference.
 RULES_VERSION = "bell.rules.v2"
 
+# Warnings that block a comparison from being published even though the state
+# survives. base_rate.py had its own hardcoded copy of this set and re-ran the
+# route filter although the answer was already on the row, so adding a second
+# code here would have moved the product and left the 87 and 157 on the judge
+# page and in the README describing the old rules. One definition.
+BLOCKING_WARNINGS = frozenset({"PRICE_DISPERSION"})
+
 MAX_PUBLISHABLE_SPREAD_BPS = 2_000
 
 
@@ -429,7 +436,7 @@ def asset_scan(asset: dict, issuer_lookup: dict | None = None, crypto_lookup: di
     #
     # Whatever survives is published WITH the unresolved warnings attached, so a
     # comparison is never presented as a clean bill of health.
-    blocking = {"PRICE_DISPERSION"}
+    blocking = BLOCKING_WARNINGS
     residual = [signal for signal in signals if signal["severity"] == "warning"]
     comparison = None
     if state != "do_not_compare" and not any(s["code"] in blocking for s in residual):
