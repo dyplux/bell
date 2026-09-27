@@ -91,6 +91,109 @@
     return temporalReceiptPaths.get(String(alert?.rwa_id || '')) || [];
   }
 
+  // "For a product sold as tracking, there is still no per-reference
+  // change-over-time view." The history answered how the POPULATION moved;
+  // nothing answered "did THIS reference change since the dated observation",
+  // which is the question a reader holding one reference actually has.
+  //
+  // The dated replay is 3.42 MiB, so a 95 KB snapshot of the four fields a
+  // change needs is fetched instead: 4.2 KB on the wire, once per page, cached,
+  // when a case renders. Be exact rather than flattering: the hero opens a case
+  // on load, so in practice that is first paint, not an interaction.
+  // And a state is a function of the rules, so a diff across a rule
+  // boundary would state a rule change as a market change. That comparison is
+  // refused here for the same reason the publication history refuses a delta.
+  let referenceSnapshot = null;
+  function loadReferenceSnapshot() {
+    if (referenceSnapshot) return referenceSnapshot;
+    referenceSnapshot = fetch('proof/reference-snapshot-2026-09-21.json',
+      { cache: 'force-cache', headers: { Accept: 'application/json' } })
+      .then(response => (response.ok ? response.json() : null))
+      .catch(() => null);
+    return referenceSnapshot;
+  }
+
+  // The receipt carries signals in two shapes: `alerts[]` holds objects with a
+  // `code`, `alert_index[]` holds a flat `signal_codes`. The first version of
+  // the comparison below read `signal_codes` off an `alerts[]` item, got
+  // undefined, treated it as empty, and told every reader that every rule had
+  // stopped firing. Absence read as a value, which is the defect this whole
+  // product is about, committed inside the feature that reports change.
+  //
+  // So absence returns null and is never a difference. A change view that
+  // cannot read one side says so instead of inventing a delta.
+  function signalCodesOf(item) {
+    if (Array.isArray(item?.signal_codes)) return [...item.signal_codes].sort();
+    if (Array.isArray(item?.signals)) {
+      return item.signals.map(signal => (typeof signal === 'string' ? signal : signal?.code))
+        .filter(Boolean).sort();
+    }
+    return null;
+  }
+
+  function describeChange(before, now) {
+    const lines = [];
+    const beforeLabel = displayDecisionLabel({ state: before.state, comparison: before.comparison_published ? {} : null }, 'FACTS OPEN');
+    const nowLabel = displayDecisionLabel(now, 'FACTS OPEN');
+    if (beforeLabel !== nowLabel) lines.push(['ROUTE', `${beforeLabel} → ${nowLabel}`]);
+    const nowRows = Number(now.token_count || 0);
+    if (Number(before.representations || 0) !== nowRows) {
+      lines.push(['REPRESENTATIONS', `${before.representations} → ${nowRows}`]);
+    }
+    const nowList = signalCodesOf(now);
+    const wasList = signalCodesOf(before);
+    if (nowList === null || wasList === null) {
+      lines.push(['RULES', 'not compared: one side of this observation records no signal list']);
+      return lines;
+    }
+    const nowCodes = new Set(nowList);
+    const wasCodes = new Set(wasList);
+    const started = nowList.filter(code => !wasCodes.has(code));
+    const stopped = wasList.filter(code => !nowCodes.has(code));
+    if (started.length) lines.push(['RULES NOW FIRING', started.join(', ')]);
+    if (stopped.length) lines.push(['RULES NO LONGER FIRING', stopped.join(', ')]);
+    return lines;
+  }
+
+  function renderReferenceChange(alert, container) {
+    if (!container || !alert) return;
+    loadReferenceSnapshot().then(snapshot => {
+      if (!snapshot || container.dataset.forId !== String(alert.rwa_id)) return;
+      const datedOn = String(snapshot.observed_at || '').replace('T', ' ').slice(0, 16);
+      const liveRules = receipt?.universe?.rules_version || null;
+      if (!snapshot.rules_version || !liveRules || snapshot.rules_version !== liveRules) {
+        container.innerHTML = `<span class="eyebrow">SINCE ${escapeHTML(datedOn)} UTC</span>`
+          + `<p class="change-refused">No change is stated. The dated observation was produced under `
+          + `${escapeHTML(snapshot.rules_version || 'an unrecorded rule set')} and this receipt under `
+          + `${escapeHTML(liveRules || 'an unrecorded rule set')}. Subtracting them would report a rule `
+          + `change as a market change, which is the error this monitor exists to refuse.</p>`;
+        container.hidden = false;
+        return;
+      }
+      const before = (snapshot.references || {})[String(alert.rwa_id)];
+      if (!before) {
+        container.innerHTML = `<span class="eyebrow">SINCE ${escapeHTML(datedOn)} UTC</span>`
+          + `<p class="change-refused">This reference is not in the dated observation, so there is `
+          + `nothing to compare it against. It is new to the catalogue, not unchanged.</p>`;
+        container.hidden = false;
+        return;
+      }
+      const changes = describeChange(before, alert);
+      const body = changes.length
+        ? `<div class="change-rows">${changes.map(([label, value]) =>
+            `<div><span>${escapeHTML(label)}</span><strong>${escapeHTML(value)}</strong></div>`).join('')}</div>`
+        : `<p class="change-none">Route, representation count and the rules that fired are all the `
+          + `same as on the dated observation. That is descriptive, not reassurance: prices moved `
+          + `and are not compared here.</p>`;
+      container.innerHTML = `<span class="eyebrow">SINCE ${escapeHTML(datedOn)} UTC · SAME RULE SET</span>`
+        + body
+        + `<small class="change-limit">Two dated observations, ${escapeHTML(String(snapshot.rules_version))} `
+        + `on both sides. Compared prices are deliberately excluded: they belong to the observation `
+        + `that produced them.</small>`;
+      container.hidden = false;
+    });
+  }
+
   function temporalPanel(alert) {
     const paths = temporalReceiptPathsFor(alert);
     if (!paths.length) return '';
@@ -609,7 +712,13 @@
     const missing = Number(signals.MARKET_FIELDS_MISSING || 0);
     if (!missing || !refs) { target.hidden = true; return; }
     target.hidden = false;
-    target.innerHTML = `<span>API COVERAGE, NOT A VERDICT</span>`
+    // A reviewer saw 791 in the hero, labelled 21 September, and 792 here from
+    // the current receipt, with nothing on screen saying they are two
+    // observations. On a page whose thesis is that two numbers describing one
+    // observation are a defect and two numbers describing two observations are
+    // not, the date is the whole difference and it was missing.
+    const observedOn = String(receipt.observed_at || '').replace('T', ' ').slice(0, 16);
+    target.innerHTML = `<span>API COVERAGE, NOT A VERDICT · OBSERVED ${observedOn} UTC</span>`
       + `<strong>${missing.toLocaleString()} of ${refs.toLocaleString()} references</strong>`
       + `<p>carry at least one representation with no price, market cap or volume reported by `
       + `CoinMarketCap, across ${rows.toLocaleString()} representation rows. This is a gap in the `
@@ -1966,7 +2075,8 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     if (proofHint) proofHint.textContent = hint;
     const decisionHeading = query.trim() ? 'SEARCHED REFERENCE' : (isClean ? 'CURRENT REFERENCE' : 'FLAGGED REFERENCE');
     const signalLabel = signals || (isClean ? 'no published rule hit' : 'published rule hit');
-      byId('decision-hero').innerHTML = `<div class="decision-hero-top"><span class="eyebrow">${decisionHeading}</span><span class="decision-case">${escapeHTML(alert.symbol || 'RWA')}</span></div><h3>${escapeHTML(alert.name)}</h3><p class="decision-signal">${escapeHTML(signalLabel)}</p><div class="decision-outcome"><span>OUTPUT</span><strong>${escapeHTML(displayDecisionLabel(alert, 'HOLD COMPARISON'))}</strong><p>${escapeHTML(decision.consequence || alert.next_action || '')}</p><b class="allocation-gate">${escapeHTML(boundary(decision.allocation_effect) || 'No allocation status is produced by this monitor')}</b></div><div class="decision-actions"><button class="brief-button" type="button" data-brief-id="${escapeHTML(alert.rwa_id)}">Save decision brief ↓</button><button class="brief-button" type="button" data-case-receipt="${escapeHTML(alert.rwa_id)}">Download case JSON ↓</button><button class="brief-button" type="button" data-copy-case="${escapeHTML(alert.rwa_id)}">Copy case link ↗</button>${watchButton(alert)}<a class="decision-action-link" href="#monitor">Inspect representation rows ↘</a></div>${capitalPanel(alert)}${temporalPanel(alert)}${referenceConcentrationPanel(alert)}${referenceActivityPanel(alert)}${resolutionRoute(alert)}<div class="decision-receipt"><span>${escapeHTML(publication.status ? freshnessStatus(publication).toUpperCase() : 'DATED')} · ${escapeHTML(publication.observed_at || receipt.observed_at || 'N/A')}</span><a href="/api/integrity" target="_blank" rel="noopener">Open credential-free receipt ↗</a></div>`;
+      byId('decision-hero').innerHTML = `<div class="decision-hero-top"><span class="eyebrow">${decisionHeading}</span><span class="decision-case">${escapeHTML(alert.symbol || 'RWA')}</span></div><h3>${escapeHTML(alert.name)}</h3><p class="decision-signal">${escapeHTML(signalLabel)}</p><div class="decision-outcome"><span>OUTPUT</span><strong>${escapeHTML(displayDecisionLabel(alert, 'HOLD COMPARISON'))}</strong><p>${escapeHTML(decision.consequence || alert.next_action || '')}</p><b class="allocation-gate">${escapeHTML(boundary(decision.allocation_effect) || 'No allocation status is produced by this monitor')}</b></div><div class="decision-actions"><button class="brief-button" type="button" data-brief-id="${escapeHTML(alert.rwa_id)}">Save decision brief ↓</button><button class="brief-button" type="button" data-case-receipt="${escapeHTML(alert.rwa_id)}">Download case JSON ↓</button><button class="brief-button" type="button" data-copy-case="${escapeHTML(alert.rwa_id)}">Copy case link ↗</button>${watchButton(alert)}<a class="decision-action-link" href="#monitor">Inspect representation rows ↘</a></div>${capitalPanel(alert)}<section class="reference-change" data-reference-change data-for-id="${escapeHTML(alert.rwa_id)}" hidden></section>${temporalPanel(alert)}${referenceConcentrationPanel(alert)}${referenceActivityPanel(alert)}${resolutionRoute(alert)}<div class="decision-receipt"><span>${escapeHTML(publication.status ? freshnessStatus(publication).toUpperCase() : 'DATED')} · ${escapeHTML(publication.observed_at || receipt.observed_at || 'N/A')}</span><a href="/api/integrity" target="_blank" rel="noopener">Open credential-free receipt ↗</a></div>`;
+      renderReferenceChange(alert, byId('decision-hero').querySelector('[data-reference-change]'));
       loadTemporalEvidence(alert);
   }
 

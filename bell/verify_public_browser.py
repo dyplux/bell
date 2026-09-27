@@ -331,6 +331,28 @@ def main() -> int:
                 require("ISSUER" in body and "CHAIN" in body,
                         "the single-wrapper card omits the issuer or the chain")
 
+            # The change view answers "did THIS reference move since the dated
+            # observation", which is the question the product was missing. It
+            # must state a real comparison or refuse, never both and never
+            # neither, and it must never read an absent field as a difference:
+            # the first version told every reader that every rule had stopped
+            # firing, because it read a field the alerts array does not carry.
+            change = page.locator("[data-reference-change]")
+            require(change.count() == 1, "the per-reference change view is not on the case card")
+            change_text = change.inner_text()
+            require("SINCE" in change_text,
+                    f"the change view does not date what it compares against: {change_text[:200]!r}")
+            stated_change = ("SAME RULE SET" in change_text)
+            require(stated_change or "would report a rule change" in change_text
+                    or "not in the dated observation" in change_text,
+                    f"the change view neither compared nor named why it refused: {change_text[:300]!r}")
+            if stated_change:
+                require("not compared: one side" not in change_text,
+                        "the change view could not read one side's signals and still rendered as a "
+                        "comparison")
+                require("Compared prices are deliberately excluded" in change_text,
+                        "the change view stopped stating that it excludes price movement")
+
             tesla_state = search_and_check("Tesla")
             require(tesla_state in PUBLIC_STATES,
                     f"Tesla rendered a state outside the published vocabulary: {tesla_state!r}")

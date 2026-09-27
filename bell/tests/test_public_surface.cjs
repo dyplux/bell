@@ -1373,3 +1373,58 @@ test('a receipt past its freshness contract can say STALE', () => {
   assert.doesNotMatch(source, /String\(publication\.status\)\.toUpperCase\(\)/,
     'the decision receipt chip went back to printing the cached status');
 });
+
+test('a per-reference change view never reads an absent field as a difference', () => {
+  // The first version of this feature compared `signal_codes` against an
+  // `alerts[]` item, which carries `signals: [{code}]` instead. Undefined was
+  // read as empty and every reader was told every rule had stopped firing -
+  // absence reported as a value, inside the feature that reports change, in a
+  // product whose whole subject is that absence is not zero.
+  const codes = runFromSource('signalCodesOf');
+  assert.deepEqual(codes({ signal_codes: ['B', 'A'] }), ['A', 'B'],
+    'the flat alert_index shape is not read');
+  assert.deepEqual(codes({ signals: [{ code: 'B' }, { code: 'A' }] }), ['A', 'B'],
+    'the alerts[] object shape is not read');
+  assert.deepEqual(codes({ signals: [] }), [], 'an empty list is a real empty list');
+  assert.equal(codes({}), null, 'a record with no signal field must be absent, not empty');
+  assert.equal(codes(null), null);
+
+  // And the comparison must refuse rather than invent when one side is absent.
+  const describe = runFromSource('describeChange', { signalCodesOf: codes, displayDecisionLabel: () => 'FACTS OPEN' });
+  const refused = describe({ state: 'no_flags', representations: 2 }, { state: 'no_flags', token_count: 2 });
+  assert.ok(refused.some(([label, value]) => label === 'RULES' && /not compared/.test(value)),
+    'a missing signal list produced a change instead of a refusal');
+  const real = describe(
+    { state: 'no_flags', representations: 2, signal_codes: ['A'] },
+    { state: 'no_flags', token_count: 2, signals: [{ code: 'B' }] });
+  assert.deepEqual(real.map(([label]) => label), ['RULES NOW FIRING', 'RULES NO LONGER FIRING'],
+    'a real signal change is not reported');
+});
+
+test('the reference snapshot is the dated receipt, and carries its rule set', () => {
+  // A change view whose two sides answer to different rules states a rule
+  // change as a market change. The snapshot has to carry the version so the
+  // page can refuse that, and it has to actually be the dated receipt.
+  const proof = path.join(site, 'proof');
+  const snapshot = JSON.parse(fs.readFileSync(path.join(proof, 'reference-snapshot-2026-09-21.json'), 'utf8'));
+  const replay = JSON.parse(fs.readFileSync(
+    path.join(proof, 'rwa-surface-integrity-latest-replay-2026-09-21.json'), 'utf8'));
+  assert.equal(snapshot.observed_at, replay.observed_at, 'the snapshot is not the dated receipt');
+  assert.equal(snapshot.rules_version, replay.universe.rules_version,
+    'the snapshot records a rule set the receipt does not');
+  assert.ok(snapshot.rules_version, 'the snapshot records no rule set, so no diff can be refused');
+  assert.equal(Object.keys(snapshot.references).length, replay.alert_index.length,
+    'the snapshot covers fewer references than the receipt it came from');
+
+  // Spot-check against the receipt rather than trusting the extractor.
+  for (const item of replay.alert_index.slice(0, 40)) {
+    const held = snapshot.references[String(item.rwa_id)];
+    assert.ok(held, `${item.name} is missing from the snapshot`);
+    assert.equal(held.state, item.state, `${item.name} state does not match the receipt`);
+    assert.equal(held.representations, item.token_count ?? 0);
+    assert.equal(held.comparison_published, Boolean(item.comparison));
+  }
+  // It must stay small enough to sit beside the live receipt.
+  const bytes = fs.statSync(path.join(proof, 'reference-snapshot-2026-09-21.json')).size;
+  assert.ok(bytes < 200_000, `the snapshot grew to ${bytes} bytes; it exists to avoid the 3.42 MiB receipt`);
+});
