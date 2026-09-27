@@ -80,7 +80,7 @@ run `python3 bell/integrity_review.py` to inspect the latest credential-free rep
 `bell/site/index.html` for the visual receipt.
 The receipt comparison utility in [`receipt_compare.py`](receipt_compare.py)
 compares two dated windows and reports flat-bar diagnostics without treating them as liquidity.
-The public integrity receipt also has a [sanitized input manifest](docs/proof/rwa-surface-integrity-input-manifest-2026-09-15.json)
+The public integrity receipt also has a [sanitized input manifest](site/proof/rwa-surface-integrity-inputs-2026-09-21.json)
 with surface counts, stable-ID join coverage and source fingerprints.
 The 15-observation population history is at
 [`site/proof/rwa-surface-integrity-history.json`](site/proof/rwa-surface-integrity-history.json),
@@ -115,7 +115,7 @@ method, wrapper medians, approximate ratios, unresolved questions, evidence link
 The save timestamp is an export time, not a fresh market observation.
 
 This is research triage. A complete calculation does not approve a wrapper or support a buy
-decision. The USD 100,000 scenario supplies context; Bell has no size-specific execution quote.
+decision. The illustrative amount shown on the page supplies context; Bell has no size-specific execution quote.
 Map-only assets such as IBKR keep their explicit state and do not receive an example's memo.
 
 Gold links to its dated receipt and replay inputs. Tesla's memo uses the nine-entry receipt

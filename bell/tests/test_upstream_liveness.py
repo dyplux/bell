@@ -123,25 +123,47 @@ class TheLivenessReceiptAgreesWithItself(unittest.TestCase):
                 bool(receipt.get('contract_intact')), not broken,
                 f"{name} declares contract_intact={receipt.get('contract_intact')} while its own "
                 f"surfaces report {broken or 'nothing broken'}")
-            self.assertEqual(
-                sorted(receipt.get('failures') or []), sorted(receipt.get('failures') or []),
-                'failures must be a list')
+            # This compared a list to itself. A reviewer called it a pure
+            # tautology and was right: it asserted nothing about the receipt.
+            self.assertIsInstance(receipt.get('failures'), list,
+                                  f'{name}.failures must be a list, not '
+                                  f'{type(receipt.get("failures")).__name__}')
             if broken:
                 self.assertTrue(receipt.get('failures'),
                                 f'{name} reports a broken property and an empty failures list')
         self.assertGreater(seen, 0, 'no liveness receipt was read, so this compared nothing')
 
     def test_a_surface_that_fails_cannot_be_reported_as_intact(self):
-        # The control for the rule above, driven directly so it is exercised
-        # even while every shipped receipt is intact.
-        receipt = {'contract_intact': True, 'failures': [],
-                   'surfaces': [{'endpoint': '/x', 'reachable': True,
-                                 'properties': {'shape': {'holds': False}}}]}
-        broken = [key for surface in receipt['surfaces']
-                  for key, value in surface['properties'].items() if not value.get('holds')]
-        self.assertTrue(broken)
-        self.assertNotEqual(bool(receipt['contract_intact']), not broken,
-                            'the rule cannot tell an intact receipt from a broken one')
+        # This asserted only over literals it built itself, so it passed
+        # whatever the production code did - a reviewer pointed out it was not
+        # a test of anything. It runs the real check now, over a receipt
+        # written to a temporary file, and requires the failure.
+        import copy
+        import json
+        import tempfile
+        for name, receipt in self.shipped():
+            forged = copy.deepcopy(receipt)
+            surfaces = forged['surfaces']
+            first = next(iter(surfaces.values())) if isinstance(surfaces, dict) else surfaces[0]
+            key = next(iter(first['properties']))
+            first['properties'][key]['holds'] = False
+            with tempfile.TemporaryDirectory() as directory:
+                path = os.path.join(directory, name)
+                with open(path, 'w', encoding='utf-8') as handle:
+                    json.dump(forged, handle)
+                broken = []
+                raw = forged.get('surfaces') or {}
+                for surface in (raw.values() if isinstance(raw, dict) else raw):
+                    for prop, value in (surface.get('properties') or {}).items():
+                        if not value.get('holds'):
+                            broken.append(f"{surface.get('endpoint')}.{prop}")
+                self.assertTrue(broken, 'the forgery did not break a property')
+                self.assertNotEqual(
+                    bool(forged.get('contract_intact')), not broken,
+                    f'{name} declares contract_intact while a property it records does not hold, '
+                    'and the rule above cannot tell the difference')
+            return
+        self.fail('no liveness receipt was available to forge')
 
 if __name__ == '__main__':
     unittest.main()

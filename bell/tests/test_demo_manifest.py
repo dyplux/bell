@@ -106,5 +106,51 @@ class DemoNamesItsDenominator(unittest.TestCase):
                       f"the judge page does not state what `make demo` prints: {stated!r}")
 
 
+class TheShippedManifestVerifies(unittest.TestCase):
+    """JUDGE.md's command must work on the file this repository ships.
+
+    It told a reader to run the verifier against a manifest, and the only
+    manifest here is a capture manifest, which the verifier rejected at the
+    door because it knew one schema. The Makefile already records shipping a
+    command that failed for anyone who ran it; this was a second.
+    """
+
+    MANIFEST = HERE.parent / "site" / "demo" / "manifest.json"
+
+    def test_the_shipped_capture_manifest_verifies(self):
+        result = verify(self.MANIFEST)
+        self.assertEqual(result["status"], "valid credential-free capture manifest")
+        self.assertGreater(result["frames"], 0)
+
+    def test_a_frame_the_manifest_lists_and_the_repository_lacks_is_refused(self):
+        import shutil
+        with tempfile.TemporaryDirectory() as directory:
+            folder = Path(directory)
+            manifest = json.loads(self.MANIFEST.read_text(encoding="utf-8"))
+            for frame in manifest["frames"][1:]:
+                shutil.copy2(self.MANIFEST.parent / frame["file"], folder / frame["file"])
+            (folder / "manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "not here"):
+                verify(folder / "manifest.json")
+
+    def test_a_console_error_is_refused(self):
+        with tempfile.TemporaryDirectory() as directory:
+            folder = Path(directory)
+            manifest = json.loads(self.MANIFEST.read_text(encoding="utf-8"))
+            manifest["console_errors"] = ["TypeError: x is not a function"]
+            manifest["frames"] = []
+            (folder / "manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "console errors"):
+                verify(folder / "manifest.json")
+
+    def test_an_unknown_schema_is_still_refused_by_name(self):
+        with tempfile.TemporaryDirectory() as directory:
+            folder = Path(directory)
+            (folder / "manifest.json").write_text(
+                json.dumps({"schema_version": "bell.something-else.v9"}), encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "bell.something-else.v9"):
+                verify(folder / "manifest.json")
+
+
 if __name__ == "__main__":
     unittest.main()

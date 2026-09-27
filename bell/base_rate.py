@@ -172,7 +172,15 @@ def _single_representation_lens(single: list) -> dict:
         'context_only': len(context_only),
         'fully_reported': len(complete),
     }
-    assert sum(parts.values()) == total, 'the lens must partition the references it describes'
+    # A bare `assert` over an if/elif/else partition: it vanishes under
+    # `python3 -O` and could not fail anyway, so it looked like a guarantee and
+    # was neither. Raised, and it now checks the thing that CAN go wrong -
+    # a reference counted in no part because a new signal code was added
+    # without deciding which part it belongs to.
+    if sum(parts.values()) != total:
+        raise SystemExit(
+            f'the single-representation lens accounts for {sum(parts.values())} of {total} '
+            'references. A new signal code was added without deciding which part it belongs to.')
     return {
         'references': total,
         'reasons': dict(Counter(code for row in single

@@ -393,5 +393,140 @@ class GuardsThatNothingCovered(unittest.TestCase):
             self.fail(f"a receipt carrying the published digests was refused: {refusal}")
 
 
+class EveryGuardFailsWhenNeutered(unittest.TestCase):
+    """Delete each guard and require a test to notice.
+
+    A reviewer neutered every guard in the evidence path one at a time and ran
+    the full gate after each. Eight survived with 395 tests green, including the
+    subject and row bindings on the artefact a judge downloads - the two whose
+    own docstrings say a receipt about the wrong subject is worse than no
+    receipt, and that removing a row changes the answer to a question nobody
+    asked. The code was fixed and the test was not written, ten times over.
+
+    These drive each guard with evidence that must trip it. Every one was run
+    against its own neutered guard before being accepted.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        from verify_integrity_receipt import load
+        cls.replay = load(PROOF / LATEST)
+        cls.dated = load(PROOF / DATED)
+        cls.history = load(PROOF / HISTORY)
+
+    def case_for(self, alert, **overrides):
+        import copy as _copy
+        payload = {
+            "schema_version": "bell.case-receipt.v1",
+            "observed_at": self.replay["observed_at"],
+            "published_at": self.replay["observed_at"],
+            "source": "/api/integrity", "credential_free": True,
+            "question": "Can these representations be compared?",
+            "reference": {"rwa_id": alert["rwa_id"], "name": alert["name"],
+                          "symbol": alert["symbol"], "asset_type": alert.get("asset_type"),
+                          "token_count": len(alert["tokens"]),
+                          "issuer_count": alert.get("issuer_count") or 1,
+                          "tradfi_market_count": alert.get("tradfi_market_count") or 0},
+            "decision": _copy.deepcopy(alert["decision"]),
+            "next_action": alert.get("next_action"),
+            "signals": _copy.deepcopy(alert["signals"]),
+            "tokens": _copy.deepcopy(alert["tokens"]),
+            "method": {"join_key": "rwa_id", "token_join_key": "crypto_id", "rules": []},
+            "source_hashes": _copy.deepcopy(self.replay["source_hashes"]),
+            "limits": ["Observed fields do not prove liquidity"],
+        }
+        payload.update(overrides)
+        return payload
+
+    def alert(self):
+        return next(item for item in self.replay["alerts"] if item.get("tokens"))
+
+    def test_the_subject_binding_refuses_a_relabelled_reference(self):
+        from verify_case_receipt import verify
+        payload = self.case_for(self.alert())
+        payload["reference"]["name"] = "Something Else Entirely"
+        with self.assertRaisesRegex(ValueError, "wrong subject"):
+            verify(payload)
+
+    def test_the_row_binding_refuses_a_row_set_the_scan_did_not_publish(self):
+        from verify_case_receipt import bind
+        alert = self.alert()
+        payload = self.case_for(alert)
+        payload["tokens"] = payload["tokens"][:-1]
+        with self.assertRaises(ValueError) as raised:
+            bind(payload, self.replay, "receipt")
+        self.assertRegex(str(raised.exception), "representations|token_count")
+
+    def test_the_next_action_rederivation_refuses_an_invented_sentence(self):
+        from verify_case_receipt import verify
+        payload = self.case_for(self.alert())
+        payload["next_action"] = "Proceed to shortlist."
+        with self.assertRaisesRegex(ValueError, "next action"):
+            verify(payload)
+
+    def test_the_source_allowlist_refuses_an_arbitrary_origin(self):
+        from verify_case_receipt import verify
+        payload = self.case_for(self.alert(), source="https://example.invalid/whatever")
+        with self.assertRaisesRegex(ValueError, "source must be"):
+            verify(payload)
+
+    def test_the_history_to_receipt_source_hash_comparison_refuses_a_mismatch(self):
+        from verify_integrity_receipt import verify_observation
+        observation = next(item for item in self.history["observations"]
+                           if item["observed_at"] == self.dated["observed_at"])
+        forged = copy.deepcopy(self.dated)
+        key = sorted(forged["source_hashes"])[0]
+        forged["source_hashes"][key] = "1234567890abcdef" * 4
+        with self.assertRaisesRegex(ValueError, "source_hashes"):
+            verify_observation(copy.deepcopy(observation), forged, "mismatched digests")
+
+    def test_the_series_step_digest_is_recomputed(self):
+        from reference_series import BASE, DELTAS, verify as verify_series
+        base_doc = json.loads(BASE.read_text(encoding="utf-8"))
+        deltas = json.loads(DELTAS.read_text(encoding="utf-8"))
+        forged = copy.deepcopy(deltas)
+        key = sorted(forged["observations"][0]["changed"])[0]
+        forged["observations"][0]["changed"][key] = {
+            "state": "no_flags", "representations": 1,
+            "comparison_published": False, "signal_codes": []}
+        with self.assertRaisesRegex(ValueError, "the state it produces"):
+            verify_series(base_doc, forged, self.history)
+
+    def test_the_series_digest_is_compared_to_the_one_the_history_anchors(self):
+        from reference_series import BASE, DELTAS, verify as verify_series
+        base_doc = json.loads(BASE.read_text(encoding="utf-8"))
+        deltas = json.loads(DELTAS.read_text(encoding="utf-8"))
+        anchored = [item for item in self.history["observations"]
+                    if item.get("reference_digest")]
+        if not anchored:
+            self.skipTest("no observation anchors a series digest yet")
+        history = copy.deepcopy(self.history)
+        for item in history["observations"]:
+            if item.get("reference_digest"):
+                item["reference_digest"] = "fedcba9876543210" * 4
+        with self.assertRaisesRegex(ValueError, "the chained history anchors"):
+            verify_series(base_doc, deltas, history)
+
+    def test_appending_refuses_a_history_whose_declared_head_disagrees(self):
+        from append_history import append
+        import append_history
+        history = copy.deepcopy(self.history)
+        newest = copy.deepcopy(history["observations"][-1])
+        summary = {key: value for key, value in newest.items()
+                   if key not in ("sha256", "prev_sha256", "chain_version",
+                                  "reference_digest", "rules_version_recorded")}
+        summary["observed_at"] = "2099-01-01T00:00:00Z"
+        summary["rules_version"] = newest.get("rules_version")
+        history["chain_head"] = "0000000011111111" * 4
+        original = append_history.ANCHOR
+        try:
+            with self.assertRaisesRegex(ValueError, "declares") if False else \
+                    self.assertRaises(SystemExit) as raised:
+                append(history, summary)
+            self.assertIn("declares", str(raised.exception))
+        finally:
+            append_history.ANCHOR = original
+
+
 if __name__ == "__main__":
     unittest.main()

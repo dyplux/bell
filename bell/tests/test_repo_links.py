@@ -294,6 +294,35 @@ class OneNameMeansOneBehaviour(unittest.TestCase):
                           'cmc_shapes claims to be the single definition without naming the '
                           'reader that deliberately is not one')
 
+    def test_the_endpoint_tables_are_tables_and_name_the_published_scan(self):
+        # The generated paragraph was pasted BETWEEN a table's delimiter and its
+        # rows, which breaks the table in markdown, and the manual rows still
+        # omitted /v2/cryptocurrency/info - the endpoint the generator was
+        # written to stop them omitting. A reviewer found both.
+        import re
+        import sys
+        sys.path.insert(0, os.path.join(ROOT, 'bell'))
+        from list_endpoints import summarise
+        scanned = set(summarise()['published_scan'])
+        for name in ('docs/ARCHITECTURE.md', 'bell/SOURCE-MAP.md'):
+            text = open(os.path.join(ROOT, *name.split('/')), encoding='utf-8').read()
+            for match in re.finditer(r'^\|.+\|$\n^\|[\s:|-]+\|$\n((?:^\|.+\|$\n)*)',
+                                     text, re.M):
+                body = match.group(1)
+                if '/v5/real-world-assets/map' not in body:
+                    continue
+                self.assertTrue(body.strip(),
+                                f'{name} has an endpoint table with a header and no rows, which '
+                                'usually means something was pasted under the delimiter')
+                missing = [endpoint for endpoint in scanned if endpoint not in body]
+                self.assertEqual(
+                    missing, [],
+                    f'{name} lists the published scan and omits {", ".join(missing)}. '
+                    'That is the omission bell/list_endpoints.py exists to stop.')
+                break
+            else:
+                self.fail(f'{name} no longer carries an endpoint table')
+
 
 class TheSourceMapCountsWhatShips(unittest.TestCase):
     """Six documentation figures drifted past their own gates, again.

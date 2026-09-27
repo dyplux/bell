@@ -32,12 +32,71 @@ def parse_time(value: object, label: str) -> datetime:
         raise ValueError(f"{label} is not an ISO-8601 timestamp") from exc
 
 
+def verify_capture(manifest: dict, manifest_path: Path) -> dict:
+    """Check a credential-free frame capture, and check the frames are there.
+
+    A capture manifest is a weaker artefact than a video manifest and is
+    checked for what it actually claims: a public HTTPS origin, no console
+    errors, dated, and every frame it lists present on disk with a non-empty
+    file. It does not claim a receipt or an ordered script, so it is not asked
+    for one.
+    """
+    base = manifest.get("base")
+    parsed = urlparse(base or "")
+    if parsed.scheme != "https" or not parsed.netloc:
+        raise ValueError("capture base must be an HTTPS public origin")
+    if manifest.get("console_errors") != []:
+        raise ValueError("browser console errors are present")
+    observed_at = parse_time(manifest.get("observed_at"), "observed_at")
+    published_at = parse_time(manifest.get("published_at"), "published_at")
+    if published_at < observed_at:
+        raise ValueError("capture published_at precedes observed_at")
+    frames = manifest.get("frames")
+    if not isinstance(frames, list) or not frames:
+        raise ValueError("capture manifest lists no frames")
+    missing, empty = [], []
+    for frame in frames:
+        if not isinstance(frame, dict) or not frame.get("file"):
+            raise ValueError("a frame entry names no file")
+        if not frame.get("label"):
+            raise ValueError(f"frame {frame['file']} carries no label")
+        path = manifest_path.parent / frame["file"]
+        if not path.exists():
+            missing.append(frame["file"])
+        elif path.stat().st_size == 0:
+            empty.append(frame["file"])
+    if missing:
+        raise ValueError(f"the manifest lists frames that are not here: {', '.join(missing)}")
+    if empty:
+        raise ValueError(f"these frames are empty files: {', '.join(empty)}")
+    labels = [frame["label"] for frame in frames]
+    if len(set(labels)) != len(labels):
+        raise ValueError("two frames carry the same label, so one of them describes nothing")
+    return {
+        "schema_version": manifest["schema_version"],
+        "base": base,
+        "frames": len(frames),
+        "observed_at": manifest.get("observed_at"),
+        "status": "valid credential-free capture manifest",
+    }
+
+
 def verify(manifest_path: Path) -> dict:
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     if not isinstance(manifest, dict):
         raise ValueError("manifest must be a JSON object")
-    if manifest.get("schema_version") != "bell.demo-video.v1":
-        raise ValueError("unexpected demo manifest schema")
+    # JUDGE.md tells a reader to run this against a manifest, and the only
+    # manifest this repository ships is `bell.demo-capture.v1`, written by
+    # capture_demo.py - which this refused at the door because it only knew
+    # `bell.demo-video.v1`. A documented command failing on the repository's own
+    # file is the defect the Makefile already records having shipped once.
+    schema = manifest.get("schema_version")
+    if schema == "bell.demo-capture.v1":
+        return verify_capture(manifest, manifest_path)
+    if schema != "bell.demo-video.v1":
+        raise ValueError(
+            f"unexpected demo manifest schema {schema!r}: expected bell.demo-video.v1 or "
+            "bell.demo-capture.v1")
     if manifest.get("mode") not in {"short", "long"}:
         raise ValueError("demo mode must be short or long")
 

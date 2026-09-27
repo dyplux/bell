@@ -126,12 +126,17 @@ jobs:
 
       - name: Commit only when the series actually grew
         run: |
-          if git diff --quiet -- bell/site/proof/rwa-surface-integrity-history.json bell/history-chain-head.txt; then
+          if git diff --quiet -- bell/site/proof/rwa-surface-integrity-history.json bell/history-chain-head.txt bell/site/proof/reference-deltas.json; then
             echo "no new observation today; nothing to commit"
             exit 0
           fi
           git config user.name 'Dyplux'
           git config user.email 'admin@dyplux.com'
-          git add bell/site/proof/rwa-surface-integrity-history.json bell/history-chain-head.txt
+          # reference-deltas.json is written by append_history and was never
+          # staged, so the per-reference series could not grow by the automatic
+          # path the documents describe: 15 observations in the history and one
+          # step in the series, both of its points added by hand. A reviewer
+          # checked `git log` and found it.
+          git add bell/site/proof/rwa-surface-integrity-history.json bell/history-chain-head.txt bell/site/proof/reference-deltas.json
           git commit -m "Record the published observation of $(date -u +%Y-%m-%d)"
           git push

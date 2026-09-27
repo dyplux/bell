@@ -32,6 +32,14 @@ GUARDED = (
     "verify_integrity_receipt.py",
     "history_chain.py",
     "append_history.py",
+    # A reviewer pointed out that the pattern test written to catch this class
+    # did not look at the two files where the class was living: the verifier for
+    # the artefact a judge downloads, and the series. Eight guards across the
+    # repository could be deleted with 395 tests green, and two of them were the
+    # subject and row bindings whose own docstrings say a receipt about the
+    # wrong subject is worse than no receipt.
+    "verify_case_receipt.py",
+    "reference_series.py",
 )
 
 

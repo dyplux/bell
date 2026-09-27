@@ -185,9 +185,24 @@ class TheSeriesAnswersToThePublishedHistory(unittest.TestCase):
         self.assertEqual(len(notes), len(self.deltas["observations"]))
 
     def test_a_step_the_history_does_not_record_is_refused(self):
+        # Appended rather than renamed: renaming leaves the observation that
+        # anchored its digest orphaned, and the orphan check refuses first.
+        # Both refusals are correct and they are the same forgery seen from
+        # two sides; this one exercises the step check.
         forged = copy.deepcopy(self.deltas)
-        forged["observations"][-1]["observed_at"] = "2099-01-01T00:00:00Z"
+        invented = copy.deepcopy(forged["observations"][-1])
+        invented["observed_at"] = "2099-01-01T00:00:00Z"
+        forged["observations"].append(invented)
         with self.assertRaisesRegex(ValueError, "the published history does not record"):
+            self.verify(BASE_DOC, forged, self.history)
+
+    def test_an_observation_whose_step_was_removed_is_refused(self):
+        # The other side: the history still anchors a digest for a step that is
+        # no longer there. Emptying the series used to return an empty list and
+        # print "1 points" while an observation claimed a digest nothing checked.
+        forged = copy.deepcopy(self.deltas)
+        forged["observations"] = []
+        with self.assertRaisesRegex(ValueError, "the series has no step for it"):
             self.verify(BASE_DOC, forged, self.history)
 
     def test_a_step_claiming_the_wrong_source_digests_is_refused(self):

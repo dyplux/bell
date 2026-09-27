@@ -133,6 +133,19 @@ def verify(base_doc: dict, deltas_doc: dict, history: dict) -> list:
     """
     notes = []
     recorded = {str(item.get("observed_at")): item for item in history.get("observations") or []}
+    # Emptying `observations` made this return an empty list and the verifier
+    # print "reference series: 1 points", while observation 15 still anchored a
+    # digest nothing then checked. A guard that vanishes when the evidence is
+    # removed, in the function written to stop exactly that. Every observation
+    # that anchors a digest must have the step that digest describes.
+    anchored = {stamp for stamp, item in recorded.items() if item.get("reference_digest")}
+    present = {str(step.get("observed_at")) for step in deltas_doc.get("observations") or []}
+    orphaned = sorted(anchored - present)
+    if orphaned:
+        raise ValueError(
+            f"the history anchors a series digest for {', '.join(orphaned)} and the series has no "
+            "step for it. A removed step is not an absent feature: the observation still claims "
+            "the digest.")
     if deltas_doc.get("base") != BASE.name:
         raise ValueError(f"the series is built on {deltas_doc.get('base')!r}, not {BASE.name}")
     if deltas_doc.get("rules_version") != base_doc.get("rules_version"):
