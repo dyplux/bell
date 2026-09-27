@@ -12,7 +12,7 @@ that matters before a shortlist: can these representations be compared at all?
 | **Track** | Build with CMC API, Real World Assets. MIT licence |
 | **The output** | Of the 244 references carrying more than one representation, **87 have a cheapest route worth naming**; 157 are refused by a coded rule |
 | **Run it yourself** | `git clone https://github.com/dyplux/bell.git && cd bell && make base-rate` - 0.3s, no API key, no install |
-| **Verify the whole thing** | `make check-offline` - 475 tests, measured between 11.0 and 15.1 seconds across machines, plus a re-derivation of the published receipt from the shipped inputs. Of the 15 dated observations shipped here, 2 ship their full payload. One of those two has its state distribution compared against the receipt; the other is UNVERIFIED on that split, because it was written under the previous rule set and no code here can re-derive it. Its totals, signals and source digests are checked. The rest are published summaries |
+| **Verify the whole thing** | `make check-offline` - 480 tests, measured between 17.71 and 17.91 seconds on 1 machine, plus a re-derivation of the published receipt from the shipped inputs. Of the 15 dated observations shipped here, 2 ship their full payload. One of those two has its state distribution compared against the receipt; the other is UNVERIFIED on that split, because it was written under the previous rule set and no code here can re-derive it. Its totals, signals and source digests are checked. The rest are published summaries |
 | **Rules as an executable spec** | `python3 bell/verify_rule_boundaries.py` - 0.2s, 8 boundary checks, no network |
 | **Receipts** | [live](https://bell.dyplux.com/api/integrity) · [dated replay](bell/site/proof/rwa-surface-integrity-latest-replay-2026-09-21.json) · [replay inputs](bell/site/proof/rwa-surface-integrity-inputs-2026-09-21.json) · [base rate](bell/site/proof/base-rate-2026-09-21.json) |
 
@@ -140,8 +140,9 @@ make check
 
 That runs every suite, re-hashes the published receipt against the shipped
 credential-free input package, re-runs the scan asserting structural equality,
-and audits the public surface. That part is offline and runs in the same 11.0 to 15.1
-seconds stated above.
+and audits the public surface. That part is offline and runs in the same time stated
+above. The figures are not repeated here: this sentence carried a second copy of the
+band, it drifted away from its twin, and a reader had no way to tell which was current.
 `make check` is then **not** offline: if a browser is present it goes on to
 drive the deployed site. Use `make check-offline` for the hermetic run. No
 variant ever needs a credential.

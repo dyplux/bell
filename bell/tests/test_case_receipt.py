@@ -327,5 +327,91 @@ class CaseReceiptTests(unittest.TestCase):
                           f"rewriting {field} was accepted, or refused without naming it")
 
 
+class TheDocumentedCommandRefusesAnUnboundSubject(unittest.TestCase):
+    """The safe mode has to be the one you get by typing the command.
+
+    A reviewer took a real exported receipt, changed the reference to "Acme
+    Bullion Trust / ACME / 999999", and ran the command this repository's own
+    documentation gives. Exit 0, and a printed verdict about an asset that does
+    not exist. Everything the verifier checked was true: those rows do produce
+    that state. It was not checking whether the rows were anybody's, and the
+    flag that would have checked was opt-in.
+
+    Binding is the default now. These tests are at the command line rather than
+    at `verify()`, because the defect was never in `verify()` - it reported the
+    unbound status correctly the whole time. The defect was the exit code.
+    """
+
+    def setUp(self):
+        import subprocess
+        import tempfile
+        self.subprocess = subprocess
+        self.directory = tempfile.TemporaryDirectory()
+        self.addCleanup(self.directory.cleanup)
+        self.root = Path(self.directory.name)
+        replay = json.loads((HERE.parent / "site" / "proof"
+                             / "rwa-surface-integrity-latest-replay-2026-09-21.json")
+                            .read_text(encoding="utf-8"))
+        alert = next(item for item in replay["alerts"] if item.get("tokens"))
+        self.case = {
+            "schema_version": "bell.case-receipt.v1",
+            "observed_at": replay["observed_at"], "published_at": replay["observed_at"],
+            "source": "proof/rwa-surface-integrity-latest-replay-2026-09-21.json",
+            "credential_free": True,
+            "question": "Can these representations be compared?",
+            "reference": {"rwa_id": alert["rwa_id"], "name": alert["name"],
+                          "symbol": alert["symbol"], "asset_type": alert.get("asset_type"),
+                          "token_count": len(alert["tokens"]),
+                          "issuer_count": alert.get("issuer_count") or 1,
+                          "tradfi_market_count": alert.get("tradfi_market_count") or 0},
+            "decision": alert["decision"], "next_action": alert.get("next_action"),
+            "signals": alert["signals"], "tokens": alert["tokens"],
+            "method": {"join_key": "rwa_id", "token_join_key": "crypto_id", "rules": []},
+            "source_hashes": replay["source_hashes"],
+            "limits": ["Observed fields do not prove liquidity"],
+        }
+
+    def run_cli(self, payload: dict, *flags: str):
+        path = self.root / "case.json"
+        path.write_text(json.dumps(payload), encoding="utf-8")
+        return self.subprocess.run(
+            [sys.executable, str(HERE.parent / "verify_case_receipt.py"), str(path), *flags],
+            capture_output=True, text=True,
+            env={"PYTHONPATH": str(HERE.parent), "PATH": "/usr/bin:/bin:/usr/local/bin"})
+
+    def test_a_relabelled_subject_fails_the_bare_command(self):
+        forged = copy.deepcopy(self.case)
+        forged["reference"].update({"name": "Acme Bullion Trust", "symbol": "ACME",
+                                    "rwa_id": 999999})
+        result = self.run_cli(forged)
+        self.assertEqual(result.returncode, 1,
+                         "the documented command blessed an asset that does not exist")
+        self.assertIn("not bound", result.stderr)
+
+    def test_the_honest_case_still_passes_the_bare_command(self):
+        # The fix must not be "refuse everything", which is the cheapest way to
+        # pass the test above.
+        result = self.run_cli(self.case)
+        self.assertEqual(result.returncode, 0, result.stderr[-400:])
+        self.assertIn("bound to", result.stdout)
+
+    def test_unbound_is_still_reachable_by_asking_for_it(self):
+        forged = copy.deepcopy(self.case)
+        forged["reference"].update({"name": "Acme Bullion Trust", "symbol": "ACME",
+                                    "rwa_id": 999999})
+        result = self.run_cli(forged, "--allow-unbound")
+        self.assertEqual(result.returncode, 0)
+        self.assertIn("--allow-unbound", result.stderr)
+
+    def test_the_refusal_says_how_to_bind_a_live_export(self):
+        # "not bound" covers a forged subject and an honest export from a scan
+        # this repository does not ship. A reader who hits the second must not
+        # have to guess.
+        forged = copy.deepcopy(self.case)
+        forged["reference"]["rwa_id"] = 999999
+        result = self.run_cli(forged)
+        self.assertIn("--against https://bell.dyplux.com/api/integrity", result.stderr)
+
+
 if __name__ == "__main__":
     unittest.main()

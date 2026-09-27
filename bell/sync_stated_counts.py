@@ -27,6 +27,8 @@ reported rather than silently skipped.
 from __future__ import annotations
 
 import argparse
+import json
+import math
 from pathlib import Path
 import re
 import subprocess
@@ -35,6 +37,7 @@ import sys
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
 JUDGE = HERE / "site" / "judge.html"
+RUNTIME = HERE / "site" / "proof" / "gate-runtime.json"
 README = ROOT / "README.md"
 
 JS_COUNTER = """
@@ -72,8 +75,34 @@ def measure() -> dict:
             "javascript": int(javascript.stdout.strip())}
 
 
+def runtime_band() -> dict:
+    """What the runtime receipt actually observed, and on how many machines.
+
+    The page said the gate "runs between 11.0 and 15.1 seconds across the
+    machines it has been measured on". The receipt held one machine and
+    12.48 to 12.61. So the band was neither the measurement nor plural, and the
+    test that guarded it only asked whether the published band CONTAINED every
+    figure, which any wide enough invention satisfies. A reviewer's own machine
+    then measured 16.01, 16.01 and 18.31 and the sentence was simply wrong.
+
+    The sentence is generated from the receipt now, the same way the test
+    counts are, so it cannot be written by hand and cannot be wider than what
+    was seen.
+    """
+    receipt = json.loads(RUNTIME.read_text(encoding="utf-8"))
+    machines = len(receipt.get("runs") or [])
+    if not machines:
+        raise SystemExit("gate-runtime.json records no run; `make time-gate` writes it")
+    return {"fastest": receipt["fastest"], "slowest": receipt["slowest"], "machines": machines}
+
+
 def rewrite(counts: dict, dry_run: bool) -> list[str]:
     total = counts["python"] + counts["javascript"]
+    band = runtime_band()
+    # "on 1 machine" rather than "across the machines it has been measured on",
+    # which read as several and was one.
+    where = ("on 1 machine" if band["machines"] == 1
+             else f"across {band['machines']} machines")
     edits = (
         (JUDGE, r"(?<=Tests in the offline gate</small>)<strong>\d+</strong>",
          f"<strong>{total}</strong>"),
@@ -82,6 +111,12 @@ def rewrite(counts: dict, dry_run: bool) -> list[str]:
         (JUDGE, r"a submission gate over \d+ tracked files",
          f"a submission gate over {counts['files']} tracked files"),
         (README, r"`make check-offline` - \d+ tests", f"`make check-offline` - {total} tests"),
+        (JUDGE, r"The gate runs between [\d.]+ and [\d.]+ seconds (?:on \d+ machine|across \d+ machines)",
+         f"The gate runs between {band['fastest']} and {band['slowest']} seconds {where}"),
+        (JUDGE, r"(?<=<small>Gate runtime</small>)<strong>[^<]*</strong>",
+         f"<strong>&lt;{math.ceil(band['slowest'])}s</strong>"),
+        (README, r"measured between [\d.]+ and [\d.]+ seconds (?:on \d+ machine|across \d+ machines|across machines)",
+         f"measured between {band['fastest']} and {band['slowest']} seconds {where}"),
     )
     changed: list[str] = []
     pending: dict[Path, str] = {}

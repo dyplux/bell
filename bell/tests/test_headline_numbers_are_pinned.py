@@ -281,13 +281,20 @@ class HeadlineNumbersArePinned(unittest.TestCase):
     # checked that a sentence quoting one cold run fell inside a band quoted in
     # two documents. Both were sentences. It is replaced by the test below,
     # which compares the band to a clock.
-    def test_the_band_contains_every_runtime_that_was_actually_measured(self):
-        # judge.html claimed the band was "measured and pinned by a test rather
-        # than quoted from one run" and no test started a clock. A reviewer
-        # rewrote it to 6.0-11.0 on a gate that takes twelve, consistently
-        # across both documents, and the gate stayed green. `make time-gate`
-        # writes what it observed; this requires the published band to contain
-        # all of it.
+    def test_the_band_is_exactly_what_was_measured(self):
+        # Three versions of this claim, three different ways of being wrong.
+        #
+        # judge.html said the band was "measured and pinned by a test rather
+        # than quoted from one run" while no test started a clock; a reviewer
+        # rewrote it to 6.0-11.0 on a gate that takes twelve and nothing
+        # noticed. The replacement asked only whether the published band
+        # CONTAINED every measured figure, which 11.0 to 15.1 satisfied over a
+        # receipt holding 12.48 to 12.61, so the page advertised a range no run
+        # had produced, said "across the machines" over a file with one, and a
+        # reviewer's own machine then measured 18.31 seconds outside it.
+        #
+        # Containment is not the property. The band has to BE the measurement,
+        # and the number of machines has to be the number of machines.
         receipt = PROOF / "gate-runtime.json"
         self.assertTrue(receipt.exists(),
                         "no gate runtime has been measured, so the band answers to nothing. "
@@ -296,15 +303,33 @@ class HeadlineNumbersArePinned(unittest.TestCase):
         every = [value for entry in measured["runs"]
                  for value in [entry["cold"]] + list(entry["warm"])]
         self.assertTrue(every, "the runtime receipt records no run")
-        band = re.search(r"between (\d+\.\d+) and (\d+\.\d+) seconds", flowed(judge_text()))
-        self.assertIsNotNone(band, "the judge page stopped stating a band")
+        page = flowed(judge_text())
+        band = re.search(r"between (\d+\.\d+) and (\d+\.\d+) seconds "
+                         r"(?:on (\d+) machine|across (\d+) machines)", page)
+        self.assertIsNotNone(
+            band, "the judge page stopped stating a band and the machines behind it")
         low, high = float(band.group(1)), float(band.group(2))
-        outside = [value for value in every if not low <= value <= high]
-        self.assertEqual(outside, [],
-                         f"the published band is {low} to {high} and these measured runs fall "
-                         f"outside it: {outside}. Widen the band or explain the run.")
-        self.assertIn(f"{measured['fastest']}s to {measured['slowest']}s", flowed(judge_text()),
-                      "the judge page no longer states the range that was actually observed")
+        self.assertEqual((low, high), (min(every), max(every)),
+                         f"the published band is {low} to {high} and the runs measured "
+                         f"{min(every)} to {max(every)}. `make sync-counts` writes this "
+                         "sentence; it is not edited by hand.")
+        stated = int(band.group(3) or band.group(4))
+        self.assertEqual(stated, len(measured["runs"]),
+                         f"the page says {stated} machine(s) and the receipt holds "
+                         f"{len(measured['runs'])}")
+
+    def test_the_page_does_not_promise_more_than_one_machine(self):
+        # The phrase a reviewer quoted back, in a paragraph that then described
+        # a single machine's run. Kept as its own test because the sentence can
+        # come back without the band changing.
+        page = flowed(judge_text())
+        machines = len(json.loads((PROOF / "gate-runtime.json").read_text(encoding="utf-8"))["runs"])
+        if machines > 1:
+            self.skipTest("more than one machine has been measured")
+        for phrase in ("across the machines it has been measured on",
+                       "across machines"):
+            self.assertNotIn(phrase, page,
+                             f"the page says {phrase!r} over a receipt holding one machine")
 
 if __name__ == "__main__":
     unittest.main()

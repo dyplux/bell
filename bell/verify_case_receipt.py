@@ -421,10 +421,14 @@ def main() -> int:
               "observation this repository does not ship, so without this it can only be checked "
               "for internal consistency. The endpoint is credential-free."))
     parser.add_argument(
-        "--require-binding", action="store_true",
-        help=("exit non-zero unless the rows were bound to a receipt shipped in this repository. "
-              "Without it an unbound receipt exits 0 with a status saying so, which a reader sees "
-              "and `verify_case_receipt.py x.json && echo ok` does not."))
+        "--allow-unbound", action="store_true",
+        help=("exit 0 when the rows could not be bound to a published scan, reporting the fact "
+              "in the JSON instead. Binding is the default because it is the difference between "
+              "'these are the published rows' and 'these rows agree with each other'."))
+    parser.add_argument(
+        # Accepted so anything that already passes it keeps working. It asks
+        # for what now always happens.
+        "--require-binding", action="store_true", help=argparse.SUPPRESS)
     args = parser.parse_args()
     try:
         against = fetch_receipt(args.against) if args.against else None
@@ -435,17 +439,35 @@ def main() -> int:
         return 1
     print(json.dumps(result, ensure_ascii=False, indent=2))
     bound = str(result.get("rows_binding", "")).startswith("bound")
-    if args.require_binding and not bound:
-        print(f"case receipt verification failed: {result['rows_binding']}", file=sys.stderr)
-        return 1
-    if not bound:
+    if bound:
+        return 0
+    if args.allow_unbound:
         # Said on stderr as well as in the JSON, because the difference between
         # "these rows are the published ones" and "these rows agree with each
         # other" is the whole value of the artefact, and a reader piping stdout
         # into jq should still see it.
-        print("note: rows were not bound to a published scan; pass --require-binding to make "
-              "that a failure", file=sys.stderr)
-    return 0
+        print("note: rows were not bound to a published scan, and --allow-unbound was passed",
+              file=sys.stderr)
+        return 0
+    # Binding used to be opt-in. A reviewer took a real receipt, changed the
+    # reference to "Acme Bullion Trust / ACME / 999999", ran the command this
+    # repository's own documentation gives, and got exit 0 and a printed
+    # verdict about an asset that does not exist. Everything the verifier
+    # checked was true: those rows do produce that state. It just was not
+    # checking whether the rows were anybody's.
+    #
+    # So the safe mode is the default now, and the unsafe one has to be asked
+    # for by name. The failure says which of the two reasons applies, because
+    # "not bound" covers both a forged subject and an honest export from a live
+    # scan this repository does not ship.
+    print(f"case receipt verification failed: {result['rows_binding']}", file=sys.stderr)
+    if not args.against:
+        print("  a case exported from the live site names an observation this repository does "
+              "not ship. Bind it against the published receipt, which needs no key:\n"
+              "    --against https://bell.dyplux.com/api/integrity\n"
+              "  or pass --allow-unbound to accept an internal-consistency check alone.",
+              file=sys.stderr)
+    return 1
 
 
 if __name__ == "__main__":

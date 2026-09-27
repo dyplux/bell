@@ -45,12 +45,20 @@ without credentials.
 - `verify_catalogue_receipt.py` checks the complete-map catalogue refresh
 - `verify_case_receipt.py` checks a case JSON downloaded from the public page. It
 re-derives the verdict from the rows and binds them to a published scan by source
-fingerprints. A case exported from a live endpoint cannot bind, because the live
-scan's inputs are not shipped, so it reports `internally consistent; rows not
-bound to a published receipt` and exits 0. Pass `--require-binding` to make that
-a failure, and `--against https://bell.dyplux.com/api/integrity` to bind it against
-the live receipt it came from. That endpoint is credential-free, so the full check
-is available to anyone with the URL.
+fingerprints. **Binding is required by default and an unbound receipt exits 1.**
+A case exported from a live endpoint cannot bind against what this repository
+ships, because the live scan's inputs are not here, so pass
+`--against https://bell.dyplux.com/api/integrity` to bind it against the receipt
+it came from. That endpoint is credential-free, so the full check is available
+to anyone with the URL. `--allow-unbound` accepts an internal-consistency check
+alone and exits 0.
+
+This was the other way round until a reviewer changed a real receipt's reference
+to `Acme Bullion Trust / ACME / 999999`, ran the command written here, and got
+exit 0 with a printed verdict about an asset that does not exist. Every check
+the verifier ran was true: those rows do produce that state. It was not checking
+whether the rows were anybody's, and the flag that would have checked was
+opt-in, in a document a reader skims.
 
 ## Exact CMC surfaces
 
@@ -89,7 +97,8 @@ From the repository root:
 ```sh
 python3 bell/verify_integrity_receipt.py
 python3 bell/verify_catalogue_receipt.py
-python3 bell/verify_case_receipt.py /path/to/downloaded-case-receipt.json --require-binding
+python3 bell/verify_case_receipt.py /path/to/downloaded-case-receipt.json \
+  --against https://bell.dyplux.com/api/integrity
 python3 bell/verify_rule_boundaries.py
 PYTHONPATH=bell python3 -m unittest discover -s bell/tests -p 'test_*.py' -q
 ```
