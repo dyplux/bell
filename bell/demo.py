@@ -137,11 +137,28 @@ def main() -> int:
               f' of health.{RESET}')
     print()
 
+    # "Of 50 references in this receipt: 35 refused" invited a reader to divide
+    # and get a 70% refusal rate. The 50 are the highest-priority FLAGGED
+    # references: the receipt truncates `alerts` after a priority sort, and the
+    # references carrying no signal at all are not in the list to begin with.
+    # Quoting a rate off a list selected for flags is the exact error
+    # `base_rate.py` exists to correct, and it was being made by the demo that
+    # introduces the product. Name the denominator, and point at the command
+    # that measures the real one.
     total = len(alerts)
-    print(f'{BOLD}Of {total} references in this receipt:{RESET} '
+    universe = receipt.get('universe') or {}
+    scanned = universe.get('tokenised_references_scanned')
+    population = f' of the {scanned:,} scanned' if isinstance(scanned, int) else ''
+    print(f'{BOLD}Of the {total} highest-priority flagged references{population}:{RESET} '
           f'{RED}{len(blocked)} refused{RESET}, '
           f'{GREEN}{len(cleared)} comparable{RESET}, '
           f'{AMBER}{len(held)} held for investigation{RESET}')
+    print(f'{DIM}This list is sorted by priority and truncated, so these counts are not a'
+          f' rate.{RESET}')
+    print(f'{DIM}References carrying no signal are not in it at all. For the refusal rate'
+          f' over{RESET}')
+    print(f'{DIM}the whole catalogue, with its denominator and interval, run'
+          f' `make base-rate`.{RESET}')
     print()
     print(f'{DIM}Every number above was recomputed from {filename} by this script.')
     print(f'The comparison is a price fact about the representations CoinMarketCap')

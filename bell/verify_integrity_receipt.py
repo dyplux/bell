@@ -137,6 +137,17 @@ def verify_observation_shape(observation: dict, label: str) -> None:
     for name, digest in source_hashes.items():
         if not SHA256.fullmatch(digest):
             raise ValueError(f"{label}.source_hashes.{name} is not a SHA-256 fingerprint")
+        # Sixty-four zeroes match the pattern above. On the two observations
+        # that ship their payload the receipt comparison catches it; on the
+        # summary-only records nothing did, so a placeholder was accepted as a
+        # fingerprint of something. Be exact about what this buys: it rejects a
+        # digest that is obviously not a digest of anything, and it does not
+        # tell a real digest from a digest of the wrong bytes. That question is
+        # what shipping the payload answers, and only two records do.
+        if len(set(digest)) == 1:
+            raise ValueError(
+                f"{label}.source_hashes.{name} is {digest[0] * 4}...: a single repeated character "
+                "is a placeholder, not the fingerprint of a payload")
 
 
 def verify_public_inputs(inputs_path: Path, receipt_path: Path) -> None:

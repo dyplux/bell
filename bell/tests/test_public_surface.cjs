@@ -1065,6 +1065,30 @@ test('the judge page names examples that hold on the receipt it ships', () => {
   assert.ok(blocked, `${refusal[1]} is not in the shipped replay receipt`);
   assert.equal(blocked.state, 'do_not_compare',
     `${refusal[1]} is not blocked in the shipped replay`);
+
+  // The page does not just say the reference is blocked, it names the rule that
+  // blocked it: "above the inclusive 10x block floor". Asserting the state alone
+  // left that name unguarded, and a judge reading a rule attributed to the wrong
+  // signal is reading a claim the code does not make. Proved the gap by
+  // flattening the prices until PRICE_DENOMINATION_BREAK stopped firing: the
+  // reference stayed blocked on ZERO_MCAP_POSITIVE_VOLUME and this suite stayed
+  // green. So read the rule out of the sentence and require it to be the one
+  // that actually fired.
+  const named = judge.match(/<li><strong>[^<]+<\/strong> returns <strong>DO NOT SHORTLIST<\/strong>:([\s\S]*?)<\/li>/);
+  assert.ok(named, 'the refusal example no longer explains which rule fired');
+  const RULE_PHRASES = [
+    [/10x block floor/, 'PRICE_DENOMINATION_BREAK'],
+    [/traded volume against a zero market cap|zero market cap/, 'ZERO_MCAP_POSITIVE_VOLUME'],
+  ];
+  const codes = (blocked.signals || blocked.signal_codes || []).map(
+    signal => (typeof signal === 'string' ? signal : signal.code));
+  const claimed = RULE_PHRASES.filter(([phrase]) => phrase.test(named[1]));
+  assert.ok(claimed.length,
+    `the judge page describes a rule this test cannot map to a signal code: ${named[1].trim().slice(0, 160)}`);
+  for (const [, code] of claimed) {
+    assert.ok(codes.includes(code),
+      `the judge page attributes ${refusal[1]}'s refusal to ${code}, but the shipped replay fired ${JSON.stringify(codes)}`);
+  }
 });
 
 test('nothing claims to be current while the page is reading a dated receipt', () => {

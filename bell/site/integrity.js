@@ -790,6 +790,21 @@
     return item?.decision?.label || fallback;
   }
 
+  // One sentence, one place. This footnote was written twice, and both copies
+  // ended "Rows remain non-comparable until Bell's identity and unit checks are
+  // cleared" with no branch on the mode. So the affirmative card - the one
+  // /judge tells a judge to search - stated that the representations share an
+  // identity and a unit, and then four lines later stated they were not
+  // comparable. On the comparable path the honest caveat is not that the rows
+  // failed a check they passed; it is which questions the price fact does not
+  // answer.
+  function capitalMetricsNote(mode, unitPhrase) {
+    const shared = `${unitPhrase} Reported 24h volume is a rolling field, not depth or executable exit capacity.`;
+    return mode === 'comparable'
+      ? `${shared} Identity and unit checks are cleared, which is what makes these rows comparable. Backing, redemption, custody and executable size remain unobserved.`
+      : `${shared} Rows remain non-comparable until Bell's identity and unit checks are cleared.`;
+  }
+
   function capitalPanel(alert) {
     const assessment = window.BellCapitalImpact.assess(alert, readCapitalBudget(alert.rwa_id));
     const rangeMetrics = assessment.metrics?.ratio
@@ -799,7 +814,7 @@
       ? `<div><span>AMOUNT / REPORTED 24H VOLUME</span><strong>${formatNumber(assessment.metrics.volume.amountSharePercent)}%</strong></div>`
       : '';
     const metrics = rangeMetrics || volumeMetrics
-      ? `<div class="capital-metrics">${rangeMetrics}${volumeMetrics}</div><small class="capital-metrics-note">Nominal quote units only. Reported 24h volume is a rolling field, not depth or executable exit capacity. Rows remain non-comparable until Bell's identity and unit checks are cleared.</small>`
+      ? `<div class="capital-metrics">${rangeMetrics}${volumeMetrics}</div><small class="capital-metrics-note">${capitalMetricsNote(assessment.mode, 'Nominal quote units only.')}</small>`
       : '<div class="capital-metrics capital-metrics-empty"><span>No comparable quote range in this receipt.</span></div>';
     return `<section class="capital-panel capital-${assessment.mode}" data-capital-panel="${escapeHTML(alert.rwa_id || '')}">
       <div class="capital-panel-head"><span>CAPITAL CHECK</span><b>Make the financial consequence visible</b></div>
@@ -961,7 +976,7 @@
       ? `<div><span>AMOUNT / REPORTED 24H VOLUME</span><strong>${formatNumber(metrics.volume.amountSharePercent)}%</strong></div>`
       : '';
     panel.querySelector('[data-capital-metrics]').innerHTML = metrics
-      ? `<div class="capital-metrics">${rangeMetrics}${volumeMetrics}</div><small class="capital-metrics-note">Nominal unit counts only. Reported 24h volume is a rolling field, not depth or executable exit capacity. Rows remain non-comparable until Bell's identity and unit checks are cleared.</small>`
+      ? `<div class="capital-metrics">${rangeMetrics}${volumeMetrics}</div><small class="capital-metrics-note">${capitalMetricsNote(assessment.mode, 'Nominal unit counts only.')}</small>`
       : '<div class="capital-metrics capital-metrics-empty"><span>No comparable quote range in this receipt.</span></div>';
     panel.querySelector('[data-capital-note]').textContent = assessment.note;
   }
@@ -1664,9 +1679,20 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     const ruleNote = fadedCount
       ? ` ${fadedCount} faded ${fadedCount === 1 ? 'column was' : 'columns were'} produced under an earlier rule set and cannot be read as a trend against the current one.`
       : '';
-    const spanNote = distinctDays.size <= 2
-      ? `Short series: ${visibleObservations.length} receipts across ${distinctDays.size} calendar ${distinctDays.size === 1 ? 'day' : 'days'}. Columns are separate observations, not daily closes.`
-      : `${visibleObservations.length} receipts across ${distinctDays.size} calendar days.`;
+    // This said "Short series: 9 receipts across 2 calendar days" directly under
+    // a header reading "14 DATED OBSERVATIONS ACROSS 4 DAYS". Both were true and
+    // together they read as a contradiction, because the caption described the
+    // nine-column window without ever saying it was one. A page that refuses to
+    // subtract two receipts on denominator grounds cannot leave its own chart
+    // quoting a truncated count as if it were the series.
+    const totalDays = new Set(observations.map(item => String(item.observed_at || '').slice(0, 10)));
+    const windowed = visibleObservations.length < observations.length;
+    const scope = windowed
+      ? `The last ${visibleObservations.length} of ${observations.length} receipts, spanning ${distinctDays.size} of ${totalDays.size} calendar ${totalDays.size === 1 ? 'day' : 'days'}.`
+      : `All ${visibleObservations.length} receipts, across ${distinctDays.size} calendar ${distinctDays.size === 1 ? 'day' : 'days'}.`;
+    const spanNote = totalDays.size <= 2
+      ? `${scope} Short series. Columns are separate observations, not daily closes.`
+      : `${scope} Columns are separate observations, not daily closes.`;
     const chartNote = spanNote + ruleNote;
     const historyBars = visibleObservations.map(item => {
       const states = item.states || {};
@@ -1759,7 +1785,19 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
       setHeroProofHeading(searchAttempted ? 'START HERE' : 'NO PUBLISHED CASE');
       byId('hero-proof-reason').textContent = 'Search a listed reference before reading the evidence card.';
       byId('hero-signal-list').innerHTML = '<div><span class="hero-signal-severity checked">NO MATCH</span><strong>No published case selected</strong><small>Try the asset name, ticker or RWA ID</small></div>';
-      byId('hero-quote-contrast').hidden = true;
+      // Every hero block that describes THE SELECTED CASE has to go when there
+      // is no selected case. This hid the quote contrast and left the capital
+      // route showing, so a search that found nothing still read "Keep 10,000
+      // uncommitted · Resolve identity, unit, issuer terms and execution
+      // evidence before selecting a wrapper" - the previous reference's verdict,
+      // printed under a card saying no case is selected. Listed rather than
+      // hidden one by one, because that is how the first one got missed.
+      // #hero-population-signal is deliberately not here: it describes the
+      // receipt, not the case, and stays true when nothing is selected.
+      for (const id of ['hero-quote-contrast', 'hero-capital-signal']) {
+        const block = byId(id);
+        if (block) block.hidden = true;
+      }
       byId('hero-token-count').textContent = '—';
       byId('hero-issuer-count').textContent = '—';
       byId('hero-signal-count').textContent = '—';

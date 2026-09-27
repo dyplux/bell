@@ -12,7 +12,7 @@ that matters before a shortlist: can these representations be compared at all?
 | **Track** | Build with CMC API, Real World Assets. MIT licence |
 | **The output** | Of the 244 references carrying more than one representation, **87 have a cheapest route worth naming**; 157 are refused by a coded rule |
 | **Run it yourself** | `git clone https://github.com/dyplux/bell.git && cd bell && make base-rate` - 0.3s, no API key, no install |
-| **Verify the whole thing** | `make check-offline` - 288 tests, measured between 2.8 and 7.0 seconds across machines, plus a re-derivation of the published receipt from the shipped inputs. Of the 14 dated observations, 2 ship their full payload and are cross-checked; the rest are published summaries |
+| **Verify the whole thing** | `make check-offline` - 290 tests, measured between 2.8 and 8.0 seconds across machines, plus a re-derivation of the published receipt from the shipped inputs. Of the 14 dated observations, 2 ship their full payload and are cross-checked; the rest are published summaries |
 | **Rules as an executable spec** | `python3 bell/verify_rule_boundaries.py` - 0.2s, 8 boundary checks, no network |
 | **Receipts** | [live](https://bell.dyplux.com/api/integrity) · [dated replay](bell/site/proof/rwa-surface-integrity-latest-replay-2026-09-21.json) · [replay inputs](bell/site/proof/rwa-surface-integrity-inputs-2026-09-21.json) · [base rate](bell/site/proof/base-rate-2026-09-21.json) |
 
@@ -50,7 +50,7 @@ number, so the method cannot be tuned to the result afterwards. Reproduce it
 with `make base-rate`, offline, with no API key:
 
 ```
-    791  references in the catalogue
+    791  references carrying tokenised representations
     547  have one representation - nothing to compare, excluded rather than
          counted against the rate
     244  carry two or more, so a comparison is something a user could attempt

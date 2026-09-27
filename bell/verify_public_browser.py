@@ -143,6 +143,36 @@ def main() -> int:
 
             history_text = page.locator("#publication-history").inner_text()
             require(receipt["observed_at"] in history_text, "publication history does not end at the current live receipt")
+            # The header said "14 DATED OBSERVATIONS ACROSS 4 DAYS" and the chart
+            # caption directly below said "Short series: 9 receipts across 2
+            # calendar days", because the caption described the nine-column
+            # window without saying it was one. Both numbers were true and
+            # together they read as a contradiction, on a page that refuses to
+            # subtract two receipts on denominator grounds. Whatever window the
+            # chart draws, the totals it names have to be the totals above it.
+            # The totals live in the hero trail line, the window caption in the
+            # history panel. Two elements, one claim.
+            trail_text = page.locator("#hero-receipt-trail").inner_text()
+            header_counts = re.search(r"(\d+)\s+DATED OBSERVATIONS ACROSS\s+(\d+)", trail_text.upper())
+            require(header_counts is not None,
+                    f"the receipt trail no longer states its length: {trail_text[:200]!r}")
+            # My first version of this only compared the totals WHEN the caption
+            # said "of N", so reverting the caption to "9 receipts across 2
+            # calendar days" made it skip and pass. A check with an exit the
+            # regression takes is not a check. Read whatever totals the caption
+            # states, windowed or not, and require them to be the ones above it.
+            caption = re.search(
+                r"(?:last (\d+) of )?(\d+) receipts,? (?:spanning|across) (?:(\d+) of )?(\d+) calendar days?",
+                history_text)
+            require(caption is not None,
+                    f"the chart caption no longer states a receipt and day count: {history_text[:300]!r}")
+            windowed, stated_receipts, window_days, stated_days = caption.groups()
+            require(bool(windowed) == bool(window_days),
+                    "the chart caption describes a window of one total but not the other")
+            require(stated_receipts == header_counts.group(1) and stated_days == header_counts.group(2),
+                    f"the chart caption accounts for {stated_receipts} receipts across {stated_days} "
+                    f"days while the header above it says {header_counts.group(1)} across "
+                    f"{header_counts.group(2)}: a truncated window is being quoted as the series")
             expected_states = {
                 "do_not_compare": "DO NOT SHORTLIST",
                 "investigate": "INVESTIGATE",
@@ -310,6 +340,26 @@ def main() -> int:
             require(catalogue_requests,
                     "the explorer resolved a dossier without ever fetching its catalogue, so the "
                     "deferral check above is measuring a broken explorer rather than a saving")
+
+            # A search that finds nothing must not leave the previous
+            # reference's verdict on screen. The no-match branch reset the
+            # metrics and hid the quote contrast, and left CAPITAL ROUTE showing
+            # "Keep 10,000 uncommitted · Resolve identity, unit, issuer terms and
+            # execution evidence before selecting a wrapper" under a card reading
+            # "No published case selected". Checked in both directions, because
+            # hiding it permanently would also pass a one-way check.
+            page.locator("#hero-search").fill("Silver")
+            page.locator("#hero-search-form button[type=submit]").click()
+            page.locator("#search-result").wait_for(state="visible", timeout=30_000)
+            page.wait_for_function("document.querySelector('#hero-capital-signal')?.hidden === false", timeout=30_000)
+            page.locator("#hero-search").fill("zzzz-no-such-reference")
+            page.locator("#hero-search-form button[type=submit]").click()
+            page.wait_for_function("document.querySelector('#decision-hero')?.textContent?.includes('No matching reference')", timeout=30_000)
+            stale = page.locator("body").inner_text()
+            require("CAPITAL ROUTE" not in stale,
+                    "a search that found nothing still shows the previous reference's capital verdict")
+            require(page.locator("#hero-quote-contrast").is_hidden(),
+                    "a search that found nothing still shows the previous reference's quote endpoints")
 
             page.locator("#hero-search").fill("Colgate")
             page.locator("#hero-search-form button[type=submit]").click()

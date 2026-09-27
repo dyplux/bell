@@ -264,7 +264,12 @@ def main() -> int:
     print('How often is a tokenised-asset comparison safe to make at all?')
     print(f"observed {result['observed_at']} · no API key used · whole catalogue, not a sample")
     print()
-    print(f"  {result['population']:>5}  references in the catalogue")
+    # "791 references in the catalogue" sat beside a README sentence saying
+    # the page searches a 7,811-entry catalogue. Both numbers were right and
+    # the word was doing two jobs: 7,811 is the CMC map, 791 is the subset
+    # carrying tokenised representations, which is the only population a
+    # comparison rate can be measured over.
+    print(f"  {result['population']:>5}  references carrying tokenised representations")
     print(f"  {result['excluded_single_representation']:>5}  have one representation - "
           f"nothing to compare, excluded rather than counted against the rate")
     print(f"  {result['denominator_two_or_more_representations']:>5}  carry two or more, "

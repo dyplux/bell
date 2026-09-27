@@ -24,7 +24,7 @@ def receipt(states, rules_version=RULES_VERSION, refs=10, rows=20):
     if rules_version is not None:
         universe["rules_version"] = rules_version
     return {"observed_at": "2026-09-21T21:25:01Z", "universe": universe,
-            "source_hashes": {"map": "0" * 64}}
+            "source_hashes": {"map": MAP_DIGEST}}
 
 
 def observation(states, rules_version=None, refs=10, rows=20):
@@ -34,11 +34,18 @@ def observation(states, rules_version=None, refs=10, rows=20):
         "tokens_scanned": rows,
         "states": states,
         "signals": {"PRICE_DENOMINATION_BREAK": 1},
-        "source_hashes": {"map": "0" * 64},
+        "source_hashes": {"map": MAP_DIGEST},
     }
     if rules_version is not None:
         entry["rules_version"] = rules_version
     return entry
+
+
+# A real digest, not a placeholder. These fixtures used sixty-four zeroes, which
+# `verify_observation_shape` now rejects: a single repeated character is not the
+# fingerprint of any payload, and accepting it let a forged summary-only
+# observation pass shape validation.
+MAP_DIGEST = "26140aa20c466e68a059462fc53906a983c129bdf10dcf5a720e8fe0fed1de83"
 
 
 class RulesVersionIsPublished(unittest.TestCase):
