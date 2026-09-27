@@ -291,6 +291,41 @@ class CaseReceiptTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "wrong subject"):
             verify(payload, against=(REPLAY, "supplied.json"))
 
+    def test_a_field_the_old_comparison_ignored_is_refused(self):
+        # bind() compared four named fields of twenty-one. A reviewer rewrote
+        # is_derivative, token_type, category, asset_type, name, issuer_id,
+        # issuer_name and crypto_info_resolved, re-ran the engine to make the
+        # verdict follow honestly, and eleven forged receipts passed
+        # --require-binding: the cheapest route moved, the spread moved, and
+        # DERIVATIVE_MIX vanished from thirteen of them. One case per field,
+        # because a list of names is exactly what failed.
+        from rwa_integrity import asset_scan
+        fields = ("is_derivative", "token_type", "category", "asset_type", "name",
+                  "issuer_id", "issuer_name", "crypto_info_resolved", "crypto_slug")
+        for field in fields:
+            payload = receipt_for(self.alert)
+            published = payload["tokens"][0].get(field)
+            # A value that really differs from the published one, whatever it
+            # is: the first version used literals and two of them happened to
+            # equal what was already there, so two of the eight proved nothing.
+            forged = (not published) if isinstance(published, bool) else (
+                "forged-value" if published != "forged-value" else "other-value")
+            payload["tokens"][0] = dict(payload["tokens"][0], **{field: forged})
+            # Let the verdict follow honestly from the rewritten rows, so only
+            # the row comparison can catch it.
+            resolved = {str(row["crypto_id"]): {"slug": row.get("crypto_slug"), "urls": {},
+                                                "contract_address": []}
+                        for row in payload["tokens"] if row.get("crypto_info_resolved")}
+            honest = asset_scan({**payload["reference"], "tokens": payload["tokens"]},
+                                crypto_lookup=resolved, crypto_info_checked=True)
+            payload["decision"] = honest["decision"]
+            payload["signals"] = honest["signals"]
+            payload["next_action"] = honest["next_action"]
+            with self.subTest(field=field), self.assertRaises(ValueError) as raised:
+                verify(payload)
+            self.assertIn(field, str(raised.exception),
+                          f"rewriting {field} was accepted, or refused without naming it")
+
 
 if __name__ == "__main__":
     unittest.main()

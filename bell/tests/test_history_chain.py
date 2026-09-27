@@ -238,5 +238,14 @@ class TheSurfaceGuards(unittest.TestCase):
         self.assertEqual(receipt["schema_version"], "rwa_surface_integrity.v1")
 
 
+class AnEmptyChainIsNotAVerifiedChain(unittest.TestCase):
+    def test_verifying_no_observations_is_refused(self):
+        # `make mutate` found this refusal undefended: verify([]) returning a
+        # head would mean an empty file verifies, which is the strongest
+        # possible forgery and the cheapest to make.
+        with self.assertRaisesRegex(ValueError, "carries no observations"):
+            verify([])
+
+
 if __name__ == "__main__":
     unittest.main()

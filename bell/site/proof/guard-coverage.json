@@ -1,0 +1,75 @@
+{
+  "schema_version": "bell.guard_coverage.v1",
+  "guards_mutated": 41,
+  "survivors": [
+    {
+      "file": "verify_case_receipt.py",
+      "line": 76
+    },
+    {
+      "file": "verify_case_receipt.py",
+      "line": 81
+    },
+    {
+      "file": "verify_case_receipt.py",
+      "line": 85
+    },
+    {
+      "file": "verify_case_receipt.py",
+      "line": 116
+    },
+    {
+      "file": "verify_case_receipt.py",
+      "line": 151
+    },
+    {
+      "file": "verify_case_receipt.py",
+      "line": 156
+    },
+    {
+      "file": "verify_case_receipt.py",
+      "line": 337
+    },
+    {
+      "file": "verify_case_receipt.py",
+      "line": 343
+    },
+    {
+      "file": "verify_case_receipt.py",
+      "line": 345
+    },
+    {
+      "file": "verify_case_receipt.py",
+      "line": 347
+    },
+    {
+      "file": "verify_case_receipt.py",
+      "line": 352
+    },
+    {
+      "file": "verify_case_receipt.py",
+      "line": 361
+    },
+    {
+      "file": "verify_case_receipt.py",
+      "line": 364
+    },
+    {
+      "file": "verify_case_receipt.py",
+      "line": 366
+    },
+    {
+      "file": "verify_case_receipt.py",
+      "line": 372
+    },
+    {
+      "file": "verify_case_receipt.py",
+      "line": 434
+    },
+    {
+      "file": "verify_case_receipt.py",
+      "line": 447
+    }
+  ],
+  "note": "Each guard's condition was rewritten so its body cannot run, and the offline gate was run. A survivor is a refusal no test notices, whatever its docstring says. Three reviewers found these by hand before this existed."
+}

@@ -237,5 +237,77 @@ class TheSeriesAnswersToThePublishedHistory(unittest.TestCase):
         self.assertNotEqual(index_digest(one), index_digest(moved))
 
 
+class EverySeriesRefusalIsDefended(unittest.TestCase):
+    """Seven refusals in reference_series.py were defended by nothing.
+
+    `make mutate` found them: it rewrites each guard's condition so the body
+    cannot run and asks whether the gate notices. Three reviewers did that by
+    hand before it existed, and every one of these is a refusal I wrote and
+    never tested.
+    """
+
+    def setUp(self):
+        from reference_series import verify as verify_series
+        self.verify = verify_series
+        self.history = json.loads((HERE.parent / "site" / "proof"
+                                   / "rwa-surface-integrity-history.json")
+                                  .read_text(encoding="utf-8"))
+        self.deltas = json.loads(DELTAS.read_text(encoding="utf-8"))
+
+    def test_a_series_built_on_another_base_is_refused(self):
+        forged = copy.deepcopy(self.deltas)
+        forged["base"] = "some-other-snapshot.json"
+        with self.assertRaisesRegex(ValueError, "is built on"):
+            self.verify(BASE_DOC, forged, self.history)
+
+    def test_a_series_under_another_rule_set_than_its_base_is_refused(self):
+        forged = copy.deepcopy(self.deltas)
+        forged["rules_version"] = "bell.rules.v9"
+        with self.assertRaisesRegex(ValueError, "different rule sets"):
+            self.verify(BASE_DOC, forged, self.history)
+
+    def test_a_step_that_does_not_advance_the_clock_is_refused(self):
+        # Backdated by appending rather than renaming: renaming orphans the
+        # observation that anchors the step's digest, and that refusal fires
+        # first. Both are correct; this one exercises the clock.
+        forged = copy.deepcopy(self.deltas)
+        stale = copy.deepcopy(forged["observations"][-1])
+        stale["observed_at"] = BASE_DOC["observed_at"]
+        forged["observations"].append(stale)
+        with self.assertRaisesRegex(ValueError, "is not after"):
+            self.verify(BASE_DOC, forged, self.history)
+
+    def test_a_step_whose_observation_answers_to_another_rule_set_is_refused(self):
+        forged_history = copy.deepcopy(self.history)
+        stamp = self.deltas["observations"][0]["observed_at"]
+        for item in forged_history["observations"]:
+            if item["observed_at"] == stamp:
+                item["rules_version"] = "bell.rules.v9"
+        with self.assertRaisesRegex(ValueError, "was recorded under"):
+            self.verify(BASE_DOC, self.deltas, forged_history)
+
+    def test_a_step_with_no_source_fingerprints_is_refused(self):
+        forged = copy.deepcopy(self.deltas)
+        forged["observations"][0]["source_hashes"] = {}
+        with self.assertRaisesRegex(ValueError, "records no source fingerprints"):
+            self.verify(BASE_DOC, forged, self.history)
+
+    def test_an_observation_that_predates_the_anchor_field_is_reported_not_failed(self):
+        # The branch that says "this observation was written before the history
+        # carried the digest". It must report rather than refuse, or every
+        # series older than the mechanism becomes unverifiable.
+        forged_history = copy.deepcopy(self.history)
+        for item in forged_history["observations"]:
+            item.pop("reference_digest", None)
+        notes = self.verify(BASE_DOC, self.deltas, forged_history)
+        self.assertTrue(any("not anchored" in note for note in notes),
+                        f"the unanchored case is not reported: {notes}")
+
+    def test_a_receipt_with_no_observed_at_is_refused_by_record(self):
+        with self.assertRaises(SystemExit) as raised:
+            record({"universe": {"rules_version": "bell.rules.v2"}, "alert_index": []})
+        self.assertIn("observed_at", str(raised.exception))
+
+
 if __name__ == "__main__":
     unittest.main()
