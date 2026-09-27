@@ -377,6 +377,16 @@ def main() -> int:
                 require(span is not None,
                         f"the change view does not say how many observations its series spans: "
                         f"{change_text[:250]!r}")
+                # The two halves describe two observations: the diff is against
+                # the receipt this page loaded, the series ends at whatever was
+                # last published. A reviewer read "all the same" directly above
+                # "moved on 1 of them" and was right to call it a
+                # contradiction. Both must be named on screen.
+                require("AGAINST" in change_text,
+                        "the change view does not name the observation it compares against")
+                if "series ends at" in change_text:
+                    require("two observations, so the two halves can disagree" in change_text,
+                            "the panel names two observations and does not say they are two")
                 require("does not reach back before" in change_text,
                         "the series does not say where it starts, so a reader can assume it "
                         "reaches back further than it does")

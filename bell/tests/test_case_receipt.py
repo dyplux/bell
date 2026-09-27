@@ -189,12 +189,16 @@ class CaseReceiptTests(unittest.TestCase):
         # repository to bind to. It used to print "valid public case receipt"
         # anyway. The status has to say which of the two questions was answered.
         payload = receipt_for(self.alert)
-        # A live export carries the live scan's fingerprints, which no receipt
-        # in this repository records. Changing the timestamp is no longer the
-        # way to unbind: that is now a contradiction and is refused, which is
-        # the point of matching on the digests instead.
+        # A live export is unbound because BOTH halves differ: it carries the
+        # live scan's fingerprints and names an observation this repository
+        # does not ship. Changing only the digests is now a contradiction, not
+        # an unbinding - the receipt names a shipped observation while claiming
+        # fingerprints that observation did not have, and that is refused by
+        # name rather than softened to "not bound".
         payload["source_hashes"] = {key: "0123456789abcdef" * 4
                                     for key in payload["source_hashes"]}
+        payload["observed_at"] = "2099-01-01T00:00:00Z"
+        payload["published_at"] = "2099-01-01T00:00:00Z"
         result = verify(payload)
         self.assertEqual(result["status"],
                          "internally consistent; rows not bound to a published receipt")
@@ -246,6 +250,20 @@ class CaseReceiptTests(unittest.TestCase):
         result = verify(receipt_for(self.alert))
         self.assertIn("next_action_checked", result)
         self.assertIsInstance(result["next_action_checked"], bool)
+
+    def test_a_receipt_naming_a_shipped_observation_with_wrong_digests_is_refused(self):
+        # `find_published` used to select the receipt BY the fingerprints and
+        # `bind` then asserted the same equality, so through the CLI that check
+        # could never fail. A reviewer counted seven guards in this file that
+        # could be deleted with the suite green, and this was one. Selection
+        # falls back to the timestamp now, so a receipt claiming a shipped
+        # observation with the wrong fingerprints is refused instead of
+        # falling through to the softer unbound status.
+        payload = receipt_for(self.alert)
+        payload["source_hashes"] = {key: "0123456789abcdef" * 4
+                                    for key in payload["source_hashes"]}
+        with self.assertRaisesRegex(ValueError, "source fingerprints"):
+            verify(payload)
 
 
 if __name__ == "__main__":

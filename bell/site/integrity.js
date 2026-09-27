@@ -165,9 +165,16 @@
     const beforeLabel = displayDecisionLabel({ state: before.state, comparison: before.comparison_published ? {} : null }, 'FACTS OPEN');
     const nowLabel = displayDecisionLabel(now, 'FACTS OPEN');
     if (beforeLabel !== nowLabel) lines.push(['ROUTE', `${beforeLabel} → ${nowLabel}`]);
-    const nowRows = Number(now.token_count || 0);
-    if (Number(before.representations || 0) !== nowRows) {
-      lines.push(['REPRESENTATIONS', `${before.representations} → ${nowRows}`]);
+    // `Number(now.token_count || 0)` read an absent count as zero and printed
+    // "REPRESENTATIONS 3 → 0". The `|| []` twenty lines down was fixed after a
+    // reviewer found it; the `|| 0` beside it was not. Absence is not a value
+    // here either, so a side that cannot be read is reported as not compared.
+    const nowRows = now.token_count == null ? null : Number(now.token_count);
+    const wasRows = before.representations == null ? null : Number(before.representations);
+    if (nowRows === null || wasRows === null) {
+      lines.push(['REPRESENTATIONS', 'not compared: one side records no count']);
+    } else if (wasRows !== nowRows) {
+      lines.push(['REPRESENTATIONS', `${wasRows} → ${nowRows}`]);
     }
     const nowList = signalCodesOf(now);
     const wasList = signalCodesOf(before);
@@ -223,6 +230,17 @@
       // things on one screen. Recomputed is the right baseline - it isolates
       // market change from rule change - and it has to say so.
       const recomputed = snapshot.baseline === 'recomputed';
+      // The two halves of this panel described two different observations and
+      // neither said so: the diff compares the baseline against the receipt
+      // THIS PAGE loaded, while the series ends at whatever observation was
+      // last published. A reviewer opened a reference and read "all the same as
+      // on the recomputed baseline" directly above "moved on 1 of them" - a
+      // contradiction that is only two named observations once they are named.
+      const loadedAt = String(receipt?.observed_at || '').replace('T', ' ').slice(0, 16);
+      const seriesEndsAt = String(
+        (deltas?.observations || []).slice(-1)[0]?.observed_at || snapshot.observed_at
+      ).replace('T', ' ').slice(0, 16);
+      const differentObservations = loadedAt !== seriesEndsAt;
       // A reviewer asked what this reference did over the last month, and the
       // panel could only answer "since one baseline". It states how many
       // published observations the series actually spans and which of them
@@ -238,9 +256,17 @@
             + moved.map(point => escapeHTML(String(point.observed_at).slice(0, 10))).join(', ')
           : `, and this reference is unchanged across all of them`)
         + `. The series grows by one point each time an observation is published; it does not `
-        + `reach back before ${escapeHTML(String(snapshot.observed_at).slice(0, 10))}.</p>`;
+        + `reach back before ${escapeHTML(String(snapshot.observed_at).slice(0, 10))}`
+        + (differentObservations
+          ? `. The comparison above is against the receipt this page loaded, observed `
+            + `${escapeHTML(loadedAt)} UTC, and the series ends at ${escapeHTML(seriesEndsAt)} `
+            + `UTC. Those are two observations, so the two halves can disagree without either `
+            + `being wrong`
+          : ``)
+        + `.</p>`;
       container.innerHTML = `<span class="eyebrow">SINCE ${escapeHTML(datedOn)} UTC`
-        + `${recomputed ? ' · RECOMPUTED BASELINE' : ''} · ${escapeHTML(String(snapshot.rules_version))}</span>`
+        + `${recomputed ? ' · RECOMPUTED BASELINE' : ''} · AGAINST ${escapeHTML(loadedAt)} UTC`
+        + ` · ${escapeHTML(String(snapshot.rules_version))}</span>`
         + body
         + seriesLine
         + `<small class="change-limit">`

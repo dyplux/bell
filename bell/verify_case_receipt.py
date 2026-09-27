@@ -77,6 +77,8 @@ def find_published(payload: dict) -> tuple:
     used to choose it.
     """
     digests = payload.get("source_hashes")
+    observed_at = payload.get("observed_at")
+    by_stamp = None
     for path in SHIPPED_RECEIPTS:
         if "history" in path.name or "inputs" in path.name:
             continue
@@ -84,9 +86,23 @@ def find_published(payload: dict) -> tuple:
             candidate = json.loads(path.read_text(encoding="utf-8"))
         except (OSError, json.JSONDecodeError):
             continue
-        if isinstance(candidate, dict) and candidate.get("source_hashes") == digests:
+        if not isinstance(candidate, dict):
+            continue
+        if candidate.get("source_hashes") == digests:
             return candidate, path.name
-    return None, None
+        if candidate.get("observed_at") == observed_at:
+            by_stamp = (candidate, path.name)
+    # Selecting by the digests and then asserting the digests match is a
+    # tautology: through the CLI that check could never fail, which a reviewer
+    # pointed out after finding that seven of this file's guards could be
+    # deleted with the suite green.
+    #
+    # A receipt naming an observation this repository ships, while carrying
+    # different fingerprints for it, is not an unbound receipt. It is a receipt
+    # about a scan that did not produce it, and falling through to "not bound"
+    # would have let it pass with a softer status. Return it so `bind` refuses
+    # it by name.
+    return by_stamp if by_stamp else (None, None)
 
 
 def bind(payload: dict, published: dict, name: str) -> None:
