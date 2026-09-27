@@ -52,13 +52,24 @@
     <p>CoinMarketCap tells you which tokenised assets exist. Bell checks whether a given
     asset's representations can honestly be compared at all, and publishes the comparison
     when they can. Of the 244 references carrying more than one representation,
-    <strong>87 have a cheapest route worth naming</strong> and 157 are refused by a coded
-    rule. Every number on this page was produced by a command you can run yourself, with
-    no API key.</p>
+    <strong>87 have a cheapest route worth naming</strong>, and behind the 157 refusals
+    sit 158 reasons of which <strong>38 are rows that contradict each other</strong>: a
+    quote denomination that breaks, a market cap of zero under live volume, a spread past
+    the publishable ceiling. Those 38 are what this scanner found. Every number on this
+    page was produced by a command you can run yourself, with no API key.</p>
+
+    <p>The other 120 reasons are a second price CoinMarketCap never published, which is a
+    fact about catalogue coverage rather than about any issuer. That is why the refusal
+    total is not the headline: 157 borrows the weight of a contradiction for a gap in the
+    data. The two are counted separately here and in every other place the numbers appear,
+    and the counts above are reasons rather than references, because one reference can fail
+    more than one rule. A reviewer had to reach a second paragraph to learn which half was
+    which; it leads now.</p>
 
     <div class="judge-facts">
+      <div><small>Contradictions found, by reason</small><strong>38</strong></div>
       <div><small>Comparisons published</small><strong>87</strong></div>
-      <div><small>Refusals, by named rule</small><strong>157</strong></div>
+      <div><small>Refused for missing coverage</small><strong>120</strong></div>
       <div><small>Tests in the offline gate</small><strong>496</strong></div>
       <div><small>Gate runtime</small><strong>&lt;24s</strong></div>
     </div>

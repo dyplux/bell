@@ -48,13 +48,22 @@ def flowed(text: str) -> str:
 
 class HeadlineNumbersArePinned(unittest.TestCase):
     def test_the_two_tiles_state_the_measured_comparison_counts(self):
+        # The refusals tile used to say 157, and 120 of the 158 reasons behind
+        # that number are a price CoinMarketCap never published. A headline of
+        # 157 borrows the weight of a contradiction for a gap in the data, so
+        # the tiles now state the two halves and both are pinned.
         page = judge_text()
         published = BASE_RATE["comparable"]
-        refused = BASE_RATE["refused"]
+        contradictions = BASE_RATE["refusal_split"]["data_contradiction"]
+        coverage = BASE_RATE["refusal_split"]["source_coverage"]
         self.assertIn(f"<small>Comparisons published</small><strong>{published}</strong>", page,
                       f"the published-comparisons tile is not the measured {published}")
-        self.assertIn(f"<small>Refusals, by named rule</small><strong>{refused}</strong>", page,
-                      f"the refusals tile is not the measured {refused}")
+        self.assertIn(f"<small>Contradictions found, by reason</small><strong>{contradictions}</strong>",
+                      page, f"the contradictions tile is not the measured {contradictions}")
+        self.assertIn(f"<small>Refused for missing coverage</small><strong>{coverage}</strong>",
+                      page, f"the coverage tile is not the measured {coverage}")
+        self.assertNotIn(f"<small>Refusals, by named rule</small><strong>{BASE_RATE['refused']}</strong>",
+                         page, "the undivided refusal total is back in a tile")
 
     def test_the_opening_paragraph_states_the_measured_denominator_and_counts(self):
         page = judge_text()
@@ -64,15 +73,32 @@ class HeadlineNumbersArePinned(unittest.TestCase):
                       flow, "the opening paragraph's denominator is not the measured one")
         self.assertIn(f"<strong>{BASE_RATE['comparable']} have a cheapest route worth naming",
                       flow, "the opening paragraph's affirmative count is not measured")
-        self.assertIn(f"and {BASE_RATE['refused']} are refused by a coded rule", flow,
-                      "the opening paragraph's refusal count is not measured")
+        # The paragraph used to end "and 157 are refused by a coded rule", and
+        # 120 of the 158 reasons behind that number are a price CoinMarketCap
+        # never published. It leads with the contradictions now, and both
+        # halves are pinned so neither can drift back into one figure.
+        split = BASE_RATE["refusal_split"]
+        reasons = split["data_contradiction"] + split["source_coverage"]
+        self.assertIn(f"behind the {BASE_RATE['refused']} refusals sit {reasons} reasons "
+                      f"of which <strong>{split['data_contradiction']} are rows that "
+                      "contradict each other", flow,
+                      "the opening paragraph no longer leads with the measured contradictions")
+        self.assertIn(f"The other {split['source_coverage']} reasons are a second price", flow,
+                      "the opening paragraph's coverage count is not measured")
 
     def test_the_readme_body_states_the_same_measured_counts(self):
         # Outside the fenced block, which is the only part the older test read.
         body = readme_text()
         body = flowed(body)
         self.assertIn(f"**{BASE_RATE['comparable']} have a cheapest route worth naming**", body)
-        self.assertIn(f"{BASE_RATE['refused']} are refused by a coded rule", body)
+        # The README row led with the refusal total too. Both halves of it are
+        # pinned here for the same reason the judge page's are.
+        split = BASE_RATE["refusal_split"]
+        self.assertIn(f"behind the {BASE_RATE['refused']} refusals sit "
+                      f"{split['data_contradiction'] + split['source_coverage']} reasons of "
+                      f"which **{split['data_contradiction']} are rows that contradict each "
+                      "other**", body)
+        self.assertIn(f"The other {split['source_coverage']} are a second price", body)
         self.assertIn(f"Of the {BASE_RATE['denominator_two_or_more_representations']} references",
                       body)
 
@@ -113,6 +139,8 @@ class HeadlineNumbersArePinned(unittest.TestCase):
         pinned = {
             str(BASE_RATE["comparable"]), str(BASE_RATE["refused"]),
             str(BASE_RATE["denominator_two_or_more_representations"]),
+            str(BASE_RATE["refusal_split"]["data_contradiction"]),
+            str(BASE_RATE["refusal_split"]["source_coverage"]),
         }
         page = judge_text()
         tiles = re.findall(r"<small>([^<]+)</small><strong>([^<]+)</strong>", page)
