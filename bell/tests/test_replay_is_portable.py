@@ -82,8 +82,23 @@ class TheComparisonIsStableUnderReordering(unittest.TestCase):
         self.assertAlmostEqual(total(r["volume_share"] for r in result["routes"]), 1.0, places=9)
 
 
-class TheShippedReceiptReplaysExactly(unittest.TestCase):
-    def test_recomputing_the_shipped_inputs_reproduces_the_shipped_receipt(self):
+class TheRecomputedReceiptDoesNotPublishMorePrecisionThanItStates(unittest.TestCase):
+    """Named for what it does.
+
+    This class was called TheShippedReceiptReplaysExactly and its method
+    test_recomputing_the_shipped_inputs_reproduces_the_shipped_receipt, and it
+    never opened the shipped receipt: it recomputes from the inputs and checks
+    that the published figures carry no more precision than they claim. A
+    reviewer read the name, looked for the comparison, and found
+    round(round(x, n), n) == round(x, n) on five floats.
+
+    The real byte-for-byte re-derivation is in verify_integrity_receipt.py,
+    which `make verify` runs inside this same gate, and a reviewer confirmed it
+    fails on a one-count edit. A test may not take credit for another check's
+    work by being named after it.
+    """
+
+    def test_published_figures_carry_no_more_precision_than_they_state(self):
         with open(INPUTS, encoding="utf-8") as handle:
             package = json.load(handle)
         surfaces = package["surfaces"]

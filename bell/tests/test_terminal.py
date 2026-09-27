@@ -10,15 +10,15 @@ import unittest
 class TheTerminal(unittest.TestCase):
     def test_terminal_marks_no_token_asset_as_underlying_only(self):
         result = build_terminal_summary({"asset": {"name": "Royal Bank", "has_tokens": False}})
-        assert result["state"] == "underlying_only"
-        assert result["output"] == "MONITOR"
-        assert result["metrics"]["token_count"] == 0
+        self.assertTrue(result["state"] == "underlying_only")
+        self.assertTrue(result["output"] == "MONITOR")
+        self.assertTrue(result["metrics"]["token_count"] == 0)
 
 
     def test_terminal_does_not_turn_missing_token_rows_into_underlying_only(self):
         result = build_terminal_summary({"asset": {"name": "Gold", "has_tokens": True}})
-        assert result["state"] == "coverage_pending"
-        assert result["output"] == "LOAD"
+        self.assertTrue(result["state"] == "coverage_pending")
+        self.assertTrue(result["output"] == "LOAD")
 
 
     def test_terminal_marks_one_token_asset_as_dossier(self):
@@ -28,10 +28,10 @@ class TheTerminal(unittest.TestCase):
             "issuers": [{"name": "bStocks"}],
             "market_pairs": [{"category": "spot"}],
         })
-        assert result["state"] == "single_token"
-        assert result["output"] == "DOSSIER"
-        assert result["metrics"]["issuer_count"] == 1
-        assert result["metrics"]["spot_pair_count"] == 1
+        self.assertTrue(result["state"] == "single_token")
+        self.assertTrue(result["output"] == "DOSSIER")
+        self.assertTrue(result["metrics"]["issuer_count"] == 1)
+        self.assertTrue(result["metrics"]["spot_pair_count"] == 1)
 
 
     def test_terminal_exposes_multi_token_market_and_data_quality_evidence(self):
@@ -46,12 +46,12 @@ class TheTerminal(unittest.TestCase):
             "market_pairs": [{"category": "spot"}, {"category": "perpetual"}],
             "findings": [{"code": "symbol_collision"}],
         })
-        assert result["state"] == "multi_token"
-        assert result["output"] == "COMPARE"
-        assert result["metrics"]["derivative_pair_count"] == 1
-        assert result["metrics"]["network_count"] == 2
-        assert any("TSLA" in point for point in result["points"])
-        assert result["points"][-1] == "1 deterministic finding(s) require review"
+        self.assertTrue(result["state"] == "multi_token")
+        self.assertTrue(result["output"] == "COMPARE")
+        self.assertTrue(result["metrics"]["derivative_pair_count"] == 1)
+        self.assertTrue(result["metrics"]["network_count"] == 2)
+        self.assertTrue(any("TSLA" in point for point in result["points"]))
+        self.assertTrue(result["points"][-1] == "1 deterministic finding(s) require review")
 
 
     def test_terminal_exposes_dex_coverage_as_a_separate_evidence_layer(self):
@@ -68,10 +68,10 @@ class TheTerminal(unittest.TestCase):
                 "surface_counts": {"detail": 1, "pools": 1, "security": 1, "holders": 1, "holder_tags": 1},
             },
         })
-        assert result["metrics"]["dex_covered_token_count"] == 1
-        assert result["metrics"]["dex_holder_tag_count"] == 1
-        assert any("DEX evidence" in point for point in result["points"])
-        assert any("DEX evidence is shown separately" in point for point in result["points"])
+        self.assertTrue(result["metrics"]["dex_covered_token_count"] == 1)
+        self.assertTrue(result["metrics"]["dex_holder_tag_count"] == 1)
+        self.assertTrue(any("DEX evidence" in point for point in result["points"]))
+        self.assertTrue(any("DEX evidence is shown separately" in point for point in result["points"]))
 
 
 if __name__ == "__main__":

@@ -24,7 +24,8 @@ def receipt(states, rules_version=RULES_VERSION, refs=10, rows=20):
     if rules_version is not None:
         universe["rules_version"] = rules_version
     return {"observed_at": "2026-09-21T21:25:01Z", "universe": universe,
-            "source_hashes": {"map": MAP_DIGEST}}
+            "source_hashes": {name: MAP_DIGEST for name in
+                          ("map", "asset_list", "quotes", "info", "issuers")}}
 
 
 def observation(states, rules_version=None, refs=10, rows=20):
@@ -34,7 +35,8 @@ def observation(states, rules_version=None, refs=10, rows=20):
         "tokens_scanned": rows,
         "states": states,
         "signals": {"PRICE_DENOMINATION_BREAK": 1},
-        "source_hashes": {"map": MAP_DIGEST},
+        "source_hashes": {name: MAP_DIGEST for name in
+                          ("map", "asset_list", "quotes", "info", "issuers")},
     }
     if rules_version is not None:
         entry["rules_version"] = rules_version

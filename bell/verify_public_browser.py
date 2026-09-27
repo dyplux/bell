@@ -280,7 +280,20 @@ def main() -> int:
             with open(case_download.path(), encoding="utf-8") as case_file:
                 case_receipt = json.load(case_file)
             case_verification = verify_case_receipt(case_receipt)
-            require(case_verification["status"] == "valid public case receipt", "downloaded case receipt failed its public contract")
+            # A case exported from the LIVE endpoint describes an observation no
+            # receipt in this repository carries, so its rows cannot be bound to
+            # a published scan and the verifier says so rather than printing
+            # "valid" over a question it did not answer. Both outcomes are
+            # acceptable here; silence about which one is not.
+            require(case_verification["status"] in (
+                        "valid public case receipt",
+                        "internally consistent; rows not bound to a published receipt"),
+                    f"downloaded case receipt failed its public contract: "
+                    f"{case_verification.get('status')!r}")
+            require(case_verification.get("rows_binding"),
+                    "the case verifier stopped reporting whether it bound the rows to a scan")
+            require(case_verification.get("verdict_rederived_from_rows"),
+                    "the case verifier stopped re-deriving the verdict from the rows")
             require(case_receipt.get("reference", {}).get("name") == "Silver", "case receipt does not identify Silver")
             require(len(case_receipt.get("tokens", [])) == 5, "case receipt does not retain the exact Silver rows")
             require(case_receipt.get("source_hashes"), "case receipt does not retain source fingerprints")
@@ -342,7 +355,11 @@ def main() -> int:
             change_text = change.inner_text()
             require("SINCE" in change_text,
                     f"the change view does not date what it compares against: {change_text[:200]!r}")
-            stated_change = ("SAME RULE SET" in change_text)
+            # The panel names its baseline: either a recomputation of the dated
+            # inputs under the current rules, or two observations that really do
+            # share a rule set. Both are comparisons; the eyebrow says which.
+            stated_change = ("RECOMPUTED BASELINE" in change_text
+                             or "SAME RULE SET" in change_text)
             require(stated_change or "would report a rule change" in change_text
                     or "not in the dated observation" in change_text,
                     f"the change view neither compared nor named why it refused: {change_text[:300]!r}")
@@ -352,6 +369,11 @@ def main() -> int:
                         "comparison")
                 require("Compared prices are deliberately excluded" in change_text,
                         "the change view stopped stating that it excludes price movement")
+                if "RECOMPUTED BASELINE" in change_text:
+                    require("not the receipt published that day" in change_text,
+                            "the change view says its baseline is recomputed and does not say "
+                            "what it is recomputed instead of. The history chart calls that same "
+                            "observation 'rules not recorded'; the two must not disagree.")
 
             tesla_state = search_and_check("Tesla")
             require(tesla_state in PUBLIC_STATES,

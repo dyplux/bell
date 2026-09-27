@@ -141,3 +141,18 @@ scroll-margin-top:calc(var(--header-height) + 16px)}
 .reference-change .change-refused{border-left:2px solid var(--red);padding-left:10px}
 .reference-change .change-limit{display:block;color:var(--dim);font-size:11px;
   line-height:1.5;margin-top:10px}
+
+/* The judge page's scope list. This was 1,863 characters in one 12px paragraph
+   with default line-height: a reviewer measured 135 characters per line and
+   said the most important disclosure on the page was the one a judge skips.
+   Same tokens, same gold rail, red rail on the two limits. */
+.judge-scope{border:1px solid var(--line);background:var(--panel-inset);padding:20px 22px;margin:8px 0 26px}
+.judge-scope h3{font:550 15px/1.3 var(--font);letter-spacing:-.01em;color:var(--paper);margin:0 0 16px}
+.judge-scope dl{margin:0}
+.judge-scope dt{font:600 11px/1.4 var(--font);letter-spacing:.09em;text-transform:uppercase;
+  color:var(--gold);margin-top:16px}
+.judge-scope dt:first-of-type{margin-top:0}
+.judge-scope dd{margin:6px 0 0;font-size:14px;line-height:1.65;color:var(--muted);max-width:68ch}
+.judge-scope .scope-limit{color:var(--red)}
+.judge-scope dd.scope-limit{color:var(--paper);border-left:2px solid var(--red);padding-left:12px}
+@media(max-width:620px){.judge-scope{padding:16px 16px}.judge-scope dd{font-size:13.5px}}

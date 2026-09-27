@@ -47,6 +47,18 @@ DEFAULT_LATEST = ROOT / "site/proof/rwa-surface-integrity-latest-replay-2026-09-
 DEFAULT_INPUTS = ROOT / "site/proof/rwa-surface-integrity-inputs-2026-09-21.json"
 SHA256 = re.compile(r"^[0-9a-f]{64}$")
 
+# `verify_observation` required only "a non-empty dict" for source_hashes, and
+# the comparison against the receipt is symmetric, so shrinking BOTH sides to
+# one fingerprint agreed with itself and the gate went green over four deleted
+# source digests.
+#
+# The floor is five, not six: `crypto_info` was added to the scan after the two
+# oldest observations were published, and they really do record five. Demanding
+# six would refuse honest history, which is the opposite failure and just as
+# bad. Anything outside this vocabulary is a surface this code does not read.
+REQUIRED_SOURCE_SURFACES = frozenset({"map", "asset_list", "quotes", "info", "issuers"})
+KNOWN_SOURCE_SURFACES = REQUIRED_SOURCE_SURFACES | {"crypto_info"}
+
 
 def load(path: Path) -> dict:
     # A truncated or corrupted file raised JSONDecodeError and printed a raw
@@ -175,6 +187,23 @@ def verify_observation(observation: dict, receipt: dict, label: str) -> None:
         raise ValueError(f"{label}.source_hashes is missing")
     if not isinstance(receipt_hashes, dict) or not receipt_hashes:
         raise ValueError(f"{label}: the bundled receipt carries no source_hashes to compare")
+    # The comparison below is symmetric, so shrinking BOTH sides to one
+    # fingerprint agreed with itself and the gate went green over four deleted
+    # source digests. Same shape as the emptied `signals`, fixed there and left
+    # here. Seventeen lines from `verify_public_inputs`, which has always
+    # required all six named surfaces. Require them here too, so a receipt
+    # cannot claim fewer sources than the scan reads.
+    missing = REQUIRED_SOURCE_SURFACES - recorded_hashes.keys()
+    if missing:
+        raise ValueError(
+            f"{label}.source_hashes is missing {', '.join(sorted(missing))}. Every published scan "
+            "reads those five surfaces, so a record that fingerprints fewer of them is a record "
+            "with sources removed.")
+    unknown = recorded_hashes.keys() - KNOWN_SOURCE_SURFACES
+    if unknown:
+        raise ValueError(
+            f"{label}.source_hashes names {', '.join(sorted(unknown))}, which this code does not "
+            "read")
     assert_equal(f"{label}.source_hashes", receipt_hashes, recorded_hashes)
 
     verify_observation_shape(observation, label)

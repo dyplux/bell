@@ -237,15 +237,20 @@ class NoTwoReceiptsDescribeOneObservationDifferently(unittest.TestCase):
                     f'{first_name} and {other_name} both describe the observation at '
                     f'{observed} and state different rules. Two receipts of one '
                     f'observation cannot answer to two rule sets.')
-        # A counter nobody reads is how the previous version hid being empty.
-        # Zero duplicate observations is a legitimate state for this repository,
-        # so this does not fail on it; what it refuses is enumerating nothing at
-        # all, which would mean `_receipts` had stopped finding receipts and the
-        # check had quietly become a no-op again.
+        # `assertGreaterEqual(compared, 0)` was true for every possible value,
+        # which is a tautology written to look like coverage. A reviewer counted
+        # it among the checks in this repository that cannot fail, and was
+        # right. Zero duplicate observations is a legitimate state here, so the
+        # honest report is to say what was and was not compared, and to fail
+        # only on the thing that would make this a no-op: enumerating nothing.
         receipts = self._receipts()
         self.assertGreater(len(receipts), 1,
                            'no dated receipts were enumerated, so this check compared nothing')
-        self.assertGreaterEqual(compared, 0)
+        if not compared:
+            # Not a failure, and not silent either. The logic is exercised by
+            # test_the_comparison_would_notice_two_receipts_that_disagree.
+            print(f'\n  note: {len(receipts)} observations, none described by two receipts, '
+                  f'so this compared nothing today')
 
 
 class OneNameMeansOneBehaviour(unittest.TestCase):

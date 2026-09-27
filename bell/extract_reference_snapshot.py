@@ -71,6 +71,23 @@ def snapshot(receipt: dict) -> dict:
         # which is the error this project spent five days publishing.
         "rules_version": universe.get("rules_version"),
         "extracted_from": RECEIPT.name,
+        # A reviewer caught the page calling this "the dated observation" while
+        # the history chart, on the same screen, said that observation recorded
+        # no rule set. Both were describing the same timestamp and they were
+        # not describing the same thing. This file is the 21 September inputs
+        # RECOMPUTED under the current rules; what Bell published that day was
+        # computed under the previous ones, and the two differ by 572
+        # references. Saying "recomputed" is what makes the comparison honest,
+        # and it is also what makes it the right baseline: diffing against a
+        # recomputation under today's rules isolates market change from rule
+        # change, which is the whole distinction this product sells.
+        "baseline": "recomputed",
+        "baseline_note": ("These states are the 21 September inputs recomputed under the current "
+                          "rule set, not the receipt published on 21 September. That receipt "
+                          "recorded no rule set and a different distribution. Comparing a live "
+                          "receipt against this recomputation isolates what the market did from "
+                          "what the rules did; comparing it against the published receipt would "
+                          "report the rule change as a market change."),
         "note": ("Per-reference state at one dated observation, lifted from the dated replay "
                  "receipt so a change view does not have to load 3.42 MiB. It records whether a "
                  "comparison was published, never the compared prices: those belong to the "

@@ -197,15 +197,28 @@ class UpstreamShapeContract(unittest.TestCase):
         # The joins are rwa_id -> crypto_id -> issuer_id. If any of these stops
         # being returned, the identity work this product is built on collapses,
         # and it should fail loudly here rather than quietly resolve nothing.
-        wanted = ('rwa_id', 'crypto_id', 'issuer_id', 'id')
+        # This asked for any of {rwa_id, crypto_id, id} and passed on `id`,
+        # the most generic key CMC returns. A reviewer enumerated the rows:
+        # 18,791 of them, and `crypto_id` appears in none - so the test named
+        # after the join was green on a key the join does not use. Require the
+        # keys this build actually joins on, by name, and let a missing one say
+        # which.
+        required = ('rwa_id', 'issuer_id')
         found = set()
+        rows = 0
         for name, row in self._rows():
-            found |= {key for key in wanted if key in row}
-        if not found:
-            self.skipTest('captured payloads contain no identity-bearing rows')
-        self.assertTrue(
-            found & {'rwa_id', 'crypto_id', 'id'},
-            f'no identity key survived in the captured payloads; found {sorted(found)}')
+            rows += 1
+            found |= {key for key in ('rwa_id', 'crypto_id', 'issuer_id', 'id') if key in row}
+        self.assertGreater(rows, 0, 'captured payloads contain no rows at all')
+        missing = [key for key in required if key not in found]
+        self.assertEqual(
+            missing, [],
+            f'the joins this build depends on need {", ".join(required)}; {", ".join(missing)} '
+            f'is in none of the {rows:,} captured rows. Found: {sorted(found)}')
+        # crypto_id is resolved from the token payloads rather than these rows,
+        # so it is reported and not required here. Saying which half is checked
+        # is the difference between a limit and a hole.
+        self.assertIn('id', found, 'no row carries even a generic identifier')
 
 
 if __name__ == '__main__':

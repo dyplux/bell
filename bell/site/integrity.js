@@ -183,12 +183,26 @@
         ? `<div class="change-rows">${changes.map(([label, value]) =>
             `<div><span>${escapeHTML(label)}</span><strong>${escapeHTML(value)}</strong></div>`).join('')}</div>`
         : `<p class="change-none">Route, representation count and the rules that fired are all the `
-          + `same as on the dated observation. That is descriptive, not reassurance: prices moved `
+          + `same as on the recomputed baseline. That is descriptive, not reassurance: prices moved `
           + `and are not compared here.</p>`;
-      container.innerHTML = `<span class="eyebrow">SINCE ${escapeHTML(datedOn)} UTC · SAME RULE SET</span>`
+      // "SINCE ... · SAME RULE SET" read as "since what Bell published that
+      // day". It is not: the baseline is that day's INPUTS recomputed under
+      // today's rules, and the receipt published that day recorded no rule set
+      // and a different distribution. A reviewer found the page saying both
+      // things on one screen. Recomputed is the right baseline - it isolates
+      // market change from rule change - and it has to say so.
+      const recomputed = snapshot.baseline === 'recomputed';
+      container.innerHTML = `<span class="eyebrow">SINCE ${escapeHTML(datedOn)} UTC`
+        + `${recomputed ? ' · RECOMPUTED BASELINE' : ''} · ${escapeHTML(String(snapshot.rules_version))}</span>`
         + body
-        + `<small class="change-limit">Two dated observations, ${escapeHTML(String(snapshot.rules_version))} `
-        + `on both sides. Compared prices are deliberately excluded: they belong to the observation `
+        + `<small class="change-limit">`
+        + (recomputed
+          ? `Baseline: the ${escapeHTML(datedOn)} inputs recomputed under `
+            + `${escapeHTML(String(snapshot.rules_version))}, not the receipt published that day, `
+            + `which recorded no rule set and a different distribution. Recomputing is what keeps `
+            + `this a market comparison instead of a rule comparison. `
+          : `Two dated observations, ${escapeHTML(String(snapshot.rules_version))} on both sides. `)
+        + `Compared prices are deliberately excluded: they belong to the observation `
         + `that produced them.</small>`;
       container.hidden = false;
     });

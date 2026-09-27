@@ -157,6 +157,34 @@ class JudgeCounts(unittest.TestCase):
             self.assertIsNone(re.search(r"check-offline[^.]{0,40}?\d\.\ds", text),
                               f"{name} quotes the gate runtime to a tenth again")
 
+    def test_the_page_states_the_thresholds_the_verifier_actually_checks(self):
+        # judge.html paraphrases the boundary checks - "1.99x stays below the
+        # dispersion rule, 2x is an inclusive warning, 9.99x stays a warning,
+        # 10x is an inclusive stop" - and a reviewer rewrote them to "0.99x ...
+        # 99x" through a green gate. The rule verifier names every threshold in
+        # its own check names, so the page is compared against those rather
+        # than against a copy.
+        import json
+        import subprocess
+        run = subprocess.run(
+            ["python3", "bell/verify_rule_boundaries.py"], cwd=HERE.parent.parent,
+            capture_output=True, text=True,
+            env={"PYTHONPATH": "bell", "PATH": "/usr/bin:/bin:/usr/local/bin"})
+        self.assertEqual(run.returncode, 0, run.stderr[-300:])
+        names = [check["name"] for check in json.loads(run.stdout)["checks"]]
+        thresholds = sorted({token for name in names
+                             for token in re.findall(r"\b\d+(?:\.\d+)?x\b", name)})
+        self.assertTrue(thresholds, "the boundary checks no longer name their thresholds")
+        page = " ".join(JUDGE.read_text(encoding="utf-8").split())
+        for threshold in thresholds:
+            self.assertIn(threshold, page,
+                          f"the verifier checks {threshold} and the judge page does not name it")
+        # And the page may not name a threshold the verifier does not check.
+        stated = set(re.findall(r"\b\d+(?:\.\d+)?x\b", page))
+        invented = stated - set(thresholds)
+        self.assertEqual(invented, set(),
+                         f"the judge page names {sorted(invented)}, which no boundary check covers")
+
     def test_the_page_describes_the_verification_the_verifier_performs(self):
         # "A recomputation of the published receipt" promised more than it
         # delivers: two of the twelve observations ship their payload and are

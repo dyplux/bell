@@ -59,6 +59,66 @@ def codes_of(signals: Any) -> set:
     return out
 
 
+SHIPPED_RECEIPTS = sorted((ROOT / "site" / "proof").glob("rwa-surface-integrity-*.json"))
+
+
+def find_published(observed_at: str) -> tuple:
+    """A receipt in this repository describing the same observation, if there is one."""
+    for path in SHIPPED_RECEIPTS:
+        if "history" in path.name or "inputs" in path.name:
+            continue
+        try:
+            candidate = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        if isinstance(candidate, dict) and candidate.get("observed_at") == observed_at:
+            return candidate, path.name
+    return None, None
+
+
+def bind(payload: dict, published: dict, name: str) -> None:
+    """Refuse a case whose rows are not the rows the published receipt carries.
+
+    Re-deriving the verdict from the rows proves the verdict follows from THOSE
+    rows. It does not prove they are the rows CoinMarketCap returned: a reviewer
+    deleted three of Silver's five representations, let the engine re-derive,
+    and got `COMPARABLE, NOT ENDORSED` on the reference this product's own
+    headline example blocks. Deleting evidence changed the answer, honestly, to
+    the wrong question.
+    """
+    if payload["source_hashes"] != published.get("source_hashes"):
+        raise ValueError(
+            f"the receipt's source fingerprints are not the ones {name} records for "
+            f"{payload['observed_at']}")
+    index = {str(item.get("rwa_id")): item
+             for item in (published.get("alerts") or []) if isinstance(item, dict)}
+    reference = index.get(str(payload["reference"].get("rwa_id")))
+    if reference is None:
+        # The published receipt truncates its full-row `alerts` array, so a
+        # reference outside it cannot be row-checked here. Say that rather than
+        # passing it off as bound.
+        raise LookupError("not carried in full by the published receipt")
+    published_rows = sorted(str(row.get("crypto_id")) for row in reference.get("tokens") or [])
+    receipt_rows = sorted(str(row.get("crypto_id")) for row in payload["tokens"])
+    if published_rows != receipt_rows:
+        missing = sorted(set(published_rows) - set(receipt_rows))
+        added = sorted(set(receipt_rows) - set(published_rows))
+        raise ValueError(
+            f"the receipt carries {len(receipt_rows)} of the {len(published_rows)} representations "
+            f"{name} publishes for this reference"
+            + (f"; missing {', '.join(missing)}" if missing else "")
+            + (f"; not published: {', '.join(added)}" if added else "")
+            + ". Removing a row changes the answer to a question nobody asked.")
+    for row in payload["tokens"]:
+        published_row = next((item for item in reference["tokens"]
+                              if str(item.get("crypto_id")) == str(row.get("crypto_id"))), None)
+        for field in ("price", "market_cap", "volume_24h", "symbol"):
+            if row.get(field) != published_row.get(field):
+                raise ValueError(
+                    f"representation {row.get('crypto_id')} carries a {field} of "
+                    f"{row.get(field)!r} and {name} publishes {published_row.get(field)!r}")
+
+
 def rederive(payload: dict) -> dict:
     """Run the engine over the receipt's own rows and refuse a verdict that does not follow."""
     reference = payload["reference"]
@@ -165,6 +225,17 @@ def verify(payload: Any) -> dict[str, Any]:
                 f"source_hashes.{name} is {digest[0] * 4}...: a single repeated character is a "
                 "placeholder, not the fingerprint of a payload")
     recomputed = rederive(payload)
+    published, published_name = find_published(payload["observed_at"])
+    if published is None:
+        binding = ("not bound: no receipt in this repository describes "
+                   f"{payload['observed_at']}, so the rows were checked against each other and "
+                   "not against a published scan")
+    else:
+        try:
+            bind(payload, published, published_name)
+            binding = f"bound to {published_name}"
+        except LookupError as reason:
+            binding = f"not bound to {published_name}: {reason}"
     return {
         "schema_version": payload["schema_version"],
         "reference": reference.get("name") or reference.get("symbol") or reference.get("rwa_id"),
@@ -174,7 +245,11 @@ def verify(payload: Any) -> dict[str, Any]:
         "verdict_rederived_from_rows": (recomputed.get("decision") or {}).get("state"),
         "signals_rederived": sorted(codes_of(recomputed.get("signals")) & ROW_DERIVED_SIGNALS),
         "signals_not_rederived": sorted(CONTEXT_SIGNALS),
-        "status": "valid public case receipt",
+        "rows_binding": binding,
+        # The verdict string used to say "valid public case receipt" whatever
+        # had been checked. It says which of the two questions was answered.
+        "status": ("valid public case receipt" if binding.startswith("bound")
+                   else "internally consistent; rows not bound to a published receipt"),
     }
 
 

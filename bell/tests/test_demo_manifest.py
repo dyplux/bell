@@ -90,6 +90,21 @@ class DemoNamesItsDenominator(unittest.TestCase):
         self.assertIn("make base-rate", self.plain,
                       "the demo does not point at the command that does measure the rate")
 
+    def test_the_judge_page_states_the_counts_the_demo_prints(self):
+        # judge.html says `make demo` "prints 35 refused, 10 comparable, 5 held
+        # for investigation". A reviewer changed it to "3 refused, 44
+        # comparable, 3 held" and the gate stayed green, on the page whose
+        # first sentence promises every number came from a command. This is
+        # that command's output.
+        import re
+        numbers = re.search(r"(\d+) refused[^0-9]+(\d+) comparable[^0-9]+(\d+) held", self.plain)
+        self.assertIsNotNone(numbers, f"the demo stopped printing its three counts: {self.plain[-300:]!r}")
+        judge = " ".join((HERE.parent / "site" / "judge.html").read_text(encoding="utf-8").split())
+        stated = (f"prints {numbers.group(1)} refused, {numbers.group(2)} comparable, "
+                  f"{numbers.group(3)} held for investigation")
+        self.assertIn(stated, judge,
+                      f"the judge page does not state what `make demo` prints: {stated!r}")
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -17,7 +17,6 @@ run against evidence the product actually produced.
 from __future__ import annotations
 
 import copy
-import hashlib
 import json
 from pathlib import Path
 import sys
@@ -31,7 +30,6 @@ from verify_case_receipt import ROW_DERIVED_SIGNALS, verify  # noqa: E402
 REPLAY = json.loads((HERE.parent / "site" / "proof"
                      / "rwa-surface-integrity-latest-replay-2026-09-21.json")
                     .read_text(encoding="utf-8"))
-DIGEST = hashlib.sha256(b"bell case receipt fixture").hexdigest()
 
 
 def receipt_for(alert: dict) -> dict:
@@ -54,7 +52,10 @@ def receipt_for(alert: dict) -> dict:
         "signals": copy.deepcopy(alert["signals"]),
         "tokens": copy.deepcopy(alert["tokens"]),
         "method": {"join_key": "rwa_id", "token_join_key": "crypto_id", "rules": []},
-        "source_hashes": {"map": DIGEST},
+        # The published digests, because the receipt now binds to the
+        # published scan and a made-up fingerprint is exactly what that
+        # binding exists to refuse.
+        "source_hashes": copy.deepcopy(REPLAY["source_hashes"]),
         "limits": ["Observed fields do not prove liquidity"],
     }
 
@@ -145,6 +146,57 @@ class CaseReceiptTests(unittest.TestCase):
                          ["NO_TRADFI_MARKET", "TOKEN_INFO_MISSING"])
         self.assertTrue(set(result["signals_rederived"]) <= ROW_DERIVED_SIGNALS)
         self.assertNotIn("NO_TRADFI_MARKET", ROW_DERIVED_SIGNALS)
+
+    def test_deleting_rows_is_refused_even_when_the_verdict_follows_from_what_is_left(self):
+        # Re-deriving the verdict from the rows proves it follows from THOSE
+        # rows. A reviewer deleted three of Silver's five representations, let
+        # the engine re-derive honestly, and got COMPARABLE on the reference
+        # this product's headline example blocks. Deleting evidence changed the
+        # answer to the wrong question, so the rows are bound to the published
+        # scan.
+        from rwa_integrity import asset_scan
+        payload = receipt_for(self.alert)
+        payload["tokens"] = payload["tokens"][:2]
+        payload["reference"]["token_count"] = 2
+        # Let the verdict and the signals follow honestly from what is left, so
+        # only the binding to the published scan can catch this. Anything less
+        # is caught by the signal check and proves nothing about the binding.
+        honest = asset_scan({**payload["reference"], "tokens": payload["tokens"]},
+                            crypto_info_checked=True)
+        payload["decision"] = honest["decision"]
+        payload["signals"] = honest["signals"]
+        with self.assertRaises(ValueError) as raised:
+            verify(payload)
+        self.assertIn("representations", str(raised.exception))
+        self.assertIn("Removing a row changes the answer", str(raised.exception))
+
+    def test_an_edited_row_is_refused(self):
+        payload = receipt_for(self.alert)
+        payload["tokens"][0] = dict(payload["tokens"][0], price=1.0)
+        with self.assertRaisesRegex(ValueError, "price"):
+            verify(payload)
+
+    def test_a_relabelled_row_is_refused(self):
+        payload = receipt_for(self.alert)
+        payload["tokens"][0] = dict(payload["tokens"][0], symbol="TSLA")
+        with self.assertRaisesRegex(ValueError, "symbol"):
+            verify(payload)
+
+    def test_a_receipt_bound_to_nothing_says_so_instead_of_claiming_valid(self):
+        # A case exported from the live endpoint has no receipt in this
+        # repository to bind to. It used to print "valid public case receipt"
+        # anyway. The status has to say which of the two questions was answered.
+        payload = receipt_for(self.alert)
+        payload["observed_at"] = "2099-01-01T00:00:00Z"
+        result = verify(payload)
+        self.assertEqual(result["status"],
+                         "internally consistent; rows not bound to a published receipt")
+        self.assertIn("not bound", result["rows_binding"])
+
+    def test_a_bound_receipt_says_what_it_is_bound_to(self):
+        result = verify(receipt_for(self.alert))
+        self.assertTrue(result["rows_binding"].startswith("bound to "), result["rows_binding"])
+        self.assertIn("rwa-surface-integrity-latest-replay-2026-09-21.json", result["rows_binding"])
 
 
 if __name__ == "__main__":

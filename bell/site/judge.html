@@ -59,47 +59,80 @@
     <div class="judge-facts">
       <div><small>Comparisons published</small><strong>87</strong></div>
       <div><small>Refusals, by named rule</small><strong>157</strong></div>
-      <div><small>Tests in the offline gate</small><strong>345</strong></div>
+      <div><small>Tests in the offline gate</small><strong>352</strong></div>
       <div><small>Gate runtime</small><strong>&lt;12s</strong></div>
     </div>
 
     <h2>Check it in 30 seconds, no key required</h2>
     <p>Clone the repository and run these. None of them touch the network, and none need a
-    CoinMarketCap credential. The timings are from a run on 26 September 2026.</p>
+    CoinMarketCap credential. Each of the first three finished in well under a second on every
+    machine this has been run on; the gate's own range is stated with it below, because that one
+    is measured and pinned by a test rather than quoted from one run.</p>
 
 <pre>git clone https://github.com/dyplux/bell.git &amp;&amp; cd bell
 make base-rate</pre>
-    <small>0.3s. Prints the whole-catalogue measurement: 791 references, 547 with a single
+    <small>Under a second. Prints the whole-catalogue measurement: 791 references, 547 with a single
     representation and nothing to compare, 244 where a comparison could be attempted, 157
     refused, 87 published. Refusal rate 64.3%, Wilson 95% interval 58.2 to 70.1%.</small>
 
 <pre>python3 bell/verify_rule_boundaries.py</pre>
-    <small>0.2s. An executable specification of the decision boundaries: 1.99x stays below
+    <small>Under a second. An executable specification of the decision boundaries: 1.99x stays below
     the dispersion rule, 2x is an inclusive warning, 9.99x stays a warning, 10x is an
     inclusive stop, and missing or zero prices do not fabricate a ratio. All 8 checks pass.</small>
 
 <pre>make demo</pre>
-    <small>0.13s. Recomputes the 50 highest-priority flagged references from the dated
+    <small>Under a second. Recomputes the 50 highest-priority flagged references from the dated
     replay receipt and prints 35 refused, 10 comparable, 5 held for investigation, with
     the reasoning for each. Those 50 are a priority-sorted slice, not a sample: the
     references carrying no signal are not in the list, so the three counts are not a rate.
     The rate over the whole catalogue, with its denominator, is the command above.</small>
 
 <pre>make check-offline</pre>
-    <small>between 2.8 and 12.0 seconds across the machines it has been measured on, cold runs
-    included. This band has been widened twice rather than quoted tight: a first run on a
-    cold machine was measured at 10.3 seconds and the stated figure has to cover the run a
-    reader actually gets, not the best one. 345 tests, 247 Python and 98 JavaScript. One Python test needs a network and a
-    CoinMarketCap key; without them it is skipped and the runner says so. Plus a re-derivation of
-    the published receipt from the 16.5 MB of shipped inputs and a submission gate over 155 tracked files. Be precise about what that re-derivation proves: the inputs are verified
-    byte for byte, and the scan is recomputed from them. Of the 14 dated observations, 2 ship their full payload. One of those two has its
-    state distribution compared against the receipt; the other does not, and the verifier
-    prints UNVERIFIED and says which half is checked. That record was written under the
-    rule set that ran before this one, and no code in this repository can re-derive it,
-    so its totals, signals and source digests are checked and the split between
-    do_not_compare, investigate and no_flags is not. The rest are published summaries, and every one of the 14 is chained to the one before it, so editing a single record invalidates every digest after it. Be exact about what that is and is not: it is tamper-evidence, not a signature. It defeats a quiet single-record edit, and it does not defeat anyone who can rewrite the whole file, the chain and the committed anchor together, because all three live in this repository. There is no external attestation and no date attestation, and the module says so in its own docstring. And where
-    a receipt predates the current rule set, the recomputed state counts are reported beside
-    the recorded ones rather than compared, because they answer to different rules.</small>
+    <small>The gate runs between 2.8 and 12.0 seconds across the machines it has been measured
+    on, cold runs included. This band has been widened twice rather than quoted tight: a first
+    run on a cold machine was measured at 10.3 seconds, and the stated figure has to cover the
+    run a reader gets, not the best one.</small>
+
+    <div class="judge-scope">
+      <h3>What that gate proves, and what it does not</h3>
+      <dl>
+        <dt>The suite</dt>
+        <dd>352 tests, 254 Python and 98 JavaScript. One Python test needs a network and a
+        CoinMarketCap key; without them it is skipped and the runner says so.</dd>
+
+        <dt>The re-derivation</dt>
+        <dd>The published receipt is recomputed from the 16.5 MB of shipped inputs. The inputs
+        are verified byte for byte and the scan is recomputed from them, so a single changed
+        count fails here.</dd>
+
+        <dt>The submission gate</dt>
+        <dd>Runs a submission gate over 155 tracked files, inspecting every one for anything
+        private or unreleasable.</dd>
+
+        <dt class="scope-limit">One observation is UNVERIFIED</dt>
+        <dd class="scope-limit">Of the 14 dated observations, 2 ship their full payload. One of
+        those two has its state distribution compared against the receipt. The other does not:
+        it was written under the rule set that ran before this one, and no code here can
+        re-derive it. Its totals, signals and source digests are checked; the split between
+        do_not_compare, investigate and no_flags is not, and the verifier prints UNVERIFIED
+        rather than leaving that to be inferred.</dd>
+
+        <dt>The chain</dt>
+        <dd>every one of the 14 is chained to the one before it, so editing a single record
+        invalidates every digest after it.</dd>
+
+        <dt class="scope-limit">The chain is not a signature</dt>
+        <dd class="scope-limit">It defeats a quiet single-record edit. It does not defeat anyone
+        who rewrites the whole file, the chain and the committed anchor together, because all
+        three live in this repository. There is no external attestation and no date attestation,
+        and the module says so in its own docstring.</dd>
+
+        <dt>Rule changes are not market changes</dt>
+        <dd>Where a receipt predates the current rule set, the recomputed state counts are
+        reported beside the recorded ones rather than compared, because they answer to different
+        rules.</dd>
+      </dl>
+    </div>
 
     <h2>Two searches that show both halves</h2>
     <p>On <a href="/">the product page</a>, search these two. They are the affirmative and
