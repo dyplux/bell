@@ -1029,7 +1029,7 @@
       : '<div class="capital-metrics capital-metrics-empty"><span>No comparable quote range in this receipt.</span></div>';
     return `<section class="capital-panel capital-${assessment.mode}" data-capital-panel="${escapeHTML(alert.rwa_id || '')}">
       <div class="capital-panel-head"><span>CAPITAL CHECK</span><b>Make the financial consequence visible</b></div>
-      <label class="capital-budget">Amount under consideration <span>$</span><input type="number" min="1" max="1000000000" step="100" value="${assessment.budget}" inputmode="decimal" data-capital-budget aria-label="Amount under consideration"></label>
+      <label class="capital-budget">Amount under consideration <span>$</span><input type="number" min="${window.BellCapitalImpact.MINIMUM_BUDGET}" max="${window.BellCapitalImpact.MAXIMUM_BUDGET}" step="100" value="${assessment.budget}" inputmode="decimal" data-capital-budget aria-label="Amount under consideration"></label>
       <strong data-capital-headline>${escapeHTML(assessment.headline)}</strong>
       <p data-capital-copy>${escapeHTML(shortenBoundary(assessment.copy))}</p>
       <div data-capital-metrics>${metrics}</div>
@@ -1045,7 +1045,7 @@
       ? formatNumber(row.volume)
       : row.volumeState === 'zero' ? '0 reported' : 'missing';
     const rows = band.rows.map(row => `<tr><th>${escapeHTML(row.token.symbol || row.token.name || 'unlabelled')}<small>${escapeHTML(row.token.name || '')}</small></th><td>${escapeHTML(row.token.issuer_name || row.token.issuer_catalogue_name || 'issuer not resolved')}</td><td>${formatNumber(row.price)}</td><td class="quote-band-delta">${row.deltaPercent >= 0 ? '+' : ''}${row.deltaPercent.toFixed(2)}%</td><td>${volume(row)}</td></tr>`).join('');
-    return `<section class="search-evidence" data-search-evidence><div class="search-evidence-head"><span>OBSERVED QUOTE BAND</span><b>${formatNumber(band.ratio)}×</b></div><p class="search-evidence-lede">${band.rows.length} priced representations around a ${formatNumber(band.median)} median quote</p><div class="quote-band-scroll"><span class="quote-band-scroll-hint">SWIPE FOR QUOTE · MEDIAN GAP · VOLUME →</span><table class="quote-band-table"><thead><tr><th>Representation</th><th>Issuer</th><th>Quote</th><th>Vs median</th><th>24h volume</th></tr></thead><tbody>${rows}</tbody></table></div><small>CMC quote rows in this receipt · relative to the observed median only · not a ranking, discount, backing, liquidity or executable spread</small></section>`;
+    return `<section class="search-evidence" data-search-evidence><div class="search-evidence-head"><span>OBSERVED QUOTE BAND</span><b>${formatNumber(band.ratio)}×</b></div><p class="search-evidence-lede">${band.rows.length} priced representations around a ${formatNumber(band.median)} median quote</p><span class="quote-band-scroll-hint">SWIPE FOR QUOTE · MEDIAN GAP · VOLUME →</span><div class="quote-band-scroll"><table class="quote-band-table"><thead><tr><th>Representation</th><th>Issuer</th><th>Quote</th><th>Vs median</th><th>24h volume</th></tr></thead><tbody>${rows}</tbody></table></div><small>CMC quote rows in this receipt · relative to the observed median only · not a ranking, discount, backing, liquidity or executable spread</small></section>`;
   }
 
   function referenceConcentrationPanel(alert) {

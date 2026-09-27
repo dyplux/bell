@@ -273,8 +273,16 @@ export default {
       if (url.pathname === '/internal/fail' && request.method === 'POST') return failJob(request, env);
       if (url.pathname === '/internal/publish' && request.method === 'POST') return publish(request, env);
       if (url.pathname === '/internal/integrity' && request.method === 'POST') return publishIntegrity(request, env);
-      if (['/integrity', '/integrity.html', '/guide.html'].includes(url.pathname) && request.method === 'GET') {
-        return Response.redirect(new URL('/', request.url), 301);
+      // A retired URL should land on the thing it was named after, not at the
+      // top of a long page. A reviewer fetched /integrity, compared it byte for
+      // byte with / and reported them identical - which they were, because the
+      // redirect dropped them at the top and said nothing about where the
+      // receipt had gone. /guide.html named no section, so it still goes to the
+      // root.
+      const RETIRED = { '/integrity': '/#evidence', '/integrity.html': '/#evidence',
+                        '/guide.html': '/' };
+      if (RETIRED[url.pathname] && request.method === 'GET') {
+        return Response.redirect(new URL(RETIRED[url.pathname], request.url), 301);
       }
       // The judge page is the one link in the nav that a reader follows from a
       // phone, and it is the whole submission in three screens. Serve it here

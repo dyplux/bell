@@ -305,3 +305,22 @@ test('/judge does not redirect to itself when the asset layer drops the extensio
     assert.notEqual(target.pathname, '/judge', '/judge redirects to itself');
   }
 });
+
+test('a retired URL lands on the section it was named after', async () => {
+  // /integrity redirected to the top of the root page, so a reviewer who
+  // fetched it and compared it byte for byte with / reported the two
+  // identical, and concluded the receipt page did not exist. It does; the
+  // redirect just never said where it went.
+  const assets = { fetch: async () => new Response('asset', { status: 200 }) };
+  for (const [from, to] of [['/integrity', '/#evidence'],
+                            ['/integrity.html', '/#evidence'],
+                            ['/guide.html', '/']]) {
+    const response = await worker.fetch(new Request(`https://bell.dyplux.com${from}`), assetsEnv(assets), {});
+    assert.equal(response.status, 301, `${from} did not redirect`);
+    assert.equal(new URL(response.headers.get('location')).pathname
+                 + new URL(response.headers.get('location')).hash,
+                 to, `${from} went somewhere else`);
+  }
+});
+
+function assetsEnv(assets) { return { ASSETS: assets }; }

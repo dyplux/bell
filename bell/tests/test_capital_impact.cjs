@@ -87,3 +87,32 @@ test('2000 generated cases preserve capital-check invariants', () => {
     assert.match(result.note, /Resolve identity/);
   }
 });
+
+test('an amount below the control\'s own minimum falls back instead of rendering zero units', () => {
+  // The input declares min="1". The clamp only asked for "positive", so
+  // 0.0000001 was accepted and the panel rendered "Keep 0 uncommitted" with
+  // zero units at both quotes, for an amount the user had typed. The control's
+  // stated contract and the code's real one disagreed.
+  const { MINIMUM_BUDGET, MAXIMUM_BUDGET } = require('../site/capital-impact.js');
+  for (const value of [0.0000001, 0.5, 0.999, 0, -100, '0.0000001']) {
+    assert.equal(budget(value), 10000, `${value} was accepted as a budget`);
+  }
+  for (const value of [MINIMUM_BUDGET, 10, 10000, MAXIMUM_BUDGET]) {
+    assert.equal(budget(value), Number(value), `${value} was rejected`);
+  }
+  assert.equal(budget(MAXIMUM_BUDGET + 1), 10000);
+});
+
+test('the markup states the bounds the code enforces', () => {
+  // Two numbers in two files saying the same thing is how they drift apart.
+  // The template reads them from here, so this asserts it kept doing that.
+  const fs = require('node:fs');
+  const { MINIMUM_BUDGET, MAXIMUM_BUDGET } = require('../site/capital-impact.js');
+  const source = fs.readFileSync(require('node:path').join(__dirname, '../site/integrity.js'), 'utf8');
+  assert.match(source, /min="\$\{window\.BellCapitalImpact\.MINIMUM_BUDGET\}"/,
+    'the capital input hardcodes its minimum instead of reading the enforced one');
+  assert.match(source, /max="\$\{window\.BellCapitalImpact\.MAXIMUM_BUDGET\}"/,
+    'the capital input hardcodes its maximum instead of reading the enforced one');
+  assert.equal(typeof MINIMUM_BUDGET, 'number');
+  assert.ok(MINIMUM_BUDGET > 0 && MAXIMUM_BUDGET > MINIMUM_BUDGET);
+});

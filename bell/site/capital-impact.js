@@ -9,9 +9,18 @@
     return Number.isFinite(number) && number > 0 ? number : null;
   }
 
+  // The input declares min="1" and max="1000000000". The floor was not
+  // enforced here, so 0.0000001 passed as a budget and the panel rendered
+  // "Keep 0 uncommitted", "UNITS AT LOW QUOTE 0" and "UNITS AT HIGH QUOTE 0"
+  // for a positive amount: the control's stated contract and the code's real
+  // one disagreed, which is the thing this product reports about other
+  // people's surfaces. Both bounds live here now and the markup reads them.
+  const MINIMUM_BUDGET = 1;
+  const MAXIMUM_BUDGET = 1000000000;
+
   function budget(value, fallback = 10000) {
     const number = finitePositive(value);
-    return number && number <= 1000000000 ? number : fallback;
+    return number && number >= MINIMUM_BUDGET && number <= MAXIMUM_BUDGET ? number : fallback;
   }
 
   function quoteRange(tokens) {
@@ -163,5 +172,6 @@
     };
   }
 
-  return { budget, quoteRange, quoteBand, volumeMetrics, capitalMetrics, assess };
+  return { budget, quoteRange, quoteBand, volumeMetrics, capitalMetrics, assess,
+           MINIMUM_BUDGET, MAXIMUM_BUDGET };
 });
