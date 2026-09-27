@@ -24,6 +24,17 @@ import unittest
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent))
 
+
+def history_with(*stamps: str) -> dict:
+    """A history that records these observations, so a test can place a point.
+
+    `record` refuses an observation the published history does not carry, which
+    is the fix for a series point that named a day the history did not. A test
+    that wants to place a point therefore has to say which history it means.
+    """
+    return {"observations": [{"observed_at": stamp, "rules_version": "bell.rules.v2"}
+                             for stamp in stamps]}
+
 from reference_series import (  # noqa: E402
     BASE, DELTAS, apply, delta, record, series_for, snapshot_of)
 
@@ -65,33 +76,40 @@ class DeltasReplayExactly(unittest.TestCase):
 
 
 class TheSeriesRefusesWhatItCannotMean(unittest.TestCase):
+    def setUp(self):
+        self.shipped = json.loads(DELTAS.read_text(encoding="utf-8"))
+        self.newest = self.shipped["observations"][-1]["observed_at"]
+
     def test_it_refuses_to_span_a_rule_change(self):
         # A state is a function of the rules. Replaying a v3 observation onto a
         # v2 series would print the rule change as movement, which is the error
         # this whole product exists to refuse.
         with self.assertRaises(SystemExit) as raised:
-            record(receipt_with("2026-09-30T00:00:00Z", rules="bell.rules.v3"))
+            record(receipt_with("2026-09-30T00:00:00Z", rules="bell.rules.v3"),
+                   history_with(self.newest, "2026-09-30T00:00:00Z"))
         self.assertIn("reports the rule change as market movement", str(raised.exception))
 
     def test_it_refuses_an_unversioned_receipt(self):
         with self.assertRaises(SystemExit):
-            record(receipt_with("2026-09-30T00:00:00Z", rules=None))
+            record(receipt_with("2026-09-30T00:00:00Z", rules=None),
+                   history_with(self.newest, "2026-09-30T00:00:00Z"))
 
     def test_it_refuses_a_backdated_point(self):
+        # Recorded by the history, so the membership check passes and the
+        # ordering check is the one being tested.
         with self.assertRaises(SystemExit) as raised:
-            record(receipt_with("2020-01-01T00:00:00Z"))
+            record(receipt_with("2020-01-01T00:00:00Z"),
+                   history_with("2020-01-01T00:00:00Z", self.newest))
         self.assertIn("older than", str(raised.exception))
 
     def test_it_does_not_write_the_same_observation_twice(self):
-        shipped = json.loads(DELTAS.read_text(encoding="utf-8"))
-        newest = shipped["observations"][-1]["observed_at"]
-        _, message = record(receipt_with(newest))
+        _, message = record(receipt_with(self.newest), history_with(self.newest))
         self.assertIn("already in the series", message)
 
     def test_a_new_observation_extends_the_series_by_one(self):
-        shipped = json.loads(DELTAS.read_text(encoding="utf-8"))
-        document, message = record(receipt_with("2026-09-30T00:00:00Z"))
-        self.assertEqual(len(document["observations"]), len(shipped["observations"]) + 1)
+        document, message = record(receipt_with("2026-09-30T00:00:00Z"),
+                                   history_with(self.newest, "2026-09-30T00:00:00Z"))
+        self.assertEqual(len(document["observations"]), len(self.shipped["observations"]) + 1)
         self.assertIn("series is now", message)
 
 
@@ -144,6 +162,64 @@ class TheShippedSeriesIsWhatTheCodeDerives(unittest.TestCase):
         self.assertLess(per_observation, BASE.stat().st_size / 4,
                         f"a point costs {per_observation:,.0f} bytes against a "
                         f"{BASE.stat().st_size:,}-byte snapshot; the delta is not paying for itself")
+
+
+class TheSeriesAnswersToThePublishedHistory(unittest.TestCase):
+    """A step that names a day nobody published is a day nobody observed.
+
+    The first version stamped a point at 23:43:43 while the history's newest
+    observation was 23:28:21, and nothing reconciled them - two surfaces
+    describing one day and disagreeing, in the product named after that defect.
+    """
+
+    def setUp(self):
+        from reference_series import verify as verify_series
+        self.verify = verify_series
+        self.history = json.loads((HERE.parent / "site" / "proof"
+                                   / "rwa-surface-integrity-history.json")
+                                  .read_text(encoding="utf-8"))
+        self.deltas = json.loads(DELTAS.read_text(encoding="utf-8"))
+
+    def test_the_shipped_series_answers_to_the_shipped_history(self):
+        notes = self.verify(BASE_DOC, self.deltas, self.history)
+        self.assertEqual(len(notes), len(self.deltas["observations"]))
+
+    def test_a_step_the_history_does_not_record_is_refused(self):
+        forged = copy.deepcopy(self.deltas)
+        forged["observations"][-1]["observed_at"] = "2099-01-01T00:00:00Z"
+        with self.assertRaisesRegex(ValueError, "the published history does not record"):
+            self.verify(BASE_DOC, forged, self.history)
+
+    def test_a_step_claiming_the_wrong_source_digests_is_refused(self):
+        forged = copy.deepcopy(self.deltas)
+        forged["observations"][0]["source_hashes"] = {"map": "0" * 64}
+        with self.assertRaisesRegex(ValueError, "source fingerprints"):
+            self.verify(BASE_DOC, forged, self.history)
+
+    def test_a_step_with_no_origin_recorded_is_refused(self):
+        for field in ("source_hashes", "alert_index_sha256"):
+            forged = copy.deepcopy(self.deltas)
+            forged["observations"][0].pop(field, None)
+            with self.subTest(field=field), self.assertRaises(ValueError):
+                self.verify(BASE_DOC, forged, self.history)
+
+    def test_record_refuses_a_receipt_the_history_does_not_carry(self):
+        with self.assertRaises(SystemExit) as raised:
+            record(receipt_with("2030-01-01T00:00:00Z"))
+        self.assertIn("not in the published history", str(raised.exception))
+
+    def test_every_step_records_the_digest_of_the_index_it_came_from(self):
+        from reference_series import index_digest
+        for step in self.deltas["observations"]:
+            self.assertRegex(step["alert_index_sha256"], r"^[0-9a-f]{64}$")
+        # And the digest is a function of the rows, not of the file's byte order.
+        one = {"alert_index": [{"rwa_id": "2", "state": "no_flags", "token_count": 1},
+                               {"rwa_id": "1", "state": "investigate", "token_count": 2}]}
+        other = {"alert_index": list(reversed(one["alert_index"]))}
+        self.assertEqual(index_digest(one), index_digest(other))
+        moved = {"alert_index": [{"rwa_id": "1", "state": "do_not_compare", "token_count": 2},
+                                 {"rwa_id": "2", "state": "no_flags", "token_count": 1}]}
+        self.assertNotEqual(index_digest(one), index_digest(moved))
 
 
 if __name__ == "__main__":

@@ -59,7 +59,7 @@
     <div class="judge-facts">
       <div><small>Comparisons published</small><strong>87</strong></div>
       <div><small>Refusals, by named rule</small><strong>157</strong></div>
-      <div><small>Tests in the offline gate</small><strong>378</strong></div>
+      <div><small>Tests in the offline gate</small><strong>386</strong></div>
       <div><small>Gate runtime</small><strong>&lt;12s</strong></div>
     </div>
 
@@ -97,7 +97,7 @@ make base-rate</pre>
       <h3>What that gate proves, and what it does not</h3>
       <dl>
         <dt>The suite</dt>
-        <dd>378 tests, 280 Python and 98 JavaScript. One Python test needs a network and a
+        <dd>386 tests, 288 Python and 98 JavaScript. One Python test needs a network and a
         CoinMarketCap key; without them it is skipped and the runner says so.</dd>
 
         <dt>The re-derivation</dt>
@@ -110,7 +110,7 @@ make base-rate</pre>
         private or unreleasable.</dd>
 
         <dt class="scope-limit">One observation is UNVERIFIED</dt>
-        <dd class="scope-limit">Of the 14 dated observations, 2 ship their full payload. One of
+        <dd class="scope-limit">Of the 15 dated observations, 2 ship their full payload. One of
         those two has its state distribution compared against the receipt. The other does not:
         it was written under the rule set that ran before this one, and no code here can
         re-derive it. Its totals, signals and source digests are checked; the split between
@@ -118,7 +118,7 @@ make base-rate</pre>
         rather than leaving that to be inferred.</dd>
 
         <dt>The chain</dt>
-        <dd>every one of the 14 is chained to the one before it, so editing a single record
+        <dd>every one of the 15 is chained to the one before it, so editing a single record
         invalidates every digest after it.</dd>
 
         <dt class="scope-limit">The chain is not a signature</dt>
@@ -126,6 +126,13 @@ make base-rate</pre>
         who rewrites the whole file, the chain and the committed anchor together, because all
         three live in this repository. There is no external attestation and no date attestation,
         and the module says so in its own docstring.</dd>
+
+        <dt class="scope-limit">The per-reference series is origin-checked, not value-checked</dt>
+        <dd class="scope-limit">Each step in the series names the observation it came from, and
+        `make verify` refuses a step whose source fingerprints are not the ones that observation
+        recorded. The row values inside a step cannot be re-derived, because the receipts behind
+        those observations are not shipped. So a step cannot claim a day nobody published, and
+        the detail inside it rests on the publisher. The verifier prints UNVERIFIED for this too.</dd>
 
         <dt>Rule changes are not market changes</dt>
         <dd>Where a receipt predates the current rule set, the recomputed state counts are

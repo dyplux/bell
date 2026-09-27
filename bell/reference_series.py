@@ -23,6 +23,7 @@ move: between 21 and 26 September, 33 of 792 changed, which is 4.2 KB raw and
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 from pathlib import Path
 import sys
@@ -34,6 +35,25 @@ DELTAS = PROOF / "reference-deltas.json"
 SCHEMA = "bell.reference_deltas.v1"
 
 FIELDS = ("state", "representations", "comparison_published", "signal_codes")
+
+
+def index_digest(receipt: dict) -> str:
+    """A fingerprint of the alert_index the delta was derived from.
+
+    The deltas were the one evidence file nothing verified: a reviewer rewrote
+    Silver into the 26 September step as clean, with no signals, and the whole
+    378-test gate stayed green. Nothing could re-derive it, because the receipt
+    that produced it is not shipped - so the fix is not to re-derive it, it is
+    to record what it came from and refuse a step whose stated origin is not
+    the origin the series claims.
+    """
+    rows = sorted(
+        (str(item.get("rwa_id") or ""), str(item.get("state") or ""),
+         int(item.get("token_count") or 0), bool(item.get("comparison")),
+         tuple(sorted(item.get("signal_codes") or [])))
+        for item in receipt.get("alert_index") or [])
+    return hashlib.sha256(
+        json.dumps(rows, ensure_ascii=False, separators=(",", ":")).encode()).hexdigest()
 
 
 def snapshot_of(receipt: dict) -> dict:
@@ -92,6 +112,51 @@ def series_for(reference_id: str, base: dict, base_at: str, deltas: list) -> lis
     return points
 
 
+def verify(base_doc: dict, deltas_doc: dict, history: dict) -> list:
+    """Refuse a series that does not answer to the published history.
+
+    Checks what CAN be checked without the receipts: that every step names an
+    observation the history records, that the fingerprints it claims are the
+    ones that observation recorded, that it is in order, and that the rule set
+    does not change under it. What it cannot check is the row detail itself,
+    because the receipts behind the steps are not shipped, and that limit is
+    named on the judge page rather than left to be discovered.
+    """
+    notes = []
+    recorded = {str(item.get("observed_at")): item for item in history.get("observations") or []}
+    if deltas_doc.get("base") != BASE.name:
+        raise ValueError(f"the series is built on {deltas_doc.get('base')!r}, not {BASE.name}")
+    if deltas_doc.get("rules_version") != base_doc.get("rules_version"):
+        raise ValueError("the series and its base answer to different rule sets")
+    previous_at = base_doc.get("observed_at")
+    for index, step in enumerate(deltas_doc.get("observations") or [], start=1):
+        label = f"series step {index} ({step.get('observed_at')})"
+        observed_at = str(step.get("observed_at") or "")
+        if observed_at <= str(previous_at):
+            raise ValueError(f"{label} is not after {previous_at}")
+        previous_at = observed_at
+        observation = recorded.get(observed_at)
+        if observation is None:
+            raise ValueError(
+                f"{label} describes an observation the published history does not record. A "
+                "series point with no observation behind it is a day nobody observed.")
+        if observation.get("rules_version") != deltas_doc.get("rules_version"):
+            raise ValueError(f"{label} was recorded under {observation.get('rules_version')!r}")
+        claimed = step.get("source_hashes")
+        if not claimed:
+            raise ValueError(
+                f"{label} records no source fingerprints, so nothing says which scan it came from")
+        if claimed != observation.get("source_hashes"):
+            raise ValueError(
+                f"{label} claims source fingerprints the history does not record for that "
+                "observation")
+        if not step.get("alert_index_sha256"):
+            raise ValueError(f"{label} records no alert_index digest")
+        notes.append(f"{label}: {len(step.get('changed') or {})} moved, "
+                     f"{len(step.get('removed') or [])} removed")
+    return notes
+
+
 def load() -> tuple:
     base_doc = json.loads(BASE.read_text(encoding="utf-8"))
     if DELTAS.exists():
@@ -102,7 +167,7 @@ def load() -> tuple:
     return base_doc, deltas_doc
 
 
-def record(receipt: dict) -> tuple:
+def record(receipt: dict, history: dict | None = None) -> tuple:
     """Add one observation to the series. Returns (document, message)."""
     base_doc, deltas_doc = load()
     observed_at = receipt.get("observed_at")
@@ -117,6 +182,21 @@ def record(receipt: dict) -> tuple:
             f"refusing to extend the series: it is recorded under "
             f"{deltas_doc.get('rules_version')!r} and this receipt declares {rules!r}. A series "
             "that spans a rule change reports the rule change as market movement.")
+    # A series point must describe an observation the published history records.
+    # The first version stamped a point at 23:43:43 while the history's newest
+    # was 23:28:21, and nothing reconciled them - a reviewer found two surfaces
+    # describing the same day and disagreeing, which is the defect this whole
+    # product is named after.
+    history_path = PROOF / "rwa-surface-integrity-history.json"
+    if history is None and history_path.exists():
+        history = json.loads(history_path.read_text(encoding="utf-8"))
+    if history is not None:
+        recorded = {str(item.get("observed_at")) for item in history.get("observations") or []}
+        if observed_at not in recorded:
+            raise SystemExit(
+                f"refusing to extend the series: {observed_at} is not in the published history. "
+                "Append the observation first, so the series and the history describe the same "
+                "days.")
     existing = [step["observed_at"] for step in deltas_doc["observations"]]
     if observed_at in existing or observed_at == base_doc.get("observed_at"):
         return deltas_doc, f"no new point: {observed_at} is already in the series"
@@ -126,6 +206,11 @@ def record(receipt: dict) -> tuple:
     previous = apply(base_doc["references"], deltas_doc["observations"])
     step = delta(previous, snapshot_of(receipt))
     step["observed_at"] = observed_at
+    # What this step was derived from, so `make verify` can refuse a step whose
+    # origin is not the origin it claims, and so a reader can tell a recorded
+    # observation from an edited one.
+    step["source_hashes"] = receipt.get("source_hashes") or {}
+    step["alert_index_sha256"] = index_digest(receipt)
     moved = len(step["changed"]) + len(step["removed"])
     deltas_doc["observations"].append(step)
     return deltas_doc, (f"recorded {observed_at}: {moved} references moved, "

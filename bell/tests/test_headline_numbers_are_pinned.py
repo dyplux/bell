@@ -152,8 +152,12 @@ class HeadlineNumbersArePinned(unittest.TestCase):
         flow = flowed(judge_text())
         self.assertIn(f"<strong>{split['source_coverage']} of the {reasons} reasons", flow,
                       "the coverage half of the refusal split is not measured")
-        self.assertIn(f"{split['data_contradiction']} are rows", flow,
-                      "the contradiction half of the refusal split is not measured")
+        # `assertIn("38 are rows")` is satisfied by "1138 are rows". A pin a
+        # forger beats by prepending a digit is not a pin; the siblings here
+        # survived only because they happen to have a non-digit before the
+        # number. Word boundary, everywhere.
+        self.assertRegex(flow, rf"\b{split['data_contradiction']} are rows",
+                         "the contradiction half of the refusal split is not measured")
 
     def test_the_demo_line_states_the_slice_the_receipt_actually_carries(self):
         alerts = len(REPLAY.get("alerts") or [])
@@ -185,9 +189,9 @@ class HeadlineNumbersArePinned(unittest.TestCase):
         self.assertIn(f"including {reasons['PRICE_DENOMINATION_BREAK']} references quoted in "
                       "different units", flow,
                       "the README's unit-mismatch count is not the measured one")
-        self.assertIn(f"{reasons['ZERO_MCAP_POSITIVE_VOLUME']} reporting traded volume against a "
-                      "zero market cap", flow,
-                      "the README's zero-market-cap count is not the measured one")
+        self.assertRegex(flow, rf"\b{reasons['ZERO_MCAP_POSITIVE_VOLUME']} reporting traded "
+                               r"volume against a zero market cap",
+                         "the README's zero-market-cap count is not the measured one")
 
     def test_the_runtime_tile_cannot_drift_out_of_its_own_stated_band(self):
         # The `<12s` tile sat beside a pinned "2.8 and 12.0 seconds" band and
@@ -243,6 +247,26 @@ class HeadlineNumbersArePinned(unittest.TestCase):
         source = (BELL / "site" / "integrity.js").read_text(encoding="utf-8")
         self.assertIn("snapshot.baseline === 'recomputed'", source,
                       "the page stopped branching on the field this test pins")
+
+    def test_the_boundary_check_count_is_the_same_in_both_documents(self):
+        # judge.html's "All 8 checks pass" is pinned to the verifier's output;
+        # README's "8 boundary checks" was free. Same figure, two files, one
+        # pinned - this repository's named signature defect.
+        page = flowed(judge_text())
+        stated = re.search(r"All (\d+) checks pass", page)
+        self.assertIsNotNone(stated, "the judge page stopped stating the boundary check count")
+        self.assertRegex(flowed(readme_text()), rf"\b{stated.group(1)} boundary checks",
+                         "the README states a different number of boundary checks")
+
+    def test_the_cold_run_figure_sits_inside_the_stated_band(self):
+        # "a first run on a cold machine was measured at 10.3 seconds" could
+        # say 1.3 and stay green, beside a band it is supposed to justify.
+        page = flowed(judge_text())
+        band = re.search(r"between (\d+\.\d+) and (\d+\.\d+) seconds", page)
+        cold = re.search(r"cold machine was measured at (\d+\.\d+) seconds", page)
+        self.assertIsNotNone(cold, "the judge page stopped naming the cold run it widened for")
+        self.assertTrue(float(band.group(1)) <= float(cold.group(1)) <= float(band.group(2)),
+                        f"the cold run figure {cold.group(1)} is outside the band it justifies")
 
 if __name__ == "__main__":
     unittest.main()

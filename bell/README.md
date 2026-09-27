@@ -26,7 +26,7 @@ badge says `LIVE RECEIPT · FRESH`; otherwise the page labels the fallback as da
 The flagship build is the **RWA Surface Integrity Monitor**. It scans the full
 CMC RWA population before a user compares tokenised representations and returns
 an evidence-backed decision. The public UI presents five plain-language
-routes: `DO NOT SHORTLIST`, `INVESTIGATE`,
+routes: `COMPARABLE, NOT ENDORSED`, `DO NOT SHORTLIST`, `INVESTIGATE`,
 `FACTS OPEN` or `SINGLE REPRESENTATION`. The receipt also keeps
 the lower-level rule decision for audit traceability.
 
@@ -82,7 +82,7 @@ The receipt comparison utility in [`receipt_compare.py`](receipt_compare.py)
 compares two dated windows and reports flat-bar diagnostics without treating them as liquidity.
 The public integrity receipt also has a [sanitized input manifest](docs/proof/rwa-surface-integrity-input-manifest-2026-09-15.json)
 with surface counts, stable-ID join coverage and source fingerprints.
-The 14-observation population history is at
+The 15-observation population history is at
 [`site/proof/rwa-surface-integrity-history.json`](site/proof/rwa-surface-integrity-history.json),
 and the latest credential-free normalized input package is at
 [`site/proof/rwa-surface-integrity-inputs-2026-09-21.json`](site/proof/rwa-surface-integrity-inputs-2026-09-21.json).

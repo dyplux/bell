@@ -86,7 +86,7 @@ def assert_equal(label: str, actual, expected) -> None:
         raise ValueError(f"{label}: expected {expected!r}, got {actual!r}")
 
 
-def verify_observation(observation: dict, receipt: dict, label: str) -> None:
+def verify_observation(observation: dict, receipt: dict, label: str) -> bool:
     assert_equal(f"{label}.observed_at", receipt.get("observed_at"), observation["observed_at"])
     universe = receipt.get("universe")
     if not isinstance(universe, dict):
@@ -436,6 +436,22 @@ def main() -> int:
     print("remaining observations are public summaries")
     print(f"history chain head: {head}")
     print(f"history sha256: {hashlib.sha256(args.history.read_bytes()).hexdigest()}")
+    # The per-reference series was the one evidence file nothing verified: a
+    # reviewer rewrote a reference into a step as clean, with no signals, and
+    # the whole gate stayed green. What can be checked without the receipts is
+    # checked here; what cannot is named, rather than left to be discovered.
+    try:
+        from reference_series import DELTAS, load as load_series, verify as verify_series
+        if DELTAS.exists():
+            base_doc, deltas_doc = load_series()
+            notes = verify_series(base_doc, deltas_doc, history)
+            print(f"reference series: {len(notes) + 1} points, "
+                  f"each step matched to a published observation and its source digests")
+            print("UNVERIFIED: the per-reference detail inside each step cannot be re-derived, "
+                  "because the receipts behind those observations are not shipped. Its origin, "
+                  "order, rule set and source fingerprints are checked; the row values are not.")
+    except ValueError as error:
+        raise ValueError(f"reference series: {error}")
     return 0
 
 

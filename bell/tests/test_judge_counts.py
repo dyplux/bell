@@ -90,8 +90,15 @@ class JudgeCounts(unittest.TestCase):
         # `npm install`, because of one untracked package-lock.json. A count a
         # document states about the repository cannot depend on the machine
         # reading it.
-        tracked = subprocess.run(["git", "ls-files"], cwd=repo, capture_output=True,
-                                 text=True, check=True).stdout.split()
+        listing = subprocess.run(["git", "ls-files"], cwd=repo, capture_output=True,
+                                 text=True, check=False)
+        if listing.returncode != 0:
+            # A GitHub ZIP download or a vendored copy is not a git working
+            # tree, and `check=True` made the whole gate exit 2 with a
+            # traceback. test_repo_links.py documents hitting this exact
+            # problem and handling it there; the same fix was not made here.
+            self.skipTest("not a git working tree, so the tracked-file count cannot be read")
+        tracked = listing.stdout.split()
         stated = re.search(r"a submission gate over (\d+)\s+tracked files",
                            JUDGE.read_text(encoding="utf-8"))
         self.assertIsNotNone(stated, "the judge page stopped stating the gate's scope")

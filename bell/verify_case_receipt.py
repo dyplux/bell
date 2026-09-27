@@ -217,8 +217,21 @@ def verify(payload: Any) -> dict[str, Any]:
         raise ValueError(f"missing top-level fields: {', '.join(sorted(missing))}")
     if payload["schema_version"] != "bell.case-receipt.v1":
         raise ValueError("unsupported schema_version")
-    if payload["source"] != "/api/integrity":
-        raise ValueError("source must be /api/integrity")
+    # This demanded "/api/integrity" and nothing else, which switched off the
+    # strongest claim in the submission. The README documents an offline path -
+    # serve bell/site and open it - and a case exported there is stamped with
+    # the dated replay it was read from. Its source fingerprints match that
+    # receipt exactly, so it is the ONLY receipt a reader can obtain that this
+    # verifier can bind; a live export never can, because the live scan's
+    # inputs are not shipped. So the one bindable artefact was rejected at the
+    # door, before `bind()` ran, and both the subject and row checks with it.
+    source = str(payload.get("source") or "")
+    bindable = source.startswith("proof/rwa-surface-integrity-") and source.endswith(".json")
+    if source != "/api/integrity" and not bindable:
+        raise ValueError(
+            f"source must be /api/integrity or a dated receipt under proof/, not {source!r}")
+    if bindable and not (ROOT / "site" / source).exists():
+        raise ValueError(f"the receipt names {source}, which this repository does not ship")
     if payload["credential_free"] is not True:
         raise ValueError("receipt is not marked credential_free")
     if not isinstance(payload["question"], str) or not payload["question"].strip():

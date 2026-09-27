@@ -1,6 +1,14 @@
 #!/usr/bin/env python3
 """Run the suite and refuse any test that executed no assertion.
 
+Be exact about the claim, because a reviewer was right to press on it: this
+measures that an assertion RAN, not that it CAN FAIL. It catches a test with no
+assertion, a loop over an empty list, and a bare `assert` that -O removes. It
+does not catch `self.assertTrue(True)` or `assertEqual(x, x)`, and saying it
+did would be the overclaim this repository exists to refuse. It also covers the
+Python suite only: the 98 JavaScript and worker tests are outside it, which is
+named in the output rather than left to be assumed.
+
 Six review rounds found the same thing six times: a test that cannot fail. A
 loop over zero items. `assertGreaterEqual(compared, 0)`. A class named after a
 re-derivation it never performed. A guard keyed on a phrase the regression
@@ -93,8 +101,10 @@ def main(argv: list[str] | None = None) -> int:
                     if count == 0 and name not in skipped
                     and name not in ALLOWED_WITHOUT_ASSERTIONS)
 
-    print(f"assertion audit: {total} tests, "
+    print(f"assertion audit: {total} Python tests, "
           f"{sum(counts.values()):,} assertions executed, {len(skipped)} skipped")
+    print("  scope: an assertion RAN. Not that it can fail - assertTrue(True) passes this. "
+          "The JavaScript and worker suites are not covered.")
     for name in skipped:
         print(f"  skipped: {name}")
     if silent:

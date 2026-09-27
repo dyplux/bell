@@ -38,10 +38,13 @@ ANCHOR = HERE / "history-chain-head.txt"
 # observation left both reading thirteen, and the gate went red - correctly, but
 # the fix belongs here rather than in the two files, because a count that is
 # restated by hand drifts again on the next append.
-RESTATE = (HERE / "site" / "judge.html", HERE.parent / "README.md")
+RESTATE = (HERE / "site" / "judge.html", HERE.parent / "README.md", HERE / "README.md")
 COUNT_PHRASES = (
     (re.compile(r"Of the \d+ dated observations"), "Of the {n} dated observations"),
     (re.compile(r"every one of the \d+ is chained"), "every one of the {n} is chained"),
+    # bell/README.md states the same count in its own words and was not in the
+    # rewriter, so it was the one file where the number drifted.
+    (re.compile(r"The \d+-observation population history"), "The {n}-observation population history"),
 )
 LIVE = "https://bell.dyplux.com/api/integrity"
 SUMMARY_FIELDS = ("tokenised_references_scanned", "tokens_scanned", "states", "signals")
@@ -99,6 +102,16 @@ def append(history: dict, summary: dict) -> tuple[bool, str]:
                        f"{summary['observed_at']}, which is already in the series")
 
     head = None
+    # Every refusal below used to live inside `if observations:`, so setting
+    # the list to [] removed all of them: the job appended one record and wrote
+    # a fresh anchor over the one protecting the other fifteen. That is
+    # literally "a guard that vanishes when the evidence is removed", which
+    # this file's own comments name as the antipattern.
+    if not observations and ANCHOR.exists():
+        raise SystemExit(
+            "refusing to append: the history carries no observations and "
+            f"{ANCHOR.name} exists. An empty series with an anchor is a series whose records "
+            "were removed, and appending would write a new anchor over the one protecting them.")
     if observations:
         # Refusing rather than repairing. A history that does not verify is a
         # question for a person, and appending to it would answer that question
