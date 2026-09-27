@@ -114,5 +114,61 @@ class DeploymentDrift(unittest.TestCase):
             self.assertTrue((SITE / filename).exists(), f"{filename} is not in the repository")
 
 
+class TheDriftCheckWaitsForAPushToBecomeADeploy(unittest.TestCase):
+    """A push and its deploy are two events, and CI runs between them.
+
+    The job reported drift on every push, for the minute the edge took to catch
+    up, and a red signal that is usually wrong stops being read. The wait does
+    not weaken the check: real drift is still there after it, and a commit that
+    is never deployed still fails. It only stops the clock from being the thing
+    that fails.
+    """
+
+    def test_the_wait_is_bounded_and_real_drift_survives_it(self):
+        import time
+        import verify_deployment_matches as drift
+
+        calls = []
+        original = drift.compare
+        # Always different, the way a commit that was never deployed looks.
+        drift.compare = lambda base, timeout: (calls.append(1) or (["/ differs"], [], 0))
+        started = time.monotonic()
+        try:
+            code = drift.main(["--base", "https://example.invalid", "--wait", "3"])
+        finally:
+            drift.compare = original
+        elapsed = time.monotonic() - started
+        self.assertEqual(code, 1, "drift that outlasts the wait must still fail")
+        self.assertGreater(len(calls), 1, "the check never re-tried")
+        self.assertLess(elapsed, 20, "the wait is not bounded by the value it was given")
+
+    def test_a_match_on_a_later_attempt_passes_without_waiting_out_the_clock(self):
+        import time
+        import verify_deployment_matches as drift
+
+        attempts = []
+        original = drift.compare
+
+        def eventually(base, timeout):
+            attempts.append(1)
+            return ([], [], 5) if len(attempts) >= 2 else (["/ differs"], [], 4)
+
+        drift.compare = eventually
+        started = time.monotonic()
+        try:
+            code = drift.main(["--base", "https://example.invalid", "--wait", "120"])
+        finally:
+            drift.compare = original
+        self.assertEqual(code, 0)
+        self.assertEqual(len(attempts), 2)
+        self.assertLess(time.monotonic() - started, 30,
+                        "it kept waiting after the surfaces already matched")
+
+    def test_ci_gives_the_check_a_wait(self):
+        workflow = (HERE.parent.parent / ".github" / "workflows" / "bell-quality.yml").read_text()
+        self.assertRegex(workflow, r"verify_deployment_matches\.py --wait \d+",
+                         "CI runs the drift check with no wait, so every push races its deploy")
+
+
 if __name__ == "__main__":
     unittest.main()

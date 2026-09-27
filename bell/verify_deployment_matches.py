@@ -27,6 +27,7 @@ import argparse
 import hashlib
 from pathlib import Path
 import sys
+import time
 import urllib.error
 import urllib.request
 
@@ -55,13 +56,7 @@ def fetch(url: str, timeout: int) -> tuple[int, bytes]:
         return error.code, error.read()
 
 
-def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("--base", default=DEFAULT_BASE)
-    parser.add_argument("--timeout", type=int, default=30)
-    args = parser.parse_args(argv)
-    base = args.base.rstrip("/")
-
+def compare(base: str, timeout: int) -> tuple:
     drifted: list[str] = []
     unreachable: list[str] = []
     matched = 0
@@ -72,7 +67,7 @@ def main(argv: list[str] | None = None) -> int:
             print(f"deployment drift check: {filename} is not in this repository", file=sys.stderr)
             return 1
         try:
-            status, body = fetch(base + route, args.timeout)
+            status, body = fetch(base + route, timeout)
         except Exception as error:
             unreachable.append(f"{route}: {type(error).__name__}: {error}")
             continue
@@ -90,6 +85,37 @@ def main(argv: list[str] | None = None) -> int:
                 f"({len(body):,} bytes deployed against {local.stat().st_size:,} here)")
         else:
             matched += 1
+    return drifted, unreachable, matched
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument("--base", default=DEFAULT_BASE)
+    parser.add_argument("--timeout", type=int, default=30)
+    parser.add_argument(
+        "--wait", type=int, default=0, metavar="SECONDS",
+        help=("keep re-checking for this long before reporting drift. A push and its deploy "
+              "are two events, and CI runs between them, so a commit that is about to be "
+              "correct was failing on the clock rather than on its contents. Drift that is "
+              "real survives the wait; a propagation window does not."))
+    args = parser.parse_args(argv)
+    base = args.base.rstrip("/")
+
+    deadline = time.monotonic() + max(args.wait, 0)
+    attempts = 0
+    while True:
+        attempts += 1
+        drifted, unreachable, matched = compare(base, args.timeout)
+        if not drifted or time.monotonic() >= deadline:
+            break
+        remaining = deadline - time.monotonic()
+        print(f"deployment drift check: {len(drifted)} surface(s) differ, {remaining:.0f}s of "
+              f"the wait left; re-checking")
+        time.sleep(min(10, max(1, remaining)))
+
+    if attempts > 1 and not drifted:
+        print(f"deployment drift check: matched after {attempts} attempts within the "
+              f"{args.wait}s wait")
 
     if unreachable:
         # An outage is not a failing commit. Say so out loud rather than

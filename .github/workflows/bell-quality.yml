@@ -69,7 +69,12 @@ jobs:
         with:
           python-version: '3.12'
       - name: Is the deployed site this commit?
-        run: python bell/verify_deployment_matches.py
+        # A push and its deploy are two events and this job runs between them,
+        # so the check was going red on the clock rather than on the contents:
+        # every push reported drift for the minute the edge took to catch up,
+        # which is how a red signal stops being read. Drift that is real
+        # survives the wait.
+        run: python bell/verify_deployment_matches.py --wait 180
 
   deployed-interface:
     # The gap CI would otherwise leave: the offline job above never touches the
