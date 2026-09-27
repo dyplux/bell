@@ -56,6 +56,36 @@ The current capture order is:
 5. `05-gold-repeat-window.png` for the dated temporal evidence
 6. `06-population-shape.png` for the full-scan route counts and observed spread bands
 
+## Building the cut
+
+The edit is a function of the recording, not of somebody scrubbing for the
+right frame. `record_demo.py` stamps `at_seconds` into the manifest at the
+moment each step appears, `verify_demo_manifest.py` refuses a manifest whose
+offsets are missing or do not run forwards, and the two scripts below cut on
+those offsets. Re-record and re-run, and you get the same cut.
+
+```bash
+export BELL_DEMO_DIR=/tmp/bell-demo-video
+PYTHONPATH=bell python3 bell/record_demo.py --long --size 1920x1080 --output $BELL_DEMO_DIR
+PYTHONPATH=bell python3 bell/verify_demo_manifest.py $BELL_DEMO_DIR/manifest.json
+python3 bell/demo_cards.py       # one statement card per step, in the product's type
+python3 bell/demo_assemble.py    # cards and footage interleaved, claim before proof
+```
+
+`demo_assemble.py` refuses to build if its plan leaves out a step the manifest
+recorded. The first plan named eight of nine and the cut simply ended before
+the receipt, eleven seconds of the closing proof dropped without a word,
+because nothing compared the plan against the recording.
+
+A card carries a number only when the capture's own manifest carries it, or
+when the card names the command and the date behind it. Everything volatile
+stays on screen in the footage, where the receipt is visible in the same frame.
+
+Measured on the 2026-09-27 capture: 106.04 seconds of product at 1920x1080,
+nine steps, zero console errors, plus 31 seconds of statement cards, giving
+136.96 seconds. The field median across the 40 submission videos that could be
+read is 2:29.
+
 ## Story
 
 An investor finds several tokens under the same stock, ETF or commodity. The

@@ -6,9 +6,17 @@ from __future__ import annotations
 import argparse
 from datetime import datetime, timezone
 import json
+import re
 import time
 from pathlib import Path
 from urllib.parse import urlencode
+
+
+# The capture was 1440x1100, which is a good shape for reading the product and
+# the wrong shape for a submission video: every platform frames 16:9, so the cut
+# was going to be pillarboxed or rescaled. The size is an argument now, and the
+# submission is recorded at 1920x1080 so no scaling happens at all.
+DEFAULT_SIZE = {'width': 1440, 'height': 1100}
 
 
 def wait_for_receipt(page) -> None:
@@ -40,16 +48,16 @@ def pause(seconds: float) -> None:
     time.sleep(seconds)
 
 
-def record(base: str, output: Path, channel: str) -> Path:
+def record(base: str, output: Path, channel: str, size: dict | None = None) -> Path:
     from playwright.sync_api import sync_playwright
 
     output.mkdir(parents=True, exist_ok=True)
     with sync_playwright() as playwright:
         browser = playwright.chromium.launch(headless=True, **({'channel': channel} if channel else {}))
         context = browser.new_context(
-            viewport={'width': 1440, 'height': 1100},
+            viewport=size or DEFAULT_SIZE,
             record_video_dir=str(output),
-            record_video_size={'width': 1440, 'height': 1100},
+            record_video_size=size or DEFAULT_SIZE,
         )
         page = context.new_page()
         errors: list[str] = []
@@ -98,7 +106,7 @@ def record(base: str, output: Path, channel: str) -> Path:
         return target
 
 
-def record_long(base: str, output: Path, channel: str) -> Path:
+def record_long(base: str, output: Path, channel: str, size: dict | None = None) -> Path:
     """Record the full judge story with readable pauses between evidence states."""
     from playwright.sync_api import sync_playwright
 
@@ -106,9 +114,9 @@ def record_long(base: str, output: Path, channel: str) -> Path:
     with sync_playwright() as playwright:
         browser = playwright.chromium.launch(headless=True, **({'channel': channel} if channel else {}))
         context = browser.new_context(
-            viewport={'width': 1440, 'height': 1100},
+            viewport=size or DEFAULT_SIZE,
             record_video_dir=str(output),
-            record_video_size={'width': 1440, 'height': 1100},
+            record_video_size=size or DEFAULT_SIZE,
         )
         page = context.new_page()
         errors: list[str] = []
@@ -229,8 +237,15 @@ def main() -> int:
     parser.add_argument('--output', type=Path, default=Path('/tmp/bell-demo-video'))
     parser.add_argument('--channel', default='chrome')
     parser.add_argument('--long', action='store_true', help='record the full 90–110 second judge story')
+    parser.add_argument('--size', default=f"{DEFAULT_SIZE['width']}x{DEFAULT_SIZE['height']}",
+                        help='viewport and video size, WIDTHxHEIGHT (1920x1080 for a 16:9 cut)')
     args = parser.parse_args()
-    target = record_long(args.base, args.output, args.channel) if args.long else record(args.base, args.output, args.channel)
+    match = re.fullmatch(r'(\d{3,5})x(\d{3,5})', args.size.strip())
+    if not match:
+        raise SystemExit(f'--size must be WIDTHxHEIGHT, got {args.size!r}')
+    size = {'width': int(match.group(1)), 'height': int(match.group(2))}
+    target = (record_long(args.base, args.output, args.channel, size) if args.long
+              else record(args.base, args.output, args.channel, size))
     print(target)
     return 0
 
