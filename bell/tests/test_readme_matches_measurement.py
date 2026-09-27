@@ -206,22 +206,40 @@ class EveryPublishedCountIsPinnedToAnArtefact(unittest.TestCase):
             with open(os.path.join(root, *name.split('/')), encoding='utf-8') as handle:
                 cls.documents[name] = handle.read()
 
-    def test_the_representation_row_count_is_the_one_in_the_receipt(self):
-        stated = f"{self.receipt['universe']['tokens_scanned']:,}"
-        for name, text in self.documents.items():
-            if 'representation' not in text:
-                continue
-            for wrong in re.findall(r'([\d,]+) representation(?:s| rows)', text):
-                self.assertEqual(wrong, stated,
-                                 f'{name} states {wrong} representation rows; the receipt says {stated}')
+    # Both of these used to check only the numbers they found, so a reviewer
+    # reworded "1,435 representation rows" to "14,350 wrapper rows" and the
+    # whole gate stayed green: the regression removed the phrase the check
+    # matched on, and the check went with it. A guard the regression can delete
+    # is not a guard. The shape is presence first, then exclusivity.
+    REPRESENTATION_ROWS = re.compile(r'\b(\d[\d,]*) (?:representation|wrapper)(?:s| rows| representations)?\b')
 
-    def test_the_catalogue_size_is_the_one_in_the_shipped_snapshot(self):
-        stated = f'{self.catalogue_entries:,}'
+    def test_the_representation_row_count_is_stated_and_is_the_receipt_s(self):
+        stated = f"{self.receipt['universe']['tokens_scanned']:,}"
+        carriers = {'README.md'}
+        for name in carriers:
+            text = self.documents[name]
+            self.assertIn(f'{stated} representation rows', text,
+                          f'{name} no longer states the representation row count at all, so the '
+                          f'check below has nothing to compare. The receipt says {stated}.')
         for name, text in self.documents.items():
+            for claimed in self.REPRESENTATION_ROWS.findall(text):
+                if claimed.replace(',', '') in {'1', '2'}:
+                    continue  # "one representation", "two or more representations"
+                self.assertEqual(
+                    claimed, stated,
+                    f'{name} counts {claimed} representation rows; the receipt says {stated}')
+
+    def test_the_catalogue_size_is_stated_and_is_the_snapshot_s(self):
+        stated = f'{self.catalogue_entries:,}'
+        self.assertIn(f'{stated}-entry', self.documents['README.md'],
+                      'the README no longer states the catalogue size, so nothing is compared')
+        for name, text in self.documents.items():
+            # The digit-length guard is gone: it skipped any five-figure
+            # inflation by construction, which is the mutation a forger would
+            # reach for first.
             for claimed in re.findall(r'([\d,]{4,}) ?(?:-entry|RWAs|records|references, including)', text):
-                if claimed.replace(',', '').isdigit() and len(claimed.replace(',', '')) == 4:
-                    self.assertEqual(claimed, stated,
-                                     f'{name} states a catalogue size of {claimed}; the snapshot has {stated}')
+                self.assertEqual(claimed, stated,
+                                 f'{name} states a catalogue size of {claimed}; the snapshot has {stated}')
 
     def test_a_wrong_row_count_would_be_caught(self):
         # Guard against a check that passes on anything.

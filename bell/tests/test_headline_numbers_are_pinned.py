@@ -126,5 +126,64 @@ class HeadlineNumbersArePinned(unittest.TestCase):
                          "these judge-page tiles state a number no measurement pins")
 
 
+    def test_the_thirty_second_path_states_the_measured_base_rate(self):
+        # A reviewer mutated all of these and the gate stayed green, on the page
+        # whose first sentence promises every number came from a command.
+        flow = flowed(judge_text())
+        rate = f"{BASE_RATE['refusal_rate'] * 100:.1f}%"
+        self.assertIn(f"Refusal rate {rate}", flow, "the stated refusal rate is not the measured one")
+        self.assertIn(f"{BASE_RATE['population']} references, "
+                      f"{BASE_RATE['excluded_single_representation']} with a single", flow,
+                      "the 30-second block's population or exclusions are not measured")
+        self.assertIn(f"{BASE_RATE['denominator_two_or_more_representations']} where a comparison "
+                      f"could be attempted, {BASE_RATE['refused']}", flow)
+        low, high = BASE_RATE["refusal_rate_ci95"]
+        self.assertIn(f"Wilson 95% interval {low * 100:.1f} to {high * 100:.1f}%", flow,
+                      "the stated confidence interval is not the measured one")
+
+    def test_the_refusal_split_is_the_measured_split(self):
+        split = BASE_RATE["refusal_split"]
+        reasons = sum(BASE_RATE["refusal_reasons"].values()) \
+            if isinstance(BASE_RATE.get("refusal_reasons"), dict) else BASE_RATE["refusal_reasons"]
+        flow = flowed(judge_text())
+        self.assertIn(f"<strong>{split['source_coverage']} of the {reasons} reasons", flow,
+                      "the coverage half of the refusal split is not measured")
+        self.assertIn(f"{split['data_contradiction']} are rows", flow,
+                      "the contradiction half of the refusal split is not measured")
+
+    def test_the_demo_line_states_the_slice_the_receipt_actually_carries(self):
+        alerts = len(REPLAY.get("alerts") or [])
+        self.assertIn(f"the {alerts} highest-priority flagged references", flowed(judge_text()),
+                      f"the judge page describes a slice of a different size; the receipt ships {alerts}")
+
+    def test_the_input_package_size_is_the_size_on_disk(self):
+        megabytes = (PROOF / "rwa-surface-integrity-inputs-2026-09-21.json").stat().st_size / 1_000_000
+        stated = f"{megabytes:.1f} MB of shipped inputs"
+        self.assertIn(stated, flowed(judge_text()),
+                      f"the judge page states an input package size that is not {stated}")
+
+    def test_the_readme_states_the_receipt_s_own_reference_count(self):
+        references = REPLAY["universe"]["tokenised_references_scanned"]
+        self.assertIn(f"contained {references} tokenised references", flowed(readme_text()),
+                      "the README states a reference count the replay receipt does not")
+
+    def test_the_named_contradiction_counts_come_from_their_own_denominator(self):
+        # The first version of this pinned the sentence to the receipt's
+        # whole-population signal counts and would have "corrected" a number
+        # that was already right. The sentence is inside the breakdown of the
+        # 157 refusals, so its denominator is the 244 comparable-attemptable
+        # references, and the source is base_rate's refusal_reasons: 30 there
+        # against 32 over the whole population. Two right numbers answering two
+        # questions is exactly what this product exists to keep apart, so the
+        # test has to read the one the sentence is about.
+        reasons = BASE_RATE["refusal_reasons"]
+        flow = flowed(readme_text())
+        self.assertIn(f"including {reasons['PRICE_DENOMINATION_BREAK']} references quoted in "
+                      "different units", flow,
+                      "the README's unit-mismatch count is not the measured one")
+        self.assertIn(f"{reasons['ZERO_MCAP_POSITIVE_VOLUME']} reporting traded volume against a "
+                      "zero market cap", flow,
+                      "the README's zero-market-cap count is not the measured one")
+
 if __name__ == "__main__":
     unittest.main()

@@ -103,10 +103,28 @@ class JudgeCounts(unittest.TestCase):
         # page that opens "Every number on this page was produced by a command
         # you can run yourself". The test count and the file count beside it
         # were pinned; this one was not, so it was wrong in both files.
+        # This read the committed receipt, so deleting two checks from that
+        # file and restating both pages to "6" kept the gate green while the
+        # verifier still printed 8. Adding the verifier to `make verify` made
+        # the gate RUN it; it did not make anything COMPARE its output. Ask the
+        # verifier.
         import json
+        import subprocess
+        run = subprocess.run(
+            ["python3", "bell/verify_rule_boundaries.py"], cwd=HERE.parent.parent,
+            capture_output=True, text=True,
+            env={"PYTHONPATH": "bell", "PATH": "/usr/bin:/bin:/usr/local/bin"})
+        self.assertEqual(run.returncode, 0, run.stderr[-400:])
+        produced = json.loads(run.stdout)
+        self.assertEqual(produced.get("status"), "pass", run.stdout[-300:])
+        checks = len(produced["checks"])
+        self.assertGreater(checks, 0, "the boundary verifier ran no checks")
+        # And the committed receipt must agree with the code that wrote it,
+        # rather than being the only thing anyone reads.
         receipt = json.loads((HERE.parent / "site" / "proof"
                               / "rule-boundary-verifier-2026-09-22.json").read_text(encoding="utf-8"))
-        checks = len(receipt["checks"])
+        self.assertEqual(len(receipt["checks"]), checks,
+                         "the committed rule-boundary receipt does not match what the verifier runs")
         self.assertIn(f"All {checks} checks pass", JUDGE.read_text(encoding="utf-8"))
         self.assertIn(f"{checks} boundary checks", README.read_text(encoding="utf-8"))
 

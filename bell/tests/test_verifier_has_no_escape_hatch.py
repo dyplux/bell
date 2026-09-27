@@ -106,6 +106,63 @@ class Forgery(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.verify_observation(observation, receipt, "current but rewritten")
 
+
+    def test_emptying_the_claimed_signals_does_not_empty_the_comparison(self):
+        # A reviewer emptied the history record's signals, zeroed every signal
+        # in the receipt, rebuilt the chain and the anchor, and the gate went
+        # green while printing that signals WERE compared - because the
+        # comparison projected the receipt onto the keys the record claimed.
+        # Every contradiction the product exists to find, erased by a check the
+        # forger scoped.
+        observation = self.dated_observation()
+        receipt = copy.deepcopy(self.dated)
+        receipt["universe"]["signals"] = {key: 0 for key in receipt["universe"]["signals"]}
+        observation["signals"] = {}
+        with self.assertRaises(ValueError) as raised:
+            self.verify_observation(observation, receipt, "signals deleted")
+        self.assertIn("signals", str(raised.exception))
+
+    def test_a_shortened_signal_claim_does_not_shorten_the_comparison(self):
+        # The same shape one step subtler: keep one signal so the dict is not
+        # empty, and the projection still ignores everything else.
+        observation = self.dated_observation()
+        receipt = copy.deepcopy(self.dated)
+        keep = sorted(observation["signals"])[0]
+        observation["signals"] = {keep: observation["signals"][keep]}
+        with self.assertRaises(ValueError):
+            self.verify_observation(observation, receipt, "signals shortened")
+
+    def test_two_bundled_receipts_cannot_claim_one_observation(self):
+        # Relabelling the dated receipt to the latest receipt's timestamp made
+        # one overwrite the other in a dict literal, so it was compared to
+        # nothing. This lived inside main(), which the rest of this file never
+        # exercised; it is a function now so it can be.
+        from verify_integrity_receipt import bundle
+        first = {"observed_at": "2026-09-21T21:25:01Z"}
+        second = {"observed_at": "2026-09-21T21:25:01Z"}
+        with self.assertRaises(ValueError) as raised:
+            bundle([(first, "dated receipt"), (second, "latest receipt")])
+        self.assertIn("same observation", str(raised.exception))
+        # The control: two real observations index cleanly.
+        indexed = bundle([(first, "dated receipt"),
+                          ({"observed_at": "2026-09-26T23:28:21Z"}, "latest receipt")])
+        self.assertEqual(len(indexed), 2)
+
+    def test_a_reordered_series_is_refused_even_after_the_chain_is_rebuilt(self):
+        # history_chain.verify's own error message promises it detects a record
+        # "inserted, removed or reordered". It detected none of those once the
+        # forger re-linked, because the links agreed with the new order. A claim
+        # in an error message is still a claim.
+        from history_chain import rebuild, verify as verify_chain
+        series = rebuild([{"observed_at": "2026-09-15T22:22:00Z"},
+                          {"observed_at": "2026-09-21T21:25:01Z"},
+                          {"observed_at": "2026-09-26T23:28:21Z"}])
+        self.assertTrue(verify_chain(series), "an ordered series no longer verifies")
+        swapped = rebuild([series[1], series[0], series[2]])
+        with self.assertRaises(ValueError) as raised:
+            verify_chain(swapped)
+        self.assertIn("observation order", str(raised.exception))
+
     def test_deleting_the_provenance_does_not_delete_the_check(self):
         manifest = self.manifest_copy()
         for surface in manifest["surfaces"].values():

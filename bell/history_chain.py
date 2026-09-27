@@ -70,6 +70,7 @@ def verify(observations: list[dict]) -> str:
     them.
     """
     previous = None
+    previous_stamp = None
     for index, observation in enumerate(observations):
         label = f"observation {index + 1} ({observation.get('observed_at', 'undated')})"
         if observation.get("chain_version") != CHAIN_VERSION:
@@ -81,6 +82,19 @@ def verify(observations: list[dict]) -> str:
         recomputed = hashlib.sha256(canonical(observation)).hexdigest()
         if recomputed != observation.get("sha256"):
             raise ValueError(f"{label} does not match its own digest: its contents were edited")
+        # The message above promises this function detects a record that was
+        # "inserted, removed or reordered". It detected none of those once the
+        # forger rebuilt the chain, because the links were consistent with the
+        # new order: a reviewer swapped two observations, re-linked, rewrote the
+        # anchor, and the whole gate passed. A claim in an error message is
+        # still a claim. `append_history` already refuses a backdated append;
+        # the same rule has to hold for what ships.
+        observed_at = str(observation.get("observed_at") or "")
+        if previous_stamp is not None and observed_at <= previous_stamp:
+            raise ValueError(
+                f"{label} is dated {observed_at or 'nothing'} and follows {previous_stamp}: "
+                "the series is not in observation order, so it was reordered or duplicated")
+        previous_stamp = observed_at
         previous = observation["sha256"]
     if previous is None:
         raise ValueError("the history carries no observations to verify")

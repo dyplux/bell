@@ -115,22 +115,30 @@ def verify_observation(observation: dict, receipt: dict, label: str) -> None:
             "State counts are not compared across rule versions."
         )
     else:
-        assert_equal(
-            f"{label}.states",
-            {key: states.get(key) for key in observation["states"]},
-            observation["states"],
-        )
+        # Found by the pattern test rather than by a reviewer, which is the
+        # first time that has happened here: the same projection as `signals`,
+        # two lines apart, unnoticed through three review rounds. A state the
+        # receipt carries and the record does not is a disagreement, so the
+        # whole dicts are compared.
+        assert_equal(f"{label}.states", states, observation["states"])
     if not rules_differ:
         assert_equal(f"{label}.state total", sum(observation["states"].values()), observation["tokenised_references_scanned"])
 
     signals = universe.get("signals")
     if not isinstance(signals, dict):
         raise ValueError(f"{label}.universe.signals is missing")
-    assert_equal(
-        f"{label}.signals",
-        {key: signals.get(key) for key in observation["signals"]},
-        observation["signals"],
-    )
+    # This compared {key: signals.get(key) for key in observation["signals"]}
+    # against observation["signals"] - a projection of the receipt onto the
+    # keys the HISTORY RECORD claims. An empty claim therefore compared nothing
+    # and passed, so a reviewer emptied the record's signals, zeroed every
+    # signal in the receipt, rebuilt the chain and the anchor, and the gate went
+    # green while printing that signals were compared. Every contradiction the
+    # product exists to find, erased by a check driven by the forger's own dict.
+    #
+    # Seventeen lines below, source_hashes already compares whole dicts. Same
+    # file, same function, one form safe and one not. Compare whole dicts, which
+    # also catches a signal the receipt carries and the record does not.
+    assert_equal(f"{label}.signals", signals, observation["signals"])
 
     # The source digests were shape-checked and never compared to the receipt,
     # so all six could be replaced with zeroes on an observation this gate calls
@@ -155,6 +163,15 @@ def verify_observation_shape(observation: dict, label: str) -> None:
     for field in required:
         if field not in observation:
             raise ValueError(f"{label}.{field} is missing")
+    # `states` was protected by the sum-total check below; `signals` had no
+    # equivalent, so an empty dict satisfied "the key exists". A scan that
+    # returned no signal at all over 791 references is not an observation this
+    # repository has ever published, and an empty one is how the comparison
+    # above was made to compare nothing.
+    if not isinstance(observation["signals"], dict) or not observation["signals"]:
+        raise ValueError(
+            f"{label}.signals is empty. An observation that records no signal over the whole "
+            "population is not a scan result; it is a deleted one.")
     if sum(observation["states"].values()) != observation["tokenised_references_scanned"]:
         raise ValueError(f"{label}.state total does not equal the scanned population")
     source_hashes = observation.get("source_hashes")
@@ -249,6 +266,30 @@ def verify_public_inputs(inputs_path: Path, receipt_path: Path) -> None:
     print(f"public inputs: verified ({inputs_path.stat().st_size:,} bytes)")
 
 
+def bundle(receipts: list) -> dict:
+    """Index the bundled receipts by observation, refusing a collision.
+
+    This was a dict literal keyed on the receipts' own timestamps, built inside
+    `main`. Relabel the dated receipt's observed_at to match the latest and one
+    entry silently overwrote the other, so a receipt was never compared to
+    anything and the `bundled_matches != len(bundled)` guard could not see it,
+    because both sides shrank together. The forger chose the key.
+
+    Lifted out of `main` so it can be checked: a reviewer pointed out that the
+    escape-hatch suite exercised two helpers and never the function where this
+    one lived.
+    """
+    stamps = [receipt.get("observed_at") for receipt, _ in receipts]
+    if len(set(stamps)) != len(receipts):
+        raise ValueError(
+            f"the bundled receipts claim the same observation ({stamps}). Two receipts of one "
+            "observation is either a duplicate or an edit, and it hides one of them from every "
+            "comparison below.")
+    if any(stamp is None for stamp in stamps):
+        raise ValueError("a bundled receipt carries no observed_at, so nothing can match it")
+    return {receipt.get("observed_at"): (receipt, name) for receipt, name in receipts}
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--history", type=Path, default=DEFAULT_HISTORY)
@@ -271,7 +312,7 @@ def main() -> int:
     if not args.inputs.exists():
         raise ValueError(f"public input package is missing: {args.inputs}")
     verify_public_inputs(args.inputs, args.latest)
-    bundled = {dated_receipt.get("observed_at"): (dated_receipt, "dated receipt"), latest_receipt.get("observed_at"): (latest_receipt, "latest receipt")}
+    bundled = bundle([(dated_receipt, "dated receipt"), (latest_receipt, "latest receipt")])
     bundled_matches = 0
     fully_compared = 0
     for index, observation in enumerate(observations):
