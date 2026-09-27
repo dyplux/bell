@@ -136,6 +136,26 @@ def verify(manifest_path: Path) -> dict:
         if not isinstance(step, dict) or not step.get("selector"):
             raise ValueError("every demo step needs a selector")
 
+    # A step nobody can find in the recording is a step nobody can cut to. The
+    # manifest listed nine of them and no times, so editing the capture meant
+    # scrubbing for each one by eye, on a recording whose whole claim is that
+    # it re-derives. The recorder stamps the offset at the moment the content
+    # is on screen, before the pause that holds it, and the offsets must run
+    # forwards: two steps at the same second, or a later step earlier in the
+    # file, means the stamps describe some other recording.
+    previous = -1.0
+    for index, step in enumerate(steps):
+        at = step.get("at_seconds")
+        if isinstance(at, bool) or not isinstance(at, (int, float)) or at < 0:
+            raise ValueError(
+                f"step {step.get('id')!r} carries no at_seconds, so it cannot be located in "
+                "the recording it describes")
+        if at <= previous and index:
+            raise ValueError(
+                f"step {step.get('id')!r} is stamped at {at}s, which is not after the step "
+                f"before it at {previous}s")
+        previous = float(at)
+
     video_name = manifest.get("video")
     if not isinstance(video_name, str) or Path(video_name).name != video_name:
         raise ValueError("manifest video must be a filename in the manifest directory")

@@ -16,8 +16,9 @@ class DemoManifestTests(unittest.TestCase):
             video = root / "demo.webm"
             video.write_bytes(b"video")
             steps = [
-                {"id": step, "route": "/", "selector": "#step"}
-                for step in (
+                {"id": step, "route": "/", "selector": "#step",
+                 "at_seconds": round(4.5 * index, 2)}
+                for index, step in enumerate((
                     "hero",
                     "silver-search",
                     "silver-evidence",
@@ -27,7 +28,7 @@ class DemoManifestTests(unittest.TestCase):
                     "gold-repeat-window",
                     "map-only",
                     "receipt",
-                )
+                ))
             ]
             manifest = root / "manifest.json"
             manifest.write_text(json.dumps({
@@ -49,6 +50,32 @@ class DemoManifestTests(unittest.TestCase):
             result = verify(manifest)
             self.assertEqual(result["status"], "ok")
             self.assertEqual(result["steps"], 9)
+
+            # A step with no offset cannot be found in the recording it
+            # describes, and an offset that goes backwards describes some other
+            # recording. Both were accepted until the recorder started stamping
+            # them, which is how nine steps and no times survived this long.
+            body = json.loads(manifest.read_text(encoding="utf-8"))
+            for bad, expected in (
+                ({}, "carries no at_seconds"),
+                ({"at_seconds": None}, "carries no at_seconds"),
+                ({"at_seconds": "12"}, "carries no at_seconds"),
+                ({"at_seconds": True}, "carries no at_seconds"),
+                ({"at_seconds": -1}, "carries no at_seconds"),
+            ):
+                broken = json.loads(json.dumps(body))
+                broken["steps"][3].pop("at_seconds", None)
+                broken["steps"][3].update(bad)
+                manifest.write_text(json.dumps(broken), encoding="utf-8")
+                with self.subTest(case=repr(bad)), \
+                        self.assertRaisesRegex(ValueError, expected):
+                    verify(manifest)
+
+            backwards = json.loads(json.dumps(body))
+            backwards["steps"][5]["at_seconds"] = backwards["steps"][4]["at_seconds"]
+            manifest.write_text(json.dumps(backwards), encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "is not after the step before it"):
+                verify(manifest)
 
 
 class DemoNamesItsDenominator(unittest.TestCase):

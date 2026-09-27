@@ -117,6 +117,27 @@ def record_long(base: str, output: Path, channel: str) -> Path:
 
         receipt_metadata: dict = {}
         steps: list[dict] = []
+        # Playwright starts writing frames when the context opens, so this is
+        # the video's own zero.
+        started = time.perf_counter()
+
+        def mark(entry: dict) -> None:
+            """Record when this step became visible, as an offset into the video.
+
+            The manifest listed nine steps and no times, so cutting the capture
+            meant scrubbing for each one by eye. An edit found that way cannot
+            be reproduced, and cannot be checked against the recording it came
+            from, which is a strange thing to accept in a repository whose
+            subject is evidence that re-derives.
+            """
+            entry['at_seconds'] = round(time.perf_counter() - started, 2)
+            steps.append(entry)
+
+        # The invariant every caller below keeps: mark the moment the content
+        # is on screen, BEFORE the pause that holds it there. The first version
+        # of this marked some steps before their pause and some after, so
+        # at_seconds meant the start of one row and the end of the next, in a
+        # single list, with no way to tell which from the row itself.
 
         def open_page(path: str = '/') -> None:
             nonlocal receipt_metadata
@@ -125,42 +146,40 @@ def record_long(base: str, output: Path, channel: str) -> Path:
             if not receipt_metadata:
                 receipt_metadata = read_receipt_metadata(page, base)
 
-        def show(selector: str, seconds: float) -> None:
+        def show(selector: str, seconds: float, entry: dict | None = None) -> None:
             page.locator(selector).wait_for(state='visible', timeout=30_000)
             page.locator(selector).scroll_into_view_if_needed()
+            if entry is not None:
+                mark(entry)
             pause(seconds)
 
         # 1. The product question and the current live receipt
         open_page()
-        steps.append({'id': 'hero', 'route': '/', 'selector': '#receipt-status-label'})
+        mark({'id': 'hero', 'route': '/', 'selector': '#receipt-status-label'})
         pause(10)
 
         # 2. A real first action, rather than a deep-link-only demo
         page.locator('#hero-search').fill('Silver')
         page.locator('#hero-search-form').locator('button[type="submit"]').click()
         page.locator('#search-result').wait_for(state='visible', timeout=30_000)
-        steps.append({'id': 'silver-search', 'route': '/', 'selector': '#search-result'})
+        mark({'id': 'silver-search', 'route': '/', 'selector': '#search-result'})
         pause(10)
 
         # 3. The selected case, capital consequence and evidence rows
-        show('#decision-hero', 12)
+        show('#decision-hero', 12, {'id': 'silver-evidence', 'route': '/', 'selector': '#decision-hero'})
         details = page.locator('#decision-hero details').first
         if details.count():
             details.click()
             pause(7)
-        steps.append({'id': 'silver-evidence', 'route': '/', 'selector': '#decision-hero'})
 
         # 4. The population-wide shape of the monitor
         open_page()
-        show('#population-visual', 12)
-        steps.append({'id': 'population-shape', 'route': '/', 'selector': '#population-visual'})
-        show('#concentration-visual', 10)
-        steps.append({'id': 'population-concentration', 'route': '/', 'selector': '#concentration-visual'})
+        show('#population-visual', 12, {'id': 'population-shape', 'route': '/', 'selector': '#population-visual'})
+        show('#concentration-visual', 10, {'id': 'population-concentration', 'route': '/', 'selector': '#concentration-visual'})
 
         # 5. A facts-open route demonstrates that Bell does not rank clean rows
         open_page('/?reference=70')
-        show('#decision-hero', 11)
-        steps.append({'id': 'facts-open', 'route': '/?reference=70', 'selector': '#decision-hero'})
+        show('#decision-hero', 11, {'id': 'facts-open', 'route': '/?reference=70', 'selector': '#decision-hero'})
 
         # 6. A repeated temporal check supplies deeper evidence for Gold
         open_page('/?reference=1')
@@ -168,8 +187,8 @@ def record_long(base: str, output: Path, channel: str) -> Path:
             "document.querySelector('#decision-hero [data-temporal-evidence]')?.textContent?.includes('72H OVERLAP')",
             timeout=30_000,
         )
-        show('#decision-hero [data-temporal-evidence]', 15)
-        steps.append({'id': 'gold-repeat-window', 'route': '/?reference=1', 'selector': '#decision-hero [data-temporal-evidence]'})
+        show('#decision-hero [data-temporal-evidence]', 15,
+             {'id': 'gold-repeat-window', 'route': '/?reference=1', 'selector': '#decision-hero [data-temporal-evidence]'})
 
         # 7. The complete map keeps references without a published case honest
         open_page()
@@ -177,12 +196,11 @@ def record_long(base: str, output: Path, channel: str) -> Path:
         page.locator('#explorer-search').fill('Colgate')
         page.locator('#explorer-form').locator('button[type="submit"]').click()
         page.locator('#explorer-dossier').wait_for(state='visible', timeout=30_000)
+        mark({'id': 'map-only', 'route': '/', 'selector': '#explorer-dossier'})
         pause(12)
-        steps.append({'id': 'map-only', 'route': '/', 'selector': '#explorer-dossier'})
 
         # 8. End on the receipt and its reproducibility boundary
-        show('#evidence', 12)
-        steps.append({'id': 'receipt', 'route': '/', 'selector': '#evidence'})
+        show('#evidence', 12, {'id': 'receipt', 'route': '/', 'selector': '#evidence'})
 
         video = page.video
         context.close()
