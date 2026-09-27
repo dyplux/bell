@@ -60,7 +60,7 @@
       <div><small>Comparisons published</small><strong>87</strong></div>
       <div><small>Refusals, by named rule</small><strong>157</strong></div>
       <div><small>Tests in the offline gate</small><strong>389</strong></div>
-      <div><small>Gate runtime</small><strong>&lt;12s</strong></div>
+      <div><small>Gate runtime</small><strong>&lt;14s</strong></div>
     </div>
 
     <h2>Check it in 30 seconds, no key required</h2>
@@ -88,10 +88,12 @@ make base-rate</pre>
     The rate over the whole catalogue, with its denominator, is the command above.</small>
 
 <pre>make check-offline</pre>
-    <small>The gate runs between 2.8 and 12.0 seconds across the machines it has been measured
-    on, cold runs included. This band has been widened twice rather than quoted tight: a first
-    run on a cold machine was measured at 10.3 seconds, and the stated figure has to cover the
-    run a reader gets, not the best one.</small>
+    <small>The gate runs between 11.0 and 14.0 seconds across the machines it has been measured
+    on, cold runs included, and re-measured against the suite that ships rather than inherited from a
+    smaller one. The lower bound used to read 2.8 seconds, which was true of a suite half this
+    size and unreachable by anyone running this one: a bound nobody can observe is not a
+    measurement. A cold run here was 12.95 seconds and warm runs 11.39 and 11.55, so the
+    stated figure covers the run a reader gets rather than the best one ever recorded.</small>
 
     <div class="judge-scope">
       <h3>What that gate proves, and what it does not</h3>

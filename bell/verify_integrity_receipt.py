@@ -109,6 +109,15 @@ def verify_observation(observation: dict, receipt: dict, label: str) -> bool:
     # The escape hatch this closes: the skip below is decided by a field inside
     # the file being audited, so an attacker who wants the state comparison
     # switched off just writes a different version into the receipt.
+    # The record's own version was never checked against the allowlist, only
+    # the receipt's. A reviewer called it a landmine rather than a hole,
+    # because main() currently refuses any other bundled receipt that skips the
+    # comparison - which is a second guard holding up the first. Check both.
+    if recorded_rules and recorded_rules not in ALLOWED_RULES_VERSIONS:
+        raise ValueError(
+            f"{label} records rule set {recorded_rules!r}. The publisher in this tree stamps "
+            f"{RULES_VERSION}, and records older than the field carry none, so this one was "
+            "edited after it was written.")
     if current_rules and current_rules not in ALLOWED_RULES_VERSIONS:
         raise ValueError(
             f"{label}: the bundled receipt declares rule set {current_rules!r}. The publisher in "

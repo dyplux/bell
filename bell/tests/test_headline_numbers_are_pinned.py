@@ -263,8 +263,14 @@ class HeadlineNumbersArePinned(unittest.TestCase):
         # say 1.3 and stay green, beside a band it is supposed to justify.
         page = flowed(judge_text())
         band = re.search(r"between (\d+\.\d+) and (\d+\.\d+) seconds", page)
-        cold = re.search(r"cold machine was measured at (\d+\.\d+) seconds", page)
+        cold = re.search(r"cold run here was (\d+\.\d+) seconds", page)
         self.assertIsNotNone(cold, "the judge page stopped naming the cold run it widened for")
+        # And the band may not carry a lower bound far below what the suite can
+        # actually do: 2.8 seconds survived from a suite half this size, so the
+        # page advertised a number no reader could observe.
+        self.assertGreater(float(band.group(1)), float(band.group(2)) * 0.5,
+                           "the lower bound is less than half the upper, which usually means it "
+                           "was inherited from a smaller suite rather than measured on this one")
         self.assertTrue(float(band.group(1)) <= float(cold.group(1)) <= float(band.group(2)),
                         f"the cold run figure {cold.group(1)} is outside the band it justifies")
 

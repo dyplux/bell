@@ -85,14 +85,19 @@ class ComparisonRespectsTheVersion(unittest.TestCase):
                 receipt({"do_not_compare": 9, "investigate": 0, "no_flags": 1}),
                 "same-version-mismatch")
 
-    def test_a_version_change_is_reported_not_failed(self):
-        # Also had no assertion. The guarantee is that the counts are reported
-        # rather than compared, so the return value says so.
-        compared = verify_observation(
-            observation({"do_not_compare": 1, "investigate": 8, "no_flags": 1}, "bell.rules.v1"),
-            receipt({"do_not_compare": 1, "investigate": 2, "no_flags": 7}, RULES_VERSION),
-            "changed")
-        self.assertFalse(compared, "counts from two rule sets were compared as if comparable")
+    def test_a_record_stamped_with_a_set_the_publisher_never_wrote_is_refused(self):
+        # This used "bell.rules.v1" on the RECORD and asserted the counts were
+        # reported rather than compared. The record side is validated against
+        # the allowlist now, and no publisher in this tree ever stamped v1, so
+        # a record carrying it was edited. The real boundary - a record that
+        # predates the field, beside a receipt that does not - is the test
+        # below, and that is the case the shipped history actually contains.
+        with self.assertRaises(ValueError) as raised:
+            verify_observation(
+                observation({"do_not_compare": 1, "investigate": 8, "no_flags": 1}, "bell.rules.v1"),
+                receipt({"do_not_compare": 1, "investigate": 2, "no_flags": 7}, RULES_VERSION),
+                "changed")
+        self.assertIn("bell.rules.v1", str(raised.exception))
 
     def test_an_unversioned_history_entry_counts_as_a_different_version(self):
         # Everything recorded before versioning existed predates these rules.
