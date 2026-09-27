@@ -262,3 +262,46 @@ test('the judge page is served at /judge, not left to a default', async () => {
   await worker.fetch(new Request('https://bell.dyplux.com/judge', { method: 'POST' }), env, {});
   assert.notDeepEqual(asked, ['/judge.html'], 'a POST was served the judge page');
 });
+
+test('/judge does not redirect to itself when the asset layer drops the extension', async () => {
+  // This shipped and was live. The asset layer answers /judge.html with a 307
+  // to /judge, because dropping the extension is what its default HTML
+  // handling does, and the worker returned that redirect from the very path it
+  // names. /judge went from 404 to an infinite loop.
+  //
+  // The test above did not catch it because its ASSETS double answers every
+  // request with 200. The double was more cooperative than the thing it stands
+  // for, so the suite was green about a route that could not load. This one
+  // makes the double behave like the platform.
+  const asked = [];
+  const env = {
+    ASSETS: {
+      fetch: async request => {
+        const { pathname } = new URL(request.url);
+        asked.push(pathname);
+        if (pathname === '/judge.html') {
+          return new Response(null, { status: 307, headers: { location: '/judge' } });
+        }
+        return new Response('<!doctype html>judge', { status: 200 });
+      },
+    },
+  };
+
+  for (const pathname of ['/judge', '/judge/']) {
+    asked.length = 0;
+    const response = await worker.fetch(new Request(`https://bell.dyplux.com${pathname}`), env, {});
+    assert.equal(response.status, 200,
+      `${pathname} answered ${response.status} instead of the page`);
+    assert.equal(await response.text(), '<!doctype html>judge');
+    assert.ok(asked.includes('/judge'),
+      'the worker never asked for the path the asset layer actually serves');
+  }
+
+  // The property that matters, stated directly: whatever the asset layer does,
+  // /judge may never answer with a redirect back to /judge.
+  const response = await worker.fetch(new Request('https://bell.dyplux.com/judge'), env, {});
+  if (response.status >= 300 && response.status < 400) {
+    const target = new URL(response.headers.get('location'), 'https://bell.dyplux.com');
+    assert.notEqual(target.pathname, '/judge', '/judge redirects to itself');
+  }
+});

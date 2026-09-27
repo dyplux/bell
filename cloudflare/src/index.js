@@ -282,7 +282,19 @@ export default {
       // which is a default that can be reconfigured without anyone noticing the
       // nav has started 404ing.
       if ((url.pathname === '/judge' || url.pathname === '/judge/') && request.method === 'GET') {
-        return env.ASSETS.fetch(new Request(new URL('/judge.html', request.url), request));
+        const asset = await env.ASSETS.fetch(new Request(new URL('/judge.html', request.url), request));
+        // The asset layer answers /judge.html with a 307 to /judge, because
+        // dropping the extension is what its default HTML handling does. /judge
+        // is the path being served right here, so returning that redirect makes
+        // the page redirect to itself forever. It shipped that way and was live:
+        // /judge went from 404 to an infinite loop, and every local audit passed
+        // throughout, because the local harness serves judge.html off disk and
+        // never runs this worker at all. A route only this file can answer was
+        // checked by a harness that cannot reach it.
+        if (asset.status >= 300 && asset.status < 400) {
+          return env.ASSETS.fetch(new Request(new URL('/judge', request.url), request));
+        }
+        return asset;
       }
       return env.ASSETS.fetch(request);
     } catch (error) {
