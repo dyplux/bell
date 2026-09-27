@@ -158,3 +158,10 @@ scroll-margin-top:calc(var(--header-height) + 16px)}
 @media(max-width:620px){.judge-scope{padding:16px 16px}.judge-scope dd{font-size:13.5px}}
 .reference-change .change-series{margin:10px 0 0;font-size:13px;line-height:1.6;color:var(--muted)}
 .reference-change .change-series b{color:var(--gold);font-variant-numeric:tabular-nums}
+
+/* The explorer's bridge to the monitor. Same gold rail, no new colour. */
+.explorer-open-case{display:inline-block;margin-top:10px;background:transparent;
+  border:1px solid var(--line);border-left:2px solid var(--gold);color:var(--paper);
+  font:500 12px/1.4 var(--font);letter-spacing:.02em;padding:8px 12px;cursor:pointer}
+.explorer-open-case:hover{border-color:var(--gold)}
+.explorer-live-note{display:block;color:var(--dim);font-size:11px;line-height:1.5;margin-top:8px}

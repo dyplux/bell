@@ -265,6 +265,32 @@ class CaseReceiptTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "source fingerprints"):
             verify(payload)
 
+    def test_a_case_can_be_bound_against_a_receipt_the_reader_supplies(self):
+        # Every case a real visitor downloads is unbindable, because the live
+        # scan's inputs are not shipped - and a reviewer showed that relabelling
+        # the subject on one of those is accepted. The live receipt is
+        # credential-free, so the reader who has the URL can supply it and get
+        # the whole check. Exercised here with a local receipt, because a gate
+        # must not talk to a server it did not start.
+        payload = receipt_for(self.alert)
+        result = verify(payload, against=(REPLAY, "supplied.json"))
+        self.assertEqual(result["rows_binding"], "bound to supplied.json")
+        self.assertEqual(result["status"], "valid public case receipt")
+
+    def test_a_supplied_receipt_of_another_observation_says_so(self):
+        payload = receipt_for(self.alert)
+        other = dict(REPLAY, observed_at="2099-01-01T00:00:00Z")
+        with self.assertRaisesRegex(ValueError, "A live endpoint moves on"):
+            verify(payload, against=(other, "supplied.json"))
+
+    def test_binding_against_a_supplied_receipt_still_refuses_a_forgery(self):
+        # The control that makes the flag worth having: supplying a receipt
+        # must not become a way to be believed.
+        payload = receipt_for(self.alert)
+        payload["reference"]["name"] = "Something Else"
+        with self.assertRaisesRegex(ValueError, "wrong subject"):
+            verify(payload, against=(REPLAY, "supplied.json"))
+
 
 if __name__ == "__main__":
     unittest.main()

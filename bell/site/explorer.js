@@ -147,7 +147,18 @@
     return `<div class="explorer-live explorer-live-${escapeHTML(row.state || 'unknown')}">`
       + `<span>${liveIndex.dated ? 'DATED REPLAY VERDICT' : 'CURRENT VERDICT'} · OBSERVED ${escapeHTML(String(liveIndex.observed_at || '').replace('T', ' ').slice(0, 16))} UTC</span>`
       + `<strong>${escapeHTML(stateLabel)}</strong>${answer}`
-      + `<small>${escapeHTML(row.next_action || '')}</small></div>`;
+      + `<small>${escapeHTML(row.next_action || '')}</small>`
+      // The page has two searches and one export button, and the button belongs
+      // to the case open in the monitor. A reviewer searched five references
+      // through the explorer and downloaded five identical receipts for a sixth
+      // reference they had never searched. The explorer is a catalogue view and
+      // the monitor holds the case, so the honest fix is to say so and offer
+      // the one click that makes them agree, rather than couple two surfaces
+      // silently.
+      + `<button type="button" class="explorer-open-case" data-open-case="${escapeHTML(String(row.rwa_id))}">`
+      + `Open this reference's decision case, and its export ↑</button>`
+      + `<small class="explorer-live-note">The decision card and the case download above the fold `
+      + `follow the case open in the monitor, not this search.</small></div>`;
   }
 
   function mapRouteLabel(asset) {
@@ -216,6 +227,17 @@
     if (liveIndex === null) liveReady.then(apply);
     else apply();
   }
+
+  document.addEventListener('click', event => {
+    const opener = event.target.closest('[data-open-case]');
+    if (!opener) return;
+    const input = document.getElementById('hero-search');
+    const form = document.getElementById('hero-search-form');
+    if (!input || !form) return;
+    input.value = opener.getAttribute('data-open-case');
+    form.requestSubmit ? form.requestSubmit() : form.dispatchEvent(new Event('submit'));
+    document.getElementById('decision-hero')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  });
 
   async function load(asset) {
     if (!asset) return;

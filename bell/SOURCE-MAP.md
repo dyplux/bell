@@ -48,7 +48,9 @@ re-derives the verdict from the rows and binds them to a published scan by sourc
 fingerprints. A case exported from a live endpoint cannot bind, because the live
 scan's inputs are not shipped, so it reports `internally consistent; rows not
 bound to a published receipt` and exits 0. Pass `--require-binding` to make that
-a failure.
+a failure, and `--against https://bell.dyplux.com/api/integrity` to bind it against
+the live receipt it came from. That endpoint is credential-free, so the full check
+is available to anyone with the URL.
 
 ## Exact CMC surfaces
 

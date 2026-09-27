@@ -422,6 +422,23 @@ def main() -> int:
             require("DEX CONTRACT COVERAGE" in gold_dossier, "Gold dossier did not expose contract coverage context")
             require("DEX SURFACES" in gold_dossier, "Gold dossier did not expose resolved DEX surfaces")
             require("CMC MARKET PAIRS" in gold_dossier, "Gold dossier did not expose the market-pair boundary")
+            # Two searches, one export button. A reviewer searched five
+            # references through the explorer and downloaded five identical
+            # receipts for a sixth they had never searched. The explorer says
+            # which surface owns the case and offers the click that makes them
+            # agree; both must be there.
+            require("follow the case open in the monitor" in gold_dossier,
+                    "the explorer no longer says which surface the export button belongs to")
+            bridge = page.locator("[data-open-case]")
+            require(bridge.count() >= 1,
+                    "the explorer offers no way to open the case it is describing")
+            before = page.locator("[data-case-receipt]").first.get_attribute("data-case-receipt")
+            bridge.first.click()
+            page.wait_for_timeout(1_500)
+            after = page.locator("[data-case-receipt]").first.get_attribute("data-case-receipt")
+            require(after != before,
+                    f"opening the explorer's case left the export on {before!r}, so the two "
+                    "surfaces still disagree about which reference is selected")
             # The pair that makes "deferred" mean anything. Without this, an
             # explorer that never loads its catalogue at all would pass the
             # check above and look like a 1.98 MiB saving.

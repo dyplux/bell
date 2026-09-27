@@ -24,6 +24,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+import urllib.request
 from pathlib import Path
 from typing import Any
 
@@ -60,6 +61,30 @@ def codes_of(signals: Any) -> set:
 
 
 SHIPPED_RECEIPTS = sorted((ROOT / "site" / "proof").glob("rwa-surface-integrity-*.json"))
+
+
+def fetch_receipt(source: str) -> tuple:
+    """Read a receipt to bind against, from a URL or a path.
+
+    A case exported from a live endpoint can never bind against this repository,
+    because the live scan's inputs are not shipped - so every receipt a real
+    visitor downloads was unbindable, and a reviewer showed that relabelling the
+    subject on one of those is accepted. The receipt itself is credential-free
+    and public, so the reader who has the URL can supply it and get the full
+    check. Opt-in, because it leaves the machine.
+    """
+    if source.startswith("http://") or source.startswith("https://"):
+        request = urllib.request.Request(
+            source, headers={"Accept": "application/json",
+                             "User-Agent": "Dyplux-Bell-CaseVerifier/1.0"})
+        with urllib.request.urlopen(request, timeout=60) as response:
+            if response.status != 200:
+                raise ValueError(f"{source} answered HTTP {response.status}")
+            return json.loads(response.read().decode("utf-8")), source
+    path = Path(source)
+    if not path.exists():
+        raise ValueError(f"{source} is not a URL and not a file that exists")
+    return json.loads(path.read_text(encoding="utf-8")), path.name
 
 
 def find_published(payload: dict) -> tuple:
@@ -115,10 +140,11 @@ def bind(payload: dict, published: dict, name: str) -> None:
     headline example blocks. Deleting evidence changed the answer, honestly, to
     the wrong question.
     """
-    if payload["source_hashes"] != published.get("source_hashes"):
+    if payload["observed_at"] != published.get("observed_at"):
         raise ValueError(
-            f"the receipt's source fingerprints are not the ones {name} records for "
-            f"{payload['observed_at']}")
+            f"the receipt describes {payload['observed_at']} and {name} currently serves "
+            f"{published.get('observed_at')}. A live endpoint moves on; bind against a receipt "
+            "of the same observation, or export a fresh case.")
     index = {str(item.get("rwa_id")): item
              for item in (published.get("alerts") or []) if isinstance(item, dict)}
     reference = index.get(str(payload["reference"].get("rwa_id")))
@@ -131,6 +157,13 @@ def bind(payload: dict, published: dict, name: str) -> None:
         raise ValueError(
             f"the receipt is dated {payload['observed_at']} and carries the source fingerprints "
             f"{name} records for {published.get('observed_at')}")
+    # A live endpoint moves. Saying "your fingerprints are wrong" to someone
+    # whose case is simply older is a true sentence that sends them looking for
+    # a forgery that is not there.
+    if payload["source_hashes"] != published.get("source_hashes"):
+        raise ValueError(
+            f"the receipt's source fingerprints are not the ones {name} records for "
+            f"{published.get('observed_at')}")
     # The rows were bound and the SUBJECT was not: a reviewer kept Silver's real
     # rows and digests, relabelled the reference "Tesla Inc / TSLA / stock", and
     # the verifier printed a valid receipt about Tesla. Every field the contract
@@ -256,7 +289,7 @@ REQUIRED_REFERENCE = {"rwa_id", "name", "symbol", "asset_type", "token_count", "
 REQUIRED_METHOD = {"join_key", "token_join_key", "rules"}
 
 
-def verify(payload: Any) -> dict[str, Any]:
+def verify(payload: Any, against: tuple | None = None) -> dict[str, Any]:
     if not isinstance(payload, dict):
         raise ValueError("receipt must be a JSON object")
     missing = REQUIRED_TOP_LEVEL - payload.keys()
@@ -326,7 +359,7 @@ def verify(payload: Any) -> dict[str, Any]:
                 f"source_hashes.{name} is {digest[0] * 4}...: a single repeated character is a "
                 "placeholder, not the fingerprint of a payload")
     recomputed = rederive(payload)
-    published, published_name = find_published(payload)
+    published, published_name = against if against else find_published(payload)
     if published is None:
         binding = ("not bound: no receipt in this repository carries these source fingerprints, "
                    f"so the {len(payload['tokens'])} rows were checked against each other and the "
@@ -361,15 +394,22 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("receipt", type=Path)
     parser.add_argument(
+        "--against", metavar="URL_OR_PATH",
+        help=("a published receipt to bind the rows against, such as "
+              "https://bell.dyplux.com/api/integrity. A case exported from a live site names an "
+              "observation this repository does not ship, so without this it can only be checked "
+              "for internal consistency. The endpoint is credential-free."))
+    parser.add_argument(
         "--require-binding", action="store_true",
         help=("exit non-zero unless the rows were bound to a receipt shipped in this repository. "
               "Without it an unbound receipt exits 0 with a status saying so, which a reader sees "
               "and `verify_case_receipt.py x.json && echo ok` does not."))
     args = parser.parse_args()
     try:
+        against = fetch_receipt(args.against) if args.against else None
         with args.receipt.open(encoding="utf-8") as handle:
-            result = verify(json.load(handle))
-    except (OSError, json.JSONDecodeError, ValueError) as exc:
+            result = verify(json.load(handle), against=against)
+    except (OSError, json.JSONDecodeError, ValueError, urllib.error.URLError) as exc:
         print(f"case receipt verification failed: {exc}", file=sys.stderr)
         return 1
     print(json.dumps(result, ensure_ascii=False, indent=2))
