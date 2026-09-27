@@ -62,14 +62,19 @@ class DemoNamesItsDenominator(unittest.TestCase):
     was making it.
     """
 
-    def setUp(self):
+    # setUpClass, not setUp: demo.py is a subprocess, and running it once per
+    # test put 1.4 seconds into a gate whose published runtime band this
+    # repository then has to keep widening. Its output does not depend on which
+    # assertion reads it.
+    @classmethod
+    def setUpClass(cls):
         import subprocess
-        self.output = subprocess.run(
+        cls.output = subprocess.run(
             ["python3", str(HERE.parent / "demo.py")],
             capture_output=True, text=True, timeout=120, cwd=str(HERE.parent.parent),
             env={"PATH": "/usr/bin:/bin", "NO_COLOR": "1", "PYTHONPATH": str(HERE.parent)},
         ).stdout
-        self.plain = re.sub(r"\x1b\[[0-9;]*m", "", self.output)
+        cls.plain = re.sub(r"\x1b\[[0-9;]*m", "", cls.output)
 
     def test_the_headline_count_says_what_it_is_counting(self):
         self.assertNotIn("references in this receipt:", self.plain,

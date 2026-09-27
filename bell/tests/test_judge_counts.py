@@ -33,6 +33,24 @@ def collected() -> int:
     return len(list(flatten(suite)))
 
 
+# The verifier is a subprocess that loads 16.5 MB and recomputes the scan, so it
+# costs about half a second. Two tests below run it against the unmodified
+# repository and only differ in which document they hold its output against, so
+# they ran it twice for the same answer. Cached once, per process.
+_VERIFIER_OUTPUT = None
+
+
+def verifier_output():
+    global _VERIFIER_OUTPUT
+    if _VERIFIER_OUTPUT is None:
+        import subprocess
+        _VERIFIER_OUTPUT = subprocess.run(
+            ["python3", "bell/verify_integrity_receipt.py"], cwd=HERE.parent.parent,
+            capture_output=True, text=True,
+            env={"PYTHONPATH": "bell", "PATH": "/usr/bin:/bin:/usr/local/bin"})
+    return _VERIFIER_OUTPUT
+
+
 class JudgeCounts(unittest.TestCase):
     def test_the_page_states_the_python_count_the_runner_collects(self):
         stated = re.search(r"(\d+) tests, (\d+) Python and (\d+) JavaScript",
@@ -122,11 +140,7 @@ class JudgeCounts(unittest.TestCase):
         # cross-checked, the rest are summaries, and counts either side of a
         # rule change are reported rather than compared. On this product, a
         # claim about evidence has to be the claim the evidence supports.
-        import subprocess
-        repo = HERE.parent.parent
-        out = subprocess.run(["python3", "bell/verify_integrity_receipt.py"], cwd=repo,
-                             capture_output=True, text=True,
-                             env={"PYTHONPATH": "bell", "PATH": "/usr/bin:/bin:/usr/local/bin"})
+        out = verifier_output()
         self.assertEqual(out.returncode, 0, out.stderr[:400])
         observations = re.search(r"ok \((\d+) observations\)", out.stdout)
         bundled = re.search(r"bundled cross-checks: (\d+)", out.stdout)
@@ -140,10 +154,7 @@ class JudgeCounts(unittest.TestCase):
         # The judge page was made precise about what make verify proves and the
         # README kept the broad version, so the two documents disagreed about
         # the same command. Whatever the verifier reports, both must say it.
-        import subprocess
-        out = subprocess.run(["python3", "bell/verify_integrity_receipt.py"],
-                             cwd=HERE.parent.parent, capture_output=True, text=True,
-                             env={"PYTHONPATH": "bell", "PATH": "/usr/bin:/bin:/usr/local/bin"})
+        out = verifier_output()
         bundled = re.search(r"bundled cross-checks: (\d+)", out.stdout)
         observations = re.search(r"ok \((\d+) observations\)", out.stdout)
         phrase = (f"Of the {observations.group(1)} dated observations, "

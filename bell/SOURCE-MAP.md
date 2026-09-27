@@ -35,6 +35,7 @@ different set of assertions, so neither was the answer to "how do I check this".
 | `verify_submission.py` | is anything private or unreleasable about to ship? | the tree | nothing |
 | `verify_public_surface.py` | does the deployed surface still serve a well-formed receipt? | `bell.dyplux.com` | network |
 | `verify_public_browser.py` | does the deployed interface still behave? | `bell.dyplux.com` | network + browser |
+| `verify_deployment_matches.py` | is the deployed site the same bytes as this commit? | `bell.dyplux.com` | network |
 
 The first six need no network and no key. The last two are the only ones that
 leave the machine, and both run without credentials.

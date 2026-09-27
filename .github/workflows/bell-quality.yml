@@ -42,6 +42,27 @@ jobs:
         # subject is surfaces that quietly disagree.
         run: make check-offline
 
+  deployment-drift:
+    # "Never on a push, so a site outage cannot redden a commit that is fine"
+    # is right about an OUTAGE and wrong about DRIFT. While that reasoning held
+    # for both, the deployed site fell behind this repository by a whole
+    # redesign - /judge answered 404, the outcome key omitted a published
+    # state, and an example chip stated the wrong verdict - and every gate was
+    # green, because no gate compared the two. A reviewer found it instead.
+    #
+    # So drift is separated from outage and runs on every push: unreachable is
+    # reported and skipped, different is named and failed. It compares bytes,
+    # needs no browser and takes a second. Behaviour stays with the browser
+    # audit below, which stays on the schedule for the original reason.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Is the deployed site this commit?
+        run: python bell/verify_deployment_matches.py
+
   deployed-interface:
     # The gap CI would otherwise leave: the offline job above never touches the
     # deployed site. This drives it with a real browser on a schedule and on
