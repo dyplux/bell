@@ -279,9 +279,15 @@ def verify_collection_manifest(surfaces: dict, manifest: dict, names: tuple) -> 
         # the evidence it guards is not a guard. The manifest already declares
         # `mode: server_side_authenticated_collection`, so the provenance it
         # implies is required, not optional.
-        if not isinstance(request_count, int) or request_count < 1:
+        # isinstance(True, int) is True, so a boolean passed here and failed
+        # two lines later with the wrong message. verify_case_receipt's
+        # token_count guard has rejected bools since it was written; this one
+        # did not. Same rule, one place had it.
+        if isinstance(request_count, bool) or not isinstance(request_count, int) \
+                or request_count < 1:
             raise ValueError(f"invalid request count for {name}")
-        if not isinstance(successful_count, int) or successful_count < 1 or successful_count > request_count:
+        if isinstance(successful_count, bool) or not isinstance(successful_count, int) \
+                or successful_count < 1 or successful_count > request_count:
             raise ValueError(f"invalid successful response count for {name}")
         if not isinstance(response_hashes, list) or len(response_hashes) != successful_count or any(not isinstance(value, str) or len(value) != 64 for value in response_hashes):
             raise ValueError(f"response hashes do not match response count for {name}")

@@ -264,5 +264,126 @@ class BindingRefusesWhatItCannotMatch(unittest.TestCase):
             self.bind(payload, other, "receipt")
 
 
+class TheInputPackageIsRefusedWhenItIsMalformed(unittest.TestCase):
+    """The provenance and package guards, driven at the functions that refuse.
+
+    `make mutate` reported twenty-four refusals in verify_integrity_receipt.py
+    that nothing noticed. Most are shape checks on the 16.5 MB input package
+    and its collection manifest: every test in the suite handed them a
+    well-formed package, so the branch that refuses a malformed one had never
+    run. The surfaces are parsed once and only the manifest is copied, because
+    re-reading 16.5 MB per row is how a useful test becomes one nobody runs.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        from verify_integrity_receipt import load, verify_collection_manifest
+        cls.verify_manifest = staticmethod(verify_collection_manifest)
+        package = load(PROOF / "rwa-surface-integrity-inputs-2026-09-21.json")
+        cls.surfaces = package["surfaces"]
+        cls.manifest = package["collection_manifest"]
+        cls.names = ("map", "asset_list", "quotes", "info", "issuers", "crypto_info")
+
+    def manifest_copy(self):
+        return copy.deepcopy(self.manifest)
+
+    def test_a_manifest_that_is_not_a_server_side_collection_is_refused(self):
+        for value in ({}, [], None, {"mode": "client_side"}, {"mode": None}):
+            with self.subTest(value=repr(value)[:24]), \
+                    self.assertRaisesRegex(ValueError, "collection manifest"):
+                self.verify_manifest(self.surfaces, value, self.names)
+
+    def test_a_surface_whose_digest_does_not_match_its_payload_is_named(self):
+        manifest = self.manifest_copy()
+        manifest["surfaces"]["map"]["payload_sha256"] = "0123456789abcdef" * 4
+        with self.assertRaisesRegex(ValueError, "map"):
+            self.verify_manifest(self.surfaces, manifest, self.names)
+
+    def test_a_surface_that_is_not_an_object_is_named(self):
+        manifest = self.manifest_copy()
+        manifest["surfaces"]["quotes"] = []
+        with self.assertRaisesRegex(ValueError, "quotes"):
+            self.verify_manifest(self.surfaces, manifest, self.names)
+
+    def test_a_request_count_that_is_not_a_positive_integer_is_refused(self):
+        for value in (0, -3, "8", None, True):
+            manifest = self.manifest_copy()
+            manifest["surfaces"]["map"]["request_count"] = value
+            with self.subTest(value=repr(value)), \
+                    self.assertRaisesRegex(ValueError, "request count"):
+                self.verify_manifest(self.surfaces, manifest, self.names)
+
+    def test_a_successful_count_outside_the_request_count_is_refused(self):
+        manifest = self.manifest_copy()
+        manifest["surfaces"]["map"]["successful_response_count"] = \
+            manifest["surfaces"]["map"]["request_count"] + 1
+        with self.assertRaisesRegex(ValueError, "successful response count"):
+            self.verify_manifest(self.surfaces, manifest, self.names)
+
+    def test_response_digests_that_do_not_match_the_count_are_refused(self):
+        manifest = self.manifest_copy()
+        manifest["surfaces"]["map"]["response_sha256"] = \
+            manifest["surfaces"]["map"]["response_sha256"][:-1]
+        with self.assertRaisesRegex(ValueError, "response hashes"):
+            self.verify_manifest(self.surfaces, manifest, self.names)
+
+    def test_status_codes_that_do_not_match_the_request_count_are_refused(self):
+        for broken in (lambda codes: codes[:-1], lambda codes: codes + ["200"]):
+            manifest = self.manifest_copy()
+            manifest["surfaces"]["map"]["status_codes"] = broken(
+                list(manifest["surfaces"]["map"]["status_codes"]))
+            with self.subTest(case=str(broken)), \
+                    self.assertRaisesRegex(ValueError, "status codes"):
+                self.verify_manifest(self.surfaces, manifest, self.names)
+
+    def test_the_untouched_manifest_passes(self):
+        # The control: a function that refuses everything proves nothing.
+        try:
+            self.verify_manifest(self.surfaces, self.manifest_copy(), self.names)
+        except ValueError as refusal:
+            self.fail(f"the shipped manifest was refused: {refusal}")
+        self.assertTrue(True, "the shipped manifest passes the function the rows above break")
+
+
+class TheHistoryFileIsRefusedWhenItIsMalformed(unittest.TestCase):
+    """The history's own shape, which nothing exercised either."""
+
+    def run_verifier(self, history: dict):
+        import subprocess
+        import tempfile
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "history.json"
+            path.write_text(json.dumps(history), encoding="utf-8")
+            return subprocess.run(
+                [sys.executable, str(HERE.parent / "verify_integrity_receipt.py"),
+                 "--history", str(path)],
+                capture_output=True, text=True,
+                env={"PYTHONPATH": str(HERE.parent), "PATH": "/usr/bin:/bin:/usr/local/bin"})
+
+    def test_a_history_of_the_wrong_schema_is_refused(self):
+        history = copy.deepcopy(HISTORY)
+        history["schema_version"] = "bell.something.v9"
+        result = self.run_verifier(history)
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("history schema", result.stderr)
+
+    def test_a_history_that_hides_what_it_does_not_contain_is_refused(self):
+        # The purpose field has to disclose that raw authenticated responses
+        # are absent. Deleting the disclosure is the cheapest overclaim there
+        # is, and nothing caught it.
+        history = copy.deepcopy(HISTORY)
+        history["purpose"] = "A dated series of observations."
+        result = self.run_verifier(history)
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("raw responses", result.stderr)
+
+    def test_a_history_with_fewer_than_two_observations_is_refused(self):
+        history = copy.deepcopy(HISTORY)
+        history["observations"] = history["observations"][:1]
+        result = self.run_verifier(history)
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("at least two", result.stderr)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -26,13 +26,16 @@ from __future__ import annotations
 
 import argparse
 import ast
+import hashlib
 import json
+from datetime import datetime, timezone
 from pathlib import Path
 import subprocess
 import sys
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
+SCHEMA = "bell.guard_coverage.v2"
 
 GUARDED = (
     "verify_integrity_receipt.py",
@@ -82,6 +85,61 @@ def gate_notices() -> bool:
     return result.returncode != 0
 
 
+def digest_of(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def assemble(measured: dict) -> dict:
+    """Build the receipt from the per-file records, and say what it did not measure.
+
+    `make mutate ONLY=one_file.py` used to overwrite the whole receipt with one
+    file's numbers, under a note that reads as a sweep of the repository. The
+    version committed before this change said "41 guards mutated, 17 survived"
+    and every one of those seventeen was in `verify_case_receipt.py`: the other
+    four guarded files were not in that run at all. The published figure was
+    three times better than the real one, and nothing read the file, so nothing
+    disagreed.
+
+    A partial run is the useful run - one file's guards take four minutes where
+    the sweep takes twenty - so the fix is not to forbid it. It is to merge it
+    into what is already known, keep each file's own count beside its own
+    digest, and refuse to call the total a sweep while a file is missing.
+    """
+    files = dict(sorted(measured.items()))
+    for name, record in files.items():
+        path = ROOT / "bell" / name
+        record["stale"] = path.exists() and record.get("source_digest") != digest_of(path)
+    missing = [name for name in GUARDED
+               if (ROOT / "bell" / name).exists() and name not in files]
+    stale = sorted(name for name, record in files.items() if record["stale"])
+    survivors = sorted(
+        ({"file": name, "line": line}
+         for name, record in files.items() for line in record["survivors"]),
+        key=lambda entry: (entry["file"], entry["line"]))
+    complete = not missing and not stale
+    scope = ("every guarded file, measured against its current source"
+             if complete else
+             "part of the guarded set: "
+             + "; ".join(filter(None, [
+                 f"{', '.join(missing)} never measured" if missing else "",
+                 f"{', '.join(stale)} measured against an older source" if stale else ""])))
+    return {
+        "schema_version": SCHEMA,
+        "complete": complete,
+        "scope": scope,
+        "guards_mutated": sum(record["guards_mutated"] for record in files.values()),
+        "files": files,
+        "files_not_measured": missing,
+        "survivors": survivors,
+        "note": ("Each guard's condition was rewritten so its body cannot run, and the offline "
+                 "gate was run. A survivor is a refusal no test notices, whatever its docstring "
+                 "says. Three reviewers found these by hand before this existed. The totals are "
+                 "the sum of the per-file records below and cover exactly the files listed "
+                 "there, which is why `scope` and `complete` are part of the receipt: one "
+                 "file's run is not the repository's coverage."),
+    }
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--only", help="one filename from the guarded list")
@@ -93,12 +151,34 @@ def main(argv: list[str] | None = None) -> int:
     if not targets:
         raise SystemExit(f"{args.only} is not one of {', '.join(GUARDED)}")
 
-    survivors, checked = [], 0
+    out = Path(args.output)
+    measured = {}
+    if out.exists():
+        try:
+            measured = json.loads(out.read_text(encoding="utf-8")).get("files", {})
+        except json.JSONDecodeError:
+            measured = {}
+    # A partial run replaces the file it measured and leaves the rest of the
+    # record alone. A --limit run measures no file to the end, so it is allowed
+    # to print but never to claim a file's coverage.
+    keep = args.limit is None
+
+    # A survivor is read off a green gate going red. If the gate is already red
+    # for some unrelated reason, every mutation reads as caught and this writes
+    # a receipt saying every guard in the repository is defended - the exact
+    # inversion of what the tool is for, and it would have been believed,
+    # because a receipt full of zeroes is the result everyone is hoping for.
+    if gate_notices():
+        raise SystemExit("the gate is red before any guard was touched, so every mutation "
+                         "would read as caught; fix `make check-offline` first")
+
+    checked = 0
     for name in targets:
         path = ROOT / "bell" / name
         if not path.exists():
             continue
-        for lineno, _, _ in guards(path):
+        found, here = guards(path), []
+        for lineno, _, _ in found:
             if args.limit and checked >= args.limit:
                 break
             original = neuter(path, lineno)
@@ -112,19 +192,23 @@ def main(argv: list[str] | None = None) -> int:
             mark = "caught" if noticed else "SURVIVED"
             print(f"  {name}:{lineno} {mark}")
             if not noticed:
-                survivors.append({"file": name, "line": lineno})
+                here.append(lineno)
+        if keep:
+            measured[name] = {
+                "guards_mutated": len(found),
+                "survivors": sorted(here),
+                "source_digest": digest_of(path),
+                "measured_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            }
 
-    receipt = {
-        "schema_version": "bell.guard_coverage.v1",
-        "guards_mutated": checked,
-        "survivors": survivors,
-        "note": ("Each guard's condition was rewritten so its body cannot run, and the offline "
-                 "gate was run. A survivor is a refusal no test notices, whatever its docstring "
-                 "says. Three reviewers found these by hand before this existed."),
-    }
-    Path(args.output).write_text(json.dumps(receipt, ensure_ascii=False, indent=2) + "\n",
-                                 encoding="utf-8")
-    print(f"\n{checked} guards mutated, {len(survivors)} survived")
+    receipt = assemble(measured)
+    out.write_text(json.dumps(receipt, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    survivors = receipt["survivors"]
+    print(f"\n{checked} guards mutated this run; "
+          f"receipt covers {receipt['guards_mutated']} across "
+          f"{len(receipt['files'])} file(s), {len(survivors)} survived")
+    if not receipt["complete"]:
+        print(f"this receipt is not a sweep: {receipt['scope']}", file=sys.stderr)
     if survivors:
         print("these refusals are defended by nothing:", file=sys.stderr)
         for entry in survivors:

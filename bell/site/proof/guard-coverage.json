@@ -1,75 +1,100 @@
 {
-  "schema_version": "bell.guard_coverage.v1",
-  "guards_mutated": 41,
+  "schema_version": "bell.guard_coverage.v2",
+  "complete": false,
+  "scope": "part of the guarded set: verify_case_receipt.py, reference_series.py, append_history.py, history_chain.py never measured",
+  "guards_mutated": 48,
+  "files": {
+    "verify_integrity_receipt.py": {
+      "guards_mutated": 48,
+      "survivors": [
+        79,
+        99,
+        173,
+        195,
+        197,
+        314,
+        316,
+        320,
+        322,
+        355,
+        379,
+        392,
+        405,
+        414,
+        462
+      ],
+      "source_digest": "fc3525d4a3514a379e88137aeb379b6a0419b02ca9b55a29b4d0e47c62a75ae7",
+      "measured_at": "2026-09-27T19:54:37Z",
+      "stale": false
+    }
+  },
+  "files_not_measured": [
+    "verify_case_receipt.py",
+    "reference_series.py",
+    "append_history.py",
+    "history_chain.py"
+  ],
   "survivors": [
     {
-      "file": "verify_case_receipt.py",
-      "line": 76
+      "file": "verify_integrity_receipt.py",
+      "line": 79
     },
     {
-      "file": "verify_case_receipt.py",
-      "line": 81
+      "file": "verify_integrity_receipt.py",
+      "line": 99
     },
     {
-      "file": "verify_case_receipt.py",
-      "line": 85
+      "file": "verify_integrity_receipt.py",
+      "line": 173
     },
     {
-      "file": "verify_case_receipt.py",
-      "line": 116
+      "file": "verify_integrity_receipt.py",
+      "line": 195
     },
     {
-      "file": "verify_case_receipt.py",
-      "line": 151
+      "file": "verify_integrity_receipt.py",
+      "line": 197
     },
     {
-      "file": "verify_case_receipt.py",
-      "line": 156
+      "file": "verify_integrity_receipt.py",
+      "line": 314
     },
     {
-      "file": "verify_case_receipt.py",
-      "line": 337
+      "file": "verify_integrity_receipt.py",
+      "line": 316
     },
     {
-      "file": "verify_case_receipt.py",
-      "line": 343
+      "file": "verify_integrity_receipt.py",
+      "line": 320
     },
     {
-      "file": "verify_case_receipt.py",
-      "line": 345
+      "file": "verify_integrity_receipt.py",
+      "line": 322
     },
     {
-      "file": "verify_case_receipt.py",
-      "line": 347
+      "file": "verify_integrity_receipt.py",
+      "line": 355
     },
     {
-      "file": "verify_case_receipt.py",
-      "line": 352
+      "file": "verify_integrity_receipt.py",
+      "line": 379
     },
     {
-      "file": "verify_case_receipt.py",
-      "line": 361
+      "file": "verify_integrity_receipt.py",
+      "line": 392
     },
     {
-      "file": "verify_case_receipt.py",
-      "line": 364
+      "file": "verify_integrity_receipt.py",
+      "line": 405
     },
     {
-      "file": "verify_case_receipt.py",
-      "line": 366
+      "file": "verify_integrity_receipt.py",
+      "line": 414
     },
     {
-      "file": "verify_case_receipt.py",
-      "line": 372
-    },
-    {
-      "file": "verify_case_receipt.py",
-      "line": 434
-    },
-    {
-      "file": "verify_case_receipt.py",
-      "line": 447
+      "file": "verify_integrity_receipt.py",
+      "line": 462
     }
   ],
-  "note": "Each guard's condition was rewritten so its body cannot run, and the offline gate was run. A survivor is a refusal no test notices, whatever its docstring says. Three reviewers found these by hand before this existed."
+  "note": "Each guard's condition was rewritten so its body cannot run, and the offline gate was run. A survivor is a refusal no test notices, whatever its docstring says. Three reviewers found these by hand before this existed. The totals are the sum of the per-file records below and cover exactly the files listed there, which is why `scope` and `complete` are part of the receipt: one file's run is not the repository's coverage."
 }
