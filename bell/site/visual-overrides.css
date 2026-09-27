@@ -474,3 +474,11 @@ footer{max-width:2200px;padding-left:64px;padding-right:64px;font-size:13px}
   border:1px solid var(--line);padding:4px 6px;font:12px var(--font);text-align:center;
   margin:0 4px;min-height:28px;font-variant-numeric:tabular-nums}
 .alert-pagination span input#alert-page-jump:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
+/* Five controls in the pagination row overflowed 320px and pushed "Last" off
+   the right edge with nothing to scroll it back. The deployed-interface audit
+   caught it on the commit that introduced it. */
+@media(max-width:560px){
+  .alert-pagination{flex-wrap:wrap;gap:6px;justify-content:center}
+  .alert-pagination button{flex:0 0 auto}
+  .alert-pagination span{flex:1 0 100%;text-align:center;order:-1;margin-bottom:4px}
+}

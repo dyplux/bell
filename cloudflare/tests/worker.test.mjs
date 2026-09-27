@@ -369,3 +369,33 @@ test('the policy allows what the site loads and nothing it does not', async () =
       `${page} gained an inline event handler, which the policy above forbids`);
   }
 });
+
+test('the asset layer states the same policy the worker does', async () => {
+  // The Worker sets security headers on everything it answers, and a reviewer
+  // still found none of them on the live root: / is served straight off the
+  // asset layer and never reaches the Worker. Only run_worker_first paths do.
+  // So _headers has to carry the same policy, and this is what stops the two
+  // copies drifting.
+  const fs = await import('node:fs');
+  const path = await import('node:path');
+  const url = await import('node:url');
+  const here = path.dirname(url.fileURLToPath(import.meta.url));
+  const headersFile = fs.readFileSync(
+    path.resolve(here, '../../bell/site/_headers'), 'utf8');
+
+  const assets = { fetch: async () => new Response('asset', { status: 200 }) };
+  const response = await worker.fetch(new Request('https://bell.dyplux.com/judge'),
+                                      { ASSETS: assets }, {});
+  for (const header of ['content-security-policy', 'strict-transport-security',
+                        'x-content-type-options', 'referrer-policy', 'permissions-policy']) {
+    const value = response.headers.get(header);
+    assert.ok(value, `the worker no longer sets ${header}`);
+    const stated = headersFile.split('\n')
+      .map(line => line.trim())
+      .find(line => line.toLowerCase().startsWith(`${header}:`));
+    assert.ok(stated, `_headers does not state ${header}, so the root will not carry it`);
+    assert.equal(stated.slice(header.length + 1).trim(), value,
+      `_headers and the worker disagree about ${header}`);
+  }
+  assert.match(headersFile, /^\/\*$/m, '_headers no longer applies to every path');
+});

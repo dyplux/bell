@@ -15,6 +15,46 @@ LOADED = ("document.querySelector('#receipt-status-label')?.textContent"
           "?.includes('LOADING') === false")
 
 
+def wait_for_either(page, selector: str, options, *, timeout: int = 30_000) -> None:
+    """Either of two words, same reason as wait_for_text below."""
+    import time as _time
+    deadline = _time.monotonic() + timeout / 1000
+    seen = ""
+    while _time.monotonic() < deadline:
+        target = page.locator(selector)
+        if target.count():
+            seen = target.first.inner_text()
+            if any(option in seen for option in options):
+                return
+        page.wait_for_timeout(120)
+    raise AssertionError(f"{selector} never showed any of {options}; last saw {seen[:200]!r}")
+
+
+def wait_for_text(page, selector: str, contains: str, *, absent: bool = False,
+                  timeout: int = 30_000) -> None:
+    """Poll from here instead of evaluating a string in the page.
+
+    The site now serves `script-src 'self'` with no 'unsafe-eval', which is the
+    point of having a policy, and Playwright's wait_for_function evaluates a
+    string: the audit started failing with "Evaluating a string as JavaScript
+    violates the following Content Security Policy directive". The tool was
+    asking the page to do something the page is right to refuse. So the
+    condition is checked on this side of the wire.
+    """
+    import time as _time
+    deadline = _time.monotonic() + timeout / 1000
+    seen = ""
+    while _time.monotonic() < deadline:
+        target = page.locator(selector)
+        if target.count():
+            seen = target.first.inner_text()
+            if (contains not in seen) if absent else (contains in seen):
+                return
+        page.wait_for_timeout(120)
+    raise AssertionError(
+        f"{selector} never {'lost' if absent else 'showed'} {contains!r}; last saw {seen[:200]!r}")
+
+
 def require(condition: bool, message: str) -> None:
     if not condition:
         raise RuntimeError(message)
@@ -62,7 +102,7 @@ def main() -> int:
                 else None))
             page.goto(args.base.rstrip("/") + "/", wait_until="domcontentloaded", timeout=30_000)
             page.locator("#receipt-status-label").wait_for(state="visible", timeout=30_000)
-            page.wait_for_function("document.querySelector('#receipt-status-label')?.textContent?.includes('LOADING') === false", timeout=30_000)
+            wait_for_text(page, "#receipt-status-label", "LOADING", absent=True)
             status = page.locator("#receipt-status-label").inner_text()
             # The label used to read "LIVE RECEIPT / FRESH"; it now states the
             # observation time instead, because "fresh" was read as "measured
@@ -88,7 +128,7 @@ def main() -> int:
             page.on("request", lambda request: refresh_requests.append(request.url) if "/api/integrity" in request.url else None)
             with page.expect_navigation(wait_until="domcontentloaded", timeout=30_000):
                 page.locator("#refresh-receipt").click()
-            page.wait_for_function("document.querySelector('#receipt-status-label')?.textContent?.includes('LOADING') === false", timeout=30_000)
+            wait_for_text(page, "#receipt-status-label", "LOADING", absent=True)
             refreshed_status = page.locator("#receipt-status-label").inner_text()
             require(
                 "OBSERVED" in refreshed_status or "DATED REPLAY" in refreshed_status,
@@ -143,7 +183,7 @@ def main() -> int:
             receipt_response = page.request.get(args.base.rstrip("/") + "/api/integrity", timeout=30_000)
             require(receipt_response.ok, f"integrity receipt request failed: {receipt_response.status}")
             receipt = receipt_response.json()
-            page.wait_for_function("observed => document.querySelector('#publication-history')?.textContent?.includes(observed)", arg=receipt["observed_at"], timeout=30_000)
+            wait_for_text(page, "#publication-history", receipt["observed_at"])
             # Every population figure the page prints must equal the receipt it
             # is reading AT THIS MOMENT, not a figure from any other observation.
             #
@@ -266,7 +306,7 @@ def main() -> int:
             # FIRST", which is honest and is not the same as being right.
             for digits in ("0", "-1"):
                 page.goto(f"{args.base.rstrip(chr(47))}/?reference={digits}", wait_until="domcontentloaded", timeout=30_000)
-                page.wait_for_function(LOADED, timeout=30_000)
+                wait_for_text(page, "#receipt-status-label", "LOADING", absent=True)
                 page.wait_for_timeout(200)
                 result = page.locator("#search-result")
                 shown = result.inner_text() if result.count() and result.is_visible() else ""
@@ -275,13 +315,13 @@ def main() -> int:
                         f"for: {shown[:300]!r}")
             # And a real id still resolves, so the fix is not "refuse digits".
             page.goto(f"{args.base.rstrip(chr(47))}/?reference=5", wait_until="domcontentloaded", timeout=30_000)
-            page.wait_for_function(LOADED, timeout=30_000)
+            wait_for_text(page, "#receipt-status-label", "LOADING", absent=True)
             page.wait_for_timeout(200)
             exact = page.locator("#search-result").inner_text()
             require("exact match" in exact.lower(),
                     f"?reference=5 no longer resolves to a single reference: {exact[:300]!r}")
             page.goto(args.base.rstrip("/") + "/", wait_until="domcontentloaded", timeout=30_000)
-            page.wait_for_function(LOADED, timeout=30_000)
+            wait_for_text(page, "#receipt-status-label", "LOADING", absent=True)
 
             # 39 of the 75 published comparisons in the live receipt are also
             # flagged by the scan, and every one of them used to read
@@ -297,14 +337,14 @@ def main() -> int:
                 subject = flagged[0]
                 page.goto(f"{args.base.rstrip(chr(47))}/?reference={subject['rwa_id']}",
                           wait_until="domcontentloaded", timeout=30_000)
-                page.wait_for_function(LOADED, timeout=30_000)
+                wait_for_text(page, "#receipt-status-label", "LOADING", absent=True)
                 page.wait_for_timeout(200)
                 shown = page.locator("#search-result").inner_text()
                 require("FLAGGED" in shown.upper(),
                         f"{subject.get('name')!r} carries a published comparison and a scan flag "
                         f"and reads as plainly comparable: {shown[:300]!r}")
                 page.goto(args.base.rstrip("/") + "/", wait_until="domcontentloaded", timeout=30_000)
-                page.wait_for_function(LOADED, timeout=30_000)
+                wait_for_text(page, "#receipt-status-label", "LOADING", absent=True)
                 page.locator('[data-filter="COMPARABLE"]').click()
                 page.wait_for_timeout(300)
                 gathered = page.locator("#alert-count").inner_text()
@@ -314,7 +354,7 @@ def main() -> int:
                         f"the COMPARABLE filter no longer gathers all {published} published "
                         f"comparisons: {gathered[:200]!r}")
                 page.goto(args.base.rstrip("/") + "/", wait_until="domcontentloaded", timeout=30_000)
-                page.wait_for_function(LOADED, timeout=30_000)
+                wait_for_text(page, "#receipt-status-label", "LOADING", absent=True)
 
             silver_state = search_and_check("Silver")
             require(page.locator("#search-result").get_by_text("Open live dossier context ↓", exact=True).count() == 1, "searched case does not expose the live dossier handoff")
@@ -363,7 +403,7 @@ def main() -> int:
             copy_button = page.locator("#decision-hero [data-copy-case]").first
             require(copy_button.count() == 1, "searched case does not expose a shareable case-link action")
             copy_button.click()
-            page.wait_for_function("document.querySelector('#decision-hero [data-copy-case]')?.textContent?.includes('Case link copied')", timeout=5_000)
+            wait_for_text(page, "#decision-hero [data-copy-case]", "Case link copied", timeout=5_000)
 
             watch_button = page.locator("[data-watch-id]").first
             require(watch_button.count() == 1, "Silver evidence queue does not expose a watch action")
@@ -375,7 +415,7 @@ def main() -> int:
             gold_state = search_and_check("Gold")
             temporal = page.locator("#decision-hero [data-temporal-evidence]")
             temporal.wait_for(state="visible", timeout=30_000)
-            page.wait_for_function("document.querySelector('#decision-hero [data-temporal-evidence]')?.textContent?.includes('cash-session')", timeout=30_000)
+            wait_for_text(page, "#decision-hero [data-temporal-evidence]", "cash-session")
             temporal_text = temporal.inner_text()
             require("REPEAT-WINDOW CHECK" in temporal_text, "Gold case did not expose the repeat-window check")
             require("weekend" in temporal_text.lower() and "cash-session" in temporal_text.lower(), "temporal check did not explain the comparison clock")
@@ -479,7 +519,7 @@ def main() -> int:
 
             page.locator("#explorer-search").fill("Gold")
             page.locator("#explorer-form button[type=submit]").click()
-            page.wait_for_function("document.querySelector('#explorer-dossier')?.textContent?.includes('EVIDENCE CONTEXT')", timeout=30_000)
+            wait_for_text(page, "#explorer-dossier", "EVIDENCE CONTEXT")
             gold_dossier = page.locator("#explorer-dossier").inner_text()
             require("DEX CONTRACT COVERAGE" in gold_dossier, "Gold dossier did not expose contract coverage context")
             require("DEX SURFACES" in gold_dossier, "Gold dossier did not expose resolved DEX surfaces")
@@ -518,10 +558,10 @@ def main() -> int:
             page.locator("#hero-search").fill("Silver")
             page.locator("#hero-search-form button[type=submit]").click()
             page.locator("#search-result").wait_for(state="visible", timeout=30_000)
-            page.wait_for_function("document.querySelector('#hero-capital-signal')?.hidden === false", timeout=30_000)
+            page.locator("#hero-capital-signal").wait_for(state="visible", timeout=30_000)
             page.locator("#hero-search").fill("zzzz-no-such-reference")
             page.locator("#hero-search-form button[type=submit]").click()
-            page.wait_for_function("document.querySelector('#decision-hero')?.textContent?.includes('No matching reference')", timeout=30_000)
+            wait_for_text(page, "#decision-hero", "No matching reference")
             stale = page.locator("body").inner_text()
             require("CAPITAL ROUTE" not in stale,
                     "a search that found nothing still shows the previous reference's capital verdict")
@@ -534,7 +574,7 @@ def main() -> int:
             map_result.wait_for(state="visible", timeout=30_000)
             require("No live case found" in map_result.inner_text(), "map-only query was incorrectly presented as a live case")
             map_result.locator("[data-open-map-query]").click()
-            page.wait_for_function("(() => { const text = document.querySelector('#explorer-dossier')?.textContent || ''; return text.includes('DOSSIER PENDING') || text.includes('REFERENCE ONLY'); })()", timeout=30_000)
+            wait_for_either(page, "#explorer-dossier", ("DOSSIER PENDING", "REFERENCE ONLY"))
             map_text = page.locator("#explorer-dossier").inner_text()
             require("Colgate-Palmolive" in map_text, "map-only route did not resolve the complete RWA catalogue entry")
             map_route = "DOSSIER PENDING" if "DOSSIER PENDING" in map_text else "REFERENCE ONLY"
@@ -573,7 +613,7 @@ def main() -> int:
             mobile_page = mobile.new_page()
             mobile_page.goto(args.base.rstrip("/") + "/", wait_until="domcontentloaded", timeout=30_000)
             mobile_page.locator("#receipt-status-label").wait_for(state="attached", timeout=30_000)
-            mobile_page.wait_for_function("document.querySelector('#receipt-status-label')?.textContent?.includes('LOADING') === false", timeout=30_000)
+            wait_for_text(mobile_page, "#receipt-status-label", "LOADING", absent=True)
             overflow = mobile_page.evaluate("document.documentElement.scrollWidth > window.innerWidth + 1")
             require(not overflow, "mobile page has horizontal overflow")
             mobile_decision = mobile_page.locator("#hero-mobile-decision")
@@ -594,7 +634,7 @@ def main() -> int:
                 narrow_page = browser.new_page(viewport={"width": width, "height": height})
                 narrow_page.goto(args.base.rstrip("/") + "/", wait_until="domcontentloaded", timeout=30_000)
                 narrow_page.locator("#receipt-status-label").wait_for(state="attached", timeout=30_000)
-                narrow_page.wait_for_function("document.querySelector('#receipt-status-label')?.textContent?.includes('LOADING') === false", timeout=30_000)
+                wait_for_text(narrow_page, "#receipt-status-label", "LOADING", absent=True)
                 narrow_overflow = narrow_page.evaluate("document.documentElement.scrollWidth > window.innerWidth + 1")
                 require(not narrow_overflow, f"{width}px mobile page has horizontal overflow")
                 # Page-level overflow was false while forty-three leaf elements
@@ -637,7 +677,7 @@ def main() -> int:
             tablet_page = tablet.new_page()
             tablet_page.goto(args.base.rstrip("/") + "/", wait_until="domcontentloaded", timeout=30_000)
             tablet_page.locator("#receipt-status-label").wait_for(state="attached", timeout=30_000)
-            tablet_page.wait_for_function("document.querySelector('#receipt-status-label')?.textContent?.includes('LOADING') === false", timeout=30_000)
+            wait_for_text(tablet_page, "#receipt-status-label", "LOADING", absent=True)
             tablet_overflow = tablet_page.evaluate("document.documentElement.scrollWidth > window.innerWidth + 1")
             require(not tablet_overflow, "tablet page has horizontal overflow")
             require(tablet_page.locator("#hero-search").is_visible(), "tablet first viewport hides the primary search")
@@ -648,7 +688,7 @@ def main() -> int:
             fallback_page.route("**/api/integrity", lambda route: route.abort())
             fallback_page.goto(args.base.rstrip("/") + "/", wait_until="domcontentloaded", timeout=30_000)
             fallback_page.locator("#receipt-status-label").wait_for(state="attached", timeout=30_000)
-            fallback_page.wait_for_function("document.querySelector('#receipt-status-label')?.textContent?.includes('LOADING') === false", timeout=30_000)
+            wait_for_text(fallback_page, "#receipt-status-label", "LOADING", absent=True)
             fallback_status = fallback_page.locator("#receipt-status-label").inner_text()
             require("DATED REPLAY" in fallback_status, f"live failure did not produce a dated replay label: {fallback_status!r}")
             require("Explore RWA" in fallback_page.locator("body").inner_text(), "dated replay fallback did not keep the RWA explorer usable")
