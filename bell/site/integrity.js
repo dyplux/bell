@@ -57,7 +57,12 @@
   // tall, which turned the index into five and a half screens of scrolling, so
   // a narrow viewport gets two. Nothing is hidden: the search, the state
   // filters and the pager all still reach every reference.
-  const pageSize = window.matchMedia('(max-width: 760px)').matches ? 2 : 4;
+  // 4 cards a page over 792 references is 198 pages, which is not navigable by
+  // hand: a reviewer said so and was right. These are full evidence cards, so
+  // raising the number for everyone trades one unusable page for another. The
+  // reader chooses, and the pagination gained a jump to the last page and a
+  // direct page entry, because "Next" 197 times is not navigation either.
+  let pageSize = window.matchMedia('(max-width: 760px)').matches ? 2 : 4;
 
   labelDatedReplayLinks();
 
@@ -1592,7 +1597,7 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     const pagination = byId('alert-pagination');
     if (pagination) {
       pagination.innerHTML = matching.length > pageSize
-        ? `<button type="button" data-page="${pageNumber - 1}" ${pageNumber === 0 ? 'disabled' : ''} aria-label="Previous population page">Previous</button><span>Page ${pageNumber + 1} of ${totalPages}</span><button type="button" data-page="${pageNumber + 1}" ${pageNumber === totalPages - 1 ? 'disabled' : ''} aria-label="Next population page">Next</button>`
+        ? `<button type="button" data-page="0" ${pageNumber === 0 ? 'disabled' : ''} aria-label="First population page">&laquo; First</button><button type="button" data-page="${pageNumber - 1}" ${pageNumber === 0 ? 'disabled' : ''} aria-label="Previous population page">Previous</button><span>Page <input id="alert-page-jump" type="number" min="1" max="${totalPages}" value="${pageNumber + 1}" aria-label="Go to population page"> of ${totalPages}</span><button type="button" data-page="${pageNumber + 1}" ${pageNumber === totalPages - 1 ? 'disabled' : ''} aria-label="Next population page">Next</button><button type="button" data-page="${totalPages - 1}" ${pageNumber === totalPages - 1 ? 'disabled' : ''} aria-label="Last population page">Last &raquo;</button>`
         : '';
     }
     renderWatchlist();
@@ -2318,6 +2323,20 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     renderAlerts();
   });
   byId('download-index')?.addEventListener('click', downloadIndex);
+  byId('alert-page-size')?.addEventListener('change', event => {
+    const chosen = Number(event.target.value);
+    pageSize = Number.isFinite(chosen) && chosen > 0 ? chosen : pageSize;
+    pageNumber = 0;
+    renderAlerts();
+  });
+  document.addEventListener('change', event => {
+    if (event.target?.id !== 'alert-page-jump') return;
+    const asked = Number(event.target.value);
+    if (!Number.isFinite(asked)) return;
+    const highest = Number(event.target.max) || 1;
+    pageNumber = Math.min(Math.max(1, Math.round(asked)), highest) - 1;
+    renderAlerts();
+  });
   byId('alert-search').addEventListener('input', event => {
     query = event.target.value;
     pageNumber = 0;

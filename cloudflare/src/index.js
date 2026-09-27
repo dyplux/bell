@@ -261,8 +261,56 @@ async function publishIntegrity(request, env) {
   return json({ ok: true, published_at: publishedAt, observed_at: observedAt });
 }
 
+// A product whose subject is integrity was serving no security headers at all:
+// no CSP, no HSTS, no nosniff, no frame-ancestors. A reviewer ran `curl -sI`
+// and found five missing, which is cheap to fix and expensive to explain.
+//
+// The policy is written against what the site actually loads rather than
+// copied from a template: every script and stylesheet is same-origin, there is
+// no inline script and no inline event handler, and the one inline <style>
+// block lives in judge.html, which is why styles need 'unsafe-inline' and
+// scripts do not.
+const SECURITY_HEADERS = {
+  'content-security-policy': [
+    "default-src 'self'",
+    "script-src 'self'",
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' data:",
+    "font-src 'self'",
+    "connect-src 'self'",
+    "form-action 'self'",
+    "base-uri 'none'",
+    "object-src 'none'",
+    "frame-ancestors 'none'",
+  ].join('; '),
+  'strict-transport-security': 'max-age=31536000; includeSubDomains',
+  'x-content-type-options': 'nosniff',
+  'referrer-policy': 'strict-origin-when-cross-origin',
+  'permissions-policy': 'camera=(), microphone=(), geolocation=(), payment=()',
+};
+
+function secured(response) {
+  // A redirect carries no body to protect and rewriting one costs a copy of
+  // every asset response, so only the headers that still mean something on a
+  // 301 are worth setting. Everything else gets the full set.
+  const headers = new Headers(response.headers);
+  for (const [name, value] of Object.entries(SECURITY_HEADERS)) {
+    if (!headers.has(name)) headers.set(name, value);
+  }
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
+}
+
 export default {
   async fetch(request, env) {
+    return secured(await handle(request, env));
+  },
+};
+
+async function handle(request, env) {
     if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: CORS_HEADERS });
     const url = new URL(request.url);
     try {
@@ -308,5 +356,4 @@ export default {
     } catch (error) {
       return json({ error: 'publication service error' }, 500);
     }
-  },
-};
+}

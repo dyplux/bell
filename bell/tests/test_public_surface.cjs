@@ -601,8 +601,11 @@ test('the reference index does not render a third of the page before you search'
   // with a question.
   const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
   // The size became viewport-dependent - two on a phone, four on a desktop -
-  // so check every branch of it rather than one literal.
-  const sizes = (integrity.match(/const pageSize = [^;]+;/) || [])[0];
+  // and then reader-chosen, so this pins the DEFAULT rather than the keyword
+  // it is declared with. An earlier version matched `const pageSize` exactly
+  // and went red the moment the reader was allowed to change it, which is a
+  // test failing on how a line is spelled rather than on what it does.
+  const sizes = (integrity.match(/\b(?:const|let|var) pageSize = [^;]+;/) || [])[0];
   assert.ok(sizes, 'the index no longer declares a page size');
   const values = (sizes.match(/\b\d+\b/g) || []).map(Number).filter(value => value <= 32);
   assert.ok(values.length, 'the page size no longer resolves to a number');
@@ -613,6 +616,13 @@ test('the reference index does not render a third of the page before you search'
   // Pagination has to still exist, or this is removal rather than deferral.
   assert.match(integrity, /alert-pagination/);
   assert.match(integrity, /Math\.ceil\(matching\.length \/ pageSize\)/);
+  // 4 a page over 792 references is 198 pages. The default stays small because
+  // these are full evidence cards, so the reader has to be able to raise it and
+  // to jump, or the index is only navigable through the CSV.
+  const page = fs.readFileSync(path.join(site, 'index.html'), 'utf8');
+  assert.match(page, /id="alert-page-size"/, 'the reader cannot change the page size');
+  assert.match(integrity, /id="alert-page-jump"/, 'there is no way to jump to a page');
+  assert.match(integrity, /aria-label="Last population page"/, 'there is no way to reach the end');
 });
 
 test('population counts on the page are derived from the receipt, never written into it', () => {
@@ -1028,10 +1038,18 @@ test('a phone gets fewer index cards without losing any reference', () => {
   // Each index card is about 1.2 screens tall at 390px, so four of them made
   // the reference index five and a half screens of scrolling on a phone.
   const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
-  assert.match(integrity, /const pageSize = window\.matchMedia\('\(max-width: 760px\)'\)\.matches \? 2 : 4;/);
+  assert.match(integrity, /\b(?:const|let) pageSize = window\.matchMedia\('\(max-width: 760px\)'\)\.matches \? 2 : 4;/,
+    'the phone default is no longer two cards');
   // Fewer cards is only acceptable because nothing becomes unreachable: the
   // pager, the search and every state filter still cover the whole population.
   assert.match(integrity, /Math\.ceil\(matching\.length \/ pageSize\)/);
+  // 4 a page over 792 references is 198 pages. The default stays small because
+  // these are full evidence cards, so the reader has to be able to raise it and
+  // to jump, or the index is only navigable through the CSV.
+  const page = fs.readFileSync(path.join(site, 'index.html'), 'utf8');
+  assert.match(page, /id="alert-page-size"/, 'the reader cannot change the page size');
+  assert.match(integrity, /id="alert-page-jump"/, 'there is no way to jump to a page');
+  assert.match(integrity, /aria-label="Last population page"/, 'there is no way to reach the end');
   assert.match(page, /id="alert-pagination"/);
   assert.match(page, /id="alert-search"/);
   for (const state of ['all', 'COMPARABLE', 'DO NOT SHORTLIST', 'INVESTIGATE', 'FACTS OPEN',

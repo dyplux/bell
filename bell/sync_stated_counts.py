@@ -111,12 +111,12 @@ def rewrite(counts: dict, dry_run: bool) -> list[str]:
         (JUDGE, r"a submission gate over \d+ tracked files",
          f"a submission gate over {counts['files']} tracked files"),
         (README, r"`make check-offline` - \d+ tests", f"`make check-offline` - {total} tests"),
-        (JUDGE, r"The gate runs between [\d.]+ and [\d.]+ seconds (?:on \d+ machine|across \d+ machines)",
-         f"The gate runs between {band['fastest']} and {band['slowest']} seconds {where}"),
+        (JUDGE, r"The gate was observed between [\d.]+ and [\d.]+ seconds (?:on \d+ machine|across \d+ machines)",
+         f"The gate was observed between {band['fastest']} and {band['slowest']} seconds {where}"),
         (JUDGE, r"(?<=<small>Gate runtime</small>)<strong>[^<]*</strong>",
          f"<strong>&lt;{math.ceil(band['slowest'])}s</strong>"),
-        (README, r"measured between [\d.]+ and [\d.]+ seconds (?:on \d+ machine|across \d+ machines|across machines)",
-         f"measured between {band['fastest']} and {band['slowest']} seconds {where}"),
+        (README, r"observed between [\d.]+ and [\d.]+ seconds (?:on \d+ machine|across \d+ machines|across machines)",
+         f"observed between {band['fastest']} and {band['slowest']} seconds {where}"),
     )
     changed: list[str] = []
     pending: dict[Path, str] = {}

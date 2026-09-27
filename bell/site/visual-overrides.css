@@ -470,3 +470,7 @@ footer{max-width:2200px;padding-left:64px;padding-right:64px;font-size:13px}
 .index-export button:hover{border-color:var(--gold)}
 .index-export button:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
 .index-export small{color:var(--dim);font-size:12px;line-height:1.45;max-width:72ch}
+.alert-pagination span input#alert-page-jump{width:62px;background:var(--panel-inset);color:var(--paper);
+  border:1px solid var(--line);padding:4px 6px;font:12px var(--font);text-align:center;
+  margin:0 4px;min-height:28px;font-variant-numeric:tabular-nums}
+.alert-pagination span input#alert-page-jump:focus-visible{outline:2px solid var(--gold);outline-offset:1px}

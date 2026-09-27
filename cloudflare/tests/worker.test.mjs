@@ -324,3 +324,48 @@ test('a retired URL lands on the section it was named after', async () => {
 });
 
 function assetsEnv(assets) { return { ASSETS: assets }; }
+
+test('every response carries the security headers the product asks of others', async () => {
+  // A reviewer ran `curl -sI` against the live site and found no CSP, no HSTS,
+  // no nosniff, no frame-ancestors and no referrer policy. Five missing
+  // headers on a product whose subject is integrity.
+  const assets = { fetch: async () => new Response('asset', { status: 200 }) };
+  const required = ['content-security-policy', 'strict-transport-security',
+                    'x-content-type-options', 'referrer-policy', 'permissions-policy'];
+  for (const path of ['/', '/judge', '/api/health', '/integrity', '/not-a-route']) {
+    const response = await worker.fetch(new Request(`https://bell.dyplux.com${path}`),
+                                        { ASSETS: assets }, {});
+    for (const header of required) {
+      assert.ok(response.headers.get(header), `${path} carries no ${header}`);
+    }
+  }
+});
+
+test('the policy allows what the site loads and nothing it does not', async () => {
+  // Written against the pages rather than copied from a template: no inline
+  // script and no inline handler anywhere, one inline <style> in judge.html.
+  // So styles need 'unsafe-inline' and scripts must not have it - a CSP that
+  // permits inline script is a CSP that permits the injection it exists to
+  // stop.
+  const fs = await import('node:fs');
+  const path = await import('node:path');
+  const url = await import('node:url');
+  const here = path.dirname(url.fileURLToPath(import.meta.url));
+  const site = path.resolve(here, '../../bell/site');
+
+  const assets = { fetch: async () => new Response('asset', { status: 200 }) };
+  const response = await worker.fetch(new Request('https://bell.dyplux.com/'), { ASSETS: assets }, {});
+  const policy = response.headers.get('content-security-policy');
+  assert.match(policy, /script-src 'self'(;|$)/, "script-src must not allow inline");
+  assert.doesNotMatch(policy, /script-src[^;]*unsafe-inline/);
+  assert.match(policy, /frame-ancestors 'none'/);
+  assert.match(policy, /object-src 'none'/);
+
+  for (const page of ['index.html', 'judge.html']) {
+    const html = fs.readFileSync(path.join(site, page), 'utf8');
+    assert.doesNotMatch(html, /<script(?![^>]*\bsrc=)[^>]*>/,
+      `${page} gained an inline script, which the policy above forbids`);
+    assert.doesNotMatch(html, /\son[a-z]+\s*=\s*"/,
+      `${page} gained an inline event handler, which the policy above forbids`);
+  }
+});

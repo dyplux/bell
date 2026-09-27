@@ -59,8 +59,8 @@
     <div class="judge-facts">
       <div><small>Comparisons published</small><strong>87</strong></div>
       <div><small>Refusals, by named rule</small><strong>157</strong></div>
-      <div><small>Tests in the offline gate</small><strong>493</strong></div>
-      <div><small>Gate runtime</small><strong>&lt;18s</strong></div>
+      <div><small>Tests in the offline gate</small><strong>495</strong></div>
+      <div><small>Gate runtime</small><strong>&lt;24s</strong></div>
     </div>
 
     <h2>Check it in 30 seconds, no key required</h2>
@@ -88,24 +88,25 @@ make base-rate</pre>
     The rate over the whole catalogue, with its denominator, is the command above.</small>
 
 <pre>make check-offline</pre>
-    <small>The gate runs between 17.71 and 17.91 seconds on 1 machine, cold runs included.
-    That sentence is written by <code>make sync-counts</code> out of
+    <small>The gate was observed between 17.71 and 23.89 seconds across 2 machines, cold runs
+    included. That sentence is written by <code>make sync-counts</code> out of
     <code>proof/gate-runtime.json</code>, which <code>make time-gate</code> fills by running the
     gate against a clock, and a test requires the two figures above to be exactly the fastest
-    and slowest in that file. Two earlier versions of this paragraph were wrong in two
-    different ways. It claimed to be "measured and pinned by a test" while no test started a
-    clock, and a reviewer moved the band to 6.0 to 11.0 seconds on a gate that takes twelve
-    with nothing noticing. Then the band read 11.0 to 15.1 seconds over several machines, which was
-    neither of those things: the file held one machine, no run
-    here ever produced either figure, and a reviewer's own machine measured 18.31 seconds
-    outside the band the page advertised. A band wide enough to contain the measurements is
-    not a measurement.</small>
+    and slowest in that file and the machine count to be the number of machines in it.
+    <b>It is a record of the machines it has run on, not a bound on yours.</b> A reviewer timed
+    it at 16.731 seconds, below the floor here, which is what a third machine is entitled to do.
+    Three earlier versions of this paragraph each claimed more than that. It said it was
+    "measured and pinned by a test" while no test started a clock, and a reviewer moved the band
+    to 6.0 to 11.0 seconds on a gate that takes twelve with nothing noticing. Then it read 11.0
+    to 15.1 seconds over several machines when the file held one, and no run had produced either
+    figure. Then it was a true two-figure band from a single machine, written as though one
+    machine could establish a range.</small>
 
     <div class="judge-scope">
       <h3>What that gate proves, and what it does not</h3>
       <dl>
         <dt>The suite</dt>
-        <dd>493 tests, 385 Python and 108 JavaScript. One Python test needs a network and a
+        <dd>495 tests, 385 Python and 110 JavaScript. One Python test needs a network and a
         CoinMarketCap key; without them it is skipped and the runner says so.</dd>
 
         <dt>The re-derivation</dt>

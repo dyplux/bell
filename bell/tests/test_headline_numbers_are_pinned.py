@@ -304,7 +304,7 @@ class HeadlineNumbersArePinned(unittest.TestCase):
                  for value in [entry["cold"]] + list(entry["warm"])]
         self.assertTrue(every, "the runtime receipt records no run")
         page = flowed(judge_text())
-        band = re.search(r"between (\d+\.\d+) and (\d+\.\d+) seconds "
+        band = re.search(r"observed between (\d+\.\d+) and (\d+\.\d+) seconds "
                          r"(?:on (\d+) machine|across (\d+) machines)", page)
         self.assertIsNotNone(
             band, "the judge page stopped stating a band and the machines behind it")
