@@ -11,7 +11,7 @@ WORKER := cloudflare
 
 .DEFAULT_GOAL := help
 
-.PHONY: help install sync-counts audit-tests test test-py test-js test-worker demo base-rate liveness verify check check-offline check-live browser-audit clean
+.PHONY: help install sync-counts audit-tests time-gate test test-py test-js test-worker demo base-rate liveness verify check check-offline check-live browser-audit clean
 
 help: ## Show the targets a reviewer needs
 	@echo "make demo     - answer one comparability question, keyless, ~1s"
@@ -35,6 +35,9 @@ install: ## Dev dependencies. The suites below run without them.
 
 sync-counts: ## Rewrite the counts judge.html and README state, from a real measurement
 	PYTHONPATH=bell python3 bell/sync_stated_counts.py
+
+time-gate: ## Time the offline gate and record what it observed
+	PYTHONPATH=bell python3 bell/time_the_gate.py
 
 audit-tests: ## Run the suite and fail any test that executed no assertion
 	PYTHONPATH=bell python3 bell/verify_tests_assert.py

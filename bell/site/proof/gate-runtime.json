@@ -1,0 +1,18 @@
+{
+  "schema_version": "bell.gate_runtime.v1",
+  "fastest": 12.48,
+  "slowest": 12.61,
+  "runs": [
+    {
+      "machine": "macOS-15.7.2-arm64-arm-64bit",
+      "python": "3.9.6",
+      "measured_at": "2026-09-27T16:58:56Z",
+      "cold": 12.61,
+      "warm": [
+        12.48,
+        12.52
+      ]
+    }
+  ],
+  "note": "Wall time of `make check-offline`, measured by bell/time_the_gate.py. The band the documents publish must contain every figure here, and a test compares them. A band is a claim about what a reader will see, so it keeps one entry per machine rather than only the latest."
+}

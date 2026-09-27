@@ -40,8 +40,8 @@ ANCHOR = HERE / "history-chain-head.txt"
 # restated by hand drifts again on the next append.
 RESTATE = (HERE / "site" / "judge.html", HERE.parent / "README.md", HERE / "README.md")
 COUNT_PHRASES = (
-    (re.compile(r"Of the \d+ dated observations"), "Of the {n} dated observations"),
-    (re.compile(r"every one of the \d+ is chained"), "every one of the {n} is chained"),
+    (re.compile(r"Of the \d+(?= dated observations)"), "Of the {n}"),
+    (re.compile(r"every one of the \d+(?= (?:is|shipped) )"), "every one of the {n}"),
     # bell/README.md states the same count in its own words and was not in the
     # rewriter, so it was the one file where the number drifted.
     (re.compile(r"The \d+-observation population history"), "The {n}-observation population history"),

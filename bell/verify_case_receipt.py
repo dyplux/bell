@@ -191,14 +191,31 @@ def bind(payload: dict, published: dict, name: str) -> None:
             + (f"; missing {', '.join(missing)}" if missing else "")
             + (f"; not published: {', '.join(added)}" if added else "")
             + ". Removing a row changes the answer to a question nobody asked.")
+    # This compared four named fields - price, market cap, volume, symbol - out
+    # of the twenty-one the engine reads. A reviewer rewrote `is_derivative`,
+    # `token_type`, `category`, `asset_type`, `name`, `issuer_id`,
+    # `issuer_name` and `crypto_info_resolved`, re-ran the engine to get a
+    # self-consistent decision, and eleven forged receipts passed
+    # --require-binding: the cheapest route moved from AMZNon to rAMZN, the
+    # spread from 16.5 bps to 5.2, the next action changed, and DERIVATIVE_MIX
+    # vanished from thirteen receipts. The strongest claim on the judge page,
+    # broken by a list of four names that did not keep up with the engine.
+    #
+    # A list of fields is a copy of a schema, and a copy drifts. The published
+    # row and the exported row have the same keys, so the whole dict is
+    # compared and nothing has to keep up with anything.
     for row in payload["tokens"]:
         published_row = next((item for item in reference["tokens"]
                               if str(item.get("crypto_id")) == str(row.get("crypto_id"))), None)
-        for field in ("price", "market_cap", "volume_24h", "symbol"):
-            if row.get(field) != published_row.get(field):
-                raise ValueError(
-                    f"representation {row.get('crypto_id')} carries a {field} of "
-                    f"{row.get(field)!r} and {name} publishes {published_row.get(field)!r}")
+        if row != published_row:
+            differing = sorted(
+                key for key in set(row) | set(published_row)
+                if row.get(key) != published_row.get(key))
+            first = differing[0]
+            raise ValueError(
+                f"representation {row.get('crypto_id')} differs from the row {name} publishes "
+                f"in {len(differing)} field(s): {', '.join(differing)}. {first} is "
+                f"{row.get(first)!r} here and {published_row.get(first)!r} there.")
 
 
 def rederive(payload: dict) -> dict:

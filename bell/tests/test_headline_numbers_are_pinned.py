@@ -258,22 +258,6 @@ class HeadlineNumbersArePinned(unittest.TestCase):
         self.assertRegex(flowed(readme_text()), rf"\b{stated.group(1)} boundary checks",
                          "the README states a different number of boundary checks")
 
-    def test_the_cold_run_figure_sits_inside_the_stated_band(self):
-        # "a first run on a cold machine was measured at 10.3 seconds" could
-        # say 1.3 and stay green, beside a band it is supposed to justify.
-        page = flowed(judge_text())
-        band = re.search(r"between (\d+\.\d+) and (\d+\.\d+) seconds", page)
-        cold = re.search(r"cold run here was (\d+\.\d+) seconds", page)
-        self.assertIsNotNone(cold, "the judge page stopped naming the cold run it widened for")
-        # And the band may not carry a lower bound far below what the suite can
-        # actually do: 2.8 seconds survived from a suite half this size, so the
-        # page advertised a number no reader could observe.
-        self.assertGreater(float(band.group(1)), float(band.group(2)) * 0.5,
-                           "the lower bound is less than half the upper, which usually means it "
-                           "was inherited from a smaller suite rather than measured on this one")
-        self.assertTrue(float(band.group(1)) <= float(cold.group(1)) <= float(band.group(2)),
-                        f"the cold run figure {cold.group(1)} is outside the band it justifies")
-
     def test_the_excluded_majority_is_partitioned_and_the_parts_sum_to_the_whole(self):
         # The first version printed two code counts that added to 541 of 547,
         # and the six in between included two references whose rows contradict
@@ -292,6 +276,35 @@ class HeadlineNumbersArePinned(unittest.TestCase):
         self.assertRegex(flow, rf"\b{lens['contradicting_rows']} carry rows\s*that contradict",
                          "the judge page hides the contradictions inside the excluded majority")
         self.assertRegex(flow, rf"sum to {lens['references']}")
+
+    # test_the_cold_run_figure_sits_inside_the_stated_band lived here and
+    # checked that a sentence quoting one cold run fell inside a band quoted in
+    # two documents. Both were sentences. It is replaced by the test below,
+    # which compares the band to a clock.
+    def test_the_band_contains_every_runtime_that_was_actually_measured(self):
+        # judge.html claimed the band was "measured and pinned by a test rather
+        # than quoted from one run" and no test started a clock. A reviewer
+        # rewrote it to 6.0-11.0 on a gate that takes twelve, consistently
+        # across both documents, and the gate stayed green. `make time-gate`
+        # writes what it observed; this requires the published band to contain
+        # all of it.
+        receipt = PROOF / "gate-runtime.json"
+        self.assertTrue(receipt.exists(),
+                        "no gate runtime has been measured, so the band answers to nothing. "
+                        "Run `make time-gate`.")
+        measured = json.loads(receipt.read_text(encoding="utf-8"))
+        every = [value for entry in measured["runs"]
+                 for value in [entry["cold"]] + list(entry["warm"])]
+        self.assertTrue(every, "the runtime receipt records no run")
+        band = re.search(r"between (\d+\.\d+) and (\d+\.\d+) seconds", flowed(judge_text()))
+        self.assertIsNotNone(band, "the judge page stopped stating a band")
+        low, high = float(band.group(1)), float(band.group(2))
+        outside = [value for value in every if not low <= value <= high]
+        self.assertEqual(outside, [],
+                         f"the published band is {low} to {high} and these measured runs fall "
+                         f"outside it: {outside}. Widen the band or explain the run.")
+        self.assertIn(f"{measured['fastest']}s to {measured['slowest']}s", flowed(judge_text()),
+                      "the judge page no longer states the range that was actually observed")
 
 if __name__ == "__main__":
     unittest.main()

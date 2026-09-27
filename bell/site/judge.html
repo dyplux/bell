@@ -59,8 +59,8 @@
     <div class="judge-facts">
       <div><small>Comparisons published</small><strong>87</strong></div>
       <div><small>Refusals, by named rule</small><strong>157</strong></div>
-      <div><small>Tests in the offline gate</small><strong>412</strong></div>
-      <div><small>Gate runtime</small><strong>&lt;14s</strong></div>
+      <div><small>Tests in the offline gate</small><strong>415</strong></div>
+      <div><small>Gate runtime</small><strong>&lt;16s</strong></div>
     </div>
 
     <h2>Check it in 30 seconds, no key required</h2>
@@ -88,18 +88,18 @@ make base-rate</pre>
     The rate over the whole catalogue, with its denominator, is the command above.</small>
 
 <pre>make check-offline</pre>
-    <small>The gate runs between 11.0 and 14.0 seconds across the machines it has been measured
-    on, cold runs included, and re-measured against the suite that ships rather than inherited from a
-    smaller one. The lower bound used to read 2.8 seconds, which was true of a suite half this
-    size and unreachable by anyone running this one: a bound nobody can observe is not a
-    measurement. A cold run here was 12.95 seconds and warm runs 11.39 and 11.55, so the
-    stated figure covers the run a reader gets rather than the best one ever recorded.</small>
+    <small>The gate runs between 11.0 and 15.1 seconds across the machines it has been measured
+    on, cold runs included. This band is not a sentence: `make time-gate` runs the gate, records what it
+    observed in <code>proof/gate-runtime.json</code>, and a test requires the band above to
+    contain every figure in that file. It used to say it was "measured and pinned by a test"
+    while no test started a clock, and a reviewer changed the band to 6.0 to 11.0 seconds on a
+    gate that takes twelve without anything noticing. Observed here: 12.48s to 12.61s across 1 machine(s), cold runs included.</small>
 
     <div class="judge-scope">
       <h3>What that gate proves, and what it does not</h3>
       <dl>
         <dt>The suite</dt>
-        <dd>412 tests, 314 Python and 98 JavaScript. One Python test needs a network and a
+        <dd>415 tests, 317 Python and 98 JavaScript. One Python test needs a network and a
         CoinMarketCap key; without them it is skipped and the runner says so.</dd>
 
         <dt>The re-derivation</dt>
@@ -108,11 +108,11 @@ make base-rate</pre>
         count fails here.</dd>
 
         <dt>The submission gate</dt>
-        <dd>Runs a submission gate over 160 tracked files, inspecting every one for anything
+        <dd>Runs a submission gate over 162 tracked files, inspecting every one for anything
         private or unreleasable.</dd>
 
         <dt class="scope-limit">One observation is UNVERIFIED</dt>
-        <dd class="scope-limit">Of the 15 dated observations, 2 ship their full payload. One of
+        <dd class="scope-limit">Of the 15 dated observations shipped in this repository, 2 ship their full payload. The product page reads the LIVE history, which is longer whenever the publisher has run since this commit, so the two pages can state different counts without either being wrong. One of
         those two has its state distribution compared against the receipt. The other does not:
         it was written under the rule set that ran before this one, and no code here can
         re-derive it. Its totals, signals and source digests are checked; the split between
@@ -120,7 +120,7 @@ make base-rate</pre>
         rather than leaving that to be inferred.</dd>
 
         <dt>The chain</dt>
-        <dd>every one of the 15 is chained to the one before it, so editing a single record
+        <dd>every one of the 15 shipped here is chained to the one before it, so editing a single record
         invalidates every digest after it.</dd>
 
         <dt class="scope-limit">The chain is not a signature</dt>
@@ -206,8 +206,12 @@ make base-rate</pre>
     </div>
 
     <h2>Which CMC surfaces it uses</h2>
-    <p>All <strong>7</strong> of the dedicated RWA endpoints are used by this repository, and
-    <strong>17</strong> distinct CoinMarketCap endpoints in total. The published population scan
+    <p>All <strong>7</strong> of the dedicated RWA endpoints are called by this repository, and
+    <strong>17</strong> distinct CoinMarketCap endpoints in total. Be exact about what "called"
+    buys, because a reviewer was right to press on it: <strong>6 are in the published scan</strong>
+    a reader can exercise without a key, 11 more are in a key-gated audit path, and one of those,
+    <strong>market-pairs/list, is refused outright on the Startup plan</strong>. An endpoint that
+    answers 403 is called and not used, and the number alone did not say so. The published population scan
     calls five of the seven: <strong>map</strong>, <strong>assets list</strong>, <strong>quotes
     latest</strong>, <strong>info</strong> and <strong>issuers list</strong>, joined on stable
     identifiers rather than on tickers, because a ticker is reused across representations.

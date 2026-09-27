@@ -243,6 +243,49 @@ class TheDailyJobDoesNotLaunderATamperedHistory(unittest.TestCase):
         self.assertEqual([item["sha256"] for item in self.history["observations"][:len(before)]],
                          before, "appending rewrote digests that were already published")
 
+
+    def test_it_refuses_to_repair_a_stale_anchor(self):
+        # The guard the judge page names as the one defence a forger must also
+        # defeat, and no test exercised it: the fixture pointed ANCHOR at a
+        # temporary file written with the CORRECT head, so the refusal could
+        # never fire. A reviewer replaced the guard with `pass` and the whole
+        # gate stayed green.
+        import append_history
+        import tempfile
+        summary = self.summary("2099-01-01T00:00:00Z")
+        stale = Path(tempfile.mkdtemp()) / "history-chain-head.txt"
+        stale.write_text("0" * 64 + "\n", encoding="utf-8")
+        original = append_history.ANCHOR
+        append_history.ANCHOR = stale
+        try:
+            with self.assertRaises(SystemExit) as raised:
+                self.append(self.history, summary)
+            self.assertIn("anchors", str(raised.exception))
+        finally:
+            append_history.ANCHOR = original
+
+    def test_it_refuses_when_the_anchor_is_missing(self):
+        import append_history
+        import tempfile
+        summary = self.summary("2099-01-01T00:00:00Z")
+        absent = Path(tempfile.mkdtemp()) / "history-chain-head.txt"
+        original = append_history.ANCHOR
+        append_history.ANCHOR = absent
+        try:
+            with self.assertRaises(SystemExit) as raised:
+                self.append(self.history, summary)
+            self.assertIn("missing", str(raised.exception))
+        finally:
+            append_history.ANCHOR = original
+
+    def test_it_refuses_a_history_that_does_not_verify(self):
+        import append_history
+        summary = self.summary("2099-01-01T00:00:00Z")
+        self.history["observations"][3]["tokens_scanned"] = 999999
+        with self.assertRaises(SystemExit) as raised:
+            self.append(self.history, summary)
+        self.assertIn("does not verify", str(raised.exception))
+
     def test_it_refuses_an_emptied_observation_list(self):
         # Every refusal in append() lived inside `if observations:`, so setting
         # the list to [] removed all of them and the daily job wrote a fresh

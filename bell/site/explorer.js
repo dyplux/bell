@@ -81,6 +81,14 @@
     }
     if (!items.length) {
       matches.innerHTML = `<p class="explorer-hint">No reference matched “${escapeHTML(query)}” in the current map receipt</p>`;
+      // The dossier was left on screen, so "nothing found" sat above a full
+      // verdict for a reference the reader never searched. The hero search
+      // clears itself correctly; this one did not - fixed on one side and left
+      // on the other, which is this repository's signature defect.
+      if (dossier) {
+        dossier.innerHTML = '';
+        dossier.hidden = true;
+      }
       return;
     }
     matches.innerHTML = `<div class="explorer-match-list">${items.map(asset => `<button type="button" class="explorer-match" data-explorer-slug="${escapeHTML(slugFor(asset))}"><span><strong>${escapeHTML(asset.name || 'Unnamed reference')}</strong><small>${escapeHTML(asset.symbol || '—')} · ${escapeHTML(asset.asset_type || 'RWA')} · rank ${escapeHTML(asset.rwa_rank || '—')}</small></span><b>${asset.has_tokens ? 'TOKENISED' : 'REFERENCE ONLY'} ↗</b></button>`).join('')}</div>`;

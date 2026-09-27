@@ -165,3 +165,23 @@ scroll-margin-top:calc(var(--header-height) + 16px)}
   font:500 12px/1.4 var(--font);letter-spacing:.02em;padding:8px 12px;cursor:pointer}
 .explorer-open-case:hover{border-color:var(--gold)}
 .explorer-live-note{display:block;color:var(--dim);font-size:11px;line-height:1.5;margin-top:8px}
+
+/* At 390px the judge page's own git clone command was clipped to "...bell.gi"
+   and the hero's "Representation" read "REPRESENTATIO". A reviewer measured
+   both. A pre that scrolls is fine; a pre that silently truncates the one
+   command the page asks you to run is not, so it wraps instead. */
+@media(max-width:620px){
+  .judge pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px;line-height:1.55}
+  .judge-scope dd{overflow-wrap:anywhere}
+}
+@media(max-width:480px){
+  #hero-words dt{white-space:normal;overflow-wrap:anywhere;hyphens:auto}
+}
+
+/* #hero-proof-output holds the verdict word itself. At 390px "COMPARABLE" was
+   clipped to fit a fixed-width rule row, so the one word the product exists to
+   produce was the one word a phone could not read. */
+@media(max-width:480px){
+  .proof-rule{flex-wrap:wrap;row-gap:6px}
+  .proof-rule strong{white-space:normal;overflow-wrap:anywhere;flex:1 1 100%}
+}

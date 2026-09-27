@@ -205,8 +205,14 @@ class JudgeCounts(unittest.TestCase):
         self.assertIsNotNone(observations, out.stdout[:300])
         self.assertIsNotNone(bundled, out.stdout[:300])
         judge = JUDGE.read_text(encoding="utf-8")
-        self.assertIn(f"Of the {observations.group(1)} dated observations, {bundled.group(1)} ship", judge,
-                      "the judge page no longer states the verification the verifier performs")
+        # The page names WHERE its count comes from now, because the product
+        # page reads the live history and can legitimately state a longer one.
+        # A reviewer saw 15 on one page and 16 on the other with nothing
+        # reconciling them.
+        self.assertRegex(
+            " ".join(judge.split()),
+            rf"Of the {observations.group(1)} dated observations[^.]*?, {bundled.group(1)} ship",
+            "the judge page no longer states the verification the verifier performs")
 
     def test_the_readme_does_not_overstate_what_the_readme_verifies(self):
         # The judge page was made precise about what make verify proves and the
@@ -220,13 +226,17 @@ class JudgeCounts(unittest.TestCase):
         # distribution nothing in this repository can re-derive, and the
         # verifier now prints UNVERIFIED for it. Both documents have to carry
         # the same count AND the same limit.
-        phrase = (f"Of the {observations.group(1)} dated observations, "
-                  f"{bundled.group(1)} ship their full payload")
+        import re as _re
+        phrase = _re.compile(
+            rf"Of the {observations.group(1)} dated observations[^.]*?, "
+            rf"{bundled.group(1)} ship their full payload")
         unverified = "UNVERIFIED" in out.stdout
-        chained = f"every one of the {observations.group(1)} is chained to the one before it"
+        chained = re.compile(
+            rf"every one of the {observations.group(1)}[^.]*?is chained to the one before it")
         for text, name in ((JUDGE.read_text(encoding="utf-8"), "judge.html"),
                            (README.read_text(encoding="utf-8"), "README.md")):
-            self.assertIn(phrase, text, f"{name} no longer states what the verifier verifies")
+            self.assertRegex(" ".join(text.split()), phrase,
+                             f"{name} no longer states what the verifier verifies")
             if unverified:
                 self.assertIn("UNVERIFIED", text,
                               f"{name} does not carry the limit the verifier prints. The verifier "
@@ -234,5 +244,5 @@ class JudgeCounts(unittest.TestCase):
                               "document does not.")
         # The chain is the answer to the forgery that got through, so the page
         # that describes the verification has to describe it.
-        self.assertIn(chained, JUDGE.read_text(encoding="utf-8"),
-                      "the judge page no longer states that the observations are chained")
+        self.assertRegex(" ".join(JUDGE.read_text(encoding="utf-8").split()), chained,
+                         "the judge page no longer states that the observations are chained")
