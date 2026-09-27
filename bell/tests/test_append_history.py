@@ -166,11 +166,39 @@ class AppendHistory(unittest.TestCase):
     def test_the_scheduled_job_only_commits_when_the_file_changed(self):
         workflow = (HERE.parent.parent / ".github" / "workflows" / "bell-quality.yml").read_text()
         self.assertIn("bell/append_history.py", workflow)
-        self.assertIn("git diff --quiet -- bell/site/proof/rwa-surface-integrity-history.json",
-                      workflow)
+        self.assertRegex(workflow, r"if git diff --quiet(?!\s+--\s)",
+                         "the job decides whether to commit by looking at a hand-written list "
+                         "of files instead of at the tree it just changed")
         # It must never run on a push: a commit is not an observation either.
         self.assertIn("if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'",
                       workflow)
+
+    def test_the_scheduled_job_stages_everything_the_script_wrote(self):
+        """A list of filenames beside a script that chooses filenames drifts.
+
+        It drifted twice. First reference-deltas.json was written by
+        append_history and never staged, so the per-reference series could not
+        grow by the automatic path the documents describe. Then, with that
+        fixed, the job's first real commit left out judge.html, README.md and
+        bell/README.md, which this script restates the series length into: it
+        landed a history of 16 observations beside prose saying 15, and
+        `make check-offline` went red on main on a commit no human wrote.
+
+        The script already decides what it writes, and it prints the list. The
+        job must not keep a second copy of that decision.
+        """
+        workflow = (HERE.parent.parent / ".github" / "workflows" / "bell-quality.yml").read_text()
+        step = workflow[workflow.index("Commit only when the series actually grew"):]
+        step = step[:step.index("git push") + len("git push")]
+        self.assertIn("git add -A", step)
+        named = [line.strip() for line in step.splitlines()
+                 if line.strip().startswith("git add ") and "-A" not in line]
+        self.assertEqual(named, [],
+                         "the commit step names files by hand; append_history decides which "
+                         "files it writes and the list has been wrong twice")
+        # Every file the script restates into has to be reachable by that add.
+        for target in append_history.RESTATE:
+            self.assertTrue(target.exists(), f"{target} no longer exists to be restated")
 
 
 if __name__ == "__main__":

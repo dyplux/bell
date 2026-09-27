@@ -59,7 +59,7 @@
     <div class="judge-facts">
       <div><small>Comparisons published</small><strong>87</strong></div>
       <div><small>Refusals, by named rule</small><strong>157</strong></div>
-      <div><small>Tests in the offline gate</small><strong>483</strong></div>
+      <div><small>Tests in the offline gate</small><strong>484</strong></div>
       <div><small>Gate runtime</small><strong>&lt;18s</strong></div>
     </div>
 
@@ -105,7 +105,7 @@ make base-rate</pre>
       <h3>What that gate proves, and what it does not</h3>
       <dl>
         <dt>The suite</dt>
-        <dd>483 tests, 381 Python and 102 JavaScript. One Python test needs a network and a
+        <dd>484 tests, 382 Python and 102 JavaScript. One Python test needs a network and a
         CoinMarketCap key; without them it is skipped and the runner says so.</dd>
 
         <dt>The re-derivation</dt>
@@ -118,7 +118,7 @@ make base-rate</pre>
         private or unreleasable.</dd>
 
         <dt class="scope-limit">One observation is UNVERIFIED</dt>
-        <dd class="scope-limit">Of the 15 dated observations shipped in this repository, 2 ship their full payload. The product page reads the LIVE history, which is longer whenever the publisher has run since this commit, so the two pages can state different counts without either being wrong. One of
+        <dd class="scope-limit">Of the 17 dated observations shipped in this repository, 2 ship their full payload. The product page reads the LIVE history, which is longer whenever the publisher has run since this commit, so the two pages can state different counts without either being wrong. One of
         those two has its state distribution compared against the receipt. The other does not:
         it was written under the rule set that ran before this one, and no code here can
         re-derive it. Its totals, signals and source digests are checked; the split between
@@ -126,7 +126,7 @@ make base-rate</pre>
         rather than leaving that to be inferred.</dd>
 
         <dt>The chain</dt>
-        <dd>every one of the 15 shipped here is chained to the one before it, so editing a single record
+        <dd>every one of the 17 shipped here is chained to the one before it, so editing a single record
         invalidates every digest after it.</dd>
 
         <dt class="scope-limit">The chain is not a signature</dt>

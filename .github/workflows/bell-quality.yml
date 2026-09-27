@@ -126,17 +126,32 @@ jobs:
 
       - name: Commit only when the series actually grew
         run: |
-          if git diff --quiet -- bell/site/proof/rwa-surface-integrity-history.json bell/history-chain-head.txt bell/site/proof/reference-deltas.json; then
+          if git diff --quiet; then
             echo "no new observation today; nothing to commit"
             exit 0
           fi
           git config user.name 'Dyplux'
           git config user.email 'admin@dyplux.com'
-          # reference-deltas.json is written by append_history and was never
+          # This step named the files by hand and the list was wrong twice.
+          #
+          # First, reference-deltas.json was written by append_history and never
           # staged, so the per-reference series could not grow by the automatic
           # path the documents describe: 15 observations in the history and one
-          # step in the series, both of its points added by hand. A reviewer
-          # checked `git log` and found it.
-          git add bell/site/proof/rwa-surface-integrity-history.json bell/history-chain-head.txt bell/site/proof/reference-deltas.json
+          # step in the series, both of its points added by hand.
+          #
+          # Then, with that fixed, the job's first real commit left out
+          # judge.html, README.md and bell/README.md, which append_history
+          # restates the series length into. It landed a history of 16
+          # observations beside prose saying 15, and `make check-offline` went
+          # red on main, on a commit no human wrote. The job even printed
+          # "restated the series length in judge.html, README.md, README.md"
+          # into a log nobody reads.
+          #
+          # A list of filenames maintained beside a script that decides which
+          # files to write is a second source of truth for the same fact. The
+          # checkout is clean, so what changed is what the job did: stage all of
+          # it, and let .gitignore be the only filter.
+          git add -A
+          git status --short
           git commit -m "Record the published observation of $(date -u +%Y-%m-%d)"
           git push
