@@ -11,6 +11,7 @@ import re
 import subprocess
 import tempfile
 import unittest
+from pathlib import Path
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 LINK = re.compile(r'\[[^\]]*\]\(([^)\s]+)\)')
@@ -305,7 +306,7 @@ class OneNameMeansOneBehaviour(unittest.TestCase):
         from list_endpoints import summarise
         scanned = set(summarise()['published_scan'])
         for name in ('docs/ARCHITECTURE.md', 'bell/SOURCE-MAP.md'):
-            text = open(os.path.join(ROOT, *name.split('/')), encoding='utf-8').read()
+            text = Path(os.path.join(ROOT, *name.split('/'))).read_text(encoding='utf-8')
             for match in re.finditer(r'^\|.+\|$\n^\|[\s:|-]+\|$\n((?:^\|.+\|$\n)*)',
                                      text, re.M):
                 body = match.group(1)
@@ -339,7 +340,7 @@ class TheSourceMapCountsWhatShips(unittest.TestCase):
         import glob
         verifiers = sorted(os.path.basename(p) for p in
                            glob.glob(os.path.join(ROOT, 'bell', 'verify_*.py')))
-        text = open(os.path.join(ROOT, 'bell', 'SOURCE-MAP.md'), encoding='utf-8').read()
+        text = Path(os.path.join(ROOT, 'bell', 'SOURCE-MAP.md')).read_text(encoding='utf-8')
         self.assertIn(f'### The {len(verifiers)} verifiers', text,
                       f'the source map heading does not match the {len(verifiers)} verify_ scripts')
         self.assertIn(f'{len(verifiers)} scripts whose names all start', text)
@@ -350,10 +351,11 @@ class TheSourceMapCountsWhatShips(unittest.TestCase):
 
     def test_the_package_readme_states_the_series_length_that_ships(self):
         import json
-        history = json.load(open(os.path.join(
-            ROOT, 'bell', 'site', 'proof', 'rwa-surface-integrity-history.json'), encoding='utf-8'))
+        history = json.loads(Path(os.path.join(
+            ROOT, 'bell', 'site', 'proof', 'rwa-surface-integrity-history.json')
+        ).read_text(encoding='utf-8'))
         total = len(history['observations'])
-        text = open(os.path.join(ROOT, 'bell', 'README.md'), encoding='utf-8').read()
+        text = Path(os.path.join(ROOT, 'bell', 'README.md')).read_text(encoding='utf-8')
         self.assertIn(f'The {total}-observation population history', text,
                       'bell/README.md states a series length the history does not have')
 
@@ -361,7 +363,7 @@ class TheSourceMapCountsWhatShips(unittest.TestCase):
         # bell/docs/proof/README.md says in its own first lines that it holds
         # superseded copies and is not what the site serves. The top-level
         # README pointed verification there anyway.
-        text = open(os.path.join(ROOT, 'README.md'), encoding='utf-8').read()
+        text = Path(os.path.join(ROOT, 'README.md')).read_text(encoding='utf-8')
         for line in text.splitlines():
             if 'bell/docs/proof' in line:
                 self.assertIn('superseded', line.lower(),
@@ -391,7 +393,7 @@ class EveryDocumentCountsTheSameEndpoints(unittest.TestCase):
         from list_endpoints import sentence, summarise
         stated = sentence(summarise())
         for name in self.CARRIERS:
-            text = open(os.path.join(ROOT, *name.split('/')), encoding='utf-8').read()
+            text = Path(os.path.join(ROOT, *name.split('/'))).read_text(encoding='utf-8')
             self.assertIn(stated, text,
                           f'{name} does not carry the generated endpoint sentence. '
                           f'Run `PYTHONPATH=bell python3 bell/list_endpoints.py` and paste it.')
@@ -404,7 +406,7 @@ class EveryDocumentCountsTheSameEndpoints(unittest.TestCase):
         # The population scan's six are the ones a judge can exercise from the
         # shipped receipt, and every one must have a call site in the module
         # that performs it.
-        scan = open(os.path.join(ROOT, 'bell', 'rwa_integrity.py'), encoding='utf-8').read()
+        scan = Path(os.path.join(ROOT, 'bell', 'rwa_integrity.py')).read_text(encoding='utf-8')
         self.assertEqual(summary['published_scan_count'], 6)
         for endpoint in summary['published_scan']:
             self.assertIn(endpoint, scan, f'{endpoint} is claimed and not called')

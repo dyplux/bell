@@ -38,6 +38,7 @@ from collections import Counter
 import io
 from pathlib import Path
 import sys
+import warnings
 import unittest
 
 HERE = Path(__file__).resolve().parent
@@ -99,12 +100,24 @@ def counted_suite(pattern: str) -> tuple:
     return counts, skipped, broken, len(tests)
 
 
+def _fail_on_leaked_files() -> None:
+    """A test that leaks a file handle is a test nobody finished writing.
+
+    A reviewer listed seven of them: `open(path).read()` with nothing closing
+    it, in files whose whole job is reading documents. None of them broke a
+    test, which is exactly why they survived. Turning the warning into an error
+    here rather than fixing the seven means the eighth cannot be added quietly.
+    """
+    warnings.simplefilter("error", ResourceWarning)
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--pattern", default="test_*.py")
     args = parser.parse_args(argv)
 
     sys.path.insert(0, str(HERE))
+    _fail_on_leaked_files()
     counts, skipped, broken, total = counted_suite(args.pattern)
     silent = sorted(name for name, count in counts.items()
                     if count == 0 and name not in skipped

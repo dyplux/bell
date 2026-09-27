@@ -14,6 +14,7 @@ import unittest
 
 from base_rate import INPUTS, measure
 from rwa_integrity import scan
+from pathlib import Path
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 README = os.path.join(ROOT, 'README.md')
@@ -352,10 +353,9 @@ class TheBaseRateReceiptIsTheMeasurement(unittest.TestCase):
     """
 
     def test_the_committed_base_rate_is_what_the_code_measures(self):
-        shipped = json.loads(
-            (os.path.join(os.path.dirname(INPUTS), 'base-rate-2026-09-21.json') and
-             open(os.path.join(os.path.dirname(INPUTS), 'base-rate-2026-09-21.json'),
-                  encoding='utf-8').read()))
+        shipped = json.loads(Path(
+            os.path.join(os.path.dirname(INPUTS), 'base-rate-2026-09-21.json')
+        ).read_text(encoding='utf-8'))
         computed = measured()
         for field in ('population', 'excluded_single_representation',
                       'denominator_two_or_more_representations', 'refused', 'comparable',
