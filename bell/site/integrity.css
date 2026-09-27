@@ -156,3 +156,5 @@ scroll-margin-top:calc(var(--header-height) + 16px)}
 .judge-scope .scope-limit{color:var(--red)}
 .judge-scope dd.scope-limit{color:var(--paper);border-left:2px solid var(--red);padding-left:12px}
 @media(max-width:620px){.judge-scope{padding:16px 16px}.judge-scope dd{font-size:13.5px}}
+.reference-change .change-series{margin:10px 0 0;font-size:13px;line-height:1.6;color:var(--muted)}
+.reference-change .change-series b{color:var(--gold);font-variant-numeric:tabular-nums}

@@ -191,7 +191,8 @@ def main(argv: list[str] | None = None) -> int:
     history_path = Path(args.history)
     history = json.loads(history_path.read_text(encoding="utf-8"))
     before = len(history.get("observations") or [])
-    changed, message = append(history, summarise(load_receipt(args.receipt)))
+    receipt = load_receipt(args.receipt)
+    changed, message = append(history, summarise(receipt))
     print(message)
     if changed and not args.dry_run:
         history_path.write_text(json.dumps(history, ensure_ascii=False, indent=2) + "\n",
@@ -205,6 +206,21 @@ def main(argv: list[str] | None = None) -> int:
         restated = restate_counts(len(history["observations"]))
         if restated:
             print(f"restated the series length in {', '.join(restated)}")
+        # The per-reference series grows by one point per observation, or it
+        # never answers "what did THIS reference do". Stored as a delta against
+        # the base snapshot: between 21 and 26 September 33 of 792 references
+        # moved, which is 4.2 KB. A full snapshot per day would be 95 KB.
+        try:
+            from reference_series import DELTAS, record as record_series
+            document, note = record_series(receipt)
+            DELTAS.write_text(
+                json.dumps(document, ensure_ascii=False, separators=(",", ":")) + "\n",
+                encoding="utf-8")
+            print(f"reference series: {note}")
+        except SystemExit as refusal:
+            # A refusal here is a real finding, not a reason to lose the
+            # observation that was just appended and written.
+            print(f"reference series not extended: {refusal}", file=sys.stderr)
     elif changed:
         print(f"dry run: would take the series to {len(history['observations'])} observations")
     return 0

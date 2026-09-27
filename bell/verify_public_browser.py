@@ -369,6 +369,17 @@ def main() -> int:
                         "comparison")
                 require("Compared prices are deliberately excluded" in change_text,
                         "the change view stopped stating that it excludes price movement")
+                # The series says how many observations it actually spans. A
+                # tracking product that implies a month from two points is the
+                # overclaim this one is built to refuse, so the number and the
+                # start date are both required on screen.
+                span = re.search(r"(\d+) published observations? in the series", change_text)
+                require(span is not None,
+                        f"the change view does not say how many observations its series spans: "
+                        f"{change_text[:250]!r}")
+                require("does not reach back before" in change_text,
+                        "the series does not say where it starts, so a reader can assume it "
+                        "reaches back further than it does")
                 if "RECOMPUTED BASELINE" in change_text:
                     require("not the receipt published that day" in change_text,
                             "the change view says its baseline is recomputed and does not say "

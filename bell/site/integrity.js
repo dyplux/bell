@@ -103,6 +103,35 @@
   // And a state is a function of the rules, so a diff across a rule
   // boundary would state a rule change as a market change. That comparison is
   // refused here for the same reason the publication history refuses a delta.
+  let referenceSeries = null;
+  function loadReferenceSeries() {
+    // The deltas: one entry per published observation, holding only the
+    // references that moved. 4.4 KB today against 95 KB for a second full
+    // snapshot, which is why the series can grow daily without the page
+    // paying for it.
+    if (referenceSeries) return referenceSeries;
+    referenceSeries = fetch('proof/reference-deltas.json',
+      { cache: 'force-cache', headers: { Accept: 'application/json' } })
+      .then(response => (response.ok ? response.json() : null))
+      .catch(() => null);
+    return referenceSeries;
+  }
+
+  function seriesFor(referenceId, snapshot, deltas) {
+    const key = String(referenceId);
+    const points = [];
+    const base = (snapshot.references || {})[key];
+    if (base) points.push({ observed_at: snapshot.observed_at, baseline: true, ...base });
+    for (const step of (deltas?.observations || [])) {
+      if (step.changed && key in step.changed) {
+        points.push({ observed_at: step.observed_at, baseline: false, ...step.changed[key] });
+      } else if ((step.removed || []).includes(key)) {
+        points.push({ observed_at: step.observed_at, baseline: false, removed: true });
+      }
+    }
+    return points;
+  }
+
   let referenceSnapshot = null;
   function loadReferenceSnapshot() {
     if (referenceSnapshot) return referenceSnapshot;
@@ -157,7 +186,7 @@
 
   function renderReferenceChange(alert, container) {
     if (!container || !alert) return;
-    loadReferenceSnapshot().then(snapshot => {
+    Promise.all([loadReferenceSnapshot(), loadReferenceSeries()]).then(([snapshot, deltas]) => {
       if (!snapshot || container.dataset.forId !== String(alert.rwa_id)) return;
       const datedOn = String(snapshot.observed_at || '').replace('T', ' ').slice(0, 16);
       const liveRules = receipt?.universe?.rules_version || null;
@@ -179,6 +208,8 @@
         return;
       }
       const changes = describeChange(before, alert);
+      // How many observations this reference is actually recorded across, so
+      // the reader is never left to infer a month from two points.
       const body = changes.length
         ? `<div class="change-rows">${changes.map(([label, value]) =>
             `<div><span>${escapeHTML(label)}</span><strong>${escapeHTML(value)}</strong></div>`).join('')}</div>`
@@ -192,9 +223,26 @@
       // things on one screen. Recomputed is the right baseline - it isolates
       // market change from rule change - and it has to say so.
       const recomputed = snapshot.baseline === 'recomputed';
+      // A reviewer asked what this reference did over the last month, and the
+      // panel could only answer "since one baseline". It states how many
+      // published observations the series actually spans and which of them
+      // this reference moved on - two today, one more per observation, and it
+      // says two rather than implying a month.
+      const points = seriesFor(alert.rwa_id, snapshot, deltas);
+      const observations = 1 + (deltas?.observations?.length || 0);
+      const moved = points.filter(point => !point.baseline);
+      const seriesLine = `<p class="change-series"><b>${observations}</b> published `
+        + `observation${observations === 1 ? '' : 's'} in the series so far`
+        + (moved.length
+          ? `. This reference moved on ${moved.length} of them: `
+            + moved.map(point => escapeHTML(String(point.observed_at).slice(0, 10))).join(', ')
+          : `, and this reference is unchanged across all of them`)
+        + `. The series grows by one point each time an observation is published; it does not `
+        + `reach back before ${escapeHTML(String(snapshot.observed_at).slice(0, 10))}.</p>`;
       container.innerHTML = `<span class="eyebrow">SINCE ${escapeHTML(datedOn)} UTC`
         + `${recomputed ? ' · RECOMPUTED BASELINE' : ''} · ${escapeHTML(String(snapshot.rules_version))}</span>`
         + body
+        + seriesLine
         + `<small class="change-limit">`
         + (recomputed
           ? `Baseline: the ${escapeHTML(datedOn)} inputs recomputed under `
