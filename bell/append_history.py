@@ -76,22 +76,60 @@ def summarise(receipt: dict) -> dict:
 
 
 def append(history: dict, summary: dict) -> tuple[bool, str]:
+    """Extend the chain. Never rebuild it, and never write over a broken one.
+
+    This rebuilt every record and then called `verify` on the list it had just
+    built, so the verification could not fail and the pre-existing chain was
+    never checked at all. A reviewer edited one record, ran this, and watched a
+    detected forgery become a verified fifteen-record chain with a freshly
+    written anchor - performed automatically, daily, by the CI job that commits
+    and pushes both files. The one defence the judge page names, that a forger
+    must also edit the anchor, was being carried out by the project itself, and
+    the evidence of the original edit was destroyed.
+
+    So: verify what is on disk first and refuse to touch it if it does not
+    verify, then link only the new record to the existing head. An existing
+    record is never re-linked, which means this can no longer rewrite history
+    even by accident.
+    """
     observations = history.setdefault("observations", [])
     seen = {str(item.get("observed_at")) for item in observations}
     if summary["observed_at"] in seen:
         return False, (f"no new observation: the published receipt still reads "
                        f"{summary['observed_at']}, which is already in the series")
-    observations.append(summary)
-    observations.sort(key=lambda item: str(item.get("observed_at") or ""))
-    # Extending the chain, not appending beside it: a record added without a
-    # link is a record nothing depends on, which is the state that let a
-    # forged observation verify.
-    previous = None
-    for index, item in enumerate(observations):
-        observations[index] = link(item, previous)
-        previous = observations[index]["sha256"]
+
+    head = None
+    if observations:
+        # Refusing rather than repairing. A history that does not verify is a
+        # question for a person, and appending to it would answer that question
+        # with a clean chain.
+        try:
+            head = verify(observations)
+        except ValueError as error:
+            raise SystemExit(
+                f"refusing to append: the history on disk does not verify. {error}\n"
+                "Appending would rebuild the chain over this and write a new anchor, "
+                "which would replace the evidence of the edit with a valid-looking series.")
+        declared = history.get("chain_head")
+        if declared != head:
+            raise SystemExit(
+                f"refusing to append: the history verifies to {head} but declares {declared!r}. "
+                "Resolve that before extending the series.")
+        newest = max(str(item.get("observed_at") or "") for item in observations)
+        if summary["observed_at"] < newest:
+            raise SystemExit(
+                f"refusing to append: {summary['observed_at']} is older than {newest}, which is "
+                "already the newest observation. A series that accepts backdated records cannot "
+                "be read as a series.")
+
+    observations.append(link(summary, head))
     history["chain_version"] = CHAIN_VERSION
-    history["chain_head"] = verify(observations)
+    history["chain_head"] = observations[-1]["sha256"]
+    # Verified after the write, over the whole series, not over a list this
+    # function just rebuilt: every record before the new one is untouched, so
+    # this is a real check of real data.
+    if verify(observations) != history["chain_head"]:
+        raise SystemExit("the extended chain does not verify; nothing was written")
     return True, (f"appended {summary['observed_at']} under "
                   f"{summary['rules_version'] or 'an unrecorded rule set'}; "
                   f"chain head {history['chain_head'][:16]}")

@@ -178,7 +178,12 @@
       : publicationStatus === 'fresh'
         ? 'Published evidence is inside its freshness contract · recheck before acting'
         : 'This is a dated replay · it is not a live quote';
-    const rows = tokens.slice(0, 10).map(token => `<tr><th>${escapeHTML(token.symbol || token.name || 'Unresolved')}<small>${escapeHTML(token.name || '')}</small></th><td>${escapeHTML(token.issuer_name || 'Unresolved')}</td><td>${token.price == null ? '—' : `$${number(token.price)}`}</td><td>${money(token.market_cap)}</td><td>${money(token.volume_24h)}</td></tr>`).join('');
+    // The header prints tokens.length while this printed ten of them, so a
+    // reference with eleven representations would state eleven and show ten
+    // with nothing said. Latent rather than live today - the widest published
+    // dossier is seven rows - which is exactly when it is cheap to fix.
+    const shown = 10;
+    const rows = tokens.slice(0, shown).map(token => `<tr><th>${escapeHTML(token.symbol || token.name || 'Unresolved')}<small>${escapeHTML(token.name || '')}</small></th><td>${escapeHTML(token.issuer_name || 'Unresolved')}</td><td>${token.price == null ? '—' : `$${number(token.price)}`}</td><td>${money(token.market_cap)}</td><td>${money(token.volume_24h)}</td></tr>`).join('');
     const findingMarkup = findings.length ? `<div class="explorer-findings"><span class="eyebrow">WHY THIS ROUTE</span>${findings.slice(0, 4).map(item => `<p><b>${escapeHTML(item.code || 'SIGNAL')}</b> ${escapeHTML(item.message || '')}</p>`).join('')}</div>` : '<p class="explorer-note">No deterministic contradiction was returned in this dossier. That is descriptive, not an approval.</p>';
     const pairStatus = metrics.market_pair_count == null ? 'Not reported' : metrics.market_pair_count === 0 ? 'Not loaded' : number(metrics.market_pair_count);
     const dexCoverage = Number(metrics.dex_contract_token_count || 0) > 0
@@ -194,7 +199,7 @@
       ? 'No token wrapper is available for this reference. Bell keeps it as a descriptive reference-only route.'
       : tokens.length === 1
         ? 'One representation is available. Bell shows a dossier and does not rank a single wrapper.'
-        : 'Rows are observed fields. Bell does not infer backing, redemption, eligibility, liquidity or executable size.';
+        : `${tokens.length > shown ? `Showing ${shown} of ${tokens.length} representations. ` : ''}Rows are observed fields. Bell does not infer backing, redemption, eligibility, liquidity or executable size.`;
     dossier.innerHTML = `<div class="explorer-dossier-head"><div><span class="eyebrow">${freshnessLabel} · PUBLISHED RWA DOSSIER · ${escapeHTML(observed)}</span><h3>${escapeHTML(source.asset?.name || asset.name || 'Reference')}</h3><p>${escapeHTML(source.asset?.symbol || asset.symbol || '—')} · ${escapeHTML(source.asset?.asset_type || asset.asset_type || 'RWA')} · ${tokens.length} representation${tokens.length === 1 ? '' : 's'}</p></div><span class="explorer-state ${state === 'do_not_compare' ? 'blocked' : ''}">${escapeHTML(stateLabel(state, tokens.length, liveVerdictFor(asset)))}</span></div><div class="explorer-metrics"><div><small>Tokenised market cap</small><strong>${money(source.asset?.tokenized_market_cap)}</strong></div><div><small>24h tokenised volume</small><strong>${money(source.asset?.tokenized_volume_24h)}</strong></div><div><small>Issuers observed</small><strong>${number(metrics.issuer_count || new Set(tokens.map(token => token.issuer_id).filter(Boolean)).size)}</strong></div><div><small>DEX evidence</small><strong>${escapeHTML(dexCoverage)}</strong></div><div><small>CMC market pairs</small><strong>${escapeHTML(pairStatus)}</strong></div></div><p class="explorer-freshness ${publicationStatus}">${escapeHTML(freshnessNote)}</p>${evidenceContext}${findingMarkup}<div class="explorer-table-wrap"><table class="explorer-table"><thead><tr><th>Representation</th><th>Issuer</th><th>Quote</th><th>MCap</th><th>24h volume</th></tr></thead><tbody>${rows || '<tr><td colspan="5">No token rows returned</td></tr>'}</tbody></table></div><p class="explorer-note">${dossierNote}</p><div class="explorer-actions"><a class="source-link" href="/api/published?slug=${encodeURIComponent(slugFor(asset))}" target="_blank" rel="noopener">Open full receipt ↗</a><button type="button" class="explorer-refresh" data-explorer-refresh="${escapeHTML(slugFor(asset))}">Refresh dossier ↻</button></div>`;
   }
 

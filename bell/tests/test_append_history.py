@@ -19,8 +19,22 @@ import unittest
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent))
 
+from history_chain import rebuild, verify as verify_chain  # noqa: E402
 import append_history  # noqa: E402
 from append_history import append, restate_counts, summarise  # noqa: E402
+
+
+def history_of(*stamps: str) -> dict:
+    """A real chained history, because append now refuses anything else.
+
+    These fixtures were bare `{"observed_at": ...}` dicts with no chain fields.
+    append used to re-link every record, so an unlinked history was silently
+    converted into a linked one - the same operation that let the daily job
+    launder a tampered record into a verified series. It refuses now, so the
+    fixture has to be a chain.
+    """
+    observations = rebuild([{"observed_at": stamp} for stamp in stamps])
+    return {"observations": observations, "chain_head": observations[-1]["sha256"]}
 
 
 def receipt(observed_at: str, rules: str | None = "bell.rules.v2") -> dict:
@@ -38,7 +52,7 @@ def receipt(observed_at: str, rules: str | None = "bell.rules.v2") -> dict:
 
 class AppendHistory(unittest.TestCase):
     def test_a_new_observation_is_appended_with_its_rule_set(self):
-        history = {"observations": [{"observed_at": "2026-09-21T21:25:01Z"}]}
+        history = history_of("2026-09-21T21:25:01Z")
         changed, message = append(history, summarise(receipt("2026-09-26T20:08:35Z")))
         self.assertTrue(changed)
         self.assertIn("bell.rules.v2", message)
@@ -48,7 +62,7 @@ class AppendHistory(unittest.TestCase):
     def test_an_unchanged_receipt_is_never_written_twice(self):
         # The publisher not having run is not an observation. Writing the same
         # timestamp again would manufacture a data point nobody made.
-        history = {"observations": [{"observed_at": "2026-09-26T20:08:35Z"}]}
+        history = history_of("2026-09-26T20:08:35Z")
         changed, message = append(history, summarise(receipt("2026-09-26T20:08:35Z")))
         self.assertFalse(changed)
         self.assertIn("already in the series", message)
@@ -61,11 +75,24 @@ class AppendHistory(unittest.TestCase):
         self.assertIn("rules_version", summary)
         self.assertIsNone(summary["rules_version"])
 
-    def test_observations_stay_in_observation_order(self):
-        history = {"observations": [{"observed_at": "2026-09-26T20:08:35Z"}]}
-        append(history, summarise(receipt("2026-09-22T06:00:00Z")))
+    def test_a_backdated_observation_is_refused_rather_than_sorted_in(self):
+        # This used to assert that a backdated record was sorted into place.
+        # Sorting it in means re-linking every record after it, which is the
+        # rebuild that let a tampered history be laundered into a verified one.
+        # A series that accepts backdated records is also not a series. So it
+        # refuses, and the order is preserved by never inserting.
+        history = history_of("2026-09-26T20:08:35Z")
+        with self.assertRaises(SystemExit) as raised:
+            append(history, summarise(receipt("2026-09-22T06:00:00Z")))
+        self.assertIn("older than", str(raised.exception))
+        self.assertEqual(len(history["observations"]), 1)
+
+    def test_appending_leaves_the_series_in_observation_order_and_verifying(self):
+        history = history_of("2026-09-21T21:25:01Z", "2026-09-22T06:00:00Z")
+        append(history, summarise(receipt("2026-09-26T20:08:35Z")))
         stamps = [item["observed_at"] for item in history["observations"]]
         self.assertEqual(stamps, sorted(stamps))
+        self.assertEqual(verify_chain(history["observations"]), history["chain_head"])
 
     def test_a_receipt_missing_its_universe_is_refused(self):
         with self.assertRaises(SystemExit):

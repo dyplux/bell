@@ -59,7 +59,7 @@
     <div class="judge-facts">
       <div><small>Comparisons published</small><strong>87</strong></div>
       <div><small>Refusals, by named rule</small><strong>157</strong></div>
-      <div><small>Tests in the offline gate</small><strong>296</strong></div>
+      <div><small>Tests in the offline gate</small><strong>306</strong></div>
       <div><small>Gate runtime</small><strong>&lt;8s</strong></div>
     </div>
 
@@ -86,8 +86,8 @@ make base-rate</pre>
     The rate over the whole catalogue, with its denominator, is the command above.</small>
 
 <pre>make check-offline</pre>
-    <small>between 2.8 and 8.0 seconds across the machines it has been measured on. 296 tests, 201 Python and 95 JavaScript, plus a re-derivation of
-    the published receipt from the 16.5 MB of shipped inputs and a submission gate over 149 tracked files. Be precise about what that re-derivation proves: the inputs are verified
+    <small>between 2.8 and 8.0 seconds across the machines it has been measured on. 306 tests, 211 Python and 95 JavaScript, plus a re-derivation of
+    the published receipt from the 16.5 MB of shipped inputs and a submission gate over 150 tracked files. Be precise about what that re-derivation proves: the inputs are verified
     byte for byte, and the scan is recomputed from them. Of the 14 dated observations, 2 ship their full payload and are cross-checked; the rest are published summaries, and every one of the 14 is chained to the one before it, so editing a single record invalidates every digest after it. Be exact about what that is and is not: it is tamper-evidence, not a signature. It defeats a quiet single-record edit, and it does not defeat anyone who can rewrite the whole file, the chain and the committed anchor together, because all three live in this repository. There is no external attestation and no date attestation, and the module says so in its own docstring. And where
     a receipt predates the current rule set, the recomputed state counts are reported beside
     the recorded ones rather than compared, because they answer to different rules.</small>

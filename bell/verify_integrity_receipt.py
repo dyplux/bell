@@ -22,7 +22,12 @@ ROOT = Path(__file__).resolve().parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from rwa_integrity import digest, scan
+from rwa_integrity import RULES_VERSION, digest, scan
+
+# Every rule set this repository has published. A bundled receipt declaring
+# anything else was not produced by any code in this tree. v1 is the set that
+# ran before the current one and is still recorded on older observations.
+KNOWN_RULES_VERSIONS = frozenset({"bell.rules.v1", RULES_VERSION})
 
 DEFAULT_HISTORY = ROOT / "site/proof/rwa-surface-integrity-history.json"
 DEFAULT_RECEIPT = ROOT / "site/proof/rwa-surface-integrity-2026-09-15.json"
@@ -77,6 +82,21 @@ def verify_observation(observation: dict, receipt: dict, label: str) -> None:
     # version.
     recorded_rules = observation.get("rules_version")
     current_rules = universe.get("rules_version")
+    # The escape hatch: the skip below is decided by a field inside the file
+    # being audited. A reviewer rewrote this receipt's whole state distribution
+    # to 791 no_flags, added `rules_version: "bell.rules.v3"`, and the verifier
+    # exited 0 - the attacker simply declared the comparison inapplicable.
+    #
+    # A bundled receipt is a receipt THIS repository produced, so its rule set
+    # has to be one this repository has ever had. v3 does not exist here, and no
+    # code in this tree could have written it. Refusing that is not a guess: a
+    # legitimate new version arrives with the code that produces it, and adding
+    # it to this tuple is the commit that records the boundary moving.
+    if current_rules and current_rules not in KNOWN_RULES_VERSIONS:
+        raise ValueError(
+            f"{label}: the bundled receipt declares rule set {current_rules!r}, which this "
+            f"repository has never published (known: {', '.join(sorted(KNOWN_RULES_VERSIONS))}). "
+            "A receipt no code here could have produced is not evidence.")
     # An observation recorded before rule versioning existed carries no version.
     # That is itself a different version from the one running now, so it is
     # reported rather than compared.
@@ -150,6 +170,54 @@ def verify_observation_shape(observation: dict, label: str) -> None:
                 "is a placeholder, not the fingerprint of a payload")
 
 
+def verify_collection_manifest(surfaces: dict, manifest: dict, names: tuple) -> None:
+    """Check the per-surface provenance against the payloads it describes.
+
+    Split out of `verify_public_inputs` so it can be checked without reparsing
+    16.5 MB for every forgery: a test holds the surfaces once and mutates the
+    manifest, which is a few kilobytes.
+    """
+    if not isinstance(manifest, dict) or manifest.get("mode") != "server_side_authenticated_collection":
+        raise ValueError("public input collection manifest is missing")
+    for name in names:
+        surface_manifest = manifest.get("surfaces", {}).get(name)
+        if not isinstance(surface_manifest, dict) or surface_manifest.get("payload_sha256") != digest(surfaces[name]):
+            raise ValueError(f"public input manifest hash does not match {name}")
+        request_count = surface_manifest.get("request_count")
+        successful_count = surface_manifest.get("successful_response_count")
+        response_hashes = surface_manifest.get("response_sha256")
+        status_codes = surface_manifest.get("status_codes")
+        # This whole block used to be optional: "if any of the four is
+        # present". Deleting all four from all six surfaces made the check
+        # vanish and the verifier still printed "public inputs: verified" over
+        # a package 5.9 MB lighter. A guard the forger can remove by removing
+        # the evidence it guards is not a guard. The manifest already declares
+        # `mode: server_side_authenticated_collection`, so the provenance it
+        # implies is required, not optional.
+        if True:
+            if not isinstance(request_count, int) or request_count < 1:
+                raise ValueError(f"invalid request count for {name}")
+            if not isinstance(successful_count, int) or successful_count < 1 or successful_count > request_count:
+                raise ValueError(f"invalid successful response count for {name}")
+            if not isinstance(response_hashes, list) or len(response_hashes) != successful_count or any(not isinstance(value, str) or len(value) != 64 for value in response_hashes):
+                raise ValueError(f"response hashes do not match response count for {name}")
+            # Checked for length and compared to nothing. Every response
+            # fingerprint in all six surfaces could be set to sixty-four zeroes
+            # and the whole suite stayed green, while the page renders these as
+            # transport evidence. Thirty lines away the same placeholder is
+            # already refused for `source_hashes`; the rule was fixed in one
+            # place and left alone in the other, which is this repository's
+            # most repeated defect. Same rule, both places.
+            placeholders = [value for value in response_hashes if len(set(value)) == 1]
+            if placeholders:
+                raise ValueError(
+                    f"{len(placeholders)} of {name}'s response fingerprints are a single repeated "
+                    f"character ({placeholders[0][:8]}...): a placeholder is not the digest of a "
+                    "response")
+            if not isinstance(status_codes, list) or len(status_codes) != request_count or any(not isinstance(value, int) for value in status_codes):
+                raise ValueError(f"status codes do not match request count for {name}")
+
+
 def verify_public_inputs(inputs_path: Path, receipt_path: Path) -> None:
     package = load(inputs_path)
     receipt = load(receipt_path)
@@ -164,25 +232,7 @@ def verify_public_inputs(inputs_path: Path, receipt_path: Path) -> None:
     if package.get("observed_at") != receipt.get("observed_at"):
         raise ValueError("public input timestamp does not match the receipt")
     manifest = package.get("collection_manifest")
-    if not isinstance(manifest, dict) or manifest.get("mode") != "server_side_authenticated_collection":
-        raise ValueError("public input collection manifest is missing")
-    for name in names:
-        surface_manifest = manifest.get("surfaces", {}).get(name)
-        if not isinstance(surface_manifest, dict) or surface_manifest.get("payload_sha256") != digest(surfaces[name]):
-            raise ValueError(f"public input manifest hash does not match {name}")
-        request_count = surface_manifest.get("request_count")
-        successful_count = surface_manifest.get("successful_response_count")
-        response_hashes = surface_manifest.get("response_sha256")
-        status_codes = surface_manifest.get("status_codes")
-        if request_count is not None or successful_count is not None or response_hashes is not None or status_codes is not None:
-            if not isinstance(request_count, int) or request_count < 1:
-                raise ValueError(f"invalid request count for {name}")
-            if not isinstance(successful_count, int) or successful_count < 1 or successful_count > request_count:
-                raise ValueError(f"invalid successful response count for {name}")
-            if not isinstance(response_hashes, list) or len(response_hashes) != successful_count or any(not isinstance(value, str) or len(value) != 64 for value in response_hashes):
-                raise ValueError(f"response hashes do not match response count for {name}")
-            if not isinstance(status_codes, list) or len(status_codes) != request_count or any(not isinstance(value, int) for value in status_codes):
-                raise ValueError(f"status codes do not match request count for {name}")
+    verify_collection_manifest(surfaces, manifest, names)
     recomputed = scan(
         surfaces["map"], surfaces["asset_list"], surfaces["quotes"],
         surfaces["info"], surfaces["issuers"],

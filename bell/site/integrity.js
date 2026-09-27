@@ -1400,7 +1400,7 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
             : 'Open the rows for a factual side-by-side, then complete external diligence.';
     result.hidden = false;
     const exact = [item.name, item.symbol, item.rwa_id].some(value => String(value || '').trim().toLowerCase() === normalizedQuery);
-    const matchLabel = exact ? `${matches.filter(candidate => [candidate.name, candidate.symbol, candidate.rwa_id].some(value => String(value || '').trim().toLowerCase() === normalizedQuery)).length || 1} MATCH · EXACT MATCH` : `${matches.length} MATCH${matches.length === 1 ? '' : 'ES'} · SHOWING FIRST`;
+    const matchLabel = exact ? `${matches.filter(candidate => [candidate.name, candidate.symbol, candidate.rwa_id].some(value => String(value || '').trim().toLowerCase() === normalizedQuery)).length || 1} MATCH · EXACT MATCH` : `${matches.length} MATCH${matches.length === 1 ? '' : 'ES'} · ${matches.length === 1 ? 'CLOSEST NAME' : 'SHOWING FIRST'}`;
     result.innerHTML = `<span>SEARCHED REFERENCE · ${matchLabel}</span><strong>${escapeHTML(item.name || item.symbol || 'Reference')} · ${escapeHTML(item.symbol || 'RWA')}</strong><p>${formatNumber(item.token_count || 0)} representations · ${formatNumber(item.issuer_count || 0)} issuers · <b>${state}</b></p><p>${escapeHTML(next)}</p>${capitalPanel(item)}${observedQuoteEndpoints(item)}<div class="search-result-actions"><a href="#monitor">Inspect this evidence ↓</a><a href="#explorer" data-open-map-query="${escapeHTML(item.rwa_id || item.name || item.symbol || '')}">Open live dossier context ↓</a></div>`;
   }
 
