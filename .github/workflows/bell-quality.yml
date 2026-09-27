@@ -42,6 +42,14 @@ jobs:
         # subject is surfaces that quietly disagree.
         run: make check-offline
 
+      - name: Do the tests actually assert anything?
+        # Six review rounds found six tests that could not fail, every one by a
+        # person reading the file. This runs the suite with every assert*
+        # counted and fails any test that reached the end having checked
+        # nothing. It is not in check-offline because it runs the suite a second
+        # time, and a gate that doubles in length stops being run.
+        run: make audit-tests
+
   deployment-drift:
     # "Never on a push, so a site outage cannot redden a commit that is fine"
     # is right about an OUTAGE and wrong about DRIFT. While that reasoning held

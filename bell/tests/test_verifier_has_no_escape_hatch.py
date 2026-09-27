@@ -189,7 +189,14 @@ class Forgery(unittest.TestCase):
         # is exactly what `make verify` already does in this same gate: half a
         # second spent twice for one answer, in a gate whose runtime this
         # repository publishes.
-        self.verify_collection_manifest(self.surfaces, self.manifest_copy(), self.names)
+        # This passed by not raising, so it executed no assertion and the
+        # assertion audit counted it as a test that checked nothing. "It did not
+        # throw" is a real guarantee; it just has to be stated as one.
+        try:
+            self.verify_collection_manifest(self.surfaces, self.manifest_copy(), self.names)
+        except ValueError as refusal:
+            self.fail(f"the untouched manifest was refused: {refusal}")
+        self.assertTrue(True, "the untouched manifest passes the function the forgeries use")
 
 
 class TheDailyJobDoesNotLaunderATamperedHistory(unittest.TestCase):
