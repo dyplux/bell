@@ -1,9 +1,53 @@
 {
   "schema_version": "bell.guard_coverage.v2",
-  "complete": false,
-  "scope": "part of the guarded set: verify_case_receipt.py, reference_series.py, append_history.py, history_chain.py never measured",
-  "guards_mutated": 48,
+  "complete": true,
+  "scope": "every guarded file, measured against its current source",
+  "guards_mutated": 123,
   "files": {
+    "append_history.py": {
+      "guards_mutated": 11,
+      "survivors": [
+        54,
+        58,
+        172
+      ],
+      "source_digest": "a9920e86a65ec3dc41a07124dbb1317f15cebaa2baedd0ecce8df49f9f87f06a",
+      "measured_at": "2026-09-27T19:30:35Z",
+      "stale": false
+    },
+    "history_chain.py": {
+      "guards_mutated": 5,
+      "survivors": [],
+      "source_digest": "af7473633f166c9ee3b31b447d69286f024ba75c81b97d75813ce20fabaee80b",
+      "measured_at": "2026-09-27T19:31:45Z",
+      "stale": false
+    },
+    "reference_series.py": {
+      "guards_mutated": 18,
+      "survivors": [],
+      "source_digest": "844c06377ce8f0341afb4341699dfda69565a91b495a6de94b0660e585de8abb",
+      "measured_at": "2026-09-27T19:27:54Z",
+      "stale": false
+    },
+    "verify_case_receipt.py": {
+      "guards_mutated": 41,
+      "survivors": [
+        76,
+        81,
+        116,
+        156,
+        343,
+        361,
+        364,
+        366,
+        372,
+        434,
+        447
+      ],
+      "source_digest": "70a6b5694f14a13fb73fb8f63e65c26b6549ed8928e2bf9dcb622816aa5a5497",
+      "measured_at": "2026-09-27T19:23:40Z",
+      "stale": false
+    },
     "verify_integrity_receipt.py": {
       "guards_mutated": 48,
       "survivors": [
@@ -24,17 +68,68 @@
         462
       ],
       "source_digest": "fc3525d4a3514a379e88137aeb379b6a0419b02ca9b55a29b4d0e47c62a75ae7",
-      "measured_at": "2026-09-27T19:54:37Z",
+      "measured_at": "2026-09-27T19:13:46Z",
       "stale": false
     }
   },
-  "files_not_measured": [
-    "verify_case_receipt.py",
-    "reference_series.py",
-    "append_history.py",
-    "history_chain.py"
-  ],
+  "files_not_measured": [],
   "survivors": [
+    {
+      "file": "append_history.py",
+      "line": 54
+    },
+    {
+      "file": "append_history.py",
+      "line": 58
+    },
+    {
+      "file": "append_history.py",
+      "line": 172
+    },
+    {
+      "file": "verify_case_receipt.py",
+      "line": 76
+    },
+    {
+      "file": "verify_case_receipt.py",
+      "line": 81
+    },
+    {
+      "file": "verify_case_receipt.py",
+      "line": 116
+    },
+    {
+      "file": "verify_case_receipt.py",
+      "line": 156
+    },
+    {
+      "file": "verify_case_receipt.py",
+      "line": 343
+    },
+    {
+      "file": "verify_case_receipt.py",
+      "line": 361
+    },
+    {
+      "file": "verify_case_receipt.py",
+      "line": 364
+    },
+    {
+      "file": "verify_case_receipt.py",
+      "line": 366
+    },
+    {
+      "file": "verify_case_receipt.py",
+      "line": 372
+    },
+    {
+      "file": "verify_case_receipt.py",
+      "line": 434
+    },
+    {
+      "file": "verify_case_receipt.py",
+      "line": 447
+    },
     {
       "file": "verify_integrity_receipt.py",
       "line": 79
