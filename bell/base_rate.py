@@ -137,29 +137,52 @@ def _single_representation_lens(single: list) -> dict:
 
     547 of 791 references carry one representation, so the comparison rate
     excludes 69% of the catalogue - correctly, because there was never a
-    comparison to refuse. But excluding them was the only thing the product
-    said about them, and a reviewer was right that a research desk holding one
-    of those 547 is handed nothing.
+    comparison to refuse. But excluding them was the only thing this product
+    said about them, and a research desk holding one of those 547 was handed
+    nothing.
 
-    There is a real finding here and it is the same discipline the refusal
-    split already uses: the reason most of them cannot be compared is that the
-    source does not report the fields. Publishing that is a coverage fact about
-    CoinMarketCap, measured over the majority of the catalogue, and it is not
-    a verdict on any issuer.
+    The first version of this counted CODES and printed two of them, so the
+    published lines added to 541 of 547 and the six in between included two
+    references whose rows contradict each other - the finding this product
+    exists to surface, hidden by the only measurement it makes over most of its
+    catalogue. A reviewer did the arithmetic.
+
+    So it partitions REFERENCES, by the most serious thing observed about each,
+    and the parts sum to the whole. A reference can carry several codes; it
+    cannot be in two parts.
     """
-    codes = Counter(code for row in single for code in (row.get('signal_codes') or []))
-    flagged = sum(1 for row in single if row.get('signal_codes'))
+    contradiction_codes = {'ZERO_MCAP_POSITIVE_VOLUME', 'PRICE_DENOMINATION_BREAK',
+                           'PRICE_DISPERSION', 'SYMBOL_COLLISION', 'DERIVATIVE_MIX',
+                           'SPREAD_ABOVE_PUBLISHABLE_CEILING'}
+    contradicting, incomplete, context_only, complete = [], [], [], []
+    for row in single:
+        codes = set(row.get('signal_codes') or [])
+        if codes & contradiction_codes:
+            contradicting.append(row)
+        elif 'MARKET_FIELDS_MISSING' in codes or 'TOKEN_INFO_MISSING' in codes:
+            incomplete.append(row)
+        elif codes:
+            context_only.append(row)
+        else:
+            complete.append(row)
     total = len(single)
+    parts = {
+        'contradicting_rows': len(contradicting),
+        'incomplete_source_fields': len(incomplete),
+        'context_only': len(context_only),
+        'fully_reported': len(complete),
+    }
+    assert sum(parts.values()) == total, 'the lens must partition the references it describes'
     return {
         'references': total,
-        'with_a_named_gap_or_finding': flagged,
-        'fully_reported': total - flagged,
-        'reasons': dict(codes.most_common()),
-        'incomplete_market_fields': codes.get('MARKET_FIELDS_MISSING', 0),
-        'incomplete_share': round(codes.get('MARKET_FIELDS_MISSING', 0) / total, 4) if total else 0.0,
-        'counts': ('reasons, not references: one reference can carry more than one. '
-                   'These references are excluded from the refusal rate because there was '
-                   'never a comparison to refuse, not because they were approved.'),
+        'reasons': dict(Counter(code for row in single
+                                for code in (row.get('signal_codes') or [])).most_common()),
+        'incomplete_share': round(parts['incomplete_source_fields'] / total, 4) if total else 0.0,
+        'partition': ('by reference, by the most serious thing observed about each, so the parts '
+                      'sum to the whole. These references are excluded from the refusal rate '
+                      'because there was never a comparison to refuse, not because they were '
+                      'approved.'),
+        **parts,
     }
 
 
@@ -340,9 +363,15 @@ def main() -> int:
     lens = result['single_representation_lens']
     print(f"  the {lens['references']} references excluded above, because one representation "
           f"is nothing to compare:")
-    print(f"    {lens['incomplete_market_fields']:>4}  carry at least one field CoinMarketCap "
-          f"does not report ({lens['incomplete_share']:.0%})")
-    print(f"    {lens['fully_reported']:>4}  report price, market cap and volume in full")
+    print(f"    {lens['incomplete_source_fields']:>4}  a field CoinMarketCap does not report "
+          f"({lens['incomplete_share']:.0%})")
+    print(f"    {lens['contradicting_rows']:>4}  rows that contradict each other, the finding "
+          f"this scanner exists to make")
+    print(f"    {lens['context_only']:>4}  complete, with a context note such as no tracked "
+          f"TradFi market")
+    print(f"    {lens['fully_reported']:>4}  complete, with nothing observed against them")
+    print(f"       = {sum((lens['incomplete_source_fields'], lens['contradicting_rows'], lens['context_only'], lens['fully_reported']))}, "
+          f"a partition of references and not a count of reasons")
     print()
     print('  So the majority of the catalogue cannot be compared, and for most of that')
     print('  majority the reason is the source rather than the asset. That is a coverage')

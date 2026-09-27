@@ -243,6 +243,36 @@ class TheDailyJobDoesNotLaunderATamperedHistory(unittest.TestCase):
         self.assertEqual([item["sha256"] for item in self.history["observations"][:len(before)]],
                          before, "appending rewrote digests that were already published")
 
+    def test_it_refuses_an_emptied_observation_list(self):
+        # Every refusal in append() lived inside `if observations:`, so setting
+        # the list to [] removed all of them and the daily job wrote a fresh
+        # anchor over the one protecting fifteen records. The guard was added
+        # and shipped without a test - the pattern this repository has now
+        # recorded ten times - and a reviewer then found that deleting the
+        # anchor as well got past it anyway.
+        summary = self.summary("2099-01-01T00:00:00Z")
+        self.history["observations"] = []
+        with self.assertRaises(SystemExit) as raised:
+            self.append(self.history, summary)
+        self.assertIn("carries no observations", str(raised.exception))
+
+    def test_an_emptied_list_is_refused_even_with_the_anchor_deleted(self):
+        # The reviewer's escalation: `if not observations and ANCHOR.exists()`
+        # still let the job through once the anchor was gone too, which is the
+        # same guard vanishing with a different piece of the evidence.
+        import append_history
+        import tempfile
+        summary = self.summary("2099-01-01T00:00:00Z")
+        original = append_history.ANCHOR
+        append_history.ANCHOR = Path(tempfile.mkdtemp()) / "history-chain-head.txt"
+        try:
+            self.history["observations"] = []
+            with self.assertRaises(SystemExit) as raised:
+                self.append(self.history, summary)
+            self.assertIn("carries no observations", str(raised.exception))
+        finally:
+            append_history.ANCHOR = original
+
     def test_it_refuses_a_backdated_observation(self):
         with self.assertRaises(SystemExit) as raised:
             self.append(self.history, self.summary("2020-01-01T00:00:00Z"))

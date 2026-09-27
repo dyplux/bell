@@ -77,6 +77,7 @@ def counted_suite(pattern: str) -> tuple:
 
     tests = list(flatten(suite))
     skipped = []
+    broken: list = []
     runner = unittest.TextTestRunner(stream=io.StringIO(), verbosity=0)
     for test in tests:
         key = f"{test.__class__.__module__}.{test.__class__.__name__}.{test._testMethodName}"
@@ -85,9 +86,17 @@ def counted_suite(pattern: str) -> tuple:
         result = runner.run(unittest.TestSuite([test]))
         if result.skipped:
             skipped.append(key)
+        # This read `result.skipped` and threw away failures and errors, so a
+        # sabotaged test made `unittest` print FAILED and this print a tidy
+        # green line and exit 0 - an audit reporting health over a red suite,
+        # in a repository whose subject is surfaces that quietly disagree. A
+        # reviewer sabotaged one test and watched it happen.
+        for case, _ in list(result.failures) + list(result.errors):
+            broken.append(f"{case.__class__.__module__}.{case.__class__.__name__}."
+                          f"{case._testMethodName}")
     for name, function in original.items():
         setattr(unittest.TestCase, name, function)
-    return counts, skipped, len(tests)
+    return counts, skipped, broken, len(tests)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -96,7 +105,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     sys.path.insert(0, str(HERE))
-    counts, skipped, total = counted_suite(args.pattern)
+    counts, skipped, broken, total = counted_suite(args.pattern)
     silent = sorted(name for name, count in counts.items()
                     if count == 0 and name not in skipped
                     and name not in ALLOWED_WITHOUT_ASSERTIONS)
@@ -107,6 +116,11 @@ def main(argv: list[str] | None = None) -> int:
           "The JavaScript and worker suites are not covered.")
     for name in skipped:
         print(f"  skipped: {name}")
+    if broken:
+        print("the suite is red, so an assertion audit over it means nothing:", file=sys.stderr)
+        for name in sorted(set(broken)):
+            print(f"  failing: {name}", file=sys.stderr)
+        return 1
     if silent:
         print("these tests ran to the end and checked nothing:", file=sys.stderr)
         for name in silent:

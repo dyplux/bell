@@ -59,7 +59,7 @@
     <div class="judge-facts">
       <div><small>Comparisons published</small><strong>87</strong></div>
       <div><small>Refusals, by named rule</small><strong>157</strong></div>
-      <div><small>Tests in the offline gate</small><strong>389</strong></div>
+      <div><small>Tests in the offline gate</small><strong>391</strong></div>
       <div><small>Gate runtime</small><strong>&lt;14s</strong></div>
     </div>
 
@@ -99,7 +99,7 @@ make base-rate</pre>
       <h3>What that gate proves, and what it does not</h3>
       <dl>
         <dt>The suite</dt>
-        <dd>389 tests, 291 Python and 98 JavaScript. One Python test needs a network and a
+        <dd>391 tests, 293 Python and 98 JavaScript. One Python test needs a network and a
         CoinMarketCap key; without them it is skipped and the runner says so.</dd>
 
         <dt>The re-derivation</dt>
@@ -168,11 +168,16 @@ make base-rate</pre>
     <p>The same discipline applies to the 547 references the rate excludes. One
     representation is nothing to compare, so they are not scored as passes and not counted
     against the rate. But excluding them was the only thing this product said about 69% of
-    the catalogue. So it measures them too: <strong>464 of the 547 carry at least one field
-    CoinMarketCap does not report</strong>, and 77 report price, market cap and volume in
-    full. The majority of the catalogue cannot be compared, and for most of that majority
-    the reason is the source rather than the asset. That is a coverage fact, not a verdict
-    on any issuer.</p>
+    the catalogue. So it measures them too, as a partition of references rather than a count
+    of reasons, because the first version of this printed two figures that added to 541 of
+    547 and hid what was in between: <strong>464 carry a field
+    CoinMarketCap does not report</strong>, <strong>2 carry rows
+    that contradict each other</strong> - the finding this scanner exists to make, and it
+    was the part the two-figure version concealed - 4 are complete with
+    a context note, and 77 are complete with nothing observed against
+    them. Those four sum to 547. The majority of the catalogue cannot be
+    compared, and for most of that majority the reason is the source rather than the asset.
+    That is a coverage fact, not a verdict on any issuer.</p>
     <p>The same discipline applies to Bell's own history. Where two published receipts were
     produced under different rule sets, the page refuses to print a delta between them and
     says so, because subtracting them would state a market change nobody observed.</p>

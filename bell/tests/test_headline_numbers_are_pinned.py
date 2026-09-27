@@ -274,25 +274,24 @@ class HeadlineNumbersArePinned(unittest.TestCase):
         self.assertTrue(float(band.group(1)) <= float(cold.group(1)) <= float(band.group(2)),
                         f"the cold run figure {cold.group(1)} is outside the band it justifies")
 
-    def test_the_excluded_majority_is_measured_and_stated(self):
-        # 547 references - 69% of the catalogue - were excluded from the rate,
-        # correctly, and that exclusion was everything the product said about
-        # them. The measurement is published now, so it is pinned like every
-        # other number on that page.
+    def test_the_excluded_majority_is_partitioned_and_the_parts_sum_to_the_whole(self):
+        # The first version printed two code counts that added to 541 of 547,
+        # and the six in between included two references whose rows contradict
+        # each other - the finding the product exists to make, hidden by the
+        # only measurement it takes over 69% of its catalogue. Both numbers
+        # were pinned, so the suite was holding a wrong presentation in place.
         lens = BASE_RATE.get("single_representation_lens")
         self.assertIsNotNone(lens, "base_rate no longer measures the excluded majority")
-        self.assertEqual(lens["references"], BASE_RATE["excluded_single_representation"],
-                         "the lens and the exclusion count describe different populations")
-        self.assertEqual(lens["incomplete_market_fields"] + 0, lens["reasons"].get(
-            "MARKET_FIELDS_MISSING", 0))
-        self.assertEqual(lens["fully_reported"],
-                         lens["references"] - lens["with_a_named_gap_or_finding"])
+        self.assertEqual(lens["references"], BASE_RATE["excluded_single_representation"])
+        parts = ("incomplete_source_fields", "contradicting_rows", "context_only",
+                 "fully_reported")
+        self.assertEqual(sum(lens[part] for part in parts), lens["references"],
+                         "the lens does not partition the references it describes")
         flow = flowed(judge_text())
-        self.assertRegex(
-            flow, rf"\b{lens['incomplete_market_fields']} of the {lens['references']} carry at "
-                  r"least one field",
-            "the judge page states a different count for the excluded majority")
-        self.assertRegex(flow, rf"\b{lens['fully_reported']} report price, market cap and volume")
+        self.assertRegex(flow, rf"\b{lens['incomplete_source_fields']} carry a field")
+        self.assertRegex(flow, rf"\b{lens['contradicting_rows']} carry rows\s*that contradict",
+                         "the judge page hides the contradictions inside the excluded majority")
+        self.assertRegex(flow, rf"sum to {lens['references']}")
 
 if __name__ == "__main__":
     unittest.main()

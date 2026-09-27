@@ -30,16 +30,17 @@
   },
   "single_representation_lens": {
     "references": 547,
-    "with_a_named_gap_or_finding": 470,
-    "fully_reported": 77,
     "reasons": {
       "MARKET_FIELDS_MISSING": 464,
       "NO_TRADFI_MARKET": 5,
       "ZERO_MCAP_POSITIVE_VOLUME": 2
     },
-    "incomplete_market_fields": 464,
     "incomplete_share": 0.8483,
-    "counts": "reasons, not references: one reference can carry more than one. These references are excluded from the refusal rate because there was never a comparison to refuse, not because they were approved."
+    "partition": "by reference, by the most serious thing observed about each, so the parts sum to the whole. These references are excluded from the refusal rate because there was never a comparison to refuse, not because they were approved.",
+    "contradicting_rows": 2,
+    "incomplete_source_fields": 464,
+    "context_only": 4,
+    "fully_reported": 77
   },
   "method": {
     "population": "every reference in the captured RWA map",

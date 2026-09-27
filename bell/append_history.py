@@ -107,11 +107,18 @@ def append(history: dict, summary: dict) -> tuple[bool, str]:
     # a fresh anchor over the one protecting the other fifteen. That is
     # literally "a guard that vanishes when the evidence is removed", which
     # this file's own comments name as the antipattern.
-    if not observations and ANCHOR.exists():
+    if not observations:
+        # `and ANCHOR.exists()` made this vanish when the forger deleted the
+        # anchor too - the same guard disappearing with a different piece of
+        # the evidence it guards, which is the shape this repository has spent
+        # nine reviews removing. Unconditional: a history with no observations
+        # is not a history being started, it is a history whose records were
+        # removed, and this job is not how a series is bootstrapped.
         raise SystemExit(
-            "refusing to append: the history carries no observations and "
-            f"{ANCHOR.name} exists. An empty series with an anchor is a series whose records "
-            "were removed, and appending would write a new anchor over the one protecting them.")
+            "refusing to append: the history carries no observations. An empty series is one "
+            "whose records were removed, and appending would write a fresh anchor over the one "
+            "protecting them. Bootstrapping a series is a deliberate act, not something the "
+            "daily job does by finding nothing there.")
     if observations:
         # Refusing rather than repairing. A history that does not verify is a
         # question for a person, and appending to it would answer that question
@@ -205,7 +212,8 @@ def main(argv: list[str] | None = None) -> int:
     history = json.loads(history_path.read_text(encoding="utf-8"))
     before = len(history.get("observations") or [])
     receipt = load_receipt(args.receipt)
-    changed, message = append(history, summarise(receipt))
+    summary = summarise(receipt)
+    changed, message = append(history, summary)
     print(message)
     if changed and not args.dry_run:
         history_path.write_text(json.dumps(history, ensure_ascii=False, indent=2) + "\n",
@@ -226,6 +234,27 @@ def main(argv: list[str] | None = None) -> int:
         try:
             from reference_series import DELTAS, record as record_series
             document, note = record_series(receipt)
+            # The step's digest sits in the file it protects, so repairing both
+            # together passes - the same weakness the chain has, and the chain
+            # answers it with an anchor outside itself. The history is that
+            # anchor: it is chained, its head is committed separately, and it
+            # now carries the digest the series must reproduce. A forger has to
+            # rewrite the deltas, the history, the chain and the anchor.
+            newest = [step for step in document["observations"]
+                      if step["observed_at"] == summary["observed_at"]]
+            if newest:
+                history["observations"][-1] = link(
+                    {**{key: value for key, value in history["observations"][-1].items()
+                        if key not in ("sha256", "prev_sha256", "chain_version")},
+                     "reference_digest": newest[0]["alert_index_sha256"]},
+                    history["observations"][-2]["sha256"] if len(history["observations"]) > 1
+                    else None)
+                history["chain_head"] = history["observations"][-1]["sha256"]
+                history_path.write_text(
+                    json.dumps(history, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+                ANCHOR.write_text(history["chain_head"] + "\n", encoding="utf-8")
+                print(f"anchored the series digest in the history; head "
+                      f"{history['chain_head'][:16]}")
             DELTAS.write_text(
                 json.dumps(document, ensure_ascii=False, separators=(",", ":")) + "\n",
                 encoding="utf-8")

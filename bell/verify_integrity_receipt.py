@@ -451,7 +451,15 @@ def main() -> int:
     # checked here; what cannot is named, rather than left to be discovered.
     try:
         from reference_series import DELTAS, load as load_series, verify as verify_series
-        if DELTAS.exists():
+        # `if DELTAS.exists()` meant deleting the file produced silence: exit 0
+        # and not even the UNVERIFIED line. A guard that vanishes with the
+        # evidence, in the function that prints the UNVERIFIED lines.
+        if not DELTAS.exists():
+            raise ValueError(
+                f"{DELTAS.name} is missing. The judge page describes a per-reference series and "
+                "the history records a digest for it, so its absence is a missing artefact, not "
+                "an absent feature.")
+        if True:
             base_doc, deltas_doc = load_series()
             notes = verify_series(base_doc, deltas_doc, history)
             print(f"reference series: {len(notes) + 1} points, "

@@ -47,11 +47,20 @@ def index_digest(receipt: dict) -> str:
     to record what it came from and refuse a step whose stated origin is not
     the origin the series claims.
     """
+    return digest_of_state(snapshot_of(receipt))
+
+
+def digest_of_state(state: dict) -> str:
+    """Hash a replayed state the same way the receipt's index is hashed.
+
+    The recorder hashes the receipt; the verifier hashes the state the deltas
+    replay to. If those were two computations they would drift, and the check
+    would quietly become about nothing. One function, both callers.
+    """
     rows = sorted(
-        (str(item.get("rwa_id") or ""), str(item.get("state") or ""),
-         int(item.get("token_count") or 0), bool(item.get("comparison")),
-         tuple(sorted(item.get("signal_codes") or [])))
-        for item in receipt.get("alert_index") or [])
+        (key, str(value.get("state") or ""), int(value.get("representations") or 0),
+         bool(value.get("comparison_published")), tuple(value.get("signal_codes") or []))
+        for key, value in state.items())
     return hashlib.sha256(
         json.dumps(rows, ensure_ascii=False, separators=(",", ":")).encode()).hexdigest()
 
@@ -150,8 +159,40 @@ def verify(base_doc: dict, deltas_doc: dict, history: dict) -> list:
             raise ValueError(
                 f"{label} claims source fingerprints the history does not record for that "
                 "observation")
-        if not step.get("alert_index_sha256"):
+        digest = step.get("alert_index_sha256")
+        if not digest:
             raise ValueError(f"{label} records no alert_index digest")
+        # Recomputed, not merely present. The previous version tested that the
+        # field existed and this docstring said the check refused a rewritten
+        # step - a docstring describing a fix that had not been made, which is
+        # the pattern this repository has now recorded ten times. A reviewer
+        # wrote a reference into a step as clean, with no signals, and the gate
+        # returned 0 while printing that the step was matched to its digests.
+        #
+        # What this can do: the state after replaying every step up to and
+        # including this one must hash to the digest the step recorded. So a
+        # step cannot be edited without also editing its own digest, and it
+        # cannot be edited to agree with a digest the history does not carry.
+        replayed = apply(base_doc["references"], (deltas_doc.get("observations") or [])[:index])
+        recomputed = digest_of_state(replayed)
+        if recomputed != digest:
+            raise ValueError(
+                f"{label} records alert_index digest {digest[:16]} and the state it produces "
+                f"hashes to {recomputed[:16]}: the step was edited after it was written")
+        # And the digest itself lives in the file it protects, so repairing
+        # both together would pass. The history is chained and anchored outside
+        # itself, so the observation carries the digest the series must
+        # reproduce. Where it does, it is compared; where it does not - every
+        # observation older than this mechanism - that is said rather than
+        # skipped silently.
+        anchored = observation.get("reference_digest")
+        if anchored is None:
+            notes.append(f"{label}: digest not anchored in the history (recorded before the "
+                         "history carried the field)")
+        elif anchored != digest:
+            raise ValueError(
+                f"{label} records digest {digest[:16]} and the chained history anchors "
+                f"{anchored[:16]}: the series and the history disagree about that observation")
         notes.append(f"{label}: {len(step.get('changed') or {})} moved, "
                      f"{len(step.get('removed') or [])} removed")
     return notes

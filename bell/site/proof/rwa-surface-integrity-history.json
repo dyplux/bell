@@ -478,9 +478,10 @@
         "issuers": "9f8f2a6b9dde140bfe5c2efbe26c1cc8937e1d1e0b3d815019539d6e3abb5175",
         "crypto_info": "5f37d471a88f88e2e341659c99cef29a31b13dc466037337769c0b69584f49e2"
       },
+      "reference_digest": "c8e39b88cd80780c8e87b5fefb0d6d94a719557cc88bb99942d9ed967fea373e",
       "chain_version": "bell.history_chain.v1",
       "prev_sha256": "3f974669dea0d4625733b4446d1f34647df34610ebaaf67646ad9d70cf76daa4",
-      "sha256": "df80271a386332ad1ed4a366055e10230763fd53aff6a28504e9c0099b970568"
+      "sha256": "a91ae86f8bde54b2e5fd6ebe38076c88898f7b4886dbd62607016ab7d577659e"
     }
   ],
   "limits": [
@@ -489,6 +490,6 @@
     "The current public page may use a newer live receipt when the publication service is available"
   ],
   "chain_version": "bell.history_chain.v1",
-  "chain_head": "df80271a386332ad1ed4a366055e10230763fd53aff6a28504e9c0099b970568",
+  "chain_head": "a91ae86f8bde54b2e5fd6ebe38076c88898f7b4886dbd62607016ab7d577659e",
   "chain_note": "Each observation carries the digest of the one before it, so editing any record invalidates every digest after it. The head is committed here and in git, which is the external anchor: this is tamper-evidence, not a signature."
 }
