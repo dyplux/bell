@@ -57,7 +57,7 @@ class JudgeCounts(unittest.TestCase):
                            JUDGE.read_text(encoding="utf-8"))
         self.assertIsNotNone(stated, "the judge page stopped stating its test breakdown")
         self.assertEqual(int(stated.group(2)), collected(),
-                         "the judge page Python count is not what unittest collects")
+                         "the judge page Python count is not what unittest collects. Run `make sync-counts`.")
         self.assertEqual(int(stated.group(1)),
                          int(stated.group(2)) + int(stated.group(3)),
                          "the judge page total does not equal its own breakdown")
@@ -85,13 +85,18 @@ class JudgeCounts(unittest.TestCase):
         # The page claimed 132 while the gate reported 136. The test count next
         # to it was pinned and this one was not, so it drifted unnoticed.
         repo = HERE.parent.parent
+        # Tracked files, nothing else. Counting untracked-not-ignored files as
+        # well made this pass here and fail in a fresh clone that had run
+        # `npm install`, because of one untracked package-lock.json. A count a
+        # document states about the repository cannot depend on the machine
+        # reading it.
         tracked = subprocess.run(["git", "ls-files"], cwd=repo, capture_output=True,
                                  text=True, check=True).stdout.split()
         stated = re.search(r"a submission gate over (\d+)\s+tracked files",
                            JUDGE.read_text(encoding="utf-8"))
         self.assertIsNotNone(stated, "the judge page stopped stating the gate's scope")
         self.assertEqual(int(stated.group(1)), len(tracked),
-                         "the judge page tracked-file count no longer matches git")
+                         "the judge page tracked-file count no longer matches git. Run `make sync-counts`, and run it AFTER staging: the count is of what the commit will contain.")
 
     def test_the_pages_state_the_number_of_boundary_checks_that_exist(self):
         # The page said "six checks" where the verifier publishes eight, on a

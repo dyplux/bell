@@ -11,7 +11,7 @@ WORKER := cloudflare
 
 .DEFAULT_GOAL := help
 
-.PHONY: help install test test-py test-js test-worker demo base-rate liveness verify check check-offline check-live browser-audit clean
+.PHONY: help install sync-counts test test-py test-js test-worker demo base-rate liveness verify check check-offline check-live browser-audit clean
 
 help: ## Show the targets a reviewer needs
 	@echo "make demo     - answer one comparability question, keyless, ~1s"
@@ -32,6 +32,9 @@ install: ## Dev dependencies. The suites below run without them.
 	# to the offline path and says so rather than refusing to run.
 	-$(PY) -m pip install --quiet playwright
 	-$(PY) -m playwright install chromium
+
+sync-counts: ## Rewrite the counts judge.html and README state, from a real measurement
+	PYTHONPATH=bell python3 bell/sync_stated_counts.py
 
 test: test-py test-js test-worker ## Every suite
 
