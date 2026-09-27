@@ -29,7 +29,7 @@ different set of assertions, so neither was the answer to "how do I check this".
 |---|---|---|---|
 | `verify_integrity_receipt.py` | does the published receipt recompute from the shipped inputs? | committed inputs + receipt | nothing |
 | `verify_catalogue_receipt.py` | does the dated map snapshot match its refresh record? | committed catalogue | nothing |
-| `verify_case_receipt.py` | is this case file a reader downloaded internally consistent? | a file the reader supplies | nothing |
+| `verify_case_receipt.py` | does this downloaded case follow from its own rows, and are those the published rows? | a file the reader supplies | nothing |
 | `verify_rule_boundaries.py` | do the coded thresholds behave as the page claims? | the rules themselves | nothing |
 | `verify_demo_manifest.py` | does the demo do what the demo script says? | committed manifest | nothing |
 | `verify_submission.py` | is anything private or unreleasable about to ship? | the tree | nothing |
@@ -43,7 +43,12 @@ without credentials.
 
 - `verify_integrity_receipt.py` recomputes the public population summary from committed normalized inputs
 - `verify_catalogue_receipt.py` checks the complete-map catalogue refresh
-- `verify_case_receipt.py` checks a case JSON downloaded from the public page
+- `verify_case_receipt.py` checks a case JSON downloaded from the public page. It
+re-derives the verdict from the rows and binds them to a published scan by source
+fingerprints. A case exported from a live endpoint cannot bind, because the live
+scan's inputs are not shipped, so it reports `internally consistent; rows not
+bound to a published receipt` and exits 0. Pass `--require-binding` to make that
+a failure.
 
 ## Exact CMC surfaces
 
@@ -82,7 +87,7 @@ From the repository root:
 ```sh
 python3 bell/verify_integrity_receipt.py
 python3 bell/verify_catalogue_receipt.py
-python3 bell/verify_case_receipt.py /path/to/downloaded-case-receipt.json
+python3 bell/verify_case_receipt.py /path/to/downloaded-case-receipt.json --require-binding
 python3 bell/verify_rule_boundaries.py
 PYTHONPATH=bell python3 -m unittest discover -s bell/tests -p 'test_*.py' -q
 ```

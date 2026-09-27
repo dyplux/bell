@@ -1343,7 +1343,20 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
       // is which.
       public_label: displayDecisionLabel(item),
       next_action: item.next_action || null,
-      signals: item.signals || [],
+      // `item.signals` is the full objects, and only the 50 references inside
+      // the truncated `alerts` array have them. For every other reference the
+      // export wrote `[]` - claiming no rule fired on a reference whose own
+      // alert_index entry lists three. A reviewer downloaded fifteen receipts
+      // through this button and two of them said that. An artefact that omits
+      // the findings is worse than one that says it does not carry them.
+      signals: item.signals
+        || (item.signal_codes || []).map((code, position) => ({
+          code,
+          severity: (item.signal_severities || [])[position] || 'unknown',
+          message: 'Recorded in the population index; the full message is in the receipt.',
+          evidence: (item.signal_evidence || {})[code] || {},
+        })),
+      signals_detail: item.signals ? 'full' : 'codes only, from the population index',
       tokens: item.tokens || item.representations || [],
       method: {
         join_key: receipt?.method?.join_key || 'rwa_id',

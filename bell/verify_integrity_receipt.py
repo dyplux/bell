@@ -279,28 +279,27 @@ def verify_collection_manifest(surfaces: dict, manifest: dict, names: tuple) -> 
         # the evidence it guards is not a guard. The manifest already declares
         # `mode: server_side_authenticated_collection`, so the provenance it
         # implies is required, not optional.
-        if True:
-            if not isinstance(request_count, int) or request_count < 1:
-                raise ValueError(f"invalid request count for {name}")
-            if not isinstance(successful_count, int) or successful_count < 1 or successful_count > request_count:
-                raise ValueError(f"invalid successful response count for {name}")
-            if not isinstance(response_hashes, list) or len(response_hashes) != successful_count or any(not isinstance(value, str) or len(value) != 64 for value in response_hashes):
-                raise ValueError(f"response hashes do not match response count for {name}")
-            # Checked for length and compared to nothing. Every response
-            # fingerprint in all six surfaces could be set to sixty-four zeroes
-            # and the whole suite stayed green, while the page renders these as
-            # transport evidence. Thirty lines away the same placeholder is
-            # already refused for `source_hashes`; the rule was fixed in one
-            # place and left alone in the other, which is this repository's
-            # most repeated defect. Same rule, both places.
-            placeholders = [value for value in response_hashes if len(set(value)) == 1]
-            if placeholders:
-                raise ValueError(
-                    f"{len(placeholders)} of {name}'s response fingerprints are a single repeated "
-                    f"character ({placeholders[0][:8]}...): a placeholder is not the digest of a "
-                    "response")
-            if not isinstance(status_codes, list) or len(status_codes) != request_count or any(not isinstance(value, int) for value in status_codes):
-                raise ValueError(f"status codes do not match request count for {name}")
+        if not isinstance(request_count, int) or request_count < 1:
+            raise ValueError(f"invalid request count for {name}")
+        if not isinstance(successful_count, int) or successful_count < 1 or successful_count > request_count:
+            raise ValueError(f"invalid successful response count for {name}")
+        if not isinstance(response_hashes, list) or len(response_hashes) != successful_count or any(not isinstance(value, str) or len(value) != 64 for value in response_hashes):
+            raise ValueError(f"response hashes do not match response count for {name}")
+        # Checked for length and compared to nothing. Every response
+        # fingerprint in all six surfaces could be set to sixty-four zeroes
+        # and the whole suite stayed green, while the page renders these as
+        # transport evidence. Thirty lines away the same placeholder is
+        # already refused for `source_hashes`; the rule was fixed in one
+        # place and left alone in the other, which is this repository's
+        # most repeated defect. Same rule, both places.
+        placeholders = [value for value in response_hashes if len(set(value)) == 1]
+        if placeholders:
+            raise ValueError(
+                f"{len(placeholders)} of {name}'s response fingerprints are a single repeated "
+                f"character ({placeholders[0][:8]}...): a placeholder is not the digest of a "
+                "response")
+        if not isinstance(status_codes, list) or len(status_codes) != request_count or any(not isinstance(value, int) for value in status_codes):
+            raise ValueError(f"status codes do not match request count for {name}")
 
 
 def verify_public_inputs(inputs_path: Path, receipt_path: Path) -> None:
@@ -459,14 +458,13 @@ def main() -> int:
                 f"{DELTAS.name} is missing. The judge page describes a per-reference series and "
                 "the history records a digest for it, so its absence is a missing artefact, not "
                 "an absent feature.")
-        if True:
-            base_doc, deltas_doc = load_series()
-            notes = verify_series(base_doc, deltas_doc, history)
-            print(f"reference series: {len(notes) + 1} points, "
-                  f"each step matched to a published observation and its source digests")
-            print("UNVERIFIED: the per-reference detail inside each step cannot be re-derived, "
-                  "because the receipts behind those observations are not shipped. Its origin, "
-                  "order, rule set and source fingerprints are checked; the row values are not.")
+        base_doc, deltas_doc = load_series()
+        notes = verify_series(base_doc, deltas_doc, history)
+        print(f"reference series: {len(notes) + 1} points, "
+              f"each step matched to a published observation and its source digests")
+        print("UNVERIFIED: the per-reference detail inside each step cannot be re-derived, "
+              "because the receipts behind those observations are not shipped. Its origin, "
+              "order, rule set and source fingerprints are checked; the row values are not.")
     except ValueError as error:
         raise ValueError(f"reference series: {error}")
     return 0

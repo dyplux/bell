@@ -161,7 +161,22 @@ def rederive(payload: dict) -> dict:
         "tradfi_market_count": reference.get("tradfi_market_count"),
         "tokens": payload["tokens"],
     }
-    recomputed = asset_scan(asset, crypto_info_checked=True)
+    # The rows in a case receipt are already `token_summary` output. Running
+    # the engine over them re-normalises them, and `token_summary` recomputes
+    # `crypto_info_resolved` from a crypto lookup the verifier does not have -
+    # so a row that recorded True came back False, TOKEN_INFO_MISSING fired,
+    # and the verifier rejected the product's own export. It rejected Marvell,
+    # which is the COMPARABLE example judge.html names, and Rivian: 2 of the 15
+    # receipts a reviewer downloaded through the documented button.
+    #
+    # Rebuild the lookup from what the rows themselves recorded, so
+    # re-normalising is idempotent instead of lossy. A row that never resolved
+    # stays unresolved.
+    resolved = {str(token.get("crypto_id")): {"slug": token.get("crypto_slug"),
+                                         "urls": {}, "contract_address": []}
+                for token in payload["tokens"]
+                if token.get("crypto_info_resolved") is True and token.get("crypto_id") is not None}
+    recomputed = asset_scan(asset, crypto_lookup=resolved, crypto_info_checked=True)
 
     decision = payload.get("decision")
     if not isinstance(decision, dict) or not decision.get("state"):
@@ -182,16 +197,32 @@ def rederive(payload: dict) -> dict:
     # the forgery this file exists to refuse, and nothing compared it. The
     # engine computes it deterministically and it was already in `recomputed`,
     # unread.
-    if payload.get("next_action") != recomputed.get("next_action"):
-        raise ValueError(
-            f"the receipt's next action is {payload.get('next_action')!r} and its own rows produce "
-            f"{recomputed.get('next_action')!r}")
+    # next_action is chosen from the signal set, and that set includes the two
+    # codes a single case receipt cannot reproduce. Comparing it outright
+    # rejected Marvell - the COMPARABLE example judge.html names - because the
+    # engine, run without the catalogue, added NO_TRADFI_MARKET and picked a
+    # different sentence. So it is compared only when the recomputed set and
+    # the claimed set agree on everything outside that context, and the
+    # verifier says which case it took.
+    recomputed_all = codes_of(recomputed.get("signals"))
+    claimed_all = codes_of(payload["signals"])
+    comparable_context = (recomputed_all - CONTEXT_SIGNALS) == (claimed_all - CONTEXT_SIGNALS)
+    next_action_checked = comparable_context
+    if comparable_context and payload.get("next_action") != recomputed.get("next_action"):
+        # Both sides see the same row-derived findings, so the sentence has to
+        # follow. Where they differ only by context, it cannot be required.
+        if (recomputed_all & CONTEXT_SIGNALS) == (claimed_all & CONTEXT_SIGNALS):
+            raise ValueError(
+                f"the receipt's next action is {payload.get('next_action')!r} and its own rows "
+                f"produce {recomputed.get('next_action')!r}")
+        next_action_checked = False
     claimed = codes_of(payload["signals"])
     recomputed_codes = codes_of(recomputed.get("signals"))
     invented = claimed - recomputed_codes - CONTEXT_SIGNALS
     if invented:
         raise ValueError(
             f"the receipt claims {', '.join(sorted(invented))}, which its own rows do not produce")
+    recomputed["_next_action_checked"] = next_action_checked
     deleted = (recomputed_codes & ROW_DERIVED_SIGNALS) - claimed
     if deleted:
         raise ValueError(
@@ -302,6 +333,7 @@ def verify(payload: Any) -> dict[str, Any]:
         "signals_rederived": sorted(codes_of(recomputed.get("signals")) & ROW_DERIVED_SIGNALS),
         "signals_not_rederived": sorted(CONTEXT_SIGNALS),
         "rows_binding": binding,
+        "next_action_checked": bool(recomputed.get("_next_action_checked")),
         # The verdict string used to say "valid public case receipt" whatever
         # had been checked. It says which of the two questions was answered.
         "status": ("valid public case receipt" if binding.startswith("bound")

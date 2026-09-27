@@ -205,6 +205,48 @@ class CaseReceiptTests(unittest.TestCase):
         self.assertTrue(result["rows_binding"].startswith("bound to "), result["rows_binding"])
         self.assertIn("rwa-surface-integrity-latest-replay-2026-09-21.json", result["rows_binding"])
 
+    def test_every_reference_in_the_index_exports_a_receipt_that_verifies(self):
+        # A reviewer downloaded fifteen receipts through the documented button
+        # and two failed: Marvell, which is the COMPARABLE example judge.html
+        # names, and Rivian. The documented verification command rejecting the
+        # product's own unmodified output is worse than no command.
+        #
+        # Two causes, both mine. `verify_case_receipt` re-ran the engine over
+        # rows that were already normalised, and `token_summary` recomputes
+        # `crypto_info_resolved` from a lookup it did not have, so a resolved
+        # row came back unresolved. And `next_action` was compared outright
+        # although it is chosen from a signal set that includes two codes a
+        # single case cannot reproduce.
+        from rwa_integrity import asset_scan
+        checked = 0
+        for row in REPLAY["alert_index"][:60]:
+            full = next((item for item in REPLAY["alerts"]
+                         if str(item.get("rwa_id")) == str(row.get("rwa_id"))), None)
+            if full is None or not full.get("tokens"):
+                continue
+            verify(receipt_for(full))
+            checked += 1
+        self.assertGreater(checked, 20, f"only {checked} references were exercised")
+
+    def test_a_row_that_recorded_its_identity_as_resolved_stays_resolved(self):
+        # The exact mechanism: re-normalising a normalised row lost the flag.
+        payload = receipt_for(self.alert)
+        resolved = [token for token in payload["tokens"]
+                    if token.get("crypto_info_resolved") is True]
+        if not resolved:
+            self.skipTest("this reference records no resolved identity to preserve")
+        result = verify(payload)
+        self.assertEqual(result["status"], "valid public case receipt")
+        self.assertNotIn("TOKEN_INFO_MISSING", result["signals_rederived"],
+                         "a row that recorded a resolved identity came back unresolved")
+
+    def test_the_verifier_says_whether_it_checked_the_next_action(self):
+        # Scoped rather than silent: where the context signals differ, the
+        # sentence cannot be required, and the reader is told which case it is.
+        result = verify(receipt_for(self.alert))
+        self.assertIn("next_action_checked", result)
+        self.assertIsInstance(result["next_action_checked"], bool)
+
 
 if __name__ == "__main__":
     unittest.main()
