@@ -458,3 +458,15 @@ footer{max-width:2200px;padding-left:64px;padding-right:64px;font-size:13px}
 .hero-words>div{background:var(--panel-inset);padding:11px 13px}
 .hero-words dt{color:var(--gold);font:500 12px var(--font);letter-spacing:.09em;text-transform:uppercase}
 .hero-words dd{margin:5px 0 0;color:var(--muted);font-size:13px;line-height:1.45}
+.index-sort{display:flex;align-items:center;gap:8px;margin-top:12px;flex-wrap:wrap}
+.index-sort span{font:11px var(--font);letter-spacing:.12em;color:var(--muted)}
+.index-sort select{background:var(--panel-inset);color:var(--paper);border:1px solid var(--line);
+  padding:7px 10px;font:12px var(--font);border-radius:0;min-height:34px;max-width:100%}
+.index-sort select:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
+.index-export{margin-top:14px;display:flex;flex-direction:column;gap:7px}
+.index-export button{align-self:flex-start;background:var(--panel-inset);color:var(--paper);
+  border:1px solid var(--line);border-left:2px solid var(--gold);padding:9px 14px;
+  font:12px var(--font);letter-spacing:.06em;cursor:pointer;min-height:36px}
+.index-export button:hover{border-color:var(--gold)}
+.index-export button:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
+.index-export small{color:var(--dim);font-size:12px;line-height:1.45;max-width:72ch}

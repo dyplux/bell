@@ -38,11 +38,13 @@
   };
   let receipt;
   let filter = 'all';
+  let sortBy = 'severity';
   const initialURL = new URL(window.location.href);
   const initialReference = initialURL.searchParams.get('reference') || '';
   let query = initialReference.trim();
   let searchAttempted = Boolean(query);
   let pageNumber = 0;
+  let lastVisibleIndex = [];
   // Twelve rows at ~350px each made the reference index 4,200px - a third of
   // the whole page - rendered before a first-time visitor had searched for
   // anything. The index is where you go when you want the population; the
@@ -1570,7 +1572,13 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     // opens on six refusals reads the product as "this tool tells me no".
     // Nothing is dropped and nothing is hidden; only the order changes, and
     // only while no filter or query is narrowing the list.
-    const matching = (filter === 'all' && !normalizedQuery) ? interleaveByState(unordered) : unordered;
+    const ordered = (filter === 'all' && !normalizedQuery && sortBy === 'severity')
+      ? interleaveByState(unordered) : unordered;
+    const matching = window.BellIndexOrder.orderIndex(ordered, sortBy);
+    // The export writes this list, not the whole population: a button that
+    // silently exports something other than what is on screen is the kind of
+    // quiet disagreement this product reports.
+    lastVisibleIndex = matching;
     const totalPages = Math.max(1, Math.ceil(matching.length / pageSize));
     pageNumber = Math.min(pageNumber, totalPages - 1);
     const start = pageNumber * pageSize;
@@ -1588,6 +1596,23 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
         : '';
     }
     renderWatchlist();
+  }
+
+  // Ordering and the shape of an export live in index-order.js so they can be
+  // driven by a test instead of a browser. The rule worth naming: a reference
+  // with no published comparison has no observed spread and sorts last, not as
+  // zero, in both directions.
+  function downloadIndex() {
+    if (!receipt) return;
+    const order = window.BellIndexOrder;
+    const rows = lastVisibleIndex.map(item =>
+      order.exportRow(item, displayDecisionLabel(item, 'FACTS OPEN')));
+    const csv = [order.HEADER, ...rows].map(row => row.map(csvCell).join(',')).join('\n') + '\n';
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+    link.download = `bell-rwa-reference-index-${String(receipt?.observed_at || '').slice(0, 10) || 'latest'}.csv`;
+    link.click();
+    window.setTimeout(() => URL.revokeObjectURL(link.href), 1000);
   }
 
   function renderSearchResult() {
@@ -2287,6 +2312,12 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     document.querySelectorAll('[data-filter]').forEach(item => item.classList.toggle('selected', item === button));
     renderAlerts();
   }));
+  byId('alert-sort')?.addEventListener('change', event => {
+    sortBy = event.target.value;
+    pageNumber = 0;
+    renderAlerts();
+  });
+  byId('download-index')?.addEventListener('click', downloadIndex);
   byId('alert-search').addEventListener('input', event => {
     query = event.target.value;
     pageNumber = 0;
