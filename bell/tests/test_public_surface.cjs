@@ -368,7 +368,7 @@ test('the population list can be filtered to the references that have an answer'
   // twelve refusals and left. "comparable" is not a state the scan emits; it is
   // the outcome a reader wants, and it must be reachable in one click.
   assert.match(index, /data-filter="COMPARABLE"/);
-  assert.match(integrity, /displayDecisionLabel\(item, 'FACTS OPEN'\) === filter/);
+  assert.match(integrity, /decisionBucket\(item, 'FACTS OPEN'\) === filter/);
   assert.match(integrity, /if \(item\?\.comparison\) return 'COMPARABLE'/);
   // The filter is useless unless the index carries the field it filters on.
   assert.match(engine, /"comparison": asset\.get\("comparison"\)/);
@@ -793,10 +793,22 @@ function runFromSource(name, deps = {}) {
 }
 
 test('the public label follows the decision, executed not grepped', () => {
-  const label = runFromSource('displayDecisionLabel');
-  // A published comparison outranks the state that let it through.
-  assert.equal(label({ state: 'investigate', comparison: { route_count: 3 } }), 'COMPARABLE');
+  const label = runFromSource('displayDecisionLabel', {
+    decisionBucket: runFromSource('decisionBucket'),
+    isFlaggedComparable: runFromSource('isFlaggedComparable'),
+  });
+  // A published comparison outranks the state that let it through, and says
+  // when it did. 39 of the 75 comparisons in the live receipt were published
+  // over a flagged reference and all of them read plainly COMPARABLE: the
+  // affirmative word over the most doubtful half of the affirmative set. The
+  // flags were always on the card; a reviewer had to do arithmetic against
+  // /api/integrity to see the split.
+  assert.equal(label({ state: 'investigate', comparison: { route_count: 3 } }), 'COMPARABLE \u00b7 FLAGGED');
   assert.equal(label({ state: 'no_flags', comparison: { route_count: 2 } }), 'COMPARABLE');
+  // A blocked reference is not "flagged", it is refused, and the qualifier
+  // must never soften that.
+  assert.equal(label({ state: 'investigate', decision: { state: 'blocked' }, comparison: {} }),
+    'DO NOT SHORTLIST');
   // A blocked reference is never labelled comparable, even with a comparison.
   assert.equal(label({ state: 'do_not_compare', comparison: { route_count: 5 } }), 'DO NOT SHORTLIST');
   // One representation is not a comparison.
@@ -804,7 +816,7 @@ test('the public label follows the decision, executed not grepped', () => {
   assert.equal(label({ state: 'no_flags', token_count: 4 }), 'FACTS OPEN');
   assert.equal(label({ state: 'investigate' }), 'INVESTIGATE');
   // Every label it can return must be in the published vocabulary.
-  const vocabulary = new Set(['COMPARABLE', 'DO NOT SHORTLIST', 'INVESTIGATE', 'FACTS OPEN', 'SINGLE REPRESENTATION']);
+  const vocabulary = new Set(['COMPARABLE', 'COMPARABLE \u00b7 FLAGGED', 'DO NOT SHORTLIST', 'INVESTIGATE', 'FACTS OPEN', 'SINGLE REPRESENTATION']);
   for (const item of [{ state: 'investigate', comparison: {} }, { state: 'no_flags', token_count: 1 },
                       { state: 'do_not_compare' }, { state: 'no_flags' }]) {
     assert.ok(vocabulary.has(label(item)), `${label(item)} is outside the published vocabulary`);
@@ -1210,7 +1222,10 @@ test('every example chip promises the word the product prints for it', () => {
   const replay = JSON.parse(fs.readFileSync(
     path.join(site, 'proof', 'rwa-surface-integrity-latest-replay-2026-09-21.json'), 'utf8'));
   const byName = new Map((replay.alert_index || []).map(item => [item.name, item]));
-  const label = runFromSource('displayDecisionLabel');
+  const label = runFromSource('displayDecisionLabel', {
+    decisionBucket: runFromSource('decisionBucket'),
+    isFlaggedComparable: runFromSource('isFlaggedComparable'),
+  });
 
   // My first version of this test pinned the DECISION EFFECT and the card
   // badge was computed somewhere else, so Coinbase advertised COMPARABLE on the
@@ -1317,19 +1332,36 @@ test('every filter returns the label it names, and they partition the population
   // label: FACTS OPEN returned 666 rows of which 545 were badged SINGLE
   // REPRESENTATION and 44 COMPARABLE. The counts reconciled; the words did not.
   const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
-  assert.match(integrity, /displayDecisionLabel\(item, 'FACTS OPEN'\) === filter/);
+  assert.match(integrity, /decisionBucket\(item, 'FACTS OPEN'\) === filter/);
   assert.doesNotMatch(integrity, /item\.state === filter/,
     'a filter went back to matching the raw state');
 
   // Every published label needs a button, or a reader cannot reach 545 of the
   // 791 references. SINGLE REPRESENTATION had none.
+  //
+  // The property is REACHABILITY, so it is asserted on the bucket a filter
+  // addresses rather than on the printed label. A label may carry a qualifier
+  // the filter deliberately ignores - COMPARABLE · FLAGGED is gathered by the
+  // COMPARABLE button on purpose, because a reader after the comparable set
+  // should not have to know there are two names for it - and that must not be
+  // mistaken for a label nobody can reach.
   const buttons = [...page.matchAll(/data-filter="([^"]+)"/g)].map(match => match[1]);
-  const label = runFromSource('displayDecisionLabel');
+  const label = runFromSource('displayDecisionLabel', {
+    decisionBucket: runFromSource('decisionBucket'),
+    isFlaggedComparable: runFromSource('isFlaggedComparable'),
+  });
   const replay = JSON.parse(fs.readFileSync(
     path.join(site, 'proof', 'rwa-surface-integrity-latest-replay-2026-09-21.json'), 'utf8'));
-  const produced = new Set((replay.alert_index || []).map(item => label(item, 'FACTS OPEN')));
+  const bucket = runFromSource('decisionBucket');
+  const produced = new Set((replay.alert_index || []).map(item => bucket(item, 'FACTS OPEN')));
   for (const word of produced) {
     assert.ok(buttons.includes(word), `the scan produces ${word} and no filter offers it`);
+  }
+  // And every printed label still has to resolve to one of those buckets, so a
+  // new label cannot appear with nothing gathering it.
+  for (const printed of new Set((replay.alert_index || []).map(item => label(item, 'FACTS OPEN')))) {
+    assert.ok(buttons.some(button => printed.startsWith(button)),
+      `the scan prints ${printed} and no filter gathers it`);
   }
   // And the buttons must partition it: every one is a label, none is a state.
   for (const button of buttons.filter(value => value !== 'all')) {
@@ -1346,7 +1378,10 @@ test('the outcome key enumerates every state the product can print', () => {
   assert.ok(key, 'the outcome key went missing');
   const replay = JSON.parse(fs.readFileSync(
     path.join(site, 'proof', 'rwa-surface-integrity-latest-replay-2026-09-21.json'), 'utf8'));
-  const label = runFromSource('displayDecisionLabel');
+  const label = runFromSource('displayDecisionLabel', {
+    decisionBucket: runFromSource('decisionBucket'),
+    isFlaggedComparable: runFromSource('isFlaggedComparable'),
+  });
   const produced = new Set((replay.alert_index || []).map(item => label(item, 'FACTS OPEN')));
   for (const word of produced) {
     assert.ok(key[0].includes(word), `the scan prints ${word} and the outcome key never defines it`);

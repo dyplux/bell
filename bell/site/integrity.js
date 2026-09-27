@@ -363,7 +363,18 @@
   }
   function searchMatches(normalizedQuery) {
     if (!receipt || !normalizedQuery) return [];
-    return (receipt.alert_index || []).filter(item => [item.name, item.symbol, item.asset_type, item.rwa_id].join(' ').toLowerCase().includes(normalizedQuery));
+    // A digits-only query is a reference id, so it is matched as one. It used
+    // to be a substring over every field joined together, which meant
+    // ?reference=0 matched SPY through "S&P 500" and returned a full verdict
+    // panel for the first of 178 fuzzy hits, and ?reference=-1 reached PDBC
+    // through "K-1". A shared link showed a complete capital panel about a
+    // reference nobody had asked for. The label said "178 MATCHES · SHOWING
+    // FIRST", which is honest and is not the same as being right.
+    const index = receipt.alert_index || [];
+    if (/^-?\d+$/.test(normalizedQuery)) {
+      return index.filter(item => String(item.rwa_id ?? '').trim().toLowerCase() === normalizedQuery);
+    }
+    return index.filter(item => [item.name, item.symbol, item.asset_type, item.rwa_id].join(' ').toLowerCase().includes(normalizedQuery));
   }
   function preferredSearchMatch(normalizedQuery) {
     const matches = searchMatches(normalizedQuery);
@@ -680,7 +691,7 @@
   };
 
   function routeKey(item) {
-    return routeKeyByLabel[displayDecisionLabel(item, 'FACTS OPEN')] || 'no_flags';
+    return routeKeyByLabel[decisionBucket(item, 'FACTS OPEN')] || 'no_flags';
   }
 
   function renderRouteLegend(items) {
@@ -748,7 +759,7 @@
       const singleNote = byId('single-rep-note');
       if (singleNote && receipt?.alert_index) {
         const singles = receipt.alert_index.filter(row => Number(row.token_count || 0) === 1);
-        const blocked = singles.filter(row => displayDecisionLabel(row, 'FACTS OPEN') === 'DO NOT SHORTLIST');
+        const blocked = singles.filter(row => decisionBucket(row, 'FACTS OPEN') === 'DO NOT SHORTLIST');
         singleNote.textContent = blocked.length
           ? `Of the ${singles.length.toLocaleString()} references carrying a single representation, `
             + `${blocked.length} also tripped a critical rule, so the index labels them `
@@ -995,7 +1006,8 @@
     return 'clear';
   }
 
-  function displayDecisionLabel(item, fallback = 'REVIEW') {
+  // The bucket a reference belongs to, which is what the filters are made of.
+  function decisionBucket(item, fallback = 'REVIEW') {
     if (item?.state === 'do_not_compare' || item?.decision?.state === 'blocked') return 'DO NOT SHORTLIST';
     // A reference whose comparison was published is not merely "under
     // investigation" or "facts open" - the reader is holding the cheapest
@@ -1006,6 +1018,27 @@
     if (item?.state === 'no_flags' && Number(item?.token_count || 0) === 1) return 'SINGLE REPRESENTATION';
     if (item?.state === 'no_flags') return 'FACTS OPEN';
     return item?.decision?.label || fallback;
+  }
+
+  // A reference can carry a published comparison AND have been flagged by the
+  // scan. 39 of the 75 comparisons in the live receipt are in that position,
+  // and all of them read COMPARABLE, in the affirmative word, over the most
+  // doubtful half of the affirmative set. The flags were always on the card,
+  // under the verdict; a reviewer had to do the arithmetic against
+  // /api/integrity to notice the split. Now the label carries it.
+  //
+  // The bucket stays COMPARABLE so the filter still gathers all 75: a reader
+  // who wants the comparable set should not have to know there are two words
+  // for it. Filtering asks which bucket; the label says what is in it.
+  function isFlaggedComparable(item) {
+    return Boolean(item?.comparison) && item?.state === 'investigate'
+      && item?.decision?.state !== 'blocked';
+  }
+
+  function displayDecisionLabel(item, fallback = 'REVIEW') {
+    const bucket = decisionBucket(item, fallback);
+    if (bucket === 'COMPARABLE' && isFlaggedComparable(item)) return 'COMPARABLE · FLAGGED';
+    return bucket;
   }
 
   // One sentence, one place. This footnote was written twice, and both copies
@@ -1560,7 +1593,7 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
       // label, so FACTS OPEN returned 666 rows of which 545 were badged SINGLE
       // REPRESENTATION and 44 COMPARABLE: 88% of what the button returned said
       // something else. Filter by the word the reader can see.
-      const stateMatches = filter === 'all' || displayDecisionLabel(item, 'FACTS OPEN') === filter;
+      const stateMatches = filter === 'all' || decisionBucket(item, 'FACTS OPEN') === filter;
       const haystack = [item.name, item.symbol, item.asset_type, item.rwa_id].join(' ').toLowerCase();
       return stateMatches && (!normalizedQuery || haystack.includes(normalizedQuery));
     });
@@ -1714,7 +1747,7 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     const comparableCount = byId('population-comparable-count');
     if (comparableCount) {
       const labelled = (receipt.alert_index || [])
-        .filter(item => displayDecisionLabel(item, 'FACTS OPEN') === 'COMPARABLE').length;
+        .filter(item => decisionBucket(item, 'FACTS OPEN') === 'COMPARABLE').length;
       comparableCount.textContent = labelled.toLocaleString();
     }
     const states = receipt.universe?.states || {};

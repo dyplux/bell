@@ -11,6 +11,10 @@ import sys
 from verify_case_receipt import verify as verify_case_receipt
 
 
+LOADED = ("document.querySelector('#receipt-status-label')?.textContent"
+          "?.includes('LOADING') === false")
+
+
 def require(condition: bool, message: str) -> None:
     if not condition:
         raise RuntimeError(message)
@@ -253,6 +257,64 @@ def main() -> int:
                     require("not ready for a clean shortlist" not in lowered,
                             f"{name} shows COMPARABLE and the unresolved copy at the same time: {result_text[:500]!r}")
                 return expected
+
+            # A digits-only query is a reference id. It used to be a substring
+            # over every field joined together, so ?reference=0 reached SPY
+            # through "S&P 500" and rendered a full verdict, capital panel and
+            # all, for the first of 178 fuzzy hits. A shared link answered a
+            # question nobody had asked. The label said "178 MATCHES · SHOWING
+            # FIRST", which is honest and is not the same as being right.
+            for digits in ("0", "-1"):
+                page.goto(f"{args.base.rstrip(chr(47))}/?reference={digits}", wait_until="domcontentloaded", timeout=30_000)
+                page.wait_for_function(LOADED, timeout=30_000)
+                page.wait_for_timeout(200)
+                result = page.locator("#search-result")
+                shown = result.inner_text() if result.count() and result.is_visible() else ""
+                require("no live case found" in shown.lower() or not shown.strip(),
+                        f"?reference={digits} rendered a verdict for a reference nobody asked "
+                        f"for: {shown[:300]!r}")
+            # And a real id still resolves, so the fix is not "refuse digits".
+            page.goto(f"{args.base.rstrip(chr(47))}/?reference=5", wait_until="domcontentloaded", timeout=30_000)
+            page.wait_for_function(LOADED, timeout=30_000)
+            page.wait_for_timeout(200)
+            exact = page.locator("#search-result").inner_text()
+            require("exact match" in exact.lower(),
+                    f"?reference=5 no longer resolves to a single reference: {exact[:300]!r}")
+            page.goto(args.base.rstrip("/") + "/", wait_until="domcontentloaded", timeout=30_000)
+            page.wait_for_function(LOADED, timeout=30_000)
+
+            # 39 of the 75 published comparisons in the live receipt are also
+            # flagged by the scan, and every one of them used to read
+            # COMPARABLE: the affirmative word over the most doubtful half of
+            # the affirmative set. The flags were always on the card; a
+            # reviewer had to do arithmetic against /api/integrity to see the
+            # split. The label carries it now, and the filter must still gather
+            # both or the reader has to know two names for one set.
+            flagged = [item for item in (receipt.get("alert_index") or [])
+                       if item.get("comparison") and item.get("state") == "investigate"
+                       and (item.get("decision") or {}).get("state") != "blocked"]
+            if flagged:
+                subject = flagged[0]
+                page.goto(f"{args.base.rstrip(chr(47))}/?reference={subject['rwa_id']}",
+                          wait_until="domcontentloaded", timeout=30_000)
+                page.wait_for_function(LOADED, timeout=30_000)
+                page.wait_for_timeout(200)
+                shown = page.locator("#search-result").inner_text()
+                require("FLAGGED" in shown.upper(),
+                        f"{subject.get('name')!r} carries a published comparison and a scan flag "
+                        f"and reads as plainly comparable: {shown[:300]!r}")
+                page.goto(args.base.rstrip("/") + "/", wait_until="domcontentloaded", timeout=30_000)
+                page.wait_for_function(LOADED, timeout=30_000)
+                page.locator('[data-filter="COMPARABLE"]').click()
+                page.wait_for_timeout(300)
+                gathered = page.locator("#alert-count").inner_text()
+                published = len([item for item in (receipt.get("alert_index") or [])
+                                 if item.get("comparison")])
+                require(str(published) in gathered,
+                        f"the COMPARABLE filter no longer gathers all {published} published "
+                        f"comparisons: {gathered[:200]!r}")
+                page.goto(args.base.rstrip("/") + "/", wait_until="domcontentloaded", timeout=30_000)
+                page.wait_for_function(LOADED, timeout=30_000)
 
             silver_state = search_and_check("Silver")
             require(page.locator("#search-result").get_by_text("Open live dossier context ↓", exact=True).count() == 1, "searched case does not expose the live dossier handoff")
