@@ -27,9 +27,10 @@
         "info": "ac6cf878fb549f1252e6beec8bedfe602e1ae64499b0ef76409ce93a19223bc5",
         "issuers": "38d1fbcbc2d005351cf66161107f10ce79234040b05ba8648dd6463b9a750b2f"
       },
+      "rules_version_recorded": false,
       "chain_version": "bell.history_chain.v1",
       "prev_sha256": null,
-      "sha256": "accd099387a74049b16331f76dc5872709de641d1df72f7b827030b4ea3973c3"
+      "sha256": "e11617526aef71c9ecb445c5ef3d7ada6e2e9154613acd89caf3e48d62d780b3"
     },
     {
       "observed_at": "2026-09-16T20:56:55Z",
@@ -57,9 +58,10 @@
         "info": "9e587f40e9b3412878180dddb78dae80abe3063a18cea02bb9a285e1665e2ef5",
         "issuers": "38d1fbcbc2d005351cf66161107f10ce79234040b05ba8648dd6463b9a750b2f"
       },
+      "rules_version_recorded": false,
       "chain_version": "bell.history_chain.v1",
-      "prev_sha256": "accd099387a74049b16331f76dc5872709de641d1df72f7b827030b4ea3973c3",
-      "sha256": "9a5308b3616e8566dd334912148104255e7548bf1fb5aca8568d1932f03088ba"
+      "prev_sha256": "e11617526aef71c9ecb445c5ef3d7ada6e2e9154613acd89caf3e48d62d780b3",
+      "sha256": "ebbf98057d41d92429f389ef1a4a44fcba2c473f0be49a34206608ca5211db11"
     },
     {
       "observed_at": "2026-09-21T15:29:46Z",
@@ -88,9 +90,10 @@
         "issuers": "5f7d087ed42ea139e9e01d4d6d71b62c54a946a4ed5dbcc73f60270992434db3",
         "crypto_info": "f4766ba2f9f52c05a7511b556bd6c40e56c54e8880233aaf3d1d375e46dc2dab"
       },
+      "rules_version_recorded": false,
       "chain_version": "bell.history_chain.v1",
-      "prev_sha256": "9a5308b3616e8566dd334912148104255e7548bf1fb5aca8568d1932f03088ba",
-      "sha256": "1a73b6170d66430c3b015a6407c8ebfd730a840f81065ff01bb02d62be5c2461"
+      "prev_sha256": "ebbf98057d41d92429f389ef1a4a44fcba2c473f0be49a34206608ca5211db11",
+      "sha256": "39d23fc178933fe2a2c50b1cd8a80770ae4089df1cd49116aa9fcc0239df9487"
     },
     {
       "observed_at": "2026-09-21T15:45:08Z",
@@ -119,9 +122,10 @@
         "issuers": "5f7d087ed42ea139e9e01d4d6d71b62c54a946a4ed5dbcc73f60270992434db3",
         "crypto_info": "980ad31557f0c9521fb3197d4df1b8efd0f1b5fb054e66cd1c8f173781b41306"
       },
+      "rules_version_recorded": false,
       "chain_version": "bell.history_chain.v1",
-      "prev_sha256": "1a73b6170d66430c3b015a6407c8ebfd730a840f81065ff01bb02d62be5c2461",
-      "sha256": "74fe5746195f745ef62d13d9c61de1d9a6f6235815b32ceca3a8750ad9ab1277"
+      "prev_sha256": "39d23fc178933fe2a2c50b1cd8a80770ae4089df1cd49116aa9fcc0239df9487",
+      "sha256": "6ee0ff6c5745513eea1c777b74d1fc65f726cad97757f1f8dbc46385e058ba43"
     },
     {
       "observed_at": "2026-09-21T16:16:48Z",
@@ -150,9 +154,10 @@
         "issuers": "5f7d087ed42ea139e9e01d4d6d71b62c54a946a4ed5dbcc73f60270992434db3",
         "crypto_info": "5442dc26338533e502acc21666d5a135fabf8ed7a700f29dccac5623954f3939"
       },
+      "rules_version_recorded": false,
       "chain_version": "bell.history_chain.v1",
-      "prev_sha256": "74fe5746195f745ef62d13d9c61de1d9a6f6235815b32ceca3a8750ad9ab1277",
-      "sha256": "17f97d61ffac202dc8d131329938948d9b4acbdc2043828abeba5fbc7be18161"
+      "prev_sha256": "6ee0ff6c5745513eea1c777b74d1fc65f726cad97757f1f8dbc46385e058ba43",
+      "sha256": "7a715e8980ae5fdd6c345c6359a1224b6a219790da440c900d7f7589beef37b2"
     },
     {
       "observed_at": "2026-09-21T17:01:00Z",
@@ -181,9 +186,10 @@
         "issuers": "5f7d087ed42ea139e9e01d4d6d71b62c54a946a4ed5dbcc73f60270992434db3",
         "crypto_info": "a8af4c6c503c4aeebf4c4344a6fb2a21652e455ce56121f915ece2b136b20464"
       },
+      "rules_version_recorded": false,
       "chain_version": "bell.history_chain.v1",
-      "prev_sha256": "17f97d61ffac202dc8d131329938948d9b4acbdc2043828abeba5fbc7be18161",
-      "sha256": "9f3496abed85182438b2669115e15940ae1bdfafc8543f7b37285dec1f9b72f5"
+      "prev_sha256": "7a715e8980ae5fdd6c345c6359a1224b6a219790da440c900d7f7589beef37b2",
+      "sha256": "5563926dcffc8c2541984ce577e4d9ba4df48ed4224700727a5ad9a325c64058"
     },
     {
       "observed_at": "2026-09-21T17:06:21Z",
@@ -212,9 +218,10 @@
         "issuers": "5f7d087ed42ea139e9e01d4d6d71b62c54a946a4ed5dbcc73f60270992434db3",
         "crypto_info": "48da715b309949be9860370ef37300bd90bf63e84494087f203d3ced7b05a6e6"
       },
+      "rules_version_recorded": false,
       "chain_version": "bell.history_chain.v1",
-      "prev_sha256": "9f3496abed85182438b2669115e15940ae1bdfafc8543f7b37285dec1f9b72f5",
-      "sha256": "c7a240fc06e1ebc924b4ec57650afa4fc9354c84106b7ecb3f7904554adb7fbf"
+      "prev_sha256": "5563926dcffc8c2541984ce577e4d9ba4df48ed4224700727a5ad9a325c64058",
+      "sha256": "230796725e4f815874c7da6019ddb1460f9fc4dfebb6eb864edaef7e296db7e1"
     },
     {
       "observed_at": "2026-09-21T17:42:51Z",
@@ -243,9 +250,10 @@
         "issuers": "5f7d087ed42ea139e9e01d4d6d71b62c54a946a4ed5dbcc73f60270992434db3",
         "crypto_info": "0ccd4ee50b25113dad96645932b9077eca7bfcbcf7fc790fdbb0e3d548d35ee2"
       },
+      "rules_version_recorded": false,
       "chain_version": "bell.history_chain.v1",
-      "prev_sha256": "c7a240fc06e1ebc924b4ec57650afa4fc9354c84106b7ecb3f7904554adb7fbf",
-      "sha256": "097ef8b954e7ececd04993b5a134826e4512d8170fdfef2acaafecd1bc17aefc"
+      "prev_sha256": "230796725e4f815874c7da6019ddb1460f9fc4dfebb6eb864edaef7e296db7e1",
+      "sha256": "531bbcf4297333aafa8a5940f63b80a33f850fe54dd751162abb6380eaf122cc"
     },
     {
       "observed_at": "2026-09-21T18:28:48Z",
@@ -274,9 +282,10 @@
         "issuers": "5f7d087ed42ea139e9e01d4d6d71b62c54a946a4ed5dbcc73f60270992434db3",
         "crypto_info": "db5061d888c2f00706e068ee426c11115e2af675539b6fcb04f0f8a93e1b4d78"
       },
+      "rules_version_recorded": false,
       "chain_version": "bell.history_chain.v1",
-      "prev_sha256": "097ef8b954e7ececd04993b5a134826e4512d8170fdfef2acaafecd1bc17aefc",
-      "sha256": "47b16a056774c40d310e3d1269b0fad6e86895b600aef6b7cac316a1030cd2b4"
+      "prev_sha256": "531bbcf4297333aafa8a5940f63b80a33f850fe54dd751162abb6380eaf122cc",
+      "sha256": "21dcf36d124041f8640837b273901645299dda0a5e85e24a7ed071d693aee4e8"
     },
     {
       "observed_at": "2026-09-21T19:19:31Z",
@@ -305,9 +314,10 @@
         "issuers": "5f7d087ed42ea139e9e01d4d6d71b62c54a946a4ed5dbcc73f60270992434db3",
         "crypto_info": "5228c35c6e0d16a529a8b6ce0707bfed2e3af96ed7954e1d969a1a1445155b4f"
       },
+      "rules_version_recorded": false,
       "chain_version": "bell.history_chain.v1",
-      "prev_sha256": "47b16a056774c40d310e3d1269b0fad6e86895b600aef6b7cac316a1030cd2b4",
-      "sha256": "0529bcb7fe0af97bb0fd94577224f792cbd2aee9ad7792345d648391387ced55"
+      "prev_sha256": "21dcf36d124041f8640837b273901645299dda0a5e85e24a7ed071d693aee4e8",
+      "sha256": "695a9e697088eff2214c9146c1ed9b78f225243b80fdcac88d54bcfb6e0a8c15"
     },
     {
       "observed_at": "2026-09-21T21:25:01Z",
@@ -336,9 +346,10 @@
         "issuers": "5f7d087ed42ea139e9e01d4d6d71b62c54a946a4ed5dbcc73f60270992434db3",
         "crypto_info": "7075ab8e12cdb2ff040c32d6848080befc71aaeb524e6ba52908c6a196933a62"
       },
+      "rules_version_recorded": false,
       "chain_version": "bell.history_chain.v1",
-      "prev_sha256": "0529bcb7fe0af97bb0fd94577224f792cbd2aee9ad7792345d648391387ced55",
-      "sha256": "7af7c0d9966e9effd49e7afb49b60d0289c2172a2d2d8cf29eca388987e371eb"
+      "prev_sha256": "695a9e697088eff2214c9146c1ed9b78f225243b80fdcac88d54bcfb6e0a8c15",
+      "sha256": "d6052444c43b9ee8d910e67c27115a53c70a953b92928fd4a49c41a64a6fec05"
     },
     {
       "observed_at": "2026-09-26T20:08:35Z",
@@ -368,9 +379,10 @@
         "issuers": "9f8f2a6b9dde140bfe5c2efbe26c1cc8937e1d1e0b3d815019539d6e3abb5175",
         "crypto_info": "3ea93a373081d7bcde73816313132bca5f7b81a5f8a3eca96d16cd4f0b72cfcd"
       },
+      "rules_version_recorded": true,
       "chain_version": "bell.history_chain.v1",
-      "prev_sha256": "7af7c0d9966e9effd49e7afb49b60d0289c2172a2d2d8cf29eca388987e371eb",
-      "sha256": "838fd95f6de624a3ad8a32b75d0b0c17af6fa03a3c259938bf09929a362603fa"
+      "prev_sha256": "d6052444c43b9ee8d910e67c27115a53c70a953b92928fd4a49c41a64a6fec05",
+      "sha256": "ff107d1fdcd451ee4955c32f84f0740c22993fb31e426beedf1efd053540ee01"
     },
     {
       "observed_at": "2026-09-26T21:25:28Z",
@@ -400,9 +412,10 @@
         "issuers": "9f8f2a6b9dde140bfe5c2efbe26c1cc8937e1d1e0b3d815019539d6e3abb5175",
         "crypto_info": "5b99ca53e2cd37cea2bc79e4ae2c7f7344ec5a2b1fd066e33b26ae088d207760"
       },
+      "rules_version_recorded": true,
       "chain_version": "bell.history_chain.v1",
-      "prev_sha256": "838fd95f6de624a3ad8a32b75d0b0c17af6fa03a3c259938bf09929a362603fa",
-      "sha256": "abec2c73c98f014412af61bdb1c006c7631114246473f496eaa55e663e7e8cce"
+      "prev_sha256": "ff107d1fdcd451ee4955c32f84f0740c22993fb31e426beedf1efd053540ee01",
+      "sha256": "3056f88b2f3a57ae2918d01f23b5bfc4ab672cffc20af29abc5870290782696f"
     },
     {
       "observed_at": "2026-09-26T23:28:21Z",
@@ -432,9 +445,10 @@
         "issuers": "9f8f2a6b9dde140bfe5c2efbe26c1cc8937e1d1e0b3d815019539d6e3abb5175",
         "crypto_info": "af570e82df3ca1607432ff076ee45d7e77232bb9a0c32ac5af46e4d903d60a0f"
       },
+      "rules_version_recorded": true,
       "chain_version": "bell.history_chain.v1",
-      "prev_sha256": "abec2c73c98f014412af61bdb1c006c7631114246473f496eaa55e663e7e8cce",
-      "sha256": "3e72f19af2764b21ae7c98d30a36d6d43f3d448af0ca489b4271b49471226616"
+      "prev_sha256": "3056f88b2f3a57ae2918d01f23b5bfc4ab672cffc20af29abc5870290782696f",
+      "sha256": "3f974669dea0d4625733b4446d1f34647df34610ebaaf67646ad9d70cf76daa4"
     }
   ],
   "limits": [
@@ -443,6 +457,6 @@
     "The current public page may use a newer live receipt when the publication service is available"
   ],
   "chain_version": "bell.history_chain.v1",
-  "chain_head": "3e72f19af2764b21ae7c98d30a36d6d43f3d448af0ca489b4271b49471226616",
+  "chain_head": "3f974669dea0d4625733b4446d1f34647df34610ebaaf67646ad9d70cf76daa4",
   "chain_note": "Each observation carries the digest of the one before it, so editing any record invalidates every digest after it. The head is committed here and in git, which is the external anchor: this is tamper-evidence, not a signature."
 }

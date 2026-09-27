@@ -101,6 +101,7 @@ class Forgery(unittest.TestCase):
         receipt = copy.deepcopy(self.dated)
         receipt["universe"]["rules_version"] = RULES_VERSION
         observation["rules_version"] = RULES_VERSION
+        observation["rules_version_recorded"] = True
         self.assertTrue(self.verify_observation(observation, receipt, "current"))
         receipt["universe"]["states"] = {"do_not_compare": 0, "investigate": 0, "no_flags": 790}
         with self.assertRaises(ValueError):

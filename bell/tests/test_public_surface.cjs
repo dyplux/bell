@@ -1099,6 +1099,12 @@ test('nothing claims to be current while the page is reading a dated receipt', (
   // rule, not the rule, and three other places kept asserting currency over a
   // five-day-old replay: the population lens chip, the strip's scope sentence
   // and the explorer's verdict header. Assert the rule.
+  // matchAll below needs the /g, and `test()` on a global regex advances
+  // lastIndex: after the integrity.js call it sat at 50977, past
+  // explorer.js's entire 22,120 bytes, so `claims.test(explorerSrc)`
+  // returned false and the loop skipped a file that really does contain
+  // CURRENT VERDICT. Half of a rule, in a block whose own comment says
+  // 'that is one instance of a rule, not the rule'. Reset it per source.
   const claims = /CURRENT RECEIPT|CURRENT VERDICT|current scan|latest scan/g;
   const inMarkup = [...page.matchAll(claims)].map(match => match[0]);
   assert.deepEqual(inMarkup, [],
@@ -1106,6 +1112,7 @@ test('nothing claims to be current while the page is reading a dated receipt', (
 
   // Each of those strings may exist only in code that has read publication.source.
   for (const [label, source] of [['integrity.js', integrity], ['explorer.js', explorerSrc]]) {
+    claims.lastIndex = 0;
     if (!claims.test(source)) continue;
     assert.match(source, /dated_static/,
       `${label} prints a currency claim without consulting the publication source`);
@@ -1416,14 +1423,24 @@ test('the reference snapshot is the dated receipt, and carries its rule set', ()
   assert.equal(Object.keys(snapshot.references).length, replay.alert_index.length,
     'the snapshot covers fewer references than the receipt it came from');
 
-  // Spot-check against the receipt rather than trusting the extractor.
-  for (const item of replay.alert_index.slice(0, 40)) {
-    const held = snapshot.references[String(item.rwa_id)];
-    assert.ok(held, `${item.name} is missing from the snapshot`);
-    assert.equal(held.state, item.state, `${item.name} state does not match the receipt`);
-    assert.equal(held.representations, item.token_count ?? 0);
-    assert.equal(held.comparison_published, Boolean(item.comparison));
+  // This was a spot-check over the first 40 of 791, and it did not look at
+  // signal_codes even inside the 40. A reviewer tampered entry 200 and a
+  // signal list inside the slice, and the full gate stayed green - so the
+  // newest feature rested on a file nothing re-derived. Re-derive all of it,
+  // the way test_transport_summary.py already does for the transport record.
+  const derived = {};
+  for (const item of replay.alert_index) {
+    const key = String(item.rwa_id ?? '').trim();
+    if (!key) continue;
+    derived[key] = {
+      state: item.state,
+      representations: Number(item.token_count ?? 0),
+      comparison_published: Boolean(item.comparison),
+      signal_codes: [...(item.signal_codes ?? [])].sort(),
+    };
   }
+  assert.deepEqual(snapshot.references, derived,
+    'the committed reference snapshot is not what the extractor produces from the receipt');
   // It must stay small enough to sit beside the live receipt.
   const bytes = fs.statSync(path.join(proof, 'reference-snapshot-2026-09-21.json')).size;
   assert.ok(bytes < 200_000, `the snapshot grew to ${bytes} bytes; it exists to avoid the 3.42 MiB receipt`);

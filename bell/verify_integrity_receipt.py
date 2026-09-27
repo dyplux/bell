@@ -103,10 +103,34 @@ def verify_observation(observation: dict, receipt: dict, label: str) -> None:
             f"this tree stamps {RULES_VERSION}, and receipts older than the field carry none, so "
             "this one was edited after it was written. Declaring a rule set is not a way to "
             "opt out of being checked.")
-    # An observation recorded before rule versioning existed carries no version.
-    # That is itself a different version from the one running now, so it is
-    # reported rather than compared.
-    rules_differ = bool(current_rules) and recorded_rules != current_rules
+    # The third escape hatch, and the one that was open in the shipped
+    # repository: a MISSING `rules_version` on the history record was read as
+    # "a different version", so deleting the key switched the state comparison
+    # off. A reviewer rewrote observation 11 to 791 blocked, re-linked the chain
+    # and the anchor, and the gate returned ok.
+    #
+    # Absence no longer grants the skip. A record that predates the field says
+    # so, in a field of its own, which a forger has to add rather than remove -
+    # and adding it re-links every digest after it. Eleven records carry that
+    # declaration, written once by declare_unversioned_observations.py.
+    declared = observation.get("rules_version_recorded")
+    if declared is None:
+        raise ValueError(
+            f"{label} does not say whether it recorded a rule set. A record whose rule set is "
+            "simply missing cannot be told from one whose rule set was removed, and the state "
+            "comparison is skipped on exactly that basis. Run "
+            "bell/declare_unversioned_observations.py.")
+    if declared and not recorded_rules:
+        raise ValueError(
+            f"{label} declares it recorded a rule set and carries none")
+    if not declared and recorded_rules:
+        raise ValueError(
+            f"{label} declares it recorded no rule set and carries {recorded_rules!r}")
+    # Two records under one unversioned rule set are comparable; the boundary is
+    # only real when the two sides name different rule sets, or when one
+    # genuinely predates the field and the other does not.
+    rules_differ = (bool(current_rules) != bool(recorded_rules)) or \
+        (bool(current_rules) and recorded_rules != current_rules)
     if rules_differ:
         recorded_rules = recorded_rules or "an unversioned rule set"
         print(
@@ -364,11 +388,23 @@ def main() -> int:
     # "bundled cross-checks: 2" read as "two observations fully verified" when
     # the state comparison had been skipped on both, because neither records a
     # rule version. Say which half was compared.
+    # "reported rather than compared" read as a neutral note. It is not: a
+    # reviewer rewrote that record's distribution to 791 blocked, re-linked the
+    # chain and the anchor, and this returned ok. Nothing in this repository
+    # can re-derive a distribution computed by rule code that no longer exists
+    # here, so the honest move is to name the hole rather than phrase it as a
+    # procedure. A project that says "I will not assert what I cannot prove" is
+    # graded against that sentence.
+    unverified = bundled_matches - fully_compared
     print(f"bundled cross-checks: {bundled_matches} "
           f"({fully_compared} compared on state counts, "
-          f"{bundled_matches - fully_compared} on identity, totals, signals and source digests only "
-          f"because the recorded rule version differs from the current one); "
-          f"remaining observations are public summaries")
+          f"{unverified} verified on identity, totals, signals and source digests only)")
+    if unverified:
+        print(f"UNVERIFIED: {unverified} bundled observation(s) record a state distribution that "
+              "nothing in this repository can re-derive, because the rule set that produced it is "
+              "not the rule set this code runs. Its totals, signals and source digests are "
+              "checked; the split between do_not_compare, investigate and no_flags is not.")
+    print("remaining observations are public summaries")
     print(f"history chain head: {head}")
     print(f"history sha256: {hashlib.sha256(args.history.read_bytes()).hexdigest()}")
     return 0

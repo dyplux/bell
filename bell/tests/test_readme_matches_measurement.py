@@ -339,5 +339,33 @@ class TheNewApiFindingsMatchTheReceipt(unittest.TestCase):
         self.assertIn('HTTP 400', self.doc)
 
 
+
+class TheBaseRateReceiptIsTheMeasurement(unittest.TestCase):
+    """The committed base-rate receipt must be what the code produces.
+
+    judge.html's headline figures hang off `base-rate-2026-09-21.json`, and
+    nothing compared that file to `measure(scan(inputs))`. A reviewer built an
+    internally consistent forgery - refused 9, comparable 235 - and it passed
+    the whole Python suite; only a hardcoded string in the JavaScript suite
+    stopped it. A comment in test_headline_numbers_are_pinned.py claimed this
+    cross-check already existed. It did not.
+    """
+
+    def test_the_committed_base_rate_is_what_the_code_measures(self):
+        shipped = json.loads(
+            (os.path.join(os.path.dirname(INPUTS), 'base-rate-2026-09-21.json') and
+             open(os.path.join(os.path.dirname(INPUTS), 'base-rate-2026-09-21.json'),
+                  encoding='utf-8').read()))
+        computed = measured()
+        for field in ('population', 'excluded_single_representation',
+                      'denominator_two_or_more_representations', 'refused', 'comparable',
+                      'refusal_reasons', 'refusal_split'):
+            self.assertIn(field, computed, f'measure() no longer returns {field}')
+            self.assertEqual(computed[field], shipped.get(field),
+                             f'base-rate-2026-09-21.json states a {field} the code does not produce')
+        self.assertAlmostEqual(computed['refusal_rate'], shipped['refusal_rate'], places=9,
+                               msg='the committed refusal rate is not the measured one')
+
+
 if __name__ == "__main__":
     unittest.main()

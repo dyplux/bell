@@ -180,12 +180,23 @@ class JudgeCounts(unittest.TestCase):
         out = verifier_output()
         bundled = re.search(r"bundled cross-checks: (\d+)", out.stdout)
         observations = re.search(r"ok \((\d+) observations\)", out.stdout)
+        # "2 ship their full payload and are cross-checked" was true of the
+        # shipping and false of the cross-checking: one of the two has a state
+        # distribution nothing in this repository can re-derive, and the
+        # verifier now prints UNVERIFIED for it. Both documents have to carry
+        # the same count AND the same limit.
         phrase = (f"Of the {observations.group(1)} dated observations, "
-                  f"{bundled.group(1)} ship their full payload and are cross-checked")
+                  f"{bundled.group(1)} ship their full payload")
+        unverified = "UNVERIFIED" in out.stdout
         chained = f"every one of the {observations.group(1)} is chained to the one before it"
         for text, name in ((JUDGE.read_text(encoding="utf-8"), "judge.html"),
                            (README.read_text(encoding="utf-8"), "README.md")):
             self.assertIn(phrase, text, f"{name} no longer states what the verifier verifies")
+            if unverified:
+                self.assertIn("UNVERIFIED", text,
+                              f"{name} does not carry the limit the verifier prints. The verifier "
+                              "says one bundled observation's distribution is unverified and the "
+                              "document does not.")
         # The chain is the answer to the forgery that got through, so the page
         # that describes the verification has to describe it.
         self.assertIn(chained, JUDGE.read_text(encoding="utf-8"),

@@ -59,7 +59,7 @@
     <div class="judge-facts">
       <div><small>Comparisons published</small><strong>87</strong></div>
       <div><small>Refusals, by named rule</small><strong>157</strong></div>
-      <div><small>Tests in the offline gate</small><strong>334</strong></div>
+      <div><small>Tests in the offline gate</small><strong>345</strong></div>
       <div><small>Gate runtime</small><strong>&lt;12s</strong></div>
     </div>
 
@@ -89,10 +89,15 @@ make base-rate</pre>
     <small>between 2.8 and 12.0 seconds across the machines it has been measured on, cold runs
     included. This band has been widened twice rather than quoted tight: a first run on a
     cold machine was measured at 10.3 seconds and the stated figure has to cover the run a
-    reader actually gets, not the best one. 334 tests, 236 Python and 98 JavaScript. One Python test needs a network and a
+    reader actually gets, not the best one. 345 tests, 247 Python and 98 JavaScript. One Python test needs a network and a
     CoinMarketCap key; without them it is skipped and the runner says so. Plus a re-derivation of
-    the published receipt from the 16.5 MB of shipped inputs and a submission gate over 154 tracked files. Be precise about what that re-derivation proves: the inputs are verified
-    byte for byte, and the scan is recomputed from them. Of the 14 dated observations, 2 ship their full payload and are cross-checked; the rest are published summaries, and every one of the 14 is chained to the one before it, so editing a single record invalidates every digest after it. Be exact about what that is and is not: it is tamper-evidence, not a signature. It defeats a quiet single-record edit, and it does not defeat anyone who can rewrite the whole file, the chain and the committed anchor together, because all three live in this repository. There is no external attestation and no date attestation, and the module says so in its own docstring. And where
+    the published receipt from the 16.5 MB of shipped inputs and a submission gate over 155 tracked files. Be precise about what that re-derivation proves: the inputs are verified
+    byte for byte, and the scan is recomputed from them. Of the 14 dated observations, 2 ship their full payload. One of those two has its
+    state distribution compared against the receipt; the other does not, and the verifier
+    prints UNVERIFIED and says which half is checked. That record was written under the
+    rule set that ran before this one, and no code in this repository can re-derive it,
+    so its totals, signals and source digests are checked and the split between
+    do_not_compare, investigate and no_flags is not. The rest are published summaries, and every one of the 14 is chained to the one before it, so editing a single record invalidates every digest after it. Be exact about what that is and is not: it is tamper-evidence, not a signature. It defeats a quiet single-record edit, and it does not defeat anyone who can rewrite the whole file, the chain and the committed anchor together, because all three live in this repository. There is no external attestation and no date attestation, and the module says so in its own docstring. And where
     a receipt predates the current rule set, the recomputed state counts are reported beside
     the recorded ones rather than compared, because they answer to different rules.</small>
 

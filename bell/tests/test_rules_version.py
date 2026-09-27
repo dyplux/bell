@@ -38,6 +38,10 @@ def observation(states, rules_version=None, refs=10, rows=20):
     }
     if rules_version is not None:
         entry["rules_version"] = rules_version
+    # A record must SAY whether it recorded a rule set. Absence used to be read
+    # as "a different version", so deleting the key switched the state
+    # comparison off; the skip requires a positive declaration now.
+    entry["rules_version_recorded"] = rules_version is not None
     return entry
 
 
@@ -121,6 +125,43 @@ class ComparisonRespectsTheVersion(unittest.TestCase):
             verify_observation(observation(states),
                                receipt({"do_not_compare": 0, "investigate": 0, "no_flags": 10}, None),
                                "both unversioned, mismatched")
+
+
+
+class TheSkipRequiresADeclaration(unittest.TestCase):
+    """Absence of a rule version may not switch the state comparison off.
+
+    A reviewer deleted `rules_version` from the history record, which made the
+    versions "differ", skipped the comparison, and let a rewritten distribution
+    through a green gate. The record has to state which case it is in.
+    """
+
+    def test_a_record_that_does_not_say_is_refused(self):
+        entry = observation({"do_not_compare": 1, "investigate": 2, "no_flags": 7})
+        entry.pop("rules_version_recorded")
+        with self.assertRaises(ValueError) as raised:
+            verify_observation(entry, receipt({"do_not_compare": 0, "investigate": 0, "no_flags": 10}),
+                               "undeclared")
+        self.assertIn("does not say whether it recorded a rule set", str(raised.exception))
+
+    def test_a_declaration_that_contradicts_the_record_is_refused(self):
+        states = {"do_not_compare": 1, "investigate": 2, "no_flags": 7}
+        entry = observation(states)
+        entry["rules_version_recorded"] = True
+        with self.assertRaisesRegex(ValueError, "declares it recorded a rule set and carries none"):
+            verify_observation(entry, receipt(states), "lying declaration")
+        entry = observation(states, RULES_VERSION)
+        entry["rules_version_recorded"] = False
+        with self.assertRaisesRegex(ValueError, "declares it recorded no rule set"):
+            verify_observation(entry, receipt(states), "lying the other way")
+
+    def test_a_declared_boundary_is_still_reported_rather_than_failed(self):
+        # The fix must not turn a real rule boundary into a wall.
+        compared = verify_observation(
+            observation({"do_not_compare": 1, "investigate": 8, "no_flags": 1}),
+            receipt({"do_not_compare": 1, "investigate": 2, "no_flags": 7}, RULES_VERSION),
+            "declared boundary")
+        self.assertFalse(compared)
 
 
 if __name__ == "__main__":

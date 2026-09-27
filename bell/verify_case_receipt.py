@@ -1,5 +1,23 @@
 #!/usr/bin/env python3
-"""Verify a credential-free Bell case receipt exported by the public UI."""
+"""Verify a credential-free Bell case receipt exported by the public UI.
+
+This checked shape and never the verdict. A reviewer downloaded a real Silver
+case, flipped `decision.state` from `blocked` to `comparable`, relabelled it
+`COMPARABLE, NOT ENDORSED`, emptied all six signals, set `next_action` to
+"Proceed to shortlist" and every source fingerprint to sixty-four `f`s - and
+this script printed "valid public case receipt" and exited 0, with the five
+Silver rows and their 31.24x quote range still in the file. Thirty lines of the
+same repository away, `verify_integrity_receipt.py` refuses a repeated-character
+fingerprint. The rule fixed in one place and left in the other, which this
+repository has now named as its own signature defect eight times.
+
+So the verdict is re-derived from the rows the receipt itself carries. Measured
+over the 50 cases in the published receipt, the state re-derives 50 out of 50,
+and the signal codes that are a pure function of those rows re-derive 50 out of
+50. Two codes are deliberately out of scope and named below: they answer to
+catalogue-wide context a single case receipt does not carry, and demanding them
+would make this refuse honest receipts.
+"""
 
 from __future__ import annotations
 
@@ -8,6 +26,77 @@ import json
 import sys
 from pathlib import Path
 from typing import Any
+
+ROOT = Path(__file__).resolve().parent
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from rwa_integrity import asset_scan
+
+# Signals that are a function of the token rows in the receipt and nothing else,
+# so they can be recomputed from the receipt alone. Measured against the
+# published receipt: exact agreement on all 50 cases.
+ROW_DERIVED_SIGNALS = frozenset({
+    "PRICE_DENOMINATION_BREAK", "ZERO_MCAP_POSITIVE_VOLUME", "PRICE_DISPERSION",
+    "SYMBOL_COLLISION", "DERIVATIVE_MIX", "MARKET_FIELDS_MISSING",
+    "SPREAD_ABOVE_PUBLISHABLE_CEILING",
+})
+# NO_TRADFI_MARKET and TOKEN_INFO_MISSING answer to the whole catalogue: whether
+# a TradFi market was returned for the reference, and whether every crypto_id
+# resolved through cryptocurrency/info across the scan. A single case receipt
+# cannot carry that, so they are not recomputed and not required. Saying which
+# half is checked is the point; claiming both would be the defect this file was
+# written to stop.
+CONTEXT_SIGNALS = frozenset({"NO_TRADFI_MARKET", "TOKEN_INFO_MISSING"})
+
+
+def codes_of(signals: Any) -> set:
+    out = set()
+    for signal in signals if isinstance(signals, list) else []:
+        code = signal if isinstance(signal, str) else (signal or {}).get("code")
+        if code:
+            out.add(code)
+    return out
+
+
+def rederive(payload: dict) -> dict:
+    """Run the engine over the receipt's own rows and refuse a verdict that does not follow."""
+    reference = payload["reference"]
+    asset = {
+        "rwa_id": reference.get("rwa_id"), "name": reference.get("name"),
+        "symbol": reference.get("symbol"), "asset_type": reference.get("asset_type"),
+        "tradfi_market_count": reference.get("tradfi_market_count"),
+        "tokens": payload["tokens"],
+    }
+    recomputed = asset_scan(asset, crypto_info_checked=True)
+
+    decision = payload.get("decision")
+    if not isinstance(decision, dict) or not decision.get("state"):
+        raise ValueError("decision.state is missing, so there is no verdict to check")
+    # The engine writes the public decision block itself, so it is compared
+    # directly rather than through a mapping written here. A second copy of the
+    # vocabulary in this file would be a second thing to drift.
+    expected = recomputed.get("decision") or {}
+    for field in ("state", "label", "consequence", "allocation_effect"):
+        if decision.get(field) != expected.get(field):
+            raise ValueError(
+                f"the receipt's decision.{field} is {decision.get(field)!r} and its own "
+                f"{len(payload['tokens'])} rows produce {expected.get(field)!r}. A verdict that "
+                "does not follow from the evidence printed beside it is the one thing this file "
+                "exists to refuse.")
+
+    claimed = codes_of(payload["signals"])
+    recomputed_codes = codes_of(recomputed.get("signals"))
+    invented = claimed - recomputed_codes - CONTEXT_SIGNALS
+    if invented:
+        raise ValueError(
+            f"the receipt claims {', '.join(sorted(invented))}, which its own rows do not produce")
+    deleted = (recomputed_codes & ROW_DERIVED_SIGNALS) - claimed
+    if deleted:
+        raise ValueError(
+            f"the receipt's rows produce {', '.join(sorted(deleted))} and the receipt does not "
+            "record it. Removing the finding does not remove the rows it was read from.")
+    return recomputed
 
 
 REQUIRED_TOP_LEVEL = {
@@ -65,12 +154,26 @@ def verify(payload: Any) -> dict[str, Any]:
         raise ValueError("reference.token_count must be a positive integer")
     if len(tokens) != token_count:
         raise ValueError("reference.token_count does not match tokens length")
+    # Sixty-four of the same character is a placeholder, not a fingerprint. The
+    # integrity verifier has refused this since a reviewer found it there; this
+    # one accepted `ffff...` six times over.
+    for name, digest in payload["source_hashes"].items():
+        if not isinstance(digest, str) or len(digest) != 64:
+            raise ValueError(f"source_hashes.{name} is not a SHA-256 fingerprint")
+        if len(set(digest)) == 1:
+            raise ValueError(
+                f"source_hashes.{name} is {digest[0] * 4}...: a single repeated character is a "
+                "placeholder, not the fingerprint of a payload")
+    recomputed = rederive(payload)
     return {
         "schema_version": payload["schema_version"],
         "reference": reference.get("name") or reference.get("symbol") or reference.get("rwa_id"),
         "decision": payload["decision"],
         "token_rows": len(tokens),
         "source_hashes": len(payload["source_hashes"]),
+        "verdict_rederived_from_rows": (recomputed.get("decision") or {}).get("state"),
+        "signals_rederived": sorted(codes_of(recomputed.get("signals")) & ROW_DERIVED_SIGNALS),
+        "signals_not_rederived": sorted(CONTEXT_SIGNALS),
         "status": "valid public case receipt",
     }
 

@@ -89,9 +89,13 @@ class HeadlineNumbersArePinned(unittest.TestCase):
 
     def test_the_base_rate_receipt_is_internally_consistent(self):
         # Without this the assertions above are pinned to a file that could
-        # itself say anything. `make base-rate` recomputes this receipt from the
-        # shipped catalogue, and test_readme_matches_measurement checks the
-        # printed block against it; this checks the arithmetic holds.
+        # itself say anything. This comment used to claim that
+        # test_readme_matches_measurement compared this file to
+        # measure(scan(inputs)); it did not - it compared the README's fenced
+        # block - and a reviewer got an internally consistent forgery through
+        # the whole Python suite on the strength of that gap. The comparison
+        # exists now, in TheBaseRateReceiptIsTheMeasurement. This still checks
+        # the arithmetic, which is a different question from provenance.
         self.assertEqual(
             BASE_RATE["refused"] + BASE_RATE["comparable"],
             BASE_RATE["denominator_two_or_more_representations"],
