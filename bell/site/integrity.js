@@ -1539,7 +1539,7 @@ ${item.next_action || 'Continue external diligence before comparing or allocatin
 - match the RWA ID to the token ID and issuer ID, then confirm the exact token, chain and unit;
 - verify instrument type, backing, redemption and eligibility from primary documents;
 - obtain venue access, depth, spread and size-specific execution evidence;
-- rerun the comparison only after the unresolved contradiction has an evidence-backed explanation.
+- resolve the unit, instrument and issuer terms behind the observed quote spread before treating the routes as economically equivalent.
 
 ## Published comparison set
 
@@ -2381,7 +2381,7 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
           : ''}`
       : alert.state === 'do_not_compare' ? 'Unit or market compatibility needs review' : alert.state === 'investigate' ? 'Identity or market fields need review' : '';
     const reasonSignals = significantSignals.slice(0, 3).map(signal => signalLabels[signal.code] || signal.code).join(' · ');
-    if (proofReason) proofReason.textContent = [reasonPrefix, reasonSignals].filter(Boolean).join(' · ') || 'No published contradiction in the current rule set';
+    if (proofReason) proofReason.textContent = [reasonPrefix, reasonSignals].filter(Boolean).join(' · ') || 'No published review trigger in the current rule set';
     const signalList = byId('hero-signal-list');
     const comparableRow = heroComparison
       ? `<div><span class="hero-signal-severity comparable">PRICE COMPARISON</span><strong>${formatNumber(heroComparison.route_count)} routes under one CMC RWA reference pass Bell's price and reported-volume filters</strong><small>${Number(heroComparison.spread_bps).toFixed(1)} bps between cheapest and dearest · equivalent units and claims are not established</small></div>`

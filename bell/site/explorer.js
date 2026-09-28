@@ -203,7 +203,7 @@
     // dossier is seven rows - which is exactly when it is cheap to fix.
     const shown = 10;
     const rows = tokens.slice(0, shown).map(token => `<tr><th>${escapeHTML(token.symbol || token.name || 'Unresolved')}<small>${escapeHTML(token.name || '')}</small></th><td>${escapeHTML(token.issuer_name || 'Unresolved')}</td><td>${token.price == null ? '—' : `$${number(token.price)}`}</td><td>${money(token.market_cap)}</td><td>${money(token.volume_24h)}</td></tr>`).join('');
-    const findingMarkup = findings.length ? `<div class="explorer-findings"><span class="eyebrow">WHY THIS ROUTE</span>${findings.slice(0, 4).map(item => `<p><b>${escapeHTML(item.code || 'SIGNAL')}</b> ${escapeHTML(item.message || '')}</p>`).join('')}</div>` : '<p class="explorer-note">No deterministic contradiction was returned in this dossier. That is descriptive, not an approval.</p>';
+    const findingMarkup = findings.length ? `<div class="explorer-findings"><span class="eyebrow">WHY THIS ROUTE</span>${findings.slice(0, 4).map(item => `<p><b>${escapeHTML(item.code || 'SIGNAL')}</b> ${escapeHTML(item.message || '')}</p>`).join('')}</div>` : '<p class="explorer-note">No published review rule fired in this dossier. That is descriptive, not an approval.</p>';
     const pairStatus = metrics.market_pair_count == null ? 'Not reported' : metrics.market_pair_count === 0 ? 'Not loaded' : number(metrics.market_pair_count);
     const dexCoverage = Number(metrics.dex_contract_token_count || 0) > 0
       ? `${number(metrics.dex_covered_token_count || 0)} / ${number(metrics.dex_contract_token_count)} wrappers`
