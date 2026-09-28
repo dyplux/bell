@@ -326,6 +326,9 @@ def main() -> int:
             alphabet_tokens = (alphabet or {}).get("tokens", [])
             if any(str(token.get("crypto_id")) == "42272" for token in alphabet_tokens):
                 search_and_check("Alphabet Inc Class A")
+                search_summary = page.locator("#search-result").inner_text()
+                require("spread therefore combines Class A and Class C routes" in search_summary,
+                        "the post-search summary drops the Alphabet class-scope warning")
                 decision_text = page.locator("#decision-hero").inner_text()
                 require("CMC groups GOOGon (Alphabet Class C) under its Class A reference" in decision_text,
                         "the Alphabet decision does not disclose the Class A/Class C CMC grouping")
@@ -343,6 +346,16 @@ def main() -> int:
                         '#alert-list [data-rwa-id="4"] .comparison-table tbody tr')
                     require(comparison_rows.count() == len(comparison.get("routes", [])),
                             "the Alphabet comparison table row count differs from its filtered route set")
+                    if "42272" in [str(value) for value in comparison.get("included_crypto_ids", [])]:
+                        require("CMC-GROUPED QUOTE SPREAD · CLASS A + C" in
+                                page.locator('#alert-list [data-rwa-id="4"] .comparison-head').inner_text(),
+                                "the Alphabet spread heading does not name its mixed-class scope")
+                page.locator('#search-result [data-open-map-query]').click()
+                explorer_verdict = page.locator("#explorer-dossier .explorer-live")
+                explorer_verdict.wait_for(state="visible", timeout=30_000)
+                explorer_text = explorer_verdict.inner_text()
+                require("spread therefore combines Class A and Class C routes" in explorer_text,
+                        "the live Alphabet dossier drops the class-scope warning")
 
             # A digits-only query is a reference id. It used to be a substring
             # over every field joined together, so ?reference=0 reached SPY

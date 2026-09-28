@@ -19,8 +19,11 @@ and says whether that route is in the filtered quote table. When included, the
 comparison heading now names the CMC-grouped Class A + C quote spread and says
 beside the value that it is not a same-share-class spread. The same caveat is
 present in the mobile preview, post-search summary and decision consequence.
-The comparison table renders every included route, so its rows match the
-published route count and evidence IDs.
+The separate live explorer verdict now carries that same class-scope sentence
+beside its spread, so following the dossier link does not drop the caveat. The
+comparison table renders every included route, so its rows match the published
+route count and evidence IDs. The deployed-browser gate now follows that link
+and checks the warning in the separate dossier as well.
 
 The complete offline gate passes (428 Python, 104 JavaScript and 18 Worker
 tests, plus receipt, catalogue, capture and submission checks). A local

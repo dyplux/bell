@@ -83,6 +83,9 @@ test('explorer keeps all four RWA routes and the freshness boundary visible', ()
   assert.match(explorer, /window\.BellDecisionLabel/);
   const integritySource = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
   assert.match(integritySource, /window\.BellDecisionLabel = \(item, fallback\)/);
+  assert.match(integritySource, /window\.BellAlphabetClassScopeSentence = alphabetClassScopeSentence/);
+  assert.match(explorer, /window\.BellAlphabetClassScopeSentence\?\.\(row\)/);
+  assert.match(explorer, /class="explorer-live-scope"/);
   assert.match(explorer, /publication\.status/);
   assert.match(explorer, /catalog\.json/);
   assert.match(explorer, /observed \$\{mapDate\(/);
@@ -404,6 +407,8 @@ test('comparison evidence is attached to exact token IDs and flags the Alphabet 
   const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
   const evidence = fs.readFileSync(path.join(site, 'issuer-evidence.js'), 'utf8');
   const styles = fs.readFileSync(path.join(site, 'integrity.css'), 'utf8');
+  const explorer = fs.readFileSync(path.join(site, 'explorer.js'), 'utf8');
+  const browserAudit = fs.readFileSync(path.resolve(__dirname, '../verify_public_browser.py'), 'utf8');
   assert.match(integrity, /issuerEvidenceMarkup\(item, c\.routes\)/);
   assert.match(integrity, /const rows = c\.routes\.map\(route =>/);
   assert.match(integrity, /catalogue\[String\(route\.crypto_id\)\]/);
@@ -415,6 +420,11 @@ test('comparison evidence is attached to exact token IDs and flags the Alphabet 
   assert.match(integrity, /the displayed spread therefore combines Class A and Class C routes, not one share class/);
   assert.match(integrity, /classScope \? `<p class="share-class-scope">/);
   assert.match(styles, /\.search-result \.share-class-scope/);
+  assert.match(integrity, /window\.BellAlphabetClassScopeSentence = alphabetClassScopeSentence/);
+  assert.match(explorer, /window\.BellAlphabetClassScopeSentence\?\.\(row\)/);
+  assert.match(explorer, /class="explorer-live-scope"/);
+  assert.match(browserAudit, /the post-search summary drops the Alphabet class-scope warning/);
+  assert.match(browserAudit, /the live Alphabet dossier drops the class-scope warning/);
   assert.match(integrity, /CMC groups GOOGon \(Alphabet Class C\) under its Class A reference/);
   assert.match(integrity, /byId\('hero-mobile-note'\)\.textContent = alphabetClassScopeSentence\(alert\)/);
   assert.match(integrity, /return issuerEvidenceMarkup\(item, tokenRowsFor\(item\)\)/);

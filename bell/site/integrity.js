@@ -1111,6 +1111,10 @@
     return `CMC groups GOOGon (Alphabet Class C) under its Class A reference; ${routeStatus}${spreadScope ? `, and ${spreadScope}` : ''}.`;
   }
 
+  // The live explorer dossier is a separate route from the decision card. Keep
+  // the reference-specific class disclosure available to that renderer too.
+  window.BellAlphabetClassScopeSentence = alphabetClassScopeSentence;
+
   function displayDecisionConsequence(item) {
     const comparison = item?.comparison;
     if (!comparison) {
