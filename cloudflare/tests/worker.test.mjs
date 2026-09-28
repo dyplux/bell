@@ -140,6 +140,60 @@ test('published dossier returns freshness metadata', async () => {
   assert.equal(body._publication.receipt_url, 'receipts/nvidia.json');
 });
 
+test('a stale dossier reports an existing refresh as queued and deduplicated', async () => {
+  const row = {
+    id: 1,
+    payload_json: JSON.stringify({ audit: { conclusion: 'investigate' } }),
+    observed_at: '2026-09-14T12:00:00Z',
+    published_at: new Date(Date.now() - 4_000_000).toISOString(),
+    stale_after_seconds: 3600,
+    receipt_url: 'receipts/nvidia.json',
+  };
+  const env = { ASSETS: assets, DB: { prepare(sql) { return {
+    bind() { return this; },
+    async first() {
+      if (/SELECT \* FROM dossiers/.test(sql)) return row;
+      if (/status IN \('queued', 'leased'\)/.test(sql)) return { id: 42 };
+      throw new Error(`unexpected query: ${sql}`);
+    },
+  }; } } };
+  const response = await worker.fetch(
+    new Request('https://example.test/api/published?slug=nvidia'), env);
+  const body = await response.json();
+  assert.equal(response.status, 200);
+  assert.equal(body._publication.status, 'stale');
+  assert.equal(body._publication.refresh_queued, true);
+  assert.equal(body._publication.refresh_deduplicated, true);
+  assert.equal(body._publication.refresh_job_id, 42);
+  assert.equal(body._publication.refresh_declined, null);
+});
+
+test('a stale dossier exposes why its refresh was not queued', async () => {
+  const row = {
+    id: 1,
+    payload_json: JSON.stringify({ audit: { conclusion: 'investigate' } }),
+    observed_at: '2026-09-14T12:00:00Z',
+    published_at: new Date(Date.now() - 4_000_000).toISOString(),
+    stale_after_seconds: 3600,
+    receipt_url: 'receipts/nvidia.json',
+  };
+  const env = { ASSETS: assets, DB: { prepare(sql) { return {
+    bind() { return this; },
+    async first() {
+      if (/SELECT \* FROM dossiers/.test(sql)) return row;
+      if (/status IN \('queued', 'leased'\)/.test(sql)) return null;
+      if (/COUNT\(\*\)/.test(sql)) return { queued: 50 };
+      throw new Error(`unexpected query: ${sql}`);
+    },
+  }; } } };
+  const response = await worker.fetch(
+    new Request('https://example.test/api/published?slug=nvidia'), env);
+  const body = await response.json();
+  assert.equal(body._publication.status, 'stale');
+  assert.equal(body._publication.refresh_queued, false);
+  assert.equal(body._publication.refresh_declined, 'hourly refresh cap reached');
+});
+
 test('integrity endpoint returns a published receipt with freshness metadata', async () => {
   const row = {
     payload_json: JSON.stringify({ schema_version: 'rwa_surface_integrity.v1', universe: { states: {} } }),

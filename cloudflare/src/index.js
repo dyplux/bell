@@ -91,7 +91,9 @@ async function enqueueRefresh(env, slug) {
   const recent = await env.DB.prepare(
     "SELECT id FROM refresh_jobs WHERE slug = ?1 AND status IN ('queued', 'leased') AND requested_at > datetime('now', '-15 minutes') LIMIT 1",
   ).bind(slug).first();
-  if (recent) return { queued: false, job_id: recent.id };
+  // A recent queued/leased job is still pending work. Mark it queued so the
+  // public client can distinguish deduplication from a cap-declined refresh.
+  if (recent) return { queued: true, deduplicated: true, job_id: recent.id };
   if (!(await withinGlobalRefreshCap(env))) {
     return { queued: false, job_id: null, declined: 'hourly refresh cap reached' };
   }
@@ -113,6 +115,7 @@ async function published(request, env) {
       status: 'map_only',
       slug,
       refresh_queued: queue.queued,
+      refresh_deduplicated: Boolean(queue.deduplicated),
       job_id: queue.job_id || null,
       declined: queue.declined || null,
       message: 'No published dossier exists yet for this reference.',
@@ -132,6 +135,9 @@ async function published(request, env) {
     receipt_url: row.receipt_url,
     credential_free: true,
     refresh_queued: queue.queued,
+    refresh_deduplicated: Boolean(queue.deduplicated),
+    refresh_job_id: queue.job_id || null,
+    refresh_declined: queue.declined || null,
     ...publicationStatus(row),
   };
   return json(payload, 200, { 'cache-control': 'no-store' });

@@ -196,8 +196,15 @@
     const publicationStatus = publication.status || 'dated';
     const freshnessLabel = publicationStatus === 'fresh' ? 'FRESH' : publicationStatus === 'stale' ? 'STALE' : 'DATED REPLAY';
     const observed = publication.observed_at || source.observed_at || 'dated observation';
+    const refreshNote = publication.refresh_queued
+      ? publication.refresh_deduplicated
+        ? ' · a refresh is already queued'
+        : ' · a refresh is queued'
+      : publication.refresh_declined
+        ? ` · refresh not queued: ${publication.refresh_declined}`
+        : ' · no refresh is queued';
     const freshnessNote = publicationStatus === 'stale'
-      ? `This dossier is stale under its ${number(publication.stale_after_seconds)} second freshness contract${publication.refresh_queued ? ' · a refresh is queued' : ''}`
+      ? `This dossier is stale under its ${number(publication.stale_after_seconds)} second freshness contract${refreshNote}`
       : publicationStatus === 'fresh'
         ? 'Published evidence is inside its freshness contract · recheck before acting'
         : 'This is a dated replay · it is not a live quote';

@@ -1559,6 +1559,14 @@ test('a receipt past its freshness contract can say STALE', () => {
     'the decision receipt chip went back to printing the cached status');
 });
 
+test('a stale dossier distinguishes queued refreshes from declined work', () => {
+  assert.match(explorer, /publication\.refresh_deduplicated/);
+  assert.match(explorer, /a refresh is already queued/);
+  assert.match(explorer, /publication\.refresh_declined/);
+  assert.match(explorer, /refresh not queued/);
+  assert.match(explorer, /no refresh is queued/);
+});
+
 test('a per-reference change view never reads an absent field as a difference', () => {
   // The first version of this feature compared `signal_codes` against an
   // `alerts[]` item, which carries `signals: [{code}]` instead. Undefined was
