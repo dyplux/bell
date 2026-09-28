@@ -1491,7 +1491,7 @@ test('the outcome key enumerates every state the product can print', () => {
   // filter button, 47 live badges and a place in the vocabulary
   // verify_submission.py declares. A reader met the word on a card with no
   // definition anywhere above it.
-  const key = page.match(/<div class="outcome-key"[\s\S]*?<\/div>\s*<\/div>/);
+  const key = page.match(/<div class="outcome-key"[\s\S]*?<\/details>\s*<\/div>/);
   assert.ok(key, 'the outcome key went missing');
   const replay = JSON.parse(fs.readFileSync(
     path.join(site, 'proof', 'rwa-surface-integrity-latest-replay-2026-09-21.json'), 'utf8'));

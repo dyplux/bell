@@ -258,6 +258,99 @@ footer{max-width:2200px;padding-left:64px;padding-right:64px;font-size:13px}
 .token-table-note{display:none;color:var(--dim);font:12px var(--font);letter-spacing:.06em;margin:10px 0 7px}
 @media(max-width:760px){.token-table-note{display:block}}
 .thesis-strip-head p:last-of-type{color:#a9b5c4;font-size:14px;line-height:1.55;max-width:700px;margin:0}.thesis-proof{color:var(--paper);font-size:13px;line-height:1.5;max-width:700px;margin:14px 0 0;padding-top:13px;border-top:1px solid #293544}
+
+/* Editorial rhythm: keep the product readable at a glance on wide screens. */
+@media(min-width:1101px){
+  main{max-width:1560px;padding:46px 48px 58px}
+  footer{max-width:1560px;padding:18px 48px 22px}
+  .hero{gap:clamp(38px,4vw,72px)}
+  .metric-strip,.monitor-grid,.evidence-section,.explorer-section,.decision-story{margin-top:48px}
+  .investor-output{grid-template-columns:minmax(0,.8fr) minmax(280px,.8fr);gap:30px;margin-top:46px;padding-top:24px}
+  .output-grid{grid-column:1/-1}
+  .investor-output-intro h2,.decision-story-copy h2{font-size:clamp(36px,4vw,54px)}
+  .explorer-intro h2{font-size:clamp(34px,3.4vw,48px)}
+}
+
+@media(min-width:900px){
+  .hero>div:first-of-type>.hero-search{order:3}
+  .hero>div:first-of-type>#finding-lede{order:4;margin-top:12px}
+}
+
+@media(min-width:761px) and (max-width:1100px){
+  main{padding:42px 34px 54px}
+  .metric-strip,.monitor-grid,.evidence-section,.explorer-section,.decision-story{margin-top:42px}
+  .investor-output{margin-top:42px}
+  .output-grid{grid-column:1/-1}
+}
+
+/* The route definitions remain available without dominating the search. */
+.outcome-key{display:block;max-width:600px;margin-top:13px}
+.hero-search>.quick-search{border:0;background:transparent;padding:0}
+.hero-search>.outcome-key{display:block!important;max-width:600px;border:0;background:transparent;padding:0}
+.outcome-key>span{display:inline;color:var(--gold);font-size:11px;margin-right:9px}
+.outcome-key>details{display:inline}
+.outcome-key>details[open]{display:block}
+.outcome-key summary,.editorial-note summary{display:inline;color:var(--link);font:12px/1.5 var(--font);cursor:pointer;text-decoration:underline;text-decoration-color:var(--gold);text-underline-offset:3px}
+.outcome-definitions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 14px;margin-top:12px;padding:12px 14px;border:1px solid var(--line);background:var(--panel-inset)}
+.outcome-definitions>div{border-left:1px solid var(--line);padding:4px 0 4px 9px}
+.outcome-definitions b{display:block;color:var(--paper);font:500 12px/1.35 var(--font);letter-spacing:.02em}
+.outcome-definitions small{display:block;color:var(--muted);font:12px/1.45 var(--font);margin-top:3px}
+.editorial-note{margin:10px 0 0;color:var(--muted);font-size:13px;line-height:1.55}
+.editorial-note p{margin:8px 0 0;max-width:88ch}
+.metric-strip-note{max-width:92ch}
+.metric-strip-note>p{margin:12px 0 5px}
+.metric-strip-note details{margin-top:4px}
+.population-visual-foot,.concentration-visual-foot{max-width:92ch}
+.methodology-details{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}
+.index-two-words{max-width:88ch}
+.index-export-note{max-width:85ch}
+.differentiation{margin-top:36px}
+footer{max-width:1560px;padding:18px clamp(20px,3.33vw,48px) 22px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;border-top:1px solid var(--line);color:var(--muted)}
+footer .footer-brand{color:var(--paper);font:500 14px var(--font);letter-spacing:-.02em}
+footer .footer-links{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+footer a{color:var(--link);font:12px var(--font);text-decoration:underline;text-decoration-color:#465366;text-underline-offset:3px}
+footer a:hover,footer a:focus-visible{color:var(--gold);text-decoration-color:var(--gold)}
+footer .footer-meta{width:100%;display:flex;justify-content:space-between;gap:12px;color:#8390a0;font:11px/1.4 var(--font)}
+
+@media(max-width:760px){
+  .investor-output{margin-top:36px;padding-top:20px}
+  .output-grid{grid-column:1/-1}
+  .metric-strip,.monitor-grid,.evidence-section,.explorer-section,.decision-story{margin-top:36px}
+  .outcome-definitions{grid-template-columns:1fr}
+  footer{display:flex;align-items:flex-start;padding:18px 20px 22px;gap:12px}
+  footer .footer-links{gap:10px 14px}
+  footer .footer-meta{display:flex;flex-direction:column;gap:4px}
+}
+
+.footer-brand{color:var(--paper);font:600 18px/1 var(--font);letter-spacing:-.06em}
+.footer-brand span{color:var(--gold)}
+.footer-brand small{display:block;margin-top:5px;color:var(--muted);font:11px/1.3 var(--font);letter-spacing:0}
+.index-export-help{margin-top:10px;color:var(--muted);font-size:12px;line-height:1.5}
+.index-export-help small{display:block;margin-top:7px}
+.provenance-boundary details{display:inline}
+.provenance-boundary summary{display:inline;color:var(--link);font:12px var(--font);cursor:pointer;text-decoration:underline;text-decoration-color:var(--gold);text-underline-offset:3px}
+.provenance-boundary details p{margin:8px 0 0;max-width:90ch}
+.population-visual-foot{display:block;color:var(--muted);font-size:12px;line-height:1.55}
+.population-visual-foot p{margin:8px 0 0}
+.methodology-details summary{color:var(--link);font:12px var(--font);cursor:pointer;text-decoration:underline;text-decoration-color:var(--gold);text-underline-offset:3px}
+.methodology-details p{color:var(--muted);font-size:12px;line-height:1.55}
+.finding-lede{margin-top:12px;padding-left:12px;font-size:15px;line-height:1.5}
+.finding-lede>strong{display:block}
+.finding-methodology,.coverage-methodology{margin-top:6px}
+.finding-methodology summary,.coverage-methodology summary{color:var(--link);font:12px var(--font);cursor:pointer;text-decoration:underline;text-decoration-color:var(--gold);text-underline-offset:3px}
+.finding-methodology p{margin:8px 0 0;font-size:13px;line-height:1.55}
+.coverage-methodology p{margin-top:8px}
+.coverage-fact{padding:9px 12px}
+.hero-search{margin-top:22px}
+.hero-example{max-width:600px;line-height:1.45}
+.hero-principle{margin-top:10px;color:var(--muted);font-size:12px;line-height:1.45}
+.hero-principle summary{display:inline;color:var(--link);cursor:pointer;text-decoration:underline;text-decoration-color:var(--gold);text-underline-offset:3px}
+.hero-principle p{margin:7px 0 0;max-width:74ch}
+
+@media(max-width:760px){
+  main{padding-bottom:44px}
+  .footer-brand{font-size:17px}
+}
 @media(max-width:760px){.thesis-strip-head p:last-of-type{font-size:13px;line-height:1.5}.thesis-proof{font-size:12px;margin-top:12px;padding-top:11px}}
 .explorer-freshness{border-left:2px solid var(--line);color:#b7c2d0;font:12px/1.45 var(--font);padding:8px 10px;margin:18px 0 0}.explorer-freshness.stale{border-color:var(--gold);color:#e4c968}.explorer-freshness.dated{border-color:var(--muted);color:var(--muted)}
 .explorer-metrics{grid-template-columns:repeat(5,1fr)}
@@ -437,8 +530,8 @@ footer{max-width:2200px;padding-left:64px;padding-right:64px;font-size:13px}
   .hero>div:first-of-type>*{order:50}
   .hero>div:first-of-type>.eyebrow{order:1}
   .hero>div:first-of-type>#finding-headline{order:2}
-  .hero>div:first-of-type>#finding-lede{order:3}
-  .hero>div:first-of-type>.hero-search{order:4}
+  .hero>div:first-of-type>.hero-search{order:3}
+  .hero>div:first-of-type>#finding-lede{order:4}
   .hero>div:first-of-type>#search-result{order:5}
   .hero>div:first-of-type>#hero-words{order:6}
   .hero>div:first-of-type>#hero-example{order:7}

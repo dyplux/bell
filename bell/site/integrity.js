@@ -833,7 +833,7 @@
         + `<em>cheapest route worth naming</em>${liveNote}<br>`
         + `<span class="finding-counter">${r.refused.toLocaleString()} of the ${n.toLocaleString()} `
         + `references are refused. Most rule hits reflect missing source coverage; data-review triggers are not proof of economic conflict</span>`;
-      lede.innerHTML = `Measured on ${measuredOn} over the whole catalogue, not a sample: `
+      const measurementDetail = `Measured on ${measuredOn} over the whole catalogue, not a sample: `
         + `<strong>${r.population.toLocaleString()}</strong> references, of which `
         + `<strong>${r.excluded_single_representation.toLocaleString()}</strong> carry a single representation `
         + `and cannot be compared at all. Of the <strong>${n.toLocaleString()}</strong> that remain, `
@@ -844,6 +844,9 @@
           + `<strong>${dataReview.toLocaleString()}</strong> price or field review triggers, and `
           + `<strong>${noPair.toLocaleString()}</strong> with fewer than two eligible spot routes.`
           + (unclassified ? ` ${unclassified} remain unclassified.` : '') : '');
+      lede.innerHTML = `<strong>${r.refused.toLocaleString()} of ${n.toLocaleString()} multi-wrapper references refused (${pct}%).</strong>`
+        + `<details class="finding-methodology"><summary>Measurement and refusal reasons</summary>`
+        + `<p>${measurementDetail}</p></details>`;
     } catch (error) {
       // Say what is missing rather than leaving a number-shaped hole - and
       // leave the question standing rather than a claim the measurement has
@@ -876,13 +879,13 @@
     // observation are a defect and two numbers describing two observations are
     // not, the date is the whole difference and it was missing.
     const observedOn = String(receipt.observed_at || '').replace('T', ' ').slice(0, 16);
-    target.innerHTML = `<span>API COVERAGE, NOT A VERDICT · OBSERVED ${observedOn} UTC</span>`
+    target.innerHTML = `<span>API COVERAGE · OBSERVED ${observedOn} UTC</span>`
       + `<strong>${missing.toLocaleString()} of ${refs.toLocaleString()} references</strong>`
-      + `<p>carry at least one representation with no price, market cap or volume reported by `
+      + `<details class="coverage-methodology"><summary>What this coverage gap means</summary><p>These references carry at least one representation with no price, market cap or volume reported by `
       + `CoinMarketCap, across ${rows.toLocaleString()} representation rows. This is a gap in the `
       + `source data, not a contradiction in any one reference, so it is reported here once rather `
       + `than held against each reference individually. Rows without a price and traded volume are `
-      + `excluded from every comparison on this page.</p>`;
+      + `excluded from every comparison on this page.</p></details>`;
   }
 
   // The published `status` is whatever the worker cached at publication time,
