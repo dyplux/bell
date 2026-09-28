@@ -54,6 +54,30 @@ GUARDED = (
 )
 
 
+# Guards that change no behaviour when neutered, each with the reason written
+# down. A sweep cannot catch these by definition, and leaving them in the
+# survivor list makes the number mean two different things at once: "nobody
+# tested this" and "nothing could". They are counted separately and the reason
+# ships in the receipt, so a reader can disagree with the argument rather than
+# take the number on trust.
+#
+# Nothing goes in here because it was inconvenient. Each entry was neutered and
+# the suite stayed green, and then the code was read to find out why.
+STATED_EXCEPTIONS = {
+    ("rwa_integrity.py", 89):
+        "number() rejects None and bool before parsing. Decimal(str(True)) and "
+        "Decimal(str(None)) both raise InvalidOperation, which the except below "
+        "already turns into None, so removing this changes no result. It states the "
+        "intent and saves a raise; it does not decide anything.",
+    ("base_rate.py", 182):
+        "The single-representation lens sorts every row through if/elif/elif/else, "
+        "so its four parts always sum to the total and this can never fire today. It "
+        "is a guard against a future edit that removes the catch-all, which is the "
+        "change that would silently drop references from the partition. It replaced "
+        "a bare assert that vanished under python3 -O.",
+}
+
+
 def guards(path: Path) -> list:
     """Every `if` whose body raises or returns: the shape of a refusal."""
     tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
@@ -254,7 +278,7 @@ def main(argv: list[str] | None = None) -> int:
         path = ROOT / "bell" / name
         if not path.exists():
             continue
-        found, here = guards(path), []
+        found, here, excepted = guards(path), [], []
         for lineno, _, _ in found:
             if args.limit and checked >= args.limit:
                 break
@@ -266,14 +290,20 @@ def main(argv: list[str] | None = None) -> int:
                 noticed = gate_notices()
             finally:
                 path.write_text(original, encoding="utf-8")
-            mark = "caught" if noticed else "SURVIVED"
+            stated = (name, lineno) in STATED_EXCEPTIONS
+            mark = "caught" if noticed else ("stated" if stated else "SURVIVED")
             print(f"  {name}:{lineno} {mark}")
-            if not noticed:
+            if not noticed and not stated:
                 here.append(lineno)
+            elif not noticed and stated:
+                excepted.append(lineno)
         if keep:
             measured[name] = {
                 "guards_mutated": len(found),
                 "survivors": sorted(here),
+                "stated_exceptions": [
+                    {"line": line, "reason": STATED_EXCEPTIONS[(name, line)]}
+                    for line in sorted(excepted)],
                 "source_digest": digest_of(path),
                 "suite_digest": suite_digest(),
                 "measured_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),

@@ -135,5 +135,49 @@ class TheCoverageReceiptStatesItsScope(unittest.TestCase):
                 self.assertIn(name, forged["files_not_measured"])
 
 
+
+class AStatedExceptionCarriesItsReason(unittest.TestCase):
+    """A guard excused from the sweep has to say why, in the receipt.
+
+    Two guards change no behaviour when neutered: `number()` rejects None and
+    bool before a parse that would have refused them anyway, and the
+    single-representation lens sorts every row through an if/elif/elif/else so
+    its parts cannot fail to sum. No behaviour test can catch either, and
+    leaving them in the survivor list makes that number mean two things at
+    once - "nobody tested this" and "nothing could".
+
+    So they are counted apart and the argument ships with them. The failure
+    mode this guards against is the obvious one: an inconvenient guard quietly
+    joining the list to make a number look better.
+    """
+
+    def setUp(self):
+        self.receipt = json.loads(RECEIPT.read_text(encoding="utf-8"))
+
+    def test_every_stated_exception_names_a_real_guard(self):
+        for (name, line) in mutate.STATED_EXCEPTIONS:
+            path = BELL / name
+            self.assertTrue(path.exists(), f"{name} does not exist")
+            self.assertIn(name, mutate.GUARDED,
+                          f"{name} is excused from a sweep that never covers it")
+            self.assertIn(line, [found for found, _, _ in mutate.guards(path)],
+                          f"{name}:{line} is not a guard, so excusing it means nothing")
+
+    def test_every_stated_exception_carries_an_argument(self):
+        for key, reason in mutate.STATED_EXCEPTIONS.items():
+            self.assertGreater(len(reason), 80,
+                               f"{key} is excused without saying why in any detail")
+            self.assertNotIn("TODO", reason)
+
+    def test_the_receipt_ships_the_reasons_and_does_not_hide_them_in_the_total(self):
+        stated = [(name, entry["line"], entry["reason"])
+                  for name, record in self.receipt["files"].items()
+                  for entry in record.get("stated_exceptions", [])]
+        survivors = {(entry["file"], entry["line"]) for entry in self.receipt["survivors"]}
+        for name, line, reason in stated:
+            self.assertEqual(reason, mutate.STATED_EXCEPTIONS[(name, line)],
+                             f"{name}:{line} ships a different reason than the code states")
+            self.assertNotIn((name, line), survivors,
+                             f"{name}:{line} is both excused and counted as a survivor")
 if __name__ == "__main__":
     unittest.main()
