@@ -1092,6 +1092,14 @@
           || item?.decision?.state === 'blocked');
   }
 
+  // "1 representations · 1 issuers" was on screen for every single-row
+  // reference. A product that reports other people's surfaces saying two
+  // things at once should not print a plural over a count of one.
+  function plural(count, word) {
+    const value = Number(count) || 0;
+    return `${formatNumber(value)} ${word}${value === 1 ? '' : 's'}`;
+  }
+
   function displayDecisionLabel(item, fallback = 'REVIEW') {
     const bucket = decisionBucket(item, fallback);
     if (bucket === 'COMPARABLE' && isFlaggedComparable(item)) return 'COMPARABLE · FLAGGED';
@@ -1218,7 +1226,7 @@
         ? 'Keep issuer concentration separate from token count and verify whether the alternatives are genuinely independent'
         : 'Issuer exposure is distributed across the reported rows; continue with unit, venue and redemption checks';
     const money = value => value >= 1e9 ? `$${(value / 1e9).toFixed(2)}bn` : value >= 1e6 ? `$${(value / 1e6).toFixed(1)}m` : `$${Math.round(value).toLocaleString()}`;
-    return `<section class="reference-concentration-panel"><div class="reference-concentration-head"><span>ISSUER CONCENTRATION · THIS REFERENCE</span><b>${(topShare * 100).toFixed(1)}% TOP ISSUER</b></div><h4>${escapeHTML(top.name)} carries ${(topShare * 100).toFixed(1)}% of positive reported value</h4><div class="reference-concentration-metrics"><div><strong>${hhi.toFixed(0)}</strong><span>HHI / 10,000</span></div><div><strong>${effective.toFixed(2)}</strong><span>EFFECTIVE ISSUERS</span></div><div><strong>${money(reportedValue)}</strong><span>REPORTED VALUE</span></div></div><p>${issuers.length} issuer labels across ${tokens.length} representations · ${missing} missing market-cap rows · ${zero} zero rows</p><p class="reference-concentration-action"><b>NEXT CHECK</b> ${escapeHTML(concentrationRead)}</p><small>Reported token-level market cap only. This is not legal issuer concentration, backing, reserves, redemption or investability.</small></section>`;
+    return `<section class="reference-concentration-panel"><div class="reference-concentration-head"><span>ISSUER CONCENTRATION · THIS REFERENCE</span><b>${(topShare * 100).toFixed(1)}% TOP ISSUER</b></div><h4>${escapeHTML(top.name)} carries ${(topShare * 100).toFixed(1)}% of positive reported value</h4><div class="reference-concentration-metrics"><div><strong>${hhi.toFixed(0)}</strong><span>HHI / 10,000</span></div><div><strong>${effective.toFixed(2)}</strong><span>EFFECTIVE ISSUERS</span></div><div><strong>${money(reportedValue)}</strong><span>REPORTED VALUE</span></div></div><p>${issuers.length} issuer labels across ${plural(tokens.length, 'representation')} · ${missing} missing market-cap rows · ${zero} zero rows</p><p class="reference-concentration-action"><b>NEXT CHECK</b> ${escapeHTML(concentrationRead)}</p><small>Reported token-level market cap only. This is not legal issuer concentration, backing, reserves, redemption or investability.</small></section>`;
   }
 
   function resolutionRoute(alert) {
@@ -1753,7 +1761,7 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     result.hidden = false;
     const exact = [item.name, item.symbol, item.rwa_id].some(value => String(value || '').trim().toLowerCase() === normalizedQuery);
     const matchLabel = exact ? `${matches.filter(candidate => [candidate.name, candidate.symbol, candidate.rwa_id].some(value => String(value || '').trim().toLowerCase() === normalizedQuery)).length || 1} MATCH · EXACT MATCH` : `${matches.length} MATCH${matches.length === 1 ? '' : 'ES'} · ${matches.length === 1 ? 'CLOSEST NAME' : 'SHOWING FIRST'}`;
-    result.innerHTML = `<span>SEARCHED REFERENCE · ${matchLabel}</span><strong>${escapeHTML(item.name || item.symbol || 'Reference')} · ${escapeHTML(item.symbol || 'RWA')}</strong><p>${formatNumber(item.token_count || 0)} representations · ${formatNumber(item.issuer_count || 0)} issuers · <b>${state}</b></p><p>${escapeHTML(next)}</p>${capitalPanel(item)}${observedQuoteEndpoints(item)}<div class="search-result-actions"><a href="#monitor">Inspect this evidence ↓</a><a href="#explorer" data-open-map-query="${escapeHTML(item.rwa_id || item.name || item.symbol || '')}">Open live dossier context ↓</a></div>`;
+    result.innerHTML = `<span>SEARCHED REFERENCE · ${matchLabel}</span><strong>${escapeHTML(item.name || item.symbol || 'Reference')} · ${escapeHTML(item.symbol || 'RWA')}</strong><p>${plural(item.token_count, 'representation')} · ${plural(item.issuer_count, 'issuer')} · <b>${state}</b></p><p>${escapeHTML(next)}</p>${capitalPanel(item)}${observedQuoteEndpoints(item)}<div class="search-result-actions"><a href="#monitor">Inspect this evidence ↓</a><a href="#explorer" data-open-map-query="${escapeHTML(item.rwa_id || item.name || item.symbol || '')}">Open live dossier context ↓</a></div>`;
   }
 
   function searchFromHero(event) {
@@ -2189,7 +2197,7 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     const signals = significantSignals.slice(0, 2).map(signal => signalLabels[signal.code] || signal.code).join(' · ');
     const primaryEvidence = significantSignals[0]?.evidence || {};
     const caseFacts = [];
-    if (alert.token_count) caseFacts.push(`${formatNumber(alert.token_count)} representations`);
+    if (alert.token_count) caseFacts.push(`${plural(alert.token_count, 'representation')}`);
     if (alert.issuer_count) caseFacts.push(`${formatNumber(alert.issuer_count)} issuers`);
     if (primaryEvidence.max_min_ratio) caseFacts.push(`${formatNumber(primaryEvidence.max_min_ratio)}× observed price spread`);
     byId('hero-case').textContent = alert.name || 'Current flagged case';

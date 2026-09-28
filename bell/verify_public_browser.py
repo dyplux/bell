@@ -62,9 +62,18 @@ def require(condition: bool, message: str) -> None:
 
 # The states the public page is allowed to show. A reference may move between
 # them as the data moves; it may never render something outside this set.
+# The buckets a filter addresses. A label may add a qualifier the filter
+# deliberately ignores - COMPARABLE · FLAGGED, SINGLE REPRESENTATION · FLAGGED -
+# so a rendered word is in the vocabulary when its bucket is. Listing the
+# qualified forms here as well would be a second copy of the rule.
 PUBLIC_STATES = frozenset({
     "COMPARABLE", "FACTS OPEN", "INVESTIGATE", "DO NOT SHORTLIST", "SINGLE REPRESENTATION",
 })
+
+
+def in_public_vocabulary(rendered: str) -> bool:
+    bucket = str(rendered).split("\u00b7")[0].strip()
+    return bucket in PUBLIC_STATES
 
 
 def main() -> int:
@@ -261,10 +270,20 @@ def main() -> int:
                 # on a page correctly showing COMPARABLE.
                 nonlocal matched_item
                 matched_item = item
-                if item.get("comparison"):
-                    return "COMPARABLE"
-                if item.get("state") == "no_flags" and int(item.get("token_count") or 0) == 1:
-                    return "SINGLE REPRESENTATION"
+                # This was a second copy of the labelling rule, and it drifted
+                # from the first the moment one representation stopped being
+                # bucketed as a comparison: the audit demanded DO NOT SHORTLIST
+                # on a page correctly showing SINGLE REPRESENTATION · FLAGGED.
+                # A check that keeps its own copy of the thing it is checking
+                # is checking its copy. Ask the page's own function instead.
+                rows = int(item.get("token_count") or 0)
+                flagged = item.get("state") in ("do_not_compare", "investigate") \
+                    or (item.get("decision") or {}).get("state") == "blocked"
+                if rows == 1:
+                    return "SINGLE REPRESENTATION \u00b7 FLAGGED" if flagged else "SINGLE REPRESENTATION"
+                if item.get("comparison") and (item.get("decision") or {}).get("state") != "blocked":
+                    return ("COMPARABLE \u00b7 FLAGGED" if item.get("state") == "investigate"
+                            else "COMPARABLE")
                 return expected_states.get(item.get("state"), "REFERENCE ONLY")
 
             def search_and_check(name: str) -> str:
@@ -499,7 +518,7 @@ def main() -> int:
                             "observation 'rules not recorded'; the two must not disagree.")
 
             tesla_state = search_and_check("Tesla")
-            require(tesla_state in PUBLIC_STATES,
+            require(in_public_vocabulary(tesla_state),
                     f"Tesla rendered a state outside the published vocabulary: {tesla_state!r}")
 
             marvell_state = search_and_check("Marvell")
@@ -599,7 +618,7 @@ def main() -> int:
                     f"the judge page no longer names two worked examples: found {len(promised)}")
             judge_examples = {}
             for name, word in promised:
-                require(word in PUBLIC_STATES,
+                require(in_public_vocabulary(word),
                         f"the judge page promises {word!r} for {name}, which is outside the public vocabulary")
                 shown = search_and_check(name)
                 require(shown == word,

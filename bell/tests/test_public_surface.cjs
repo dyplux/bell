@@ -1613,3 +1613,17 @@ test('the judge page promises the words the product prints for its two examples'
       `the judge page promises "${promised}" for ${name} and the product prints "${printed}"`);
   }
 });
+
+test('a count of one is not printed with a plural', () => {
+  // "1 representations · 1 issuers" was on screen for every single-row
+  // reference, which is a product that reports other people's surfaces saying
+  // two things at once doing it itself.
+  const plural = runFromSource('plural', { formatNumber: value => String(value) });
+  assert.equal(plural(1, 'representation'), '1 representation');
+  assert.equal(plural(0, 'representation'), '0 representations');
+  assert.equal(plural(2, 'issuer'), '2 issuers');
+  assert.equal(plural(null, 'issuer'), '0 issuers');
+  const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
+  assert.doesNotMatch(integrity, /\$\{formatNumber\([^)]*\)\} representations/,
+    'a template still hardcodes the plural after a formatted count');
+});
