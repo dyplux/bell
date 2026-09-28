@@ -1386,34 +1386,57 @@
   // performed. Render it: a monitor that only ever refuses is a gate with no
   // door. The unresolved warnings ride along so this is never read as a clean
   // bill of health.
-  function issuerEvidenceMarkup(routes) {
-    const catalogue = Array.isArray(window.BELL_ISSUER_EVIDENCE) ? window.BELL_ISSUER_EVIDENCE : [];
-    const groups = catalogue.map(entry => ({
-      entry,
-      routes: routes.filter(route => entry.match.test(String(route.issuer_name || ''))),
-    })).filter(group => group.routes.length);
-    if (!groups.length) return '';
-    const cards = groups.map(({ entry, routes: matched }) => {
-      const routeNames = matched.map(route => `${route.symbol || '—'} · ${route.name || 'instrument name not supplied'}`);
-      const facts = entry.facts.map(fact => `<li>${escapeHTML(fact)}</li>`).join('');
+  function issuerEvidenceMarkup(item, routes) {
+    const catalogue = window.BELL_INSTRUMENT_EVIDENCE || {};
+    const tokenRows = item?.tokens || item?.representations || [];
+    const tokenById = new Map(tokenRows.map(token => [String(token.crypto_id), token]));
+    const matched = routes.map(route => ({
+      route,
+      entry: catalogue[String(route.crypto_id)],
+      token: tokenById.get(String(route.crypto_id)),
+    }));
+    if (!matched.length) return '';
+    const classC = tokenRows.find(token => String(token.crypto_id) === '42272');
+    const includedClassC = routes.some(route => String(route.crypto_id) === '42272');
+    const classMismatch = String(item?.rwa_id) === '4' && classC;
+    const documented = matched.filter(row => row.entry);
+    const unmapped = matched.filter(row => !row.entry);
+    if (!documented.length && !classMismatch) return '';
+    const cards = documented.map(({ route, entry, token }) => {
+      const routeLabel = `${route.symbol || '—'} · ${route.name || 'instrument name not supplied'} · CMC crypto_id ${route.crypto_id ?? 'missing'}`;
+      const metadataLinks = [
+        ['CMC listing', token?.cmc_url],
+        ['Project page', token?.project_url],
+      ].map(([label, href]) => {
+        const url = externalURL(href);
+        return url ? `<a href="${escapeHTML(url)}" target="_blank" rel="noopener">${label} ↗</a>` : '';
+      }).filter(Boolean).join('');
+      const platforms = Array.isArray(token?.platforms) ? token.platforms : [];
+      const contractDetails = platforms.length
+        ? `<details class="issuer-contracts"><summary>CMC contracts · ${platforms.length} networks</summary><ul>${platforms.map(platform => `<li>${escapeHTML(platform.name || platform.slug || 'Network')} · <code>${escapeHTML(platform.contract_address || 'address unavailable')}</code></li>`).join('')}</ul></details>`
+        : '';
+      const identityLinks = metadataLinks || contractDetails
+        ? `<div class="issuer-evidence-links">${metadataLinks}</div>${contractDetails}`
+        : '';
       const sources = entry.sources.map(source => {
         const url = externalURL(source.url);
         return url ? `<a href="${escapeHTML(url)}" target="_blank" rel="noopener">${escapeHTML(source.label)} ↗</a>` : '';
       }).filter(Boolean).join('');
-      return `<article class="issuer-evidence-card"><div class="issuer-evidence-title"><span>${escapeHTML(entry.issuer)}</span><strong>${escapeHTML(entry.structure)}</strong></div><p class="issuer-evidence-routes">${routeNames.map(escapeHTML).join('<br>')}</p><ul>${facts}</ul><small>${escapeHTML(entry.scope)}</small><div class="issuer-evidence-links">${sources}</div></article>`;
+      return `<article class="issuer-evidence-card"><div class="issuer-evidence-title"><span>${escapeHTML(entry.issuer)}</span><strong>${escapeHTML(entry.status)}</strong></div><p class="issuer-evidence-routes">${escapeHTML(routeLabel)}<br>${escapeHTML(entry.identity)}</p><p>${escapeHTML(entry.note)}</p><div class="issuer-evidence-links">${sources}</div>${identityLinks}</article>`;
     }).join('');
-    const documented = new Set(groups.flatMap(group => group.routes));
-    const gaps = routes.filter(route => !documented.has(route));
-    const gapNote = gaps.length
-      ? `<p class="issuer-evidence-gap"><b>Issuer terms not mapped here:</b> ${gaps.map(route => escapeHTML(`${route.symbol || '—'} · ${route.name || route.issuer_name || 'unknown route'}`)).join('; ')}. Their economic claims remain unreviewed.</p>`
+    const gapNote = unmapped.length
+      ? `<details class="issuer-evidence-gap issuer-unmapped"><summary>Issuer terms not mapped for ${unmapped.length} included route${unmapped.length === 1 ? '' : 's'}</summary><ul>${unmapped.map(({ route }) => `<li>${escapeHTML(`${route.symbol || '—'} · ${route.name || route.issuer_name || 'unknown route'} · CMC crypto_id ${route.crypto_id ?? 'missing'}`)}</li>`).join('')}</ul><p>Unit, rights, backing and redemption remain unreviewed for these IDs.</p></details>`
       : '';
-    return `<section class="issuer-evidence" aria-label="Issuer-published economic terms"><div class="issuer-evidence-heading"><span>ECONOMIC UNIT &amp; RIGHTS</span><p>Issuer-published product documentation for the routes above. These claims are not independently verified; asset-specific offering terms still matter.</p></div><div class="issuer-evidence-grid">${cards}</div>${gapNote}</section>`;
+    const classWarning = classMismatch
+      ? `<p class="issuer-evidence-gap"><b>Share-class mismatch:</b> CMC places ${escapeHTML(classC.symbol || 'GOOGon')} (${escapeHTML(classC.name || 'Alphabet Class C')}) under the Alphabet Class A reference. It is ${includedClassC ? 'included in' : 'not included in'} this filtered quote table. This reference therefore groups different share classes; only the rows actually listed above contribute to the displayed spread.</p>`
+      : '';
+    return `<section class="issuer-evidence" aria-label="Issuer-published terms by token ID"><div class="issuer-evidence-heading"><span>TERMS BY TOKEN ID</span><p>Each note is attached to the exact CMC crypto_id shown. Sources describe issuer-published claims; they do not independently verify backing, redemption, eligibility or custody.</p></div>${cards ? `<div class="issuer-evidence-grid">${cards}</div>` : ''}${gapNote}${classWarning}</section>`;
   }
 
   function renderComparison(item) {
     const c = item.comparison;
     if (!c || !Array.isArray(c.routes) || c.routes.length < 2) {
-      return issuerEvidenceMarkup(item.tokens || item.representations || []);
+      return issuerEvidenceMarkup(item, item.tokens || item.representations || []);
     }
     const rows = c.routes.slice(0, 6).map(route => {
       const share = Number.isFinite(route.volume_share) ? `${(route.volume_share * 100).toFixed(1)}%` : '--';
@@ -1434,7 +1457,7 @@
     const open = (c.unresolved || []).length
       ? `<p class="comparison-open"><span>STILL OPEN</span> ${escapeHTML((c.unresolved || []).join(' · '))}. The route filter drops derivatives, keys on the token id rather than the ticker, and excludes rows without both a price and traded volume, so these do not block the comparison - but they are not resolved.</p>`
       : '';
-    return `<div class="comparison-block"><span class="comparison-scroll-hint">SWIPE FOR PRICE · VS CHEAPEST · SHARE OF VOLUME →</span><div class="comparison-head"><span>FILTERED PRICE COMPARISON</span><strong>${Number(c.spread_bps).toFixed(1)} bps</strong><small>${c.route_count} token routes under this CMC RWA reference</small></div><p class="comparison-fill">${fill}</p><table class="comparison-table"><thead><tr><th>route</th><th>issuer</th><th class="num">price</th><th class="num">vs cheapest</th><th class="num">share of volume</th></tr></thead><tbody>${rows}</tbody></table>${issuerEvidenceMarkup(c.routes)}${routeSetDetails}${open}<p class="comparison-limits">A price comparison of the representations CoinMarketCap returned. Equivalent units and claims are not established. ${NOT_OBSERVED_SHORT}</p></div>`;
+    return `<div class="comparison-block"><span class="comparison-scroll-hint">SWIPE FOR PRICE · VS CHEAPEST · SHARE OF VOLUME →</span><div class="comparison-head"><span>FILTERED PRICE COMPARISON</span><strong>${Number(c.spread_bps).toFixed(1)} bps</strong><small>${c.route_count} token routes under this CMC RWA reference</small></div><p class="comparison-fill">${fill}</p><table class="comparison-table"><thead><tr><th>route</th><th>issuer</th><th class="num">price</th><th class="num">vs cheapest</th><th class="num">share of volume</th></tr></thead><tbody>${rows}</tbody></table>${issuerEvidenceMarkup(item, c.routes)}${routeSetDetails}${open}<p class="comparison-limits">A price comparison of the representations CoinMarketCap returned. Equivalent units and claims are not established. ${NOT_OBSERVED_SHORT}</p></div>`;
   }
 
   function comparisonRouteSet(item) {

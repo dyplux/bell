@@ -6,6 +6,22 @@ matters more, what was wrong before.
 
 Everything below was measured. No figure here comes from an estimate.
 
+## 28 September follow-up: instrument evidence is keyed to the token
+
+The mobile decision preview now jumps to the rendered case itself, with the
+sticky-header offset applied. Issuer notes are mapped by CMC `crypto_id`, not
+issuer name; the cards expose the CMC-reported networks and contract addresses
+behind each token ID, while unreviewed issuer terms remain explicit. The
+Robinhood GOOGL row now points to the Robinhood Chain debt-security Final Terms
+instead of Robinhood Europe's separate derivative product. The Alphabet page
+also marks that CMC groups Ondo's Class C `GOOGon` under its Class A reference,
+and says whether that route is in the filtered quote table.
+
+The 84 public-surface JavaScript tests pass, the complete offline gate passed
+before this follow-up's final copy and contract-disclosure refinements, and a
+local Chromium check rendered the evidence and mobile jump without page errors.
+The competitive reassessment has not yet been rerun against this follow-up.
+
 ---
 
 ## The one that mattered most: the site was a week behind the repository

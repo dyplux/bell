@@ -324,12 +324,20 @@ footer{max-width:2200px;padding-left:64px;padding-right:64px;font-size:13px}
 .issuer-evidence-title{display:flex;flex-wrap:wrap;justify-content:space-between;gap:5px 12px;color:#dbe5ef;font:600 12px var(--font)}
 .issuer-evidence-title strong{color:#e1c16e;font-size:11px}
 .issuer-evidence-routes{margin:6px 0;color:#aebccd;font:11px/1.45 var(--font)}
+.issuer-evidence-card>p:not(.issuer-evidence-routes){margin:6px 0;color:#c3cfdb;font:11px/1.5 var(--font)}
 .issuer-evidence-card ul{margin:6px 0;padding-left:16px;color:#c3cfdb;font:11px/1.45 var(--font)}
 .issuer-evidence-card li+li{margin-top:4px}
 .issuer-evidence-card small{display:block;margin-top:7px}
 .issuer-evidence-links{display:flex;flex-wrap:wrap;gap:6px 12px;margin-top:8px}
 .issuer-evidence-links a{color:#e1c16e;font:11px var(--font);text-decoration:underline;text-underline-offset:2px}
+.issuer-contracts{margin-top:7px;color:#aebccd;font:11px/1.45 var(--font)}
+.issuer-contracts summary{cursor:pointer;color:#e1c16e}
+.issuer-contracts ul{margin:5px 0;padding-left:16px;list-style:disc}
+.issuer-contracts code{overflow-wrap:anywhere;color:#c3cfdb;font:11px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace}
 .issuer-evidence-gap{margin:8px 0 0;padding:8px;border-left:2px solid #9b7740;background:rgba(155,119,64,.08)}
+.issuer-unmapped summary{cursor:pointer;color:#e1c16e}
+.issuer-unmapped ul{margin:6px 0;padding-left:16px}
+.issuer-unmapped p{margin:5px 0 0}
 .comparison-open{margin:9px 0 0;font-size:12px;color:#d2a45e;line-height:1.5}
 .comparison-open span{font-weight:700;letter-spacing:.06em;margin-right:5px}
 .comparison-limits{margin:7px 0 0;font-size:12px;color:#8798ab;line-height:1.5}

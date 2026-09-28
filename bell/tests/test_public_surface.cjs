@@ -400,16 +400,27 @@ test('filtered route comparisons expose the instrument name beside ticker and is
   assert.match(styles, /\.comparison-route-name[^}]*white-space:normal/);
 });
 
-test('comparison cards carry sourced issuer structures with explicit scope limits', () => {
+test('comparison evidence is attached to exact token IDs and flags the Alphabet class mismatch', () => {
   const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
   const evidence = fs.readFileSync(path.join(site, 'issuer-evidence.js'), 'utf8');
-  assert.match(integrity, /issuerEvidenceMarkup\(c\.routes\)/);
-  assert.match(integrity, /return issuerEvidenceMarkup\(item\.tokens \|\| item\.representations \|\| \[\]\)/);
+  assert.match(integrity, /issuerEvidenceMarkup\(item, c\.routes\)/);
+  assert.match(integrity, /catalogue\[String\(route\.crypto_id\)\]/);
+  assert.match(integrity, /tokenById\.get\(String\(route\.crypto_id\)\)/);
+  assert.match(integrity, /CMC contracts · \$\{platforms\.length\} networks/);
+  assert.match(integrity, /Share-class mismatch/);
+  assert.match(integrity, /includedClassC \? 'included in' : 'not included in'/);
+  assert.match(integrity, /return issuerEvidenceMarkup\(item, item\.tokens \|\| item\.representations \|\| \[\]\)/);
+  assert.match(evidence, /window\.BELL_INSTRUMENT_EVIDENCE/);
+  assert.match(evidence, /'37013'/);
+  assert.match(evidence, /'42272'/);
+  assert.match(evidence, /'40757'/);
+  assert.match(evidence, /Alphabet Class C/);
   assert.match(evidence, /docs\.ondo\.finance\/ondo-stocks\/overview/);
-  assert.match(evidence, /docs\.xstocks\.fi\/docs\/product-legal-overview/);
-  assert.match(evidence, /robinhood\.com\/eu\/en\/crypto\/GOOGL/);
-  assert.match(evidence, /those terms were not independently checked here/);
-  assert.match(integrity, /economic claims remain unreviewed/);
+  assert.match(evidence, /docs\.robinhood\.com\/chain\/stock-tokens/);
+  assert.doesNotMatch(evidence, /robinhood\.com\/eu\/en\/crypto\/GOOGL/);
+  assert.match(evidence, /Final Terms checked/);
+  assert.match(integrity, /Issuer terms not mapped for \$\{unmapped\.length\} included route/);
+  assert.match(integrity, /if \(!documented\.length && !classMismatch\) return ''/);
 });
 
 test('mobile decision preview opens the exact rendered case card', () => {
