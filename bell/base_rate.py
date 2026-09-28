@@ -4,11 +4,11 @@
     PYTHONPATH=bell python3 bell/base_rate.py
     PYTHONPATH=bell python3 bell/base_rate.py --json bell/site/proof/base-rate.json
 
-A screener puts two tokens of the same underlying side by side and shows you the
-cheaper one. That is only meaningful if they are the same thing: same instrument,
-same unit, same market state. CoinMarketCap's RWA surfaces carry no field that
-says whether they are, and nothing in the catalogue refuses the comparison on
-your behalf.
+A screener can put two tokens under one CMC RWA reference side by side and show
+their observed quotes. That alone does not establish the same instrument, unit
+or market state. CoinMarketCap's RWA surfaces carry no field that proves those
+claims, so this measurement concerns what Bell's coded filters permit, not proof
+that two wrappers are economically equivalent.
 
 `demo.py` shows that a comparison *can* be unsafe, on a handful of worked
 references. That is a demonstration. This measures how often it is unsafe across

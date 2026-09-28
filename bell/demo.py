@@ -108,21 +108,21 @@ def main() -> int:
         print(f'{DIM}  ... {len(blocked) - 6} more refused in this receipt{RESET}')
     print()
 
-    print(f'{BOLD}{GREEN}COMPARABLE{RESET} — the prices can be set side by side, '
-          f'so the comparison is published')
+    print(f'{BOLD}{GREEN}FILTERED PRICE COMPARISON{RESET} — routes share a CMC RWA '
+          f'reference and pass price and reported-volume filters; equivalent units are unverified')
     if not cleared:
         print(f'{DIM}  Nothing in this receipt cleared the gate with two or more'
               f' tradable representations.{RESET}')
     else:
         print(f'{DIM}{"reference":<26}{"cheapest route":<16}{"spread":<13}'
-              f'{"cheapest also deepest":<24}{"24h volume":<12}unresolved{RESET}')
+              f'{"cheapest also highest volume":<28}{"24h volume":<12}unresolved{RESET}')
         for asset in cleared[:8]:
             routes = asset['comparison']
             name = (asset.get('name') or asset.get('symbol') or '?')[:25]
             cheapest = (routes['cheapest']['symbol'] or '?')[:15]
-            same = 'yes' if routes['cheapest_is_deepest'] else f"no, {routes['deepest']['symbol'][:12]}"
+            same = 'yes' if routes['cheapest_is_deepest'] else f"no, {routes['deepest']['symbol'][:12]} has more"
             print(f'  {name:<26}{cheapest:<16}{routes["spread_bps"]:>7.1f} bps  '
-                  f'{same:<24}{money(routes["traded_volume_24h"]):<12}'
+                  f'{same:<28}{money(routes["traded_volume_24h"]):<12}'
                   f'{len(routes["unresolved"])}')
         if len(cleared) > 8:
             print(f'{DIM}  ... {len(cleared) - 8} more comparable in this receipt{RESET}')

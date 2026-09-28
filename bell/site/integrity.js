@@ -705,7 +705,7 @@
     single_representation: { label: 'SINGLE REPRESENTATION', route: 'No comparison route; verify instrument and issuer terms', steps: ['CMC returned one representation, so there is no wrapper ranking to perform', 'Verify instrument, issuer, backing, redemption, eligibility and custody', 'Confirm executable liquidity before treating it as investable'] },
     investigate: { label: 'INVESTIGATE', route: 'Classify the representation and verify missing fields', steps: ['Classify the representation and confirm the issuer', 'Fill the missing fields named on the card', 'Keep unresolved wrappers separate in the research memo'] },
     no_flags: { label: 'FACTS OPEN', route: 'Complete external backing and execution checks', steps: ['No published rule fired; this is not an approval', 'Inspect the observed rows for yourself', 'Run external backing, eligibility, redemption, custody and liquidity checks'] },
-    comparable: { label: 'COMPARABLE', route: 'Compare the published routes, then diligence outside this monitor', steps: ['The representations share an identity, a unit and a market state', 'Read the spread, the cheapest route and whether it is also the deepest', 'Backing, redemption, eligibility and custody are still unobserved here'] },
+    comparable: { label: 'FILTERED PRICE COMPARISON', route: 'Review filtered quotes, then verify units and issuer terms', steps: ['These routes share a CMC RWA reference; equivalent units and claims are not established', 'Read the spread and reported 24h volume; neither proves executable depth', 'Backing, redemption, eligibility and custody remain unobserved here'] },
   };
 
   // The fifth place this label was decided separately. The legend filed every
@@ -1069,6 +1069,19 @@
     return item?.decision?.label || fallback;
   }
 
+  // Keep the replayable receipt untouched while giving the interface a
+  // calibrated explanation derived from its published route set.
+  function displayDecisionConsequence(item) {
+    const comparison = item?.comparison;
+    if (!comparison) return item?.decision?.consequence || '';
+    const cheapest = comparison.cheapest || {};
+    const highestVolume = comparison.deepest || {};
+    const unresolved = (comparison.unresolved || []).length;
+    return `${comparison.route_count} routes under one CMC RWA reference passed Bell's price and reported-volume filters; equivalent units and claims are not established. `
+      + `Observed spread ${Number(comparison.spread_bps).toFixed(1)} bps; lowest quote ${cheapest.symbol || 'unknown'}; highest reported 24h volume ${highestVolume.symbol || 'unknown'}.`
+      + (unresolved ? ` ${unresolved} rule check${unresolved === 1 ? '' : 's'} remain open.` : '');
+  }
+
   // A reference can carry a published comparison AND have been flagged by the
   // scan. 39 of the 75 comparisons in the live receipt are in that position,
   // and all of them read COMPARABLE, in the affirmative word, over the most
@@ -1131,7 +1144,7 @@
   function capitalMetricsNote(mode, unitPhrase, representations) {
     const shared = `${unitPhrase} Reported 24h volume is a rolling field, not depth or executable exit capacity.`;
     if (mode === 'comparable') {
-      return `${shared} Identity and unit checks are cleared, which is what makes these rows comparable. Backing, redemption, custody and executable size remain unobserved.`;
+      return `${shared} These rows share a CMC RWA reference and passed Bell's price and volume filters; equivalent units and claims are not established. Backing, redemption, custody and executable size remain unobserved.`;
     }
     // "Rows remain non-comparable" over a single row says nothing: there is no
     // second row for it to be non-comparable with. The flag on such a
@@ -1139,13 +1152,13 @@
     if (Number(representations) === 1) {
       return `${shared} This is the reference's only representation, so nothing here is being compared; the flag is about that row's own fields.`;
     }
-    return `${shared} Rows remain non-comparable until Bell's identity and unit checks are cleared.`;
+    return `${shared} Rows remain outside Bell's filtered route comparison while its identity or quote rules are unresolved.`;
   }
 
   function capitalPanel(alert) {
     const assessment = window.BellCapitalImpact.assess(alert, readCapitalBudget(alert.rwa_id));
     const rangeMetrics = assessment.metrics?.ratio
-      ? `<div><span>OBSERVED RANGE</span><strong>${formatNumber(assessment.metrics.ratio)}×</strong></div><div><span>UNITS AT LOW QUOTE</span><strong>${formatNumber(assessment.metrics.unitsAtLowQuote)}</strong></div><div><span>UNITS AT HIGH QUOTE</span><strong>${formatNumber(assessment.metrics.unitsAtHighQuote)}</strong></div>`
+      ? `<div><span>FILTERED QUOTE RANGE</span><strong>${formatNumber(assessment.metrics.ratio)}×</strong></div><div><span>NOMINAL TOKEN UNITS AT LOW QUOTE</span><strong>${formatNumber(assessment.metrics.unitsAtLowQuote)}</strong></div><div><span>NOMINAL TOKEN UNITS AT HIGH QUOTE</span><strong>${formatNumber(assessment.metrics.unitsAtHighQuote)}</strong></div>`
       : '';
     const volumeMetrics = assessment.metrics?.volume
       ? `<div><span>AMOUNT / REPORTED 24H VOLUME</span><strong>${formatNumber(assessment.metrics.volume.amountSharePercent)}%</strong></div>`
@@ -1307,7 +1320,7 @@
     panel.querySelector('[data-capital-copy]').textContent = assessment.copy;
     const metrics = assessment.metrics;
     const rangeMetrics = metrics?.ratio
-      ? `<div><span>OBSERVED RANGE</span><strong>${formatNumber(metrics.ratio)}×</strong></div><div><span>UNITS AT LOW QUOTE</span><strong>${formatNumber(metrics.unitsAtLowQuote)}</strong></div><div><span>UNITS AT HIGH QUOTE</span><strong>${formatNumber(metrics.unitsAtHighQuote)}</strong></div>`
+      ? `<div><span>FILTERED QUOTE RANGE</span><strong>${formatNumber(metrics.ratio)}×</strong></div><div><span>NOMINAL TOKEN UNITS AT LOW QUOTE</span><strong>${formatNumber(metrics.unitsAtLowQuote)}</strong></div><div><span>NOMINAL TOKEN UNITS AT HIGH QUOTE</span><strong>${formatNumber(metrics.unitsAtHighQuote)}</strong></div>`
       : '';
     const volumeMetrics = metrics?.volume
       ? `<div><span>AMOUNT / REPORTED 24H VOLUME</span><strong>${formatNumber(metrics.volume.amountSharePercent)}%</strong></div>`
@@ -1331,12 +1344,12 @@
       return `<tr><td>${escapeHTML(route.symbol || '')}</td><td>${escapeHTML(route.issuer_name || '')}</td><td class="num">${formatNumber(route.price)}</td><td class="num">${premium === 0 ? 'cheapest' : `+${premium.toFixed(1)} bps`}</td><td class="num">${share}</td></tr>`;
     }).join('');
     const fill = c.cheapest_is_deepest
-      ? 'The cheapest route is also the one carrying volume.'
-      : `The cheapest route is not the deepest: ${escapeHTML(c.deepest.symbol || '')} carries more 24h volume.`;
+      ? 'The cheapest route also has the highest reported 24h volume.'
+      : `${escapeHTML(c.deepest.symbol || '')} has higher reported 24h volume than the cheapest route.`;
     const open = (c.unresolved || []).length
       ? `<p class="comparison-open"><span>STILL OPEN</span> ${escapeHTML((c.unresolved || []).join(' · '))}. The route filter drops derivatives, keys on the token id rather than the ticker, and excludes rows without both a price and traded volume, so these do not block the comparison - but they are not resolved.</p>`
       : '';
-    return `<div class="comparison-block"><span class="comparison-scroll-hint">SWIPE FOR PRICE · VS CHEAPEST · SHARE OF VOLUME →</span><div class="comparison-head"><span>COMPARABLE</span><strong>${Number(c.spread_bps).toFixed(1)} bps</strong><small>${c.route_count} tradable representations</small></div><p class="comparison-fill">${fill}</p><table class="comparison-table"><thead><tr><th>route</th><th>issuer</th><th class="num">price</th><th class="num">vs cheapest</th><th class="num">share of volume</th></tr></thead><tbody>${rows}</tbody></table>${open}<p class="comparison-limits">A price comparison of the representations CoinMarketCap returned. ${NOT_OBSERVED_SHORT}</p></div>`;
+    return `<div class="comparison-block"><span class="comparison-scroll-hint">SWIPE FOR PRICE · VS CHEAPEST · SHARE OF VOLUME →</span><div class="comparison-head"><span>FILTERED PRICE COMPARISON</span><strong>${Number(c.spread_bps).toFixed(1)} bps</strong><small>${c.route_count} token routes under this CMC RWA reference</small></div><p class="comparison-fill">${fill}</p><table class="comparison-table"><thead><tr><th>route</th><th>issuer</th><th class="num">price</th><th class="num">vs cheapest</th><th class="num">share of volume</th></tr></thead><tbody>${rows}</tbody></table>${open}<p class="comparison-limits">A price comparison of the representations CoinMarketCap returned. Equivalent units and claims are not established. ${NOT_OBSERVED_SHORT}</p></div>`;
   }
 
   function renderAlertRow(alert) {
@@ -1350,14 +1363,14 @@
       // example. One function now decides the word.
       const stateLabel = displayDecisionLabel(alert);
       const decision = alert.decision || {};
-      return `<article class="alert-row" data-rwa-id="${escapeHTML(alert.rwa_id)}"><div class="alert-name">${escapeHTML(alert.name)}<small>${escapeHTML(alert.symbol)} · ${escapeHTML(alert.asset_type)} · ${alert.issuer_count} issuers</small></div><div class="alert-state ${stateClass(stateLabel)}">${escapeHTML(stateLabel)}</div><div class="alert-signals">${escapeHTML(labels)}</div><div class="alert-tokens"><strong>${alert.token_count}</strong><small>representations</small></div><div class="alert-decision"><span>Decision effect</span><b>${escapeHTML(displayDecisionLabel(alert))}</b><p>${escapeHTML(decision.consequence || '')}</p></div><div class="alert-action"><span>Next action</span>${escapeHTML(alert.next_action)}</div>${renderComparison(alert)}<div class="alert-tools">${watchButton(alert)}${briefButton(alert.rwa_id)}</div><details class="alert-details"><summary>Inspect evidence</summary>${evidence}<h4>Representation rows</h4>${renderTokenTable(alert)}</details>${renderWorksheet(alert)}</article>`;
+      return `<article class="alert-row" data-rwa-id="${escapeHTML(alert.rwa_id)}"><div class="alert-name">${escapeHTML(alert.name)}<small>${escapeHTML(alert.symbol)} · ${escapeHTML(alert.asset_type)} · ${alert.issuer_count} issuers</small></div><div class="alert-state ${stateClass(stateLabel)}">${escapeHTML(stateLabel)}</div><div class="alert-signals">${escapeHTML(labels)}</div><div class="alert-tokens"><strong>${alert.token_count}</strong><small>representations</small></div><div class="alert-decision"><span>Decision effect</span><b>${escapeHTML(displayDecisionLabel(alert))}</b><p>${escapeHTML(displayDecisionConsequence(alert))}</p></div><div class="alert-action"><span>Next action</span>${escapeHTML(alert.next_action)}</div>${renderComparison(alert)}<div class="alert-tools">${watchButton(alert)}${briefButton(alert.rwa_id)}</div><details class="alert-details"><summary>Inspect evidence</summary>${evidence}<h4>Representation rows</h4>${renderTokenTable(alert)}</details>${renderWorksheet(alert)}</article>`;
   }
 
   function renderIndexRow(item, detail) {
     if (detail) return renderAlertRow(detail);
     const stateLabel = displayDecisionLabel(item, 'FACTS OPEN');
     const decision = item.decision || {};
-    return `<article class="alert-row compact-row" data-rwa-id="${escapeHTML(item.rwa_id)}"><div class="alert-name">${escapeHTML(item.name)}<small>${escapeHTML(item.symbol)} · ${escapeHTML(item.asset_type)} · ${item.issuer_count || 0} issuers · RWA ${escapeHTML(item.rwa_id)}</small></div><div class="alert-state ${stateClass(stateLabel)}">${escapeHTML(stateLabel)}</div><div class="alert-signals">${escapeHTML((item.signal_codes || []).filter(code => code !== 'NO_TRADFI_MARKET').slice(0, 3).map(code => signalLabels[code] || code).join(' · ') || 'No published rule hit')}</div><div class="alert-tokens"><strong>${Number(item.token_count || 0).toLocaleString()}</strong><small>representations</small></div><div class="alert-decision"><span>Decision effect</span><b>${escapeHTML(displayDecisionLabel(item, 'FACTS OPEN'))}</b><p>${escapeHTML(decision.consequence || '')}</p><p class="compact-observation"><span>OBSERVED</span> ${escapeHTML(compactObservation(item))}</p></div><div class="alert-action"><span>Next action</span>${escapeHTML(item.next_action || '')}</div>${renderComparison(item)}<div class="alert-tools">${watchButton(item)}${briefButton(item.rwa_id)}</div><details class="alert-details"><summary>Inspect representations</summary><p class="compact-note">CMC quote rows observed in this receipt. Bell uses them to route research, not to certify backing, eligibility, liquidity or equivalence.</p><ul class="compact-evidence">${renderCompactEvidence(item)}</ul>${renderTokenTable(item)}</details>${renderWorksheet(item)}</article>`;
+    return `<article class="alert-row compact-row" data-rwa-id="${escapeHTML(item.rwa_id)}"><div class="alert-name">${escapeHTML(item.name)}<small>${escapeHTML(item.symbol)} · ${escapeHTML(item.asset_type)} · ${item.issuer_count || 0} issuers · RWA ${escapeHTML(item.rwa_id)}</small></div><div class="alert-state ${stateClass(stateLabel)}">${escapeHTML(stateLabel)}</div><div class="alert-signals">${escapeHTML((item.signal_codes || []).filter(code => code !== 'NO_TRADFI_MARKET').slice(0, 3).map(code => signalLabels[code] || code).join(' · ') || 'No published rule hit')}</div><div class="alert-tokens"><strong>${Number(item.token_count || 0).toLocaleString()}</strong><small>representations</small></div><div class="alert-decision"><span>Decision effect</span><b>${escapeHTML(displayDecisionLabel(item, 'FACTS OPEN'))}</b><p>${escapeHTML(displayDecisionConsequence(item))}</p><p class="compact-observation"><span>OBSERVED</span> ${escapeHTML(compactObservation(item))}</p></div><div class="alert-action"><span>Next action</span>${escapeHTML(item.next_action || '')}</div>${renderComparison(item)}<div class="alert-tools">${watchButton(item)}${briefButton(item.rwa_id)}</div><details class="alert-details"><summary>Inspect representations</summary><p class="compact-note">CMC quote rows observed in this receipt. Bell uses them to route research, not to certify backing, eligibility, liquidity or equivalence.</p><ul class="compact-evidence">${renderCompactEvidence(item)}</ul>${renderTokenTable(item)}</details>${renderWorksheet(item)}</article>`;
   }
 
   function markdownBrief(item) {
@@ -1396,7 +1409,7 @@ Generated from the credential-free Bell receipt. This is research triage, not in
 - Asset type: ${item.asset_type || 'N/A'}
 - State: ${displayDecisionLabel(item)}
 - Published rule state: ${item.state === 'no_flags' ? 'FACTS OPEN' : String(item.state || '').replaceAll('_', ' ').toUpperCase()}
-- Consequence: ${decision.consequence || 'No allocation status is produced by this monitor'}
+- Consequence: ${displayDecisionConsequence(item) || 'No allocation status is produced by this monitor'}
 - Observed: ${receipt.observed_at || 'N/A'}
 - Published: ${receipt._publication?.published_at || 'N/A'}
 
@@ -2227,7 +2240,7 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
       caseFacts.push(`${Number(heroComparison.spread_bps).toFixed(1)} bps apart`);
       caseFacts.push(cheapest.symbol
         ? `cheapest ${cheapest.symbol}${heroComparison.cheapest_is_deepest
-            ? ', also the deepest' : `, but ${deepest.symbol || 'another route'} trades more`}`
+            ? ', highest reported 24h volume' : `; ${deepest.symbol || 'another route'} has higher reported 24h volume`}`
         : 'cheapest route published');
     }
     byId('hero-case-fact').textContent = caseFacts.join(' · ') || signals || 'Published rule hit';
@@ -2241,14 +2254,15 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     if (proofReason) proofReason.textContent = [reasonPrefix, reasonSignals].filter(Boolean).join(' · ') || 'No published contradiction in the current rule set';
     const signalList = byId('hero-signal-list');
     const comparableRow = heroComparison
-      ? `<div><span class="hero-signal-severity comparable">COMPARABLE</span><strong>${formatNumber(heroComparison.route_count)} routes share an identity, a unit and a market state</strong><small>${Number(heroComparison.spread_bps).toFixed(1)} bps between cheapest and dearest · selected by rule: ${escapeHTML(HERO_RULE)}</small></div>`
+      ? `<div><span class="hero-signal-severity comparable">PRICE COMPARISON</span><strong>${formatNumber(heroComparison.route_count)} routes under one CMC RWA reference pass Bell's price and reported-volume filters</strong><small>${Number(heroComparison.spread_bps).toFixed(1)} bps between cheapest and dearest · equivalent units and claims are not established</small></div>`
       : '';
     if (signalList) signalList.innerHTML = comparableRow + (significantSignals.length
       ? significantSignals.slice(0, 3).map(signal => `<div><span class="hero-signal-severity ${signal.severity === 'critical' ? 'critical' : 'warning'}">${escapeHTML(String(signal.severity || 'signal').toUpperCase())}</span><strong>${escapeHTML(signalLabels[signal.code] || signal.code)}</strong><small>${escapeHTML(signalEvidenceSummary(signal))} · ${escapeHTML(signalSourceLabel(signal.code))}</small></div>`).join('')
       : (comparableRow ? '' : '<div><span class="hero-signal-severity checked">CLEAR</span><strong>No published rule hit</strong><small>Observed fields remain descriptive and require external diligence</small></div>'));
     const quoteContrast = byId('hero-quote-contrast');
     const capitalSignal = byId('hero-capital-signal');
-    const pricedTokens = (alert.tokens || []).filter(token => typeof token.price === 'number').sort((a, b) => a.price - b.price);
+    const comparisonRows = heroComparison && Array.isArray(heroComparison.routes) ? heroComparison.routes : null;
+    const pricedTokens = (comparisonRows || alert.tokens || []).filter(token => typeof token.price === 'number').sort((a, b) => a.price - b.price);
     if (quoteContrast) {
       const hasRange = pricedTokens.length >= 2 && pricedTokens[0].price !== pricedTokens[pricedTokens.length - 1].price;
       quoteContrast.hidden = !hasRange;
@@ -2299,7 +2313,7 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     };
     const identityNeedsReview = signalCodes.has('TOKEN_INFO_MISSING') || signalCodes.has('SYMBOL_COLLISION');
     setEvidenceCheck('hero-identity-check', identityNeedsReview ? 'REVIEW' : 'CHECKED', identityNeedsReview ? 'review' : 'checked');
-    setEvidenceCheck('hero-unit-check', signalCodes.has('PRICE_DENOMINATION_BREAK') ? 'BLOCKED' : signalCodes.has('DERIVATIVE_MIX') ? 'REVIEW' : 'CHECKED', signalCodes.has('PRICE_DENOMINATION_BREAK') ? 'blocked' : signalCodes.has('DERIVATIVE_MIX') ? 'review' : 'checked');
+    setEvidenceCheck('hero-unit-check', signalCodes.has('PRICE_DENOMINATION_BREAK') ? 'BLOCKED' : 'UNVERIFIED', signalCodes.has('PRICE_DENOMINATION_BREAK') ? 'blocked' : 'review');
     setEvidenceCheck('hero-market-check', signalCodes.has('ZERO_MCAP_POSITIVE_VOLUME') || signalCodes.has('MARKET_FIELDS_MISSING') ? 'REVIEW' : 'OBSERVED', signalCodes.has('ZERO_MCAP_POSITIVE_VOLUME') || signalCodes.has('MARKET_FIELDS_MISSING') ? 'review' : 'checked');
     byId('hero-example').textContent = `${isDatedReplay ? 'Published replay' : 'Live example'}: search ${alert.name || 'the reference'} → inspect ${caseFacts.join(' · ') || 'the evidence'} → ${displayDecisionLabel(alert, 'HOLD COMPARISON')} → verify the next action before ranking a wrapper.`;
     byId('hero-proof-output').textContent = displayDecisionLabel(alert, 'HOLD COMPARISON');
@@ -2325,7 +2339,7 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     if (proofHint) proofHint.textContent = hint;
     const decisionHeading = query.trim() ? 'SEARCHED REFERENCE' : (isClean ? 'CURRENT REFERENCE' : 'FLAGGED REFERENCE');
     const signalLabel = signals || (isClean ? 'no published rule hit' : 'published rule hit');
-      byId('decision-hero').innerHTML = `<div class="decision-hero-top"><span class="eyebrow">${decisionHeading}</span><span class="decision-case">${escapeHTML(alert.symbol || 'RWA')}</span></div><h3>${escapeHTML(alert.name)}</h3><p class="decision-signal">${escapeHTML(signalLabel)}</p><div class="decision-outcome"><span>OUTPUT</span><strong>${escapeHTML(displayDecisionLabel(alert, 'HOLD COMPARISON'))}</strong><p>${escapeHTML(decision.consequence || alert.next_action || '')}</p><b class="allocation-gate">${escapeHTML(boundary(decision.allocation_effect) || 'No allocation status is produced by this monitor')}</b></div><div class="decision-actions"><button class="brief-button" type="button" data-brief-id="${escapeHTML(alert.rwa_id)}">Save decision brief ↓</button><button class="brief-button" type="button" data-case-receipt="${escapeHTML(alert.rwa_id)}">Download case JSON ↓</button><button class="brief-button" type="button" data-copy-case="${escapeHTML(alert.rwa_id)}">Copy case link ↗</button>${watchButton(alert)}<a class="decision-action-link" href="#monitor">Inspect representation rows ↘</a></div>${capitalPanel(alert)}<section class="reference-change" data-reference-change data-for-id="${escapeHTML(alert.rwa_id)}" hidden></section>${temporalPanel(alert)}${referenceConcentrationPanel(alert)}${referenceActivityPanel(alert)}${resolutionRoute(alert)}<div class="decision-receipt"><span>${escapeHTML(publication.status ? freshnessStatus(publication).toUpperCase() : 'DATED')} · ${escapeHTML(publication.observed_at || receipt.observed_at || 'N/A')}</span><a href="/api/integrity" target="_blank" rel="noopener">Open credential-free receipt ↗</a></div>`;
+      byId('decision-hero').innerHTML = `<div class="decision-hero-top"><span class="eyebrow">${decisionHeading}</span><span class="decision-case">${escapeHTML(alert.symbol || 'RWA')}</span></div><h3>${escapeHTML(alert.name)}</h3><p class="decision-signal">${escapeHTML(signalLabel)}</p><div class="decision-outcome"><span>OUTPUT</span><strong>${escapeHTML(displayDecisionLabel(alert, 'HOLD COMPARISON'))}</strong><p>${escapeHTML(displayDecisionConsequence(alert) || alert.next_action || '')}</p><b class="allocation-gate">${escapeHTML(boundary(decision.allocation_effect) || 'No allocation status is produced by this monitor')}</b></div><div class="decision-actions"><button class="brief-button" type="button" data-brief-id="${escapeHTML(alert.rwa_id)}">Save decision brief ↓</button><button class="brief-button" type="button" data-case-receipt="${escapeHTML(alert.rwa_id)}">Download case JSON ↓</button><button class="brief-button" type="button" data-copy-case="${escapeHTML(alert.rwa_id)}">Copy case link ↗</button>${watchButton(alert)}<a class="decision-action-link" href="#monitor">Inspect representation rows ↘</a></div>${capitalPanel(alert)}<section class="reference-change" data-reference-change data-for-id="${escapeHTML(alert.rwa_id)}" hidden></section>${temporalPanel(alert)}${referenceConcentrationPanel(alert)}${referenceActivityPanel(alert)}${resolutionRoute(alert)}<div class="decision-receipt"><span>${escapeHTML(publication.status ? freshnessStatus(publication).toUpperCase() : 'DATED')} · ${escapeHTML(publication.observed_at || receipt.observed_at || 'N/A')}</span><a href="/api/integrity" target="_blank" rel="noopener">Open credential-free receipt ↗</a></div>`;
       renderReferenceChange(alert, byId('decision-hero').querySelector('[data-reference-change]'));
       loadTemporalEvidence(alert);
   }

@@ -289,11 +289,10 @@ def is_derivative_row(token: dict) -> bool:
 def comparable_routes(tokens: list[dict]) -> dict | None:
     """Rank the tradable representations of one reference.
 
-    Only called for a reference that cleared every rule, so identity, unit and
-    market state are already established. Derivative-labelled rows are excluded
-    because a derivative is not a route into the same exposure, and rows with no
-    price or no traded volume are excluded because an unquoted or untraded row
-    cannot be bought at the price it prints.
+    Called when the price-denomination block has not fired. It does not prove
+    that routes under one CMC RWA reference have equivalent units or claims.
+    Derivative-labelled rows are excluded; rows without a positive price and
+    reported 24h volume are also excluded from this descriptive price set.
 
     The comparison is a price fact about the rows CMC returned. It is not a
     statement about backing, redemption, eligibility or custody, none of which
@@ -340,15 +339,17 @@ def comparable_routes(tokens: list[dict]) -> dict | None:
     for route in routes:
         route["volume_share"] = share(route["volume_24h"], traded)
         route["premium_to_cheapest_bps"] = published((route["price"] / cheapest["price"] - 1) * 10_000)
-    deepest = max(routes, key=lambda route: route["volume_24h"])
+    highest_volume = max(routes, key=lambda route: route["volume_24h"])
     return {
         "routes": routes,
         "route_count": len(routes),
         "cheapest": {"symbol": cheapest["symbol"], "issuer_name": cheapest["issuer_name"], "price": cheapest["price"]},
-        "deepest": {"symbol": deepest["symbol"], "issuer_name": deepest["issuer_name"], "volume_24h": deepest["volume_24h"]},
+        # This is reported 24h volume, not market depth or executable capacity.
+        "deepest": {"symbol": highest_volume["symbol"], "issuer_name": highest_volume["issuer_name"], "volume_24h": highest_volume["volume_24h"]},
         "spread_bps": round(spread_bps, 1),
         "traded_volume_24h": traded,
-        "cheapest_is_deepest": cheapest["symbol"] == deepest["symbol"],
+        # Tickers can collide. Compare the actual route row, never its symbol.
+        "cheapest_is_deepest": cheapest is highest_volume,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
     }

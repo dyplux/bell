@@ -64,6 +64,36 @@ test('facts-open case surfaces an observed quote gap without calling it executab
   assert.match(result.note, /not an executable saving/i);
 });
 
+test('published capital comparison uses only the routes in its receipt', () => {
+  const result = assess({
+    state: 'no_flags',
+    token_count: 4,
+    tokens: [
+      { crypto_id: 1, symbol: 'APPROVED-A', price: 10, volume_24h: 100 },
+      { crypto_id: 2, symbol: 'APPROVED-B', price: 20, volume_24h: 300 },
+      { crypto_id: 3, symbol: 'EXCLUDED-DERIVATIVE', price: 2, volume_24h: 10000 },
+      { crypto_id: 4, symbol: 'EXCLUDED-UNTRADED', price: 200, volume_24h: 0 },
+    ],
+    comparison: {
+      route_count: 2,
+      routes: [
+        { crypto_id: 1, symbol: 'APPROVED-A', price: 10, volume_24h: 100 },
+        { crypto_id: 2, symbol: 'APPROVED-B', price: 20, volume_24h: 300 },
+      ],
+      spread_bps: 10000,
+      cheapest: { symbol: 'APPROVED-A' },
+      deepest: { symbol: 'APPROVED-B' },
+      cheapest_is_deepest: false,
+    },
+  }, 10000);
+  assert.equal(result.metrics.ratio, 2);
+  assert.equal(result.metrics.unitsAtLowQuote, 1000);
+  assert.equal(result.metrics.unitsAtHighQuote, 500);
+  assert.equal(result.metrics.volume.reportedVolume, 400);
+  assert.match(result.copy, /equivalent units and claims are not established/i);
+  assert.match(result.copy, /highest reported 24h volume|higher reported 24h volume/i);
+});
+
 test('2000 generated cases preserve capital-check invariants', () => {
   let seed = 9217;
   const random = () => {

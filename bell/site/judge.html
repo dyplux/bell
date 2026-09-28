@@ -71,8 +71,8 @@
       <div><small>Contradictions found, by reason &middot; 21 Sep</small><strong>51</strong></div>
       <div><small>Comparisons published &middot; 21 Sep</small><strong>87</strong></div>
       <div><small>Refused for missing coverage &middot; 21 Sep</small><strong>107</strong></div>
-      <div><small>Tests in the offline gate</small><strong>535</strong></div>
-      <div><small>Gate runtime, 2 machines</small><strong>17&ndash;24s</strong></div>
+      <div><small>Tests in the offline gate</small><strong>536</strong></div>
+      <div><small>Gate runtime, 2 machines</small><strong>17&ndash;26s</strong></div>
     </div>
 
     <h2>Check it in 30 seconds, no key required</h2>
@@ -100,7 +100,7 @@ make base-rate</pre>
     The rate over the whole catalogue, with its denominator, is the command above.</small>
 
 <pre>make check-offline</pre>
-    <small>The gate was observed between 17.71 and 23.89 seconds across 2 machines, cold runs
+    <small>The gate was observed between 17.71 and 25.35 seconds across 2 machines, cold runs
     included. <code>make time-gate</code> runs the gate against a clock and writes
     <code>proof/gate-runtime.json</code>; <code>make sync-counts</code> writes this sentence out
     of that file, and a test requires the two figures to be exactly the fastest and slowest in
@@ -112,7 +112,7 @@ make base-rate</pre>
       <h3>What that gate proves, and what it does not</h3>
       <dl>
         <dt>The suite</dt>
-        <dd>535 tests, 420 Python and 115 JavaScript. One Python test needs a network and a
+        <dd>536 tests, 420 Python and 116 JavaScript. One Python test needs a network and a
         CoinMarketCap key; without them it is skipped and the runner says so.</dd>
 
         <dt>The re-derivation</dt>
@@ -162,8 +162,9 @@ make base-rate</pre>
     the live one, so a local clone shows what this page describes.</p>
     <ol>
       <li><strong>Coinbase Global, Inc.</strong> returns <strong>COMPARABLE &middot; FLAGGED</strong>:
-      the representations share an identity, a unit and a market state, so Bell names the
-      spread in basis points, the cheapest route, and whether that route is also the deepest.
+      routes under one CMC RWA reference pass Bell's price and reported-volume filters, so Bell names
+      the filtered spread, cheapest route, and which route has the highest reported 24h volume.
+      This does not establish equivalent units or claims, and reported volume is not market depth.
       The qualifier is there because the scan also raised a flag on this reference, and the
       flags are on the card under the verdict. This is the output the product exists to
       produce, with the thing it still wants you to look at attached to it.</li>

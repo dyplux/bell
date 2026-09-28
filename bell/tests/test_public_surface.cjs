@@ -224,6 +224,10 @@ test('an affirmative on the page has to carry its consequence', () => {
   const capital = fs.readFileSync(path.join(site, 'capital-impact.js'), 'utf8');
   assert.match(capital, /mode: 'comparable'/);
   assert.match(capital, /cheapest route/);
+  const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
+  assert.match(integrity, /function displayDecisionConsequence/);
+  assert.match(integrity, /equivalent units and claims are not established/);
+  assert.match(integrity, /highest reported 24h volume/);
 });
 
 test('hero search lands on the result it just generated', () => {

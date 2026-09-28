@@ -35,9 +35,11 @@ It is not a token leaderboard, safety score or investment recommendation.
 
 The output is explicit:
 
-- `COMPARABLE, NOT ENDORSED`: the representations share an identity, a unit and a
-  market state, so Bell names the spread, the cheapest route and whether that route
-  is also the deepest. This is the output the product exists to produce;
+- `COMPARABLE, NOT ENDORSED`: routes under one CMC RWA reference passed Bell's
+  price and reported-volume filters, so Bell names the filtered spread and
+  cheapest route. Equivalent units and claims are not established; reported
+  volume does not establish market depth. This is a filtered price observation,
+  not an endorsement;
 - `DO NOT SHORTLIST`: a critical identity, denomination or market contradiction
   fired; stop ranking the wrapper;
 - `INVESTIGATE`: a warning requires classification before

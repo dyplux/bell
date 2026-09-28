@@ -96,8 +96,16 @@
 
   function assess(alert, amount = 10000) {
     const value = budget(amount);
-    const range = quoteRange(alert && (alert.tokens || alert.representations));
-    const metrics = capitalMetrics(range, value, alert && (alert.tokens || alert.representations));
+    const allRows = alert && (alert.tokens || alert.representations) || [];
+    // When the receipt publishes a comparison, every capital figure must use
+    // that exact, rule-filtered route set. Mixing in excluded rows made the
+    // amount panel report a different range from the spread shown beside it.
+    const comparisonRows = alert && alert.comparison && Array.isArray(alert.comparison.routes)
+      ? alert.comparison.routes
+      : null;
+    const rows = comparisonRows || allRows;
+    const range = quoteRange(rows);
+    const metrics = capitalMetrics(range, value, rows);
     const tokenCount = Number(alert && alert.token_count) || 0;
     const state = alert && alert.state;
 
@@ -129,9 +137,9 @@
         budget: value,
         metrics,
         headline: `Compare ${comparison.route_count} routes for ${value.toLocaleString(undefined, { maximumFractionDigits: 0 })}`,
-        copy: `The representations share an identity, a unit and a market state, so their prices can be set side by side. `
+        copy: `These routes share a CoinMarketCap RWA reference and pass Bell's price and reported-volume filters; equivalent units and claims are not established. `
           + `Observed spread ${Number.isFinite(spread) ? spread.toFixed(1) : '?'} bps; cheapest route ${cheapest.symbol || 'unknown'}`
-          + `${comparison.cheapest_is_deepest ? ', which also carries the most 24h volume' : `, though ${(comparison.deepest || {}).symbol || 'another route'} carries more 24h volume`}.`,
+          + `${comparison.cheapest_is_deepest ? ', also with the highest reported 24h volume' : `; ${(comparison.deepest || {}).symbol || 'another route'} has higher reported 24h volume`}.`,
         note: open
           ? `A price comparison, not an allocation. ${open} check${open === 1 ? '' : 's'} remain open, and backing, redemption, eligibility and custody are not observed here.`
           : 'A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed here.',

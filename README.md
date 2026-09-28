@@ -12,7 +12,7 @@ that matters before a shortlist: can these representations be compared at all?
 | **Track** | Build with CMC API, Real World Assets. MIT licence |
 | **The output** | Of the 244 references carrying more than one representation, **87 have a cheapest route worth naming**, and behind the 157 refusals sit 158 reasons of which **51 are rows that contradict each other**. The other 107 are a second price CoinMarketCap never published, which is a coverage fact rather than a finding, so the two are never added together |
 | **Run it yourself** | `git clone https://github.com/dyplux/bell.git && cd bell && make base-rate` - 0.3s, no API key, no install |
-| **Verify the whole thing** | `make check-offline` - 535 tests, observed between 17.71 and 23.89 seconds across 2 machines, plus a re-derivation of the published receipt from the shipped inputs. Of the 18 dated observations shipped here, 2 ship their full payload. One of those two has its state distribution compared against the receipt; the other is UNVERIFIED on that split, because it was written under the previous rule set and no code here can re-derive it. Its totals, signals and source digests are checked. The rest are published summaries |
+| **Verify the whole thing** | `make check-offline` - 536 tests, observed between 17.71 and 25.35 seconds across 2 machines, plus a re-derivation of the published receipt from the shipped inputs. Of the 18 dated observations shipped here, 2 ship their full payload. One of those two has its state distribution compared against the receipt; the other is UNVERIFIED on that split, because it was written under the previous rule set and no code here can re-derive it. Its totals, signals and source digests are checked. The rest are published summaries |
 | **Rules as an executable spec** | `python3 bell/verify_rule_boundaries.py` - 0.2s, 8 boundary checks, no network |
 | **Receipts** | [live](https://bell.dyplux.com/api/integrity) · [dated replay](bell/site/proof/rwa-surface-integrity-latest-replay-2026-09-21.json) · [replay inputs](bell/site/proof/rwa-surface-integrity-inputs-2026-09-21.json) · [base rate](bell/site/proof/base-rate-2026-09-21.json) |
 
@@ -22,10 +22,10 @@ that matters before a shortlist: can these representations be compared at all?
 Bell joins CMC RWA references, token rows, quotes, metadata and issuers through
 stable identifiers, then routes each reference into the honest workflow:
 
-- `COMPARABLE, NOT ENDORSED` when the representations share an identity, a unit
-  and a market state, so their prices can honestly be set side by side. Bell
-  names the observed spread, the cheapest route and whether that route is also
-  the deepest
+- `COMPARABLE, NOT ENDORSED` when routes under one CMC RWA reference pass Bell's
+  price and reported-volume filters. This does not establish equivalent units
+  or claims. Bell names the observed spread, the cheapest route and which route
+  has the highest reported 24h volume; that volume is not market depth.
 - `DO NOT SHORTLIST` when a critical contradiction is observed
 - `INVESTIGATE` when evidence is incomplete or ambiguous
 - `FACTS OPEN` when observed fields can be inspected without creating a winner

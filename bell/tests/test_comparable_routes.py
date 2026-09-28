@@ -48,14 +48,16 @@ class ComparableRoutes(unittest.TestCase):
         self.assertAlmostEqual(result["spread_bps"], 200.0, places=1)
         self.assertAlmostEqual(result["routes"][1]["premium_to_cheapest_bps"], 200.0, places=1)
 
-    def test_deepest_route_is_reported_separately_from_cheapest(self):
-        # The cheapest print is not always the one you can actually fill.
+    def test_highest_reported_volume_route_is_reported_separately_from_cheapest(self):
+        # Reported volume is not evidence of order-book depth or fill capacity.
         result = comparable_routes([
-            token("THIN", 100.0, 1_000),
-            token("DEEP", 101.0, 900_000),
+            token("SHARED", 100.0, 1_000, crypto_id=101),
+            token("SHARED", 101.0, 900_000, crypto_id=202),
         ])
-        self.assertEqual(result["cheapest"]["symbol"], "THIN")
-        self.assertEqual(result["deepest"]["symbol"], "DEEP")
+        self.assertEqual(result["cheapest"]["symbol"], "SHARED")
+        self.assertEqual(result["deepest"]["symbol"], "SHARED")
+        # A ticker collision must not make two different token IDs look like
+        # the same route.
         self.assertFalse(result["cheapest_is_deepest"])
 
     def test_volume_shares_sum_to_one(self):
