@@ -153,10 +153,16 @@ class JudgeCounts(unittest.TestCase):
         self.assertIsNotNone(band, "the judge page stopped stating a measured range")
         self.assertIn(f"between {band.group(1)} and {band.group(2)} seconds", readme,
                       "the README and the judge page disagree about the gate runtime")
-        tile = re.search(r"<strong>&lt;(\d+)s</strong>", judge)
-        self.assertIsNotNone(tile, "the gate runtime tile went missing")
-        self.assertGreaterEqual(float(tile.group(1)), float(band.group(2)),
-                                "the headline bound is below the range the page itself states")
+        # The tile was "&lt;24s", a ceiling, and a third machine ran the gate
+        # in 29 seconds. A ceiling claims every machine; the file only knows
+        # the ones it measured. The tile states their range now, so it and the
+        # sentence beside it say the same thing.
+        tile = re.search(r"<strong>(\d+)&ndash;(\d+)s</strong>", judge)
+        self.assertIsNotNone(tile, "the gate runtime tile no longer states a range")
+        self.assertLessEqual(float(tile.group(1)), float(band.group(1)),
+                             "the tile's floor is above the range the page itself states")
+        self.assertGreaterEqual(float(tile.group(2)), float(band.group(2)),
+                                "the tile's ceiling is below the range the page itself states")
         # The individual command timings stay precise - they are single
         # commands and they were measured. It is the gate, which varies with
         # the machine running it, that must not be quoted to a tenth.

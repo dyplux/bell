@@ -778,8 +778,18 @@
       const measuredOn = new Date(r.observed_at).toLocaleDateString('en-GB', {
         day: 'numeric', month: 'long'
       });
+      // The headline figure is the dated measurement, and the index on the same
+      // page renders today's. A reviewer found 87 in the hero and 75 in the
+      // filter 400px below it, both correct, both labelled, and nobody reading
+      // top to bottom would know they were different questions asked a week
+      // apart. So the live count stands beside the dated one, in the headline
+      // itself, whenever the loaded receipt disagrees with it.
+      const liveComparable = (receipt?.alert_index || []).filter(item => item?.comparison).length;
+      const liveNote = (liveComparable && liveComparable !== r.comparable)
+        ? `<span class="finding-live">${liveComparable.toLocaleString()} in today's scan</span>`
+        : '';
       headline.innerHTML = `<strong>${r.comparable.toLocaleString()}</strong> tokenised assets have a `
-        + `<em>cheapest route worth naming</em><br>`
+        + `<em>cheapest route worth naming</em>${liveNote}<br>`
         + `<span class="finding-counter">${r.refused.toLocaleString()} of the ${n.toLocaleString()} `
         + `comparable-looking ones are refused, and most of that is a missing price `
         + `rather than a contradiction</span>`;
@@ -1008,6 +1018,14 @@
 
   // The bucket a reference belongs to, which is what the filters are made of.
   function decisionBucket(item, fallback = 'REVIEW') {
+    // One representation is not a comparison, whatever the scan flagged about
+    // it. Two references in the live scan carry a single row and a
+    // do_not_compare state, and they were bucketed DO NOT SHORTLIST: the
+    // SINGLE REPRESENTATION filter returned 545 while the prose beside it said
+    // 547, and a reader filtering for single-representation references lost
+    // exactly the two the scanner had something to say about. The count is a
+    // property of the reference, so it is read first.
+    if (Number(item?.token_count ?? item?.representations ?? 0) === 1) return 'SINGLE REPRESENTATION';
     if (item?.state === 'do_not_compare' || item?.decision?.state === 'blocked') return 'DO NOT SHORTLIST';
     // A reference whose comparison was published is not merely "under
     // investigation" or "facts open" - the reader is holding the cheapest
@@ -1015,7 +1033,6 @@
     // in the decision body where it belongs.
     if (item?.comparison) return 'COMPARABLE';
     if (item?.state === 'investigate') return 'INVESTIGATE';
-    if (item?.state === 'no_flags' && Number(item?.token_count || 0) === 1) return 'SINGLE REPRESENTATION';
     if (item?.state === 'no_flags') return 'FACTS OPEN';
     return item?.decision?.label || fallback;
   }
@@ -1035,9 +1052,18 @@
       && item?.decision?.state !== 'blocked';
   }
 
+  // The same idea for the other bucket that can hide a flag: a lone
+  // representation the scan had something to say about.
+  function isFlaggedSingle(item) {
+    return Number(item?.token_count ?? item?.representations ?? 0) === 1
+      && (item?.state === 'do_not_compare' || item?.state === 'investigate'
+          || item?.decision?.state === 'blocked');
+  }
+
   function displayDecisionLabel(item, fallback = 'REVIEW') {
     const bucket = decisionBucket(item, fallback);
     if (bucket === 'COMPARABLE' && isFlaggedComparable(item)) return 'COMPARABLE · FLAGGED';
+    if (bucket === 'SINGLE REPRESENTATION' && isFlaggedSingle(item)) return 'SINGLE REPRESENTATION · FLAGGED';
     return bucket;
   }
 
@@ -1049,11 +1075,18 @@
   // comparable. On the comparable path the honest caveat is not that the rows
   // failed a check they passed; it is which questions the price fact does not
   // answer.
-  function capitalMetricsNote(mode, unitPhrase) {
+  function capitalMetricsNote(mode, unitPhrase, representations) {
     const shared = `${unitPhrase} Reported 24h volume is a rolling field, not depth or executable exit capacity.`;
-    return mode === 'comparable'
-      ? `${shared} Identity and unit checks are cleared, which is what makes these rows comparable. Backing, redemption, custody and executable size remain unobserved.`
-      : `${shared} Rows remain non-comparable until Bell's identity and unit checks are cleared.`;
+    if (mode === 'comparable') {
+      return `${shared} Identity and unit checks are cleared, which is what makes these rows comparable. Backing, redemption, custody and executable size remain unobserved.`;
+    }
+    // "Rows remain non-comparable" over a single row says nothing: there is no
+    // second row for it to be non-comparable with. The flag on such a
+    // reference is about that row's own market state.
+    if (Number(representations) === 1) {
+      return `${shared} This is the reference's only representation, so nothing here is being compared; the flag is about that row's own fields.`;
+    }
+    return `${shared} Rows remain non-comparable until Bell's identity and unit checks are cleared.`;
   }
 
   function capitalPanel(alert) {
@@ -1065,7 +1098,7 @@
       ? `<div><span>AMOUNT / REPORTED 24H VOLUME</span><strong>${formatNumber(assessment.metrics.volume.amountSharePercent)}%</strong></div>`
       : '';
     const metrics = rangeMetrics || volumeMetrics
-      ? `<div class="capital-metrics">${rangeMetrics}${volumeMetrics}</div><small class="capital-metrics-note">${capitalMetricsNote(assessment.mode, 'Nominal quote units only.')}</small>`
+      ? `<div class="capital-metrics">${rangeMetrics}${volumeMetrics}</div><small class="capital-metrics-note">${capitalMetricsNote(assessment.mode, 'Nominal quote units only.', alert?.token_count)}</small>`
       : '<div class="capital-metrics capital-metrics-empty"><span>No comparable quote range in this receipt.</span></div>';
     return `<section class="capital-panel capital-${assessment.mode}" data-capital-panel="${escapeHTML(alert.rwa_id || '')}">
       <div class="capital-panel-head"><span>CAPITAL CHECK</span><b>Make the financial consequence visible</b></div>
@@ -1227,7 +1260,7 @@
       ? `<div><span>AMOUNT / REPORTED 24H VOLUME</span><strong>${formatNumber(metrics.volume.amountSharePercent)}%</strong></div>`
       : '';
     panel.querySelector('[data-capital-metrics]').innerHTML = metrics
-      ? `<div class="capital-metrics">${rangeMetrics}${volumeMetrics}</div><small class="capital-metrics-note">${capitalMetricsNote(assessment.mode, 'Nominal unit counts only.')}</small>`
+      ? `<div class="capital-metrics">${rangeMetrics}${volumeMetrics}</div><small class="capital-metrics-note">${capitalMetricsNote(assessment.mode, 'Nominal unit counts only.', alert?.token_count)}</small>`
       : '<div class="capital-metrics capital-metrics-empty"><span>No comparable quote range in this receipt.</span></div>';
     panel.querySelector('[data-capital-note]').textContent = assessment.note;
   }

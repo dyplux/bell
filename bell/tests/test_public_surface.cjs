@@ -796,6 +796,7 @@ test('the public label follows the decision, executed not grepped', () => {
   const label = runFromSource('displayDecisionLabel', {
     decisionBucket: runFromSource('decisionBucket'),
     isFlaggedComparable: runFromSource('isFlaggedComparable'),
+    isFlaggedSingle: runFromSource('isFlaggedSingle'),
   });
   // A published comparison outranks the state that let it through, and says
   // when it did. 39 of the 75 comparisons in the live receipt were published
@@ -813,10 +814,21 @@ test('the public label follows the decision, executed not grepped', () => {
   assert.equal(label({ state: 'do_not_compare', comparison: { route_count: 5 } }), 'DO NOT SHORTLIST');
   // One representation is not a comparison.
   assert.equal(label({ state: 'no_flags', token_count: 1 }), 'SINGLE REPRESENTATION');
+  // One representation is not a comparison, whatever the scan flagged about it.
+  // Two references carried one row and a do_not_compare state and were told
+  // "a research desk must not rank or substitute these representations": the
+  // comparison vocabulary where no comparison exists, which is the error this
+  // product reports about somebody else's catalogue. They also made the
+  // SINGLE REPRESENTATION filter return 545 beside prose saying 547.
+  assert.equal(label({ state: 'do_not_compare', token_count: 1 }),
+    'SINGLE REPRESENTATION \u00b7 FLAGGED');
+  assert.equal(label({ state: 'investigate', token_count: 1 }),
+    'SINGLE REPRESENTATION \u00b7 FLAGGED');
+  assert.equal(label({ state: 'do_not_compare', token_count: 4 }), 'DO NOT SHORTLIST');
   assert.equal(label({ state: 'no_flags', token_count: 4 }), 'FACTS OPEN');
   assert.equal(label({ state: 'investigate' }), 'INVESTIGATE');
   // Every label it can return must be in the published vocabulary.
-  const vocabulary = new Set(['COMPARABLE', 'COMPARABLE \u00b7 FLAGGED', 'DO NOT SHORTLIST', 'INVESTIGATE', 'FACTS OPEN', 'SINGLE REPRESENTATION']);
+  const vocabulary = new Set(['COMPARABLE', 'COMPARABLE \u00b7 FLAGGED', 'DO NOT SHORTLIST', 'INVESTIGATE', 'FACTS OPEN', 'SINGLE REPRESENTATION', 'SINGLE REPRESENTATION \u00b7 FLAGGED']);
   for (const item of [{ state: 'investigate', comparison: {} }, { state: 'no_flags', token_count: 1 },
                       { state: 'do_not_compare' }, { state: 'no_flags' }]) {
     assert.ok(vocabulary.has(label(item)), `${label(item)} is outside the published vocabulary`);
@@ -1225,6 +1237,7 @@ test('every example chip promises the word the product prints for it', () => {
   const label = runFromSource('displayDecisionLabel', {
     decisionBucket: runFromSource('decisionBucket'),
     isFlaggedComparable: runFromSource('isFlaggedComparable'),
+    isFlaggedSingle: runFromSource('isFlaggedSingle'),
   });
 
   // My first version of this test pinned the DECISION EFFECT and the card
@@ -1349,6 +1362,7 @@ test('every filter returns the label it names, and they partition the population
   const label = runFromSource('displayDecisionLabel', {
     decisionBucket: runFromSource('decisionBucket'),
     isFlaggedComparable: runFromSource('isFlaggedComparable'),
+    isFlaggedSingle: runFromSource('isFlaggedSingle'),
   });
   const replay = JSON.parse(fs.readFileSync(
     path.join(site, 'proof', 'rwa-surface-integrity-latest-replay-2026-09-21.json'), 'utf8'));
@@ -1381,6 +1395,7 @@ test('the outcome key enumerates every state the product can print', () => {
   const label = runFromSource('displayDecisionLabel', {
     decisionBucket: runFromSource('decisionBucket'),
     isFlaggedComparable: runFromSource('isFlaggedComparable'),
+    isFlaggedSingle: runFromSource('isFlaggedSingle'),
   });
   const produced = new Set((replay.alert_index || []).map(item => label(item, 'FACTS OPEN')));
   for (const word of produced) {
@@ -1504,4 +1519,32 @@ test('the reference snapshot is the dated receipt, and carries its rule set', ()
   // It must stay small enough to sit beside the live receipt.
   const bytes = fs.statSync(path.join(proof, 'reference-snapshot-2026-09-21.json')).size;
   assert.ok(bytes < 200_000, `the snapshot grew to ${bytes} bytes; it exists to avoid the 3.42 MiB receipt`);
+});
+
+test('the single-representation count the prose states is the count its filter returns', () => {
+  // The hero said 547 carry a single representation; the filter beside it
+  // returned 545, because two of them were bucketed DO NOT SHORTLIST. A reader
+  // filtering for single-representation references silently lost exactly the
+  // two the scanner had something to say about.
+  const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
+  const bucket = runFromSource('decisionBucket');
+  const replay = JSON.parse(fs.readFileSync(
+    path.join(site, 'proof', 'rwa-surface-integrity-latest-replay-2026-09-21.json'), 'utf8'));
+  const index = replay.alert_index || [];
+  const singles = index.filter(item => Number(item.token_count) === 1);
+  const bucketed = index.filter(item => bucket(item, 'FACTS OPEN') === 'SINGLE REPRESENTATION');
+  assert.equal(bucketed.length, singles.length,
+    `${singles.length} references carry one representation and the filter gathers ${bucketed.length}`);
+  assert.ok(singles.length > 0, 'the replay has no single-representation references to check');
+  // And the flagged ones are still visibly flagged rather than quietly folded in.
+  const flagged = singles.filter(item => item.state !== 'no_flags');
+  const label = runFromSource('displayDecisionLabel', {
+    decisionBucket: bucket,
+    isFlaggedComparable: runFromSource('isFlaggedComparable'),
+    isFlaggedSingle: runFromSource('isFlaggedSingle'),
+  });
+  for (const item of flagged) {
+    assert.match(label(item, 'FACTS OPEN'), /FLAGGED$/,
+      `${item.name} has one representation and a scan flag and reads as unflagged`);
+  }
 });

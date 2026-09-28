@@ -482,3 +482,10 @@ footer{max-width:2200px;padding-left:64px;padding-right:64px;font-size:13px}
   .alert-pagination button{flex:0 0 auto}
   .alert-pagination span{flex:1 0 100%;text-align:center;order:-1;margin-bottom:4px}
 }
+
+/* The dated headline figure and today's, side by side. A reviewer read 87 in
+   the hero and 75 in the filter below it, both correct and a week apart. */
+.finding-live{display:inline-block;margin-left:14px;padding:4px 10px;border:1px solid var(--line);
+  border-left:2px solid var(--gold);background:var(--panel-inset);color:var(--muted);
+  font:12px/1.2 var(--font);letter-spacing:.06em;vertical-align:middle;white-space:nowrap}
+@media(max-width:700px){.finding-live{display:block;margin:10px 0 0;white-space:normal}}

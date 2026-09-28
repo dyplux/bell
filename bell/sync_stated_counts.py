@@ -113,8 +113,14 @@ def rewrite(counts: dict, dry_run: bool) -> list[str]:
         (README, r"`make check-offline` - \d+ tests", f"`make check-offline` - {total} tests"),
         (JUDGE, r"The gate was observed between [\d.]+ and [\d.]+ seconds (?:on \d+ machine|across \d+ machines)",
          f"The gate was observed between {band['fastest']} and {band['slowest']} seconds {where}"),
-        (JUDGE, r"(?<=<small>Gate runtime</small>)<strong>[^<]*</strong>",
-         f"<strong>&lt;{math.ceil(band['slowest'])}s</strong>"),
+        # The tile said "&lt;24s", which a third machine measured 29 seconds
+        # against. A ceiling claims every machine; a range claims the ones
+        # measured, which is all the file knows. The body text already said so
+        # and the tile did not, and the tile is what gets read.
+        (JUDGE, r"<small>Gate runtime[^<]*</small><strong>[^<]*</strong>",
+         f"<small>Gate runtime, {band['machines']} machine"
+         f"{'' if band['machines'] == 1 else 's'}</small>"
+         f"<strong>{math.floor(band['fastest'])}&ndash;{math.ceil(band['slowest'])}s</strong>"),
         (README, r"observed between [\d.]+ and [\d.]+ seconds (?:on \d+ machine|across \d+ machines|across machines)",
          f"observed between {band['fastest']} and {band['slowest']} seconds {where}"),
     )

@@ -10343,8 +10343,8 @@
       "decision": {
         "state": "blocked",
         "label": "DO NOT SELECT A WRAPPER",
-        "consequence": "A research desk must not rank or substitute these representations until the contradiction is resolved.",
-        "allocation_effect": "NO WRAPPER SELECTED until identity, denomination and market state are cleared."
+        "consequence": "This reference has one representation and that row contradicts itself, so there is nothing here to compare and nothing to rank. Resolve the contradiction before treating the row as a price.",
+        "allocation_effect": "NO WRAPPER SELECTED until the row's own market state is cleared."
       }
     },
     {
@@ -10413,8 +10413,8 @@
       "decision": {
         "state": "blocked",
         "label": "DO NOT SELECT A WRAPPER",
-        "consequence": "A research desk must not rank or substitute these representations until the contradiction is resolved.",
-        "allocation_effect": "NO WRAPPER SELECTED until identity, denomination and market state are cleared."
+        "consequence": "This reference has one representation and that row contradicts itself, so there is nothing here to compare and nothing to rank. Resolve the contradiction before treating the row as a price.",
+        "allocation_effect": "NO WRAPPER SELECTED until the row's own market state is cleared."
       }
     },
     {
@@ -93838,8 +93838,8 @@
       "decision": {
         "state": "blocked",
         "label": "DO NOT SELECT A WRAPPER",
-        "consequence": "A research desk must not rank or substitute these representations until the contradiction is resolved.",
-        "allocation_effect": "NO WRAPPER SELECTED until identity, denomination and market state are cleared."
+        "consequence": "This reference has one representation and that row contradicts itself, so there is nothing here to compare and nothing to rank. Resolve the contradiction before treating the row as a price.",
+        "allocation_effect": "NO WRAPPER SELECTED until the row's own market state is cleared."
       },
       "comparison": null,
       "tokens": [
@@ -93931,8 +93931,8 @@
       "decision": {
         "state": "blocked",
         "label": "DO NOT SELECT A WRAPPER",
-        "consequence": "A research desk must not rank or substitute these representations until the contradiction is resolved.",
-        "allocation_effect": "NO WRAPPER SELECTED until identity, denomination and market state are cleared."
+        "consequence": "This reference has one representation and that row contradicts itself, so there is nothing here to compare and nothing to rank. Resolve the contradiction before treating the row as a price.",
+        "allocation_effect": "NO WRAPPER SELECTED until the row's own market state is cleared."
       },
       "comparison": null,
       "tokens": [

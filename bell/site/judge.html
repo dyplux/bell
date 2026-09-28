@@ -56,7 +56,12 @@
     sit 158 reasons of which <strong>38 are rows that contradict each other</strong>: a
     quote denomination that breaks, a market cap of zero under live volume, a spread past
     the publishable ceiling. Those 38 are what this scanner found. Every number on this
-    page was produced by a command you can run yourself, with no API key.</p>
+    page was produced by a command you can run yourself, with no API key. The three
+    counts in the strip below are that dated measurement, so they are labelled with its
+    date: this page ships no JavaScript and cannot show you today's. The
+    <a href="/">product page</a> reads the live receipt and prints both, because a reviewer
+    read 87 here, found 75 in the live index, and had no way to tell from either page that
+    the two were a week apart.</p>
 
     <p>The other 120 reasons are a second price CoinMarketCap never published, which is a
     fact about catalogue coverage rather than about any issuer. That is why the refusal
@@ -67,11 +72,11 @@
     which; it leads now.</p>
 
     <div class="judge-facts">
-      <div><small>Contradictions found, by reason</small><strong>38</strong></div>
-      <div><small>Comparisons published</small><strong>87</strong></div>
-      <div><small>Refused for missing coverage</small><strong>120</strong></div>
-      <div><small>Tests in the offline gate</small><strong>496</strong></div>
-      <div><small>Gate runtime</small><strong>&lt;24s</strong></div>
+      <div><small>Contradictions found, by reason &middot; 21 Sep</small><strong>38</strong></div>
+      <div><small>Comparisons published &middot; 21 Sep</small><strong>87</strong></div>
+      <div><small>Refused for missing coverage &middot; 21 Sep</small><strong>120</strong></div>
+      <div><small>Tests in the offline gate</small><strong>497</strong></div>
+      <div><small>Gate runtime, 2 machines</small><strong>17&ndash;24s</strong></div>
     </div>
 
     <h2>Check it in 30 seconds, no key required</h2>
@@ -117,7 +122,7 @@ make base-rate</pre>
       <h3>What that gate proves, and what it does not</h3>
       <dl>
         <dt>The suite</dt>
-        <dd>496 tests, 385 Python and 111 JavaScript. One Python test needs a network and a
+        <dd>497 tests, 385 Python and 112 JavaScript. One Python test needs a network and a
         CoinMarketCap key; without them it is skipped and the runner says so.</dd>
 
         <dt>The re-derivation</dt>

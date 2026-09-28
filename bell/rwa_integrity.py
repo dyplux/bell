@@ -388,11 +388,28 @@ def asset_scan(asset: dict, issuer_lookup: dict | None = None, crypto_lookup: di
     else:
         next_action = "No rule hit in this scan; this is not proof of backing, liquidity or eligibility."
     if state == "do_not_compare":
+        # A reference with one representation has nothing to rank and nothing to
+        # substitute, so the comparison vocabulary is false about it. Two
+        # references in the live scan are in exactly that position: one row,
+        # flagged for a market cap of zero under live volume, described as
+        # representations a desk must not rank against each other. That is this
+        # product's own error, in the words it uses to report the same error in
+        # somebody else's catalogue.
+        single = len(tokens) == 1
         decision = {
             "state": "blocked",
             "label": "DO NOT SELECT A WRAPPER",
-            "consequence": "A research desk must not rank or substitute these representations until the contradiction is resolved.",
-            "allocation_effect": "NO WRAPPER SELECTED until identity, denomination and market state are cleared.",
+            "consequence": (
+                "This reference has one representation and that row contradicts itself, so "
+                "there is nothing here to compare and nothing to rank. Resolve the "
+                "contradiction before treating the row as a price."
+                if single else
+                "A research desk must not rank or substitute these representations until the "
+                "contradiction is resolved."),
+            "allocation_effect": (
+                "NO WRAPPER SELECTED until the row's own market state is cleared."
+                if single else
+                "NO WRAPPER SELECTED until identity, denomination and market state are cleared."),
         }
     elif state == "investigate":
         decision = {

@@ -56,12 +56,19 @@ class HeadlineNumbersArePinned(unittest.TestCase):
         published = BASE_RATE["comparable"]
         contradictions = BASE_RATE["refusal_split"]["data_contradiction"]
         coverage = BASE_RATE["refusal_split"]["source_coverage"]
-        self.assertIn(f"<small>Comparisons published</small><strong>{published}</strong>", page,
-                      f"the published-comparisons tile is not the measured {published}")
-        self.assertIn(f"<small>Contradictions found, by reason</small><strong>{contradictions}</strong>",
-                      page, f"the contradictions tile is not the measured {contradictions}")
-        self.assertIn(f"<small>Refused for missing coverage</small><strong>{coverage}</strong>",
-                      page, f"the coverage tile is not the measured {coverage}")
+        # The three dated tiles carry the date of the measurement behind them,
+        # because /judge ships no JavaScript and cannot show today's: a
+        # reviewer read 87 here and found 75 in the live index 400px below,
+        # both correct, a week apart, and neither page said so.
+        for label, value in (("Comparisons published", published),
+                             ("Contradictions found, by reason", contradictions),
+                             ("Refused for missing coverage", coverage)):
+            self.assertRegex(
+                page, rf"<small>{re.escape(label)}[^<]*</small><strong>{value}</strong>",
+                f"the {label!r} tile is not the measured {value}")
+            self.assertRegex(
+                page, rf"<small>{re.escape(label)} &middot; \d+ \w+</small>",
+                f"the {label!r} tile does not say which day it measured")
         self.assertNotIn(f"<small>Refusals, by named rule</small><strong>{BASE_RATE['refused']}</strong>",
                          page, "the undivided refusal total is back in a tile")
 
@@ -228,10 +235,18 @@ class HeadlineNumbersArePinned(unittest.TestCase):
         page = flowed(judge_text())
         band = re.search(r"between (\d+\.\d+) and (\d+\.\d+) seconds", page)
         self.assertIsNotNone(band, "the judge page stopped stating a measured band")
-        tile = re.search(r"<small>Gate runtime</small><strong>&lt;(\d+)s</strong>", judge_text())
-        self.assertIsNotNone(tile, "the gate runtime tile went missing")
-        self.assertGreaterEqual(float(tile.group(1)), float(band.group(2)),
-                                "the runtime tile is below the band stated beside it")
+        # The tile used to state a ceiling, "&lt;24s", and a third machine ran
+        # the gate in 29. A ceiling is a claim about every machine; the file
+        # only knows the ones it measured, so the tile states their range and
+        # says how many there were.
+        tile = re.search(r"<small>Gate runtime, (\d+) machines?</small>"
+                         r"<strong>(\d+)&ndash;(\d+)s</strong>", judge_text())
+        self.assertIsNotNone(tile, "the gate runtime tile no longer states a range and a count")
+        low, high = float(band.group(1)), float(band.group(2))
+        self.assertLessEqual(float(tile.group(2)), low,
+                             "the runtime tile's floor is above the fastest run measured")
+        self.assertGreaterEqual(float(tile.group(3)), high,
+                                "the runtime tile's ceiling is below the slowest run measured")
 
     def test_every_statement_of_the_published_count_agrees(self):
         # "157 refused, 87 published" had 157 pinned and 87 free in the same
