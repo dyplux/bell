@@ -314,6 +314,7 @@ footer{max-width:2200px;padding-left:64px;padding-right:64px;font-size:13px}
 .comparison-table th{text-align:left;color:#8798ab;font-weight:600;padding:3px 6px;border-bottom:1px solid rgba(170,184,201,.16)}
 .comparison-table td{padding:3px 6px;border-bottom:1px solid rgba(170,184,201,.07);color:#c6d2df}
 .comparison-table .num{text-align:right;font-variant-numeric:tabular-nums}
+.comparison-route-name{display:block;max-width:240px;margin-top:3px;color:#91a1b3;font-size:11px;line-height:1.35;white-space:normal}
 .comparison-open{margin:9px 0 0;font-size:12px;color:#d2a45e;line-height:1.5}
 .comparison-open span{font-weight:700;letter-spacing:.06em;margin-right:5px}
 .comparison-limits{margin:7px 0 0;font-size:12px;color:#8798ab;line-height:1.5}

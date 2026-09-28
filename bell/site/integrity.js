@@ -1392,7 +1392,7 @@
     const rows = c.routes.slice(0, 6).map(route => {
       const share = Number.isFinite(route.volume_share) ? `${(route.volume_share * 100).toFixed(1)}%` : '--';
       const premium = Number(route.premium_to_cheapest_bps || 0);
-      return `<tr><td>${escapeHTML(route.symbol || '')}</td><td>${escapeHTML(route.issuer_name || '')}</td><td class="num">${formatNumber(route.price)}</td><td class="num">${premium === 0 ? 'cheapest' : `+${premium.toFixed(1)} bps`}</td><td class="num">${share}</td></tr>`;
+      return `<tr><td><strong>${escapeHTML(route.symbol || '')}</strong><small class="comparison-route-name">${escapeHTML(route.name || 'Instrument name not supplied')}</small></td><td>${escapeHTML(route.issuer_name || '')}</td><td class="num">${formatNumber(route.price)}</td><td class="num">${premium === 0 ? 'cheapest' : `+${premium.toFixed(1)} bps`}</td><td class="num">${share}</td></tr>`;
     }).join('');
     const highestReportedVolume = c.highest_reported_volume || c.deepest || {};
     const cheapestHasHighestReportedVolume = c.cheapest_has_highest_reported_volume
@@ -2403,8 +2403,8 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
         byId('hero-low-symbol').textContent = low.symbol || 'LOW';
         byId('hero-high-quote').textContent = formatNumber(high.price);
         byId('hero-high-symbol').textContent = high.symbol || 'HIGH';
-        byId('hero-low-issuer').textContent = low.issuer_name || 'Issuer not resolved';
-        byId('hero-high-issuer').textContent = high.issuer_name || 'Issuer not resolved';
+        byId('hero-low-issuer').textContent = [low.name, low.issuer_name].filter(Boolean).join(' · ') || 'Issuer not resolved';
+        byId('hero-high-issuer').textContent = [high.name, high.issuer_name].filter(Boolean).join(' · ') || 'Issuer not resolved';
       }
     }
     if (capitalSignal) {

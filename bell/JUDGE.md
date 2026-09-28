@@ -23,7 +23,7 @@ unit and market-field coherence, and returns a visible state with evidence and a
 research action. It does not issue a safety score or approve a wrapper.
 
 The flagship proof is population-wide. Bell scans the tokenised references in the
-published receipt and keeps the whole queue inspectable. A critical contradiction is
+published receipt and keeps the whole queue inspectable. A critical review flag is
 `DO NOT SHORTLIST`, a warning is `INVESTIGATE`, a single wrapper becomes a dossier
 instead of a ranking, and a map-only reference remains `REFERENCE ONLY` or `DOSSIER
 PENDING`. The current public release also exposes the complete 7,811-reference map
@@ -45,7 +45,8 @@ current submission and does not require an API key.
    and the low/high quote endpoints with their issuer labels.
 3. Read the compact `CAPITAL ROUTE` directly below the endpoints. For a blocked case it
    makes the immediate user consequence explicit: keep the example amount uncommitted
-   until the contradiction is resolved. This is a deterministic guard, not a portfolio
+   until a person checks the source rows. The threshold is a review trigger, not proof
+   of incompatible economic claims. This is a deterministic guard, not a portfolio
    recommendation.
 4. Read the boundary below the endpoints: these are CMC quote rows, not a discount, backing,
    liquidity or executable spread.

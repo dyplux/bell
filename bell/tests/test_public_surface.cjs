@@ -391,6 +391,15 @@ test('the headline finding is read from the measurement, never typed into the pa
   assert.doesNotMatch(hero, /95%\s*interval\s*\d/);
 });
 
+test('filtered route comparisons expose the instrument name beside ticker and issuer', () => {
+  const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
+  const styles = fs.readFileSync(path.join(site, 'visual-overrides.css'), 'utf8');
+  assert.match(integrity, /comparison-route-name/);
+  assert.match(integrity, /route\.name \|\| 'Instrument name not supplied'/);
+  assert.match(integrity, /\[low\.name, low\.issuer_name\]/);
+  assert.match(styles, /\.comparison-route-name[^}]*white-space:normal/);
+});
+
 test('a missing measurement says so instead of leaving a number-shaped hole', () => {
   const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
   assert.match(integrity, /could not be loaded/);
