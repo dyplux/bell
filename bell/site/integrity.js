@@ -1080,7 +1080,16 @@
   // calibrated explanation derived from its published route set.
   function displayDecisionConsequence(item) {
     const comparison = item?.comparison;
-    if (!comparison) return item?.decision?.consequence || '';
+    if (!comparison) {
+      const signalCodes = new Set([
+        ...(item?.signal_codes || []),
+        ...(item?.signals || []).map(signal => typeof signal === 'string' ? signal : signal?.code).filter(Boolean),
+      ]);
+      if (signalCodes.has('ZERO_MCAP_POSITIVE_VOLUME')) {
+        return 'CoinMarketCap reports positive 24h volume alongside a zero market-cap field. This is a reported-field inconsistency, not proof that no market exists. Keep the route out of a shortlist until the quote is checked by crypto_id.';
+      }
+      return item?.decision?.consequence || '';
+    }
     const cheapest = comparison.cheapest || {};
     const highestVolume = comparison.deepest || {};
     const unresolved = (comparison.unresolved || []).length;

@@ -228,6 +228,8 @@ test('an affirmative on the page has to carry its consequence', () => {
   assert.match(integrity, /function displayDecisionConsequence/);
   assert.match(integrity, /equivalent units and claims are not established/);
   assert.match(integrity, /highest reported 24h volume/);
+  assert.match(integrity, /reported-field inconsistency, not proof that no market exists/);
+  assert.match(integrity, /checked by crypto_id/);
 });
 
 test('hero search lands on the result it just generated', () => {

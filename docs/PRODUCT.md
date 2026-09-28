@@ -40,8 +40,9 @@ The output is explicit:
   cheapest route. Equivalent units and claims are not established; reported
   volume does not establish market depth. This is a filtered price observation,
   not an endorsement;
-- `DO NOT SHORTLIST`: a critical identity, denomination or market contradiction
-  fired; stop ranking the wrapper;
+- `DO NOT SHORTLIST`: a critical comparison stop rule fired; verify the identity
+  or reported quote fields before ranking. A zero-market-cap/positive-volume
+  field pair is a review trigger, not proof that no market exists;
 - `INVESTIGATE`: a warning requires classification before
   treating rows as equivalent;
 - `FACTS OPEN`: no published Bell rule fired, so observed fields

@@ -26,7 +26,8 @@ stable identifiers, then routes each reference into the honest workflow:
   price and reported-volume filters. This does not establish equivalent units
   or claims. Bell names the observed spread, the cheapest route and which route
   has the highest reported 24h volume; that volume is not market depth.
-- `DO NOT SHORTLIST` when a critical contradiction is observed
+- `DO NOT SHORTLIST` when a critical comparison stop rule fires; field
+  inconsistencies trigger verification, not a claim about market behaviour
 - `INVESTIGATE` when evidence is incomplete or ambiguous
 - `FACTS OPEN` when observed fields can be inspected without creating a winner
 - `SINGLE REPRESENTATION` when there is no valid wrapper comparison
