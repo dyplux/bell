@@ -314,7 +314,21 @@ footer{max-width:2200px;padding-left:64px;padding-right:64px;font-size:13px}
 .comparison-table th{text-align:left;color:#8798ab;font-weight:600;padding:3px 6px;border-bottom:1px solid rgba(170,184,201,.16)}
 .comparison-table td{padding:3px 6px;border-bottom:1px solid rgba(170,184,201,.07);color:#c6d2df}
 .comparison-table .num{text-align:right;font-variant-numeric:tabular-nums}
-.comparison-route-name{display:block;max-width:240px;margin-top:3px;color:#91a1b3;font-size:11px;line-height:1.35;white-space:normal}
+.comparison-table td .comparison-route-name{display:block;max-width:240px;margin-top:3px;color:#91a1b3;font-size:11px;line-height:1.35;white-space:normal}
+.issuer-evidence{margin-top:14px;padding-top:12px;border-top:1px solid rgba(170,184,201,.16)}
+.issuer-evidence-heading>span{font:700 11px var(--font);letter-spacing:.08em;color:#e1c16e}
+.issuer-evidence-heading p,.issuer-evidence-card small,.issuer-evidence-gap{color:#9eacbd;font:11px/1.45 var(--font)}
+.issuer-evidence-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:9px}
+.issuer-evidence-card{min-width:0;padding:10px;border:1px solid rgba(170,184,201,.13);background:rgba(7,13,20,.42)}
+.issuer-evidence-title{display:flex;flex-wrap:wrap;justify-content:space-between;gap:5px 12px;color:#dbe5ef;font:600 12px var(--font)}
+.issuer-evidence-title strong{color:#e1c16e;font-size:11px}
+.issuer-evidence-routes{margin:6px 0;color:#aebccd;font:11px/1.45 var(--font)}
+.issuer-evidence-card ul{margin:6px 0;padding-left:16px;color:#c3cfdb;font:11px/1.45 var(--font)}
+.issuer-evidence-card li+li{margin-top:4px}
+.issuer-evidence-card small{display:block;margin-top:7px}
+.issuer-evidence-links{display:flex;flex-wrap:wrap;gap:6px 12px;margin-top:8px}
+.issuer-evidence-links a{color:#e1c16e;font:11px var(--font);text-decoration:underline;text-underline-offset:2px}
+.issuer-evidence-gap{margin:8px 0 0;padding:8px;border-left:2px solid #9b7740;background:rgba(155,119,64,.08)}
 .comparison-open{margin:9px 0 0;font-size:12px;color:#d2a45e;line-height:1.5}
 .comparison-open span{font-weight:700;letter-spacing:.06em;margin-right:5px}
 .comparison-limits{margin:7px 0 0;font-size:12px;color:#8798ab;line-height:1.5}
@@ -502,6 +516,7 @@ footer{max-width:2200px;padding-left:64px;padding-right:64px;font-size:13px}
    The cells have to be allowed to shrink and the words to wrap. */
 .outcome-key>div{min-width:0;overflow-wrap:break-word;word-break:normal}
 @media(max-width:620px){.outcome-key{grid-template-columns:repeat(auto-fit,minmax(min(100%,165px),1fr))}}
+@media(max-width:620px){.issuer-evidence-grid{grid-template-columns:1fr}.issuer-evidence-card{padding:9px}}
 
 .dated-capture-links{display:flex;align-items:baseline;flex-wrap:wrap;gap:9px 18px;padding:14px 16px;margin:18px 0;border:1px solid var(--line);border-left:2px solid var(--gold);background:var(--panel-inset);color:var(--muted);font:12px/1.5 var(--font)}
 .dated-capture-links strong{flex-basis:100%;color:var(--gold);font:500 12px var(--font);letter-spacing:.1em}

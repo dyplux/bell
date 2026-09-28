@@ -400,6 +400,18 @@ test('filtered route comparisons expose the instrument name beside ticker and is
   assert.match(styles, /\.comparison-route-name[^}]*white-space:normal/);
 });
 
+test('comparison cards carry sourced issuer structures with explicit scope limits', () => {
+  const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
+  const evidence = fs.readFileSync(path.join(site, 'issuer-evidence.js'), 'utf8');
+  assert.match(integrity, /issuerEvidenceMarkup\(c\.routes\)/);
+  assert.match(integrity, /return issuerEvidenceMarkup\(item\.tokens \|\| item\.representations \|\| \[\]\)/);
+  assert.match(evidence, /docs\.ondo\.finance\/ondo-stocks\/overview/);
+  assert.match(evidence, /docs\.xstocks\.fi\/docs\/product-legal-overview/);
+  assert.match(evidence, /robinhood\.com\/eu\/en\/crypto\/GOOGL/);
+  assert.match(evidence, /those terms were not independently checked here/);
+  assert.match(integrity, /economic claims remain unreviewed/);
+});
+
 test('a missing measurement says so instead of leaving a number-shaped hole', () => {
   const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
   assert.match(integrity, /could not be loaded/);

@@ -1386,9 +1386,35 @@
   // performed. Render it: a monitor that only ever refuses is a gate with no
   // door. The unresolved warnings ride along so this is never read as a clean
   // bill of health.
+  function issuerEvidenceMarkup(routes) {
+    const catalogue = Array.isArray(window.BELL_ISSUER_EVIDENCE) ? window.BELL_ISSUER_EVIDENCE : [];
+    const groups = catalogue.map(entry => ({
+      entry,
+      routes: routes.filter(route => entry.match.test(String(route.issuer_name || ''))),
+    })).filter(group => group.routes.length);
+    if (!groups.length) return '';
+    const cards = groups.map(({ entry, routes: matched }) => {
+      const routeNames = matched.map(route => `${route.symbol || '—'} · ${route.name || 'instrument name not supplied'}`);
+      const facts = entry.facts.map(fact => `<li>${escapeHTML(fact)}</li>`).join('');
+      const sources = entry.sources.map(source => {
+        const url = externalURL(source.url);
+        return url ? `<a href="${escapeHTML(url)}" target="_blank" rel="noopener">${escapeHTML(source.label)} ↗</a>` : '';
+      }).filter(Boolean).join('');
+      return `<article class="issuer-evidence-card"><div class="issuer-evidence-title"><span>${escapeHTML(entry.issuer)}</span><strong>${escapeHTML(entry.structure)}</strong></div><p class="issuer-evidence-routes">${routeNames.map(escapeHTML).join('<br>')}</p><ul>${facts}</ul><small>${escapeHTML(entry.scope)}</small><div class="issuer-evidence-links">${sources}</div></article>`;
+    }).join('');
+    const documented = new Set(groups.flatMap(group => group.routes));
+    const gaps = routes.filter(route => !documented.has(route));
+    const gapNote = gaps.length
+      ? `<p class="issuer-evidence-gap"><b>Issuer terms not mapped here:</b> ${gaps.map(route => escapeHTML(`${route.symbol || '—'} · ${route.name || route.issuer_name || 'unknown route'}`)).join('; ')}. Their economic claims remain unreviewed.</p>`
+      : '';
+    return `<section class="issuer-evidence" aria-label="Issuer-published economic terms"><div class="issuer-evidence-heading"><span>ECONOMIC UNIT &amp; RIGHTS</span><p>Issuer-published product documentation for the routes above. These claims are not independently verified; asset-specific offering terms still matter.</p></div><div class="issuer-evidence-grid">${cards}</div>${gapNote}</section>`;
+  }
+
   function renderComparison(item) {
     const c = item.comparison;
-    if (!c || !Array.isArray(c.routes) || c.routes.length < 2) return '';
+    if (!c || !Array.isArray(c.routes) || c.routes.length < 2) {
+      return issuerEvidenceMarkup(item.tokens || item.representations || []);
+    }
     const rows = c.routes.slice(0, 6).map(route => {
       const share = Number.isFinite(route.volume_share) ? `${(route.volume_share * 100).toFixed(1)}%` : '--';
       const premium = Number(route.premium_to_cheapest_bps || 0);
@@ -1408,7 +1434,7 @@
     const open = (c.unresolved || []).length
       ? `<p class="comparison-open"><span>STILL OPEN</span> ${escapeHTML((c.unresolved || []).join(' · '))}. The route filter drops derivatives, keys on the token id rather than the ticker, and excludes rows without both a price and traded volume, so these do not block the comparison - but they are not resolved.</p>`
       : '';
-    return `<div class="comparison-block"><span class="comparison-scroll-hint">SWIPE FOR PRICE · VS CHEAPEST · SHARE OF VOLUME →</span><div class="comparison-head"><span>FILTERED PRICE COMPARISON</span><strong>${Number(c.spread_bps).toFixed(1)} bps</strong><small>${c.route_count} token routes under this CMC RWA reference</small></div><p class="comparison-fill">${fill}</p><table class="comparison-table"><thead><tr><th>route</th><th>issuer</th><th class="num">price</th><th class="num">vs cheapest</th><th class="num">share of volume</th></tr></thead><tbody>${rows}</tbody></table>${routeSetDetails}${open}<p class="comparison-limits">A price comparison of the representations CoinMarketCap returned. Equivalent units and claims are not established. ${NOT_OBSERVED_SHORT}</p></div>`;
+    return `<div class="comparison-block"><span class="comparison-scroll-hint">SWIPE FOR PRICE · VS CHEAPEST · SHARE OF VOLUME →</span><div class="comparison-head"><span>FILTERED PRICE COMPARISON</span><strong>${Number(c.spread_bps).toFixed(1)} bps</strong><small>${c.route_count} token routes under this CMC RWA reference</small></div><p class="comparison-fill">${fill}</p><table class="comparison-table"><thead><tr><th>route</th><th>issuer</th><th class="num">price</th><th class="num">vs cheapest</th><th class="num">share of volume</th></tr></thead><tbody>${rows}</tbody></table>${issuerEvidenceMarkup(c.routes)}${routeSetDetails}${open}<p class="comparison-limits">A price comparison of the representations CoinMarketCap returned. Equivalent units and claims are not established. ${NOT_OBSERVED_SHORT}</p></div>`;
   }
 
   function comparisonRouteSet(item) {

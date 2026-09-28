@@ -68,12 +68,22 @@
     contradictory. These are rule hits rather than references, and one reference can trigger
     more than one rule.</p>
 
+    <p>Bell also routes the price table into issuer-published structure disclosures. On the
+    Alphabet reference, the source descriptions distinguish a
+    <a href="https://robinhood.com/eu/en/crypto/GOOGL/" target="_blank" rel="noopener">Robinhood derivative</a>,
+    <a href="https://docs.xstocks.fi/docs/product-legal-overview" target="_blank" rel="noopener">Backed's xStock tracker certificate</a>,
+    and <a href="https://docs.ondo.finance/ondo-stocks/overview" target="_blank" rel="noopener">Ondo's total-return tracker</a>.
+    Ondo says one token need not equal one share because dividends are reinvested; that is a
+    reason to inspect units before reading a price spread as a mismatch. These are issuer
+    descriptions, not independent verification, and Bell flags when exact asset-level terms
+    remain unchecked.</p>
+
     <div class="judge-facts">
       <div><small>Data-review triggers, by reason &middot; 21 Sep</small><strong>38</strong></div>
       <div><small>Comparisons published &middot; 21 Sep</small><strong>87</strong></div>
       <div><small>Refused for missing coverage &middot; 21 Sep</small><strong>107</strong></div>
       <div><small>No eligible spot pair &middot; 21 Sep</small><strong>13</strong></div>
-      <div><small>Tests in the offline gate</small><strong>548</strong></div>
+      <div><small>Tests in the offline gate</small><strong>549</strong></div>
       <div><small>Gate runtime, 2 machines</small><strong>17&ndash;26s</strong></div>
     </div>
 
@@ -125,7 +135,7 @@ make base-rate</pre>
       <h3>What that gate proves, and what it does not</h3>
       <dl>
         <dt>The suite</dt>
-        <dd>548 tests, 428 Python and 120 JavaScript. One Python test needs a network and a
+        <dd>549 tests, 428 Python and 121 JavaScript. One Python test needs a network and a
         CoinMarketCap key; without them it is skipped and the runner says so.</dd>
 
         <dt>The re-derivation</dt>
@@ -134,7 +144,7 @@ make base-rate</pre>
         count fails here.</dd>
 
         <dt>The submission gate</dt>
-        <dd>Runs a submission gate over 181 tracked files, inspecting every one for anything
+        <dd>Runs a submission gate over 182 tracked files, inspecting every one for anything
         private or unreleasable.</dd>
 
         <dt class="scope-limit">One observation is UNVERIFIED</dt>
