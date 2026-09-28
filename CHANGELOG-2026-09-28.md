@@ -15,15 +15,18 @@ behind each token ID, while unreviewed issuer terms remain explicit. The
 Robinhood GOOGL row now points to the Robinhood Chain debt-security Final Terms
 instead of Robinhood Europe's separate derivative product. The Alphabet page
 also marks that CMC groups Ondo's Class C `GOOGon` under its Class A reference,
-and says whether that route is in the filtered quote table. The same caveat is
-now present in the mobile preview and decision consequence. The comparison
-table renders every included route, so its rows match the published route
-count and evidence IDs.
+and says whether that route is in the filtered quote table. When included, the
+comparison heading now names the CMC-grouped Class A + C quote spread and says
+beside the value that it is not a same-share-class spread. The same caveat is
+present in the mobile preview and decision consequence. The comparison table
+renders every included route, so its rows match the published route count and
+evidence IDs.
 
 The complete offline gate passes (428 Python, 104 JavaScript and 18 Worker
 tests, plus receipt, catalogue, capture and submission checks). A local
-Chromium check renders the mobile caveat without page errors. The competitive
-reassessment has not yet been rerun against this follow-up.
+Chromium check renders the mobile caveat without page errors. Blind RWA
+follow-up scores were 87–90.5; competitors were not re-scored on the same cut,
+so these scores do not establish a current rank.
 
 ---
 

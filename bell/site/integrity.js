@@ -1103,7 +1103,12 @@
     const routeStatus = item?.comparison
       ? `the Class C route is ${scope.included ? 'included in' : 'excluded from'} this filtered quote set`
       : 'this observation has no published filtered quote set';
-    return `CMC groups GOOGon (Alphabet Class C) under its Class A reference; ${routeStatus}.`;
+    const spreadScope = item?.comparison
+      ? scope.included
+        ? 'the displayed spread therefore combines Class A and Class C routes, not one share class'
+        : 'the displayed spread uses the remaining Class A routes only'
+      : '';
+    return `CMC groups GOOGon (Alphabet Class C) under its Class A reference; ${routeStatus}${spreadScope ? `, and ${spreadScope}` : ''}.`;
   }
 
   function displayDecisionConsequence(item) {
@@ -1484,7 +1489,14 @@
     const open = (c.unresolved || []).length
       ? `<p class="comparison-open"><span>STILL OPEN</span> ${escapeHTML((c.unresolved || []).join(' · '))}. The route filter drops derivatives, keys on the token id rather than the ticker, and excludes rows without both a price and traded volume, so these do not block the comparison - but they are not resolved.</p>`
       : '';
-    return `<div class="comparison-block"><span class="comparison-scroll-hint">SWIPE FOR PRICE · VS CHEAPEST · SHARE OF VOLUME →</span><div class="comparison-head"><span>FILTERED PRICE COMPARISON</span><strong>${Number(c.spread_bps).toFixed(1)} bps</strong><small>${c.route_count} token routes under this CMC RWA reference</small></div><p class="comparison-fill">${fill}</p><table class="comparison-table"><thead><tr><th>route</th><th>issuer</th><th class="num">price</th><th class="num">vs cheapest</th><th class="num">share of volume</th></tr></thead><tbody>${rows}</tbody></table>${issuerEvidenceMarkup(item, c.routes)}${routeSetDetails}${open}<p class="comparison-limits">A price comparison of the representations CoinMarketCap returned. Equivalent units and claims are not established. ${NOT_OBSERVED_SHORT}</p></div>`;
+    const alphabetScope = alphabetClassScope(item);
+    const comparisonTitle = alphabetScope?.included
+      ? 'CMC-GROUPED QUOTE SPREAD · CLASS A + C'
+      : 'FILTERED PRICE COMPARISON';
+    const comparisonScope = alphabetScope?.included
+      ? '<p class="comparison-limits">This CMC-grouped spread includes Alphabet Class A and Class C routes. It is not a same-share-class spread.</p>'
+      : '';
+    return `<div class="comparison-block"><span class="comparison-scroll-hint">SWIPE FOR PRICE · VS CHEAPEST · SHARE OF VOLUME →</span><div class="comparison-head"><span>${comparisonTitle}</span><strong>${Number(c.spread_bps).toFixed(1)} bps</strong><small>${c.route_count} token routes under this CMC RWA reference</small></div>${comparisonScope}<p class="comparison-fill">${fill}</p><table class="comparison-table"><thead><tr><th>route</th><th>issuer</th><th class="num">price</th><th class="num">vs cheapest</th><th class="num">share of volume</th></tr></thead><tbody>${rows}</tbody></table>${issuerEvidenceMarkup(item, c.routes)}${routeSetDetails}${open}<p class="comparison-limits">A price comparison of the representations CoinMarketCap returned. Equivalent units and claims are not established. ${NOT_OBSERVED_SHORT}</p></div>`;
   }
 
   function comparisonRouteSet(item) {

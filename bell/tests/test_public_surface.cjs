@@ -410,6 +410,8 @@ test('comparison evidence is attached to exact token IDs and flags the Alphabet 
   assert.match(integrity, /CMC contracts · \$\{platforms\.length\} networks/);
   assert.match(integrity, /Share-class mismatch/);
   assert.match(integrity, /alphabetClassScopeSentence\(item\)/);
+  assert.match(integrity, /CMC-GROUPED QUOTE SPREAD · CLASS A \+ C/);
+  assert.match(integrity, /the displayed spread therefore combines Class A and Class C routes, not one share class/);
   assert.match(integrity, /CMC groups GOOGon \(Alphabet Class C\) under its Class A reference/);
   assert.match(integrity, /byId\('hero-mobile-note'\)\.textContent = alphabetClassScopeSentence\(alert\)/);
   assert.match(integrity, /return issuerEvidenceMarkup\(item, tokenRowsFor\(item\)\)/);
