@@ -1105,7 +1105,7 @@
     const decision = item?.decision;
     if (!decision) return null;
     const comparison = item?.comparison;
-    if (!comparison) return { ...decision, consequence: displayDecisionConsequence(item) };
+    if (!comparison) return { ...decision };
     const cheapest = comparison.cheapest || {};
     const highestVolume = comparison.highest_reported_volume || comparison.deepest || {};
     const cheapestHasHighestVolume = comparison.cheapest_has_highest_reported_volume
