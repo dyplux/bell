@@ -404,12 +404,15 @@ test('comparison evidence is attached to exact token IDs and flags the Alphabet 
   const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
   const evidence = fs.readFileSync(path.join(site, 'issuer-evidence.js'), 'utf8');
   assert.match(integrity, /issuerEvidenceMarkup\(item, c\.routes\)/);
+  assert.match(integrity, /const rows = c\.routes\.map\(route =>/);
   assert.match(integrity, /catalogue\[String\(route\.crypto_id\)\]/);
   assert.match(integrity, /tokenById\.get\(String\(route\.crypto_id\)\)/);
   assert.match(integrity, /CMC contracts · \$\{platforms\.length\} networks/);
   assert.match(integrity, /Share-class mismatch/);
-  assert.match(integrity, /includedClassC \? 'included in' : 'not included in'/);
-  assert.match(integrity, /return issuerEvidenceMarkup\(item, item\.tokens \|\| item\.representations \|\| \[\]\)/);
+  assert.match(integrity, /alphabetClassScopeSentence\(item\)/);
+  assert.match(integrity, /CMC groups GOOGon \(Alphabet Class C\) under its Class A reference/);
+  assert.match(integrity, /byId\('hero-mobile-note'\)\.textContent = alphabetClassScopeSentence\(alert\)/);
+  assert.match(integrity, /return issuerEvidenceMarkup\(item, tokenRowsFor\(item\)\)/);
   assert.match(evidence, /window\.BELL_INSTRUMENT_EVIDENCE/);
   assert.match(evidence, /'37013'/);
   assert.match(evidence, /'42272'/);

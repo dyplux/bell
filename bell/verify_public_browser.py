@@ -317,6 +317,33 @@ def main() -> int:
                             f"{name} shows COMPARABLE and the unresolved copy at the same time: {result_text[:500]!r}")
                 return expected
 
+            # CMC places an Alphabet Class C route under its Class A reference.
+            # The visible decision must disclose whether that route belongs to
+            # this receipt's filtered quote set, and the table must show every
+            # included route counted in its headline.
+            alphabet = next((row for row in receipt.get("alerts", [])
+                             if str(row.get("rwa_id")) == "4"), None)
+            alphabet_tokens = (alphabet or {}).get("tokens", [])
+            if any(str(token.get("crypto_id")) == "42272" for token in alphabet_tokens):
+                search_and_check("Alphabet Inc Class A")
+                decision_text = page.locator("#decision-hero").inner_text()
+                require("CMC groups GOOGon (Alphabet Class C) under its Class A reference" in decision_text,
+                        "the Alphabet decision does not disclose the Class A/Class C CMC grouping")
+                comparison = (alphabet or {}).get("comparison") or {}
+                if comparison:
+                    expected_membership = (
+                        "Class C route is included in this filtered quote set"
+                        if any(str(route.get("crypto_id")) == "42272"
+                               for route in comparison.get("routes", []))
+                        else "Class C route is excluded from this filtered quote set"
+                    )
+                    require(expected_membership in decision_text,
+                            f"the Alphabet decision does not disclose route membership: {expected_membership}")
+                    comparison_rows = page.locator(
+                        '#alert-list [data-rwa-id="4"] .comparison-table tbody tr')
+                    require(comparison_rows.count() == len(comparison.get("routes", [])),
+                            "the Alphabet comparison table row count differs from its filtered route set")
+
             # A digits-only query is a reference id. It used to be a substring
             # over every field joined together, so ?reference=0 reached SPY
             # through "S&P 500" and rendered a full verdict, capital panel and

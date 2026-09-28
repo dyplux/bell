@@ -1081,6 +1081,31 @@
 
   // Keep the replayable receipt untouched while giving the interface a
   // calibrated explanation derived from its published route set.
+  function tokenRowsFor(item) {
+    if (Array.isArray(item?.tokens) && item.tokens.length) return item.tokens;
+    if (Array.isArray(item?.representations)) return item.representations;
+    return [];
+  }
+
+  function alphabetClassScope(item) {
+    if (String(item?.rwa_id) !== '4') return null;
+    const tokenRows = tokenRowsFor(item);
+    const classC = tokenRows.find(token => String(token.crypto_id) === '42272');
+    if (!classC) return null;
+    const routes = item?.comparison?.routes || [];
+    const included = routes.some(route => String(route.crypto_id) === '42272');
+    return { token: classC, included };
+  }
+
+  function alphabetClassScopeSentence(item) {
+    const scope = alphabetClassScope(item);
+    if (!scope) return '';
+    const routeStatus = item?.comparison
+      ? `the Class C route is ${scope.included ? 'included in' : 'excluded from'} this filtered quote set`
+      : 'this observation has no published filtered quote set';
+    return `CMC groups GOOGon (Alphabet Class C) under its Class A reference; ${routeStatus}.`;
+  }
+
   function displayDecisionConsequence(item) {
     const comparison = item?.comparison;
     if (!comparison) {
@@ -1088,27 +1113,30 @@
         ...(item?.signal_codes || []),
         ...(item?.signals || []).map(signal => typeof signal === 'string' ? signal : signal?.code).filter(Boolean),
       ]);
-      if (signalCodes.has('ZERO_MCAP_POSITIVE_VOLUME')) {
-        return 'CoinMarketCap reports positive 24h volume alongside a zero market-cap field. This is a reported-field inconsistency, not proof that no market exists. Keep the route out of a shortlist until the quote is checked by crypto_id.';
-      }
-      if (signalCodes.has('PRICE_DENOMINATION_BREAK')) {
-        return 'Observed CMC quotes span at least 10× within this reference. Verify units, wrapper claims and quote identity before comparing; the threshold is a review trigger, not proof of an economic mismatch.';
-      }
-      return item?.decision?.consequence || '';
+      const base = signalCodes.has('ZERO_MCAP_POSITIVE_VOLUME')
+        ? 'CoinMarketCap reports positive 24h volume alongside a zero market-cap field. This is a reported-field inconsistency, not proof that no market exists. Keep the route out of a shortlist until the quote is checked by crypto_id.'
+        : signalCodes.has('PRICE_DENOMINATION_BREAK')
+          ? 'Observed CMC quotes span at least 10× within this reference. Verify units, wrapper claims and quote identity before comparing; the threshold is a review trigger, not proof of an economic mismatch.'
+          : item?.decision?.consequence || '';
+      return [base, alphabetClassScopeSentence(item)].filter(Boolean).join(' ');
     }
     const cheapest = comparison.cheapest || {};
     const highestVolume = comparison.highest_reported_volume || comparison.deepest || {};
     const unresolved = (comparison.unresolved || []).length;
     return `${comparison.route_count} routes under one CMC RWA reference passed Bell's price and reported-volume filters; equivalent units and claims are not established. `
       + `Observed spread ${Number(comparison.spread_bps).toFixed(1)} bps; lowest quote ${cheapest.symbol || 'unknown'}; highest reported 24h volume ${highestVolume.symbol || 'unknown'}.`
-      + (unresolved ? ` ${unresolved} rule check${unresolved === 1 ? '' : 's'} remain open.` : '');
+      + (unresolved ? ` ${unresolved} rule check${unresolved === 1 ? '' : 's'} remain open.` : '')
+      + (alphabetClassScopeSentence(item) ? ` ${alphabetClassScopeSentence(item)}` : '');
   }
 
   function decisionForCaseReceipt(item) {
     const decision = item?.decision;
     if (!decision) return null;
     const comparison = item?.comparison;
-    if (!comparison) return { ...decision };
+    if (!comparison) {
+      const classScope = alphabetClassScopeSentence(item);
+      return classScope ? { ...decision, consequence: [decision.consequence, classScope].filter(Boolean).join(' ') } : { ...decision };
+    }
     const cheapest = comparison.cheapest || {};
     const highestVolume = comparison.highest_reported_volume || comparison.deepest || {};
     const cheapestHasHighestVolume = comparison.cheapest_has_highest_reported_volume
@@ -1117,7 +1145,7 @@
       ...decision,
       consequence: `${comparison.route_count} token routes grouped under one CMC RWA reference passed Bell's price and reported-volume filters; this does not establish equivalent units or claims. Observed quote spread ${Number(comparison.spread_bps).toFixed(1)} bps; cheapest route ${cheapest.symbol || 'unknown'}`
         + (cheapestHasHighestVolume ? '' : `; ${highestVolume.symbol || 'another route'} has the highest reported 24h volume`)
-        + '.',
+        + `. ${alphabetClassScopeSentence(item)}`.trim(),
     };
   }
 
@@ -1228,7 +1256,7 @@
   }
 
   function observedQuoteEndpoints(item) {
-    const tokens = item?.tokens || item?.representations || [];
+    const tokens = tokenRowsFor(item);
     const band = window.BellCapitalImpact.quoteBand(tokens);
     if (!band) return '';
     const volume = row => row.volumeState === 'positive'
@@ -1388,7 +1416,7 @@
   // bill of health.
   function issuerEvidenceMarkup(item, routes) {
     const catalogue = window.BELL_INSTRUMENT_EVIDENCE || {};
-    const tokenRows = item?.tokens || item?.representations || [];
+    const tokenRows = tokenRowsFor(item);
     const tokenById = new Map(tokenRows.map(token => [String(token.crypto_id), token]));
     const matched = routes.map(route => ({
       route,
@@ -1396,9 +1424,8 @@
       token: tokenById.get(String(route.crypto_id)),
     }));
     if (!matched.length) return '';
-    const classC = tokenRows.find(token => String(token.crypto_id) === '42272');
-    const includedClassC = routes.some(route => String(route.crypto_id) === '42272');
-    const classMismatch = String(item?.rwa_id) === '4' && classC;
+    const classScope = alphabetClassScope(item);
+    const classMismatch = Boolean(classScope);
     const documented = matched.filter(row => row.entry);
     const unmapped = matched.filter(row => !row.entry);
     if (!documented.length && !classMismatch) return '';
@@ -1427,8 +1454,8 @@
     const gapNote = unmapped.length
       ? `<details class="issuer-evidence-gap issuer-unmapped"><summary>Issuer terms not mapped for ${unmapped.length} included route${unmapped.length === 1 ? '' : 's'}</summary><ul>${unmapped.map(({ route }) => `<li>${escapeHTML(`${route.symbol || '—'} · ${route.name || route.issuer_name || 'unknown route'} · CMC crypto_id ${route.crypto_id ?? 'missing'}`)}</li>`).join('')}</ul><p>Unit, rights, backing and redemption remain unreviewed for these IDs.</p></details>`
       : '';
-    const classWarning = classMismatch
-      ? `<p class="issuer-evidence-gap"><b>Share-class mismatch:</b> CMC places ${escapeHTML(classC.symbol || 'GOOGon')} (${escapeHTML(classC.name || 'Alphabet Class C')}) under the Alphabet Class A reference. It is ${includedClassC ? 'included in' : 'not included in'} this filtered quote table. This reference therefore groups different share classes; only the rows actually listed above contribute to the displayed spread.</p>`
+    const classWarning = classScope
+      ? `<p class="issuer-evidence-gap"><b>Share-class mismatch:</b> ${escapeHTML(alphabetClassScopeSentence(item))} This reference groups different share classes; only the rows listed above contribute to the displayed spread.</p>`
       : '';
     return `<section class="issuer-evidence" aria-label="Issuer-published terms by token ID"><div class="issuer-evidence-heading"><span>TERMS BY TOKEN ID</span><p>Each note is attached to the exact CMC crypto_id shown. Sources describe issuer-published claims; they do not independently verify backing, redemption, eligibility or custody.</p></div>${cards ? `<div class="issuer-evidence-grid">${cards}</div>` : ''}${gapNote}${classWarning}</section>`;
   }
@@ -1436,9 +1463,9 @@
   function renderComparison(item) {
     const c = item.comparison;
     if (!c || !Array.isArray(c.routes) || c.routes.length < 2) {
-      return issuerEvidenceMarkup(item, item.tokens || item.representations || []);
+      return issuerEvidenceMarkup(item, tokenRowsFor(item));
     }
-    const rows = c.routes.slice(0, 6).map(route => {
+    const rows = c.routes.map(route => {
       const share = Number.isFinite(route.volume_share) ? `${(route.volume_share * 100).toFixed(1)}%` : '--';
       const premium = Number(route.premium_to_cheapest_bps || 0);
       return `<tr><td><strong>${escapeHTML(route.symbol || '')}</strong><small class="comparison-route-name">${escapeHTML(route.name || 'Instrument name not supplied')}</small></td><td>${escapeHTML(route.issuer_name || '')}</td><td class="num">${formatNumber(route.price)}</td><td class="num">${premium === 0 ? 'cheapest' : `+${premium.toFixed(1)} bps`}</td><td class="num">${share}</td></tr>`;
@@ -1468,7 +1495,7 @@
       return { included_crypto_ids: included, excluded_crypto_ids: comparison.excluded_crypto_ids };
     }
     const includedKeys = new Set(included.map(id => String(id)));
-    const tokens = item?.tokens || item?.representations || [];
+    const tokens = tokenRowsFor(item);
     const eligibleCounts = new Map();
     for (const token of tokens) {
       const id = token?.crypto_id;
@@ -2502,7 +2529,8 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
       mobileDecision.hidden = false;
       byId('hero-mobile-case').textContent = alert.name || alert.symbol || 'Current reference';
       byId('hero-mobile-outcome').textContent = displayDecisionLabel(alert, 'HOLD COMPARISON');
-      byId('hero-mobile-note').textContent = caseFacts.join(' · ') || signals || 'Open the full evidence card for the supporting fields';
+      byId('hero-mobile-note').textContent = alphabetClassScopeSentence(alert)
+        || caseFacts.join(' · ') || signals || 'Open the full evidence card for the supporting fields';
     }
     const isClean = alert.state === 'no_flags';
     // The output was read from displayDecisionLabel and the hint from the raw
