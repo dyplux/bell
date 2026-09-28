@@ -6,80 +6,41 @@
   "files": {
     "append_history.py": {
       "guards_mutated": 11,
-      "survivors": [
-        172
-      ],
+      "survivors": [],
       "source_digest": "a9920e86a65ec3dc41a07124dbb1317f15cebaa2baedd0ecce8df49f9f87f06a",
-      "suite_digest": "a89745e23520ed1384bd39140c75732e5ea659fd85912c246ad29feb7fd81998",
-      "measured_at": "2026-09-28T01:39:11Z"
+      "suite_digest": "605c367ee02b4128a873eee0b11e50046c37f04985fc818e4ce1be66cd7583d6",
+      "measured_at": "2026-09-28T03:53:36Z"
     },
     "history_chain.py": {
       "guards_mutated": 5,
       "survivors": [],
       "source_digest": "af7473633f166c9ee3b31b447d69286f024ba75c81b97d75813ce20fabaee80b",
-      "suite_digest": "a89745e23520ed1384bd39140c75732e5ea659fd85912c246ad29feb7fd81998",
-      "measured_at": "2026-09-28T01:41:32Z"
+      "suite_digest": "605c367ee02b4128a873eee0b11e50046c37f04985fc818e4ce1be66cd7583d6",
+      "measured_at": "2026-09-28T03:56:10Z"
     },
     "reference_series.py": {
       "guards_mutated": 18,
       "survivors": [],
       "source_digest": "844c06377ce8f0341afb4341699dfda69565a91b495a6de94b0660e585de8abb",
-      "suite_digest": "a89745e23520ed1384bd39140c75732e5ea659fd85912c246ad29feb7fd81998",
-      "measured_at": "2026-09-28T01:33:58Z"
+      "suite_digest": "605c367ee02b4128a873eee0b11e50046c37f04985fc818e4ce1be66cd7583d6",
+      "measured_at": "2026-09-28T03:47:59Z"
     },
     "verify_case_receipt.py": {
       "guards_mutated": 40,
-      "survivors": [
-        116
-      ],
+      "survivors": [],
       "source_digest": "a14cbf71d2d9be51e0d3c5823820c669a662d5350336e99205281295a47fa6a0",
-      "suite_digest": "a89745e23520ed1384bd39140c75732e5ea659fd85912c246ad29feb7fd81998",
-      "measured_at": "2026-09-28T01:25:32Z"
+      "suite_digest": "605c367ee02b4128a873eee0b11e50046c37f04985fc818e4ce1be66cd7583d6",
+      "measured_at": "2026-09-28T03:38:46Z"
     },
     "verify_integrity_receipt.py": {
       "guards_mutated": 48,
-      "survivors": [
-        390,
-        403,
-        416,
-        425,
-        473
-      ],
+      "survivors": [],
       "source_digest": "be1ffce4d98cbf1d9787163f0f590762d5fd78a729111737b0095ce9c3947883",
-      "suite_digest": "a89745e23520ed1384bd39140c75732e5ea659fd85912c246ad29feb7fd81998",
-      "measured_at": "2026-09-28T01:06:44Z"
+      "suite_digest": "605c367ee02b4128a873eee0b11e50046c37f04985fc818e4ce1be66cd7583d6",
+      "measured_at": "2026-09-28T03:18:19Z"
     }
   },
   "files_not_measured": [],
-  "survivors": [
-    {
-      "file": "append_history.py",
-      "line": 172
-    },
-    {
-      "file": "verify_case_receipt.py",
-      "line": 116
-    },
-    {
-      "file": "verify_integrity_receipt.py",
-      "line": 390
-    },
-    {
-      "file": "verify_integrity_receipt.py",
-      "line": 403
-    },
-    {
-      "file": "verify_integrity_receipt.py",
-      "line": 416
-    },
-    {
-      "file": "verify_integrity_receipt.py",
-      "line": 425
-    },
-    {
-      "file": "verify_integrity_receipt.py",
-      "line": 473
-    }
-  ],
+  "survivors": [],
   "note": "Each guard's condition was rewritten so its body cannot run, and the offline gate was run. A survivor is a refusal no test notices, whatever its docstring says. Three reviewers found these by hand before this existed. The totals are the sum of the per-file records below and cover exactly the files listed there, which is why `scope` and `complete` are in the receipt: one file's run is not the repository's coverage. `complete` is about what was measured, not about when. Whether a record still describes this tree is decided by its two digests: source_digest is the file it mutated, suite_digest is the suite that judged it, because 'this guard is defended' means a test in that suite goes red when the guard stops refusing. Recompute both and you know."
 }

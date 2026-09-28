@@ -21,6 +21,7 @@ import copy
 import json
 from pathlib import Path
 import sys
+import tempfile
 import unittest
 
 HERE = Path(__file__).resolve().parent
@@ -598,5 +599,201 @@ class AnEndpointThatDoesNotAnswerIsNotEvidence(unittest.TestCase):
         self.assertEqual(receipt["observed_at"], "2026-09-21")
 
 
+
+class TheCommandLinePathsAreRefusedToo(unittest.TestCase):
+    """The branches only main() can reach, which `make mutate` found undefended.
+
+    Five of the seven guards that survived a full mutation sweep are here: a
+    missing input package, a history that does not carry a bundled receipt's
+    observation, a declared chain head that disagrees with the chain, and the
+    series file simply not being there. Every test in the suite drove the
+    verifier's functions and none drove its command line, so the refusals a
+    reader actually hits first were the ones nothing exercised.
+    """
+
+    def setUp(self):
+        import subprocess
+        import tempfile
+        self.subprocess = subprocess
+        self.directory = tempfile.TemporaryDirectory()
+        self.addCleanup(self.directory.cleanup)
+        self.root = Path(self.directory.name)
+        self.proof = HERE.parent / "site" / "proof"
+
+    def run_cli(self, *flags: str):
+        return self.subprocess.run(
+            [sys.executable, str(HERE.parent / "verify_integrity_receipt.py"), *flags],
+            capture_output=True, text=True,
+            env={"PYTHONPATH": str(HERE.parent), "PATH": "/usr/bin:/bin:/usr/local/bin"})
+
+    def write(self, name: str, value) -> Path:
+        path = self.root / name
+        path.write_text(json.dumps(value), encoding="utf-8")
+        return path
+
+    def test_an_input_package_that_is_not_there_is_named(self):
+        missing = self.root / "no-such-inputs.json"
+        result = self.run_cli("--inputs", str(missing))
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("public input package is missing", result.stderr)
+        self.assertIn(missing.name, result.stderr,
+                      "the refusal does not say which file it looked for")
+
+    def test_a_history_that_does_not_carry_a_bundled_observation_is_refused(self):
+        # Drop the observation the dated receipt describes. Everything else
+        # still verifies, so only this guard can catch it.
+        history = copy.deepcopy(HISTORY)
+        dated = json.loads((self.proof / "rwa-surface-integrity-2026-09-15.json")
+                           .read_text(encoding="utf-8"))
+        kept = [item for item in history["observations"]
+                if item["observed_at"] != dated["observed_at"]]
+        self.assertEqual(len(kept), len(history["observations"]) - 1,
+                         "the dated receipt's observation is not in the shipped history")
+        history["observations"] = kept
+        result = self.run_cli("--history", str(self.write("history.json", history)))
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("missing a bundled receipt observation", result.stderr)
+
+    def test_a_declared_chain_head_that_disagrees_with_the_chain_is_refused(self):
+        history = copy.deepcopy(HISTORY)
+        history["chain_head"] = "0" * 64
+        result = self.run_cli("--history", str(self.write("history.json", history)))
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("history chain head is", result.stderr)
+        self.assertIn("the file declares", result.stderr)
+
+    def test_a_bundled_receipt_that_skips_the_state_comparison_must_ship_its_inputs(self):
+        """"Not compared, because the rules differ" needs something else proving it.
+
+        The latest receipt is recomputed byte for byte from its shipped input
+        package, so skipping its state comparison costs nothing. Any other
+        bundled receipt that skips has nothing behind it, and calling it
+        cross-checked would be the claim this project exists to refuse.
+
+        It never fires on the shipped artefacts, because the dated receipt and
+        its history record are both unversioned and therefore agree. Make the
+        receipt declare the current rule set while its record still declares
+        none, and the skip happens on a receipt that ships no inputs.
+        """
+        from rwa_integrity import RULES_VERSION
+
+        dated = json.loads((self.proof / "rwa-surface-integrity-2026-09-15.json")
+                           .read_text(encoding="utf-8"))
+        self.assertIsNone(dated["universe"].get("rules_version"),
+                          "the dated receipt now declares a rule set; this fixture assumed not")
+        dated["universe"]["rules_version"] = RULES_VERSION
+        result = self.run_cli("--receipt", str(self.write("dated.json", dated)))
+        self.assertEqual(result.returncode, 1, result.stdout[-300:])
+        self.assertIn("was not compared on state counts", result.stderr)
+        self.assertIn("ships no input package", result.stderr)
+
+    def test_a_missing_reference_series_is_a_missing_artefact_not_an_absent_feature(self):
+        # `if DELTAS.exists()` meant deleting the file produced silence. The
+        # guard that replaced it is reached only from main(), so nothing drove
+        # it either.
+        import reference_series
+        original = reference_series.DELTAS
+        reference_series.DELTAS = self.root / "not-here.json"
+        try:
+            result = self.subprocess.run(
+                [sys.executable, "-c",
+                 "import sys; sys.path.insert(0, %r);"
+                 "import reference_series, pathlib;"
+                 "reference_series.DELTAS = pathlib.Path(%r);"
+                 "import verify_integrity_receipt as v;"
+                 "sys.argv = ['verify']; sys.exit(v.main())"
+                 % (str(HERE.parent), str(self.root / "not-here.json"))],
+                capture_output=True, text=True,
+                env={"PYTHONPATH": str(HERE.parent), "PATH": "/usr/bin:/bin:/usr/local/bin"})
+        finally:
+            reference_series.DELTAS = original
+        self.assertEqual(result.returncode, 1, result.stdout[-400:])
+        self.assertIn("is missing", result.stderr + result.stdout)
+
+
+class ThePostWriteChecksAreDrivenToo(unittest.TestCase):
+    """Two guards that run after a decision has already been made.
+
+    `append_history` re-verifies the whole chain after extending it, and
+    `find_published` prefers a receipt whose source digests match over one that
+    merely shares a timestamp. Both are the second half of an operation, which
+    is why nothing reached them: a test that drives the happy path never sees
+    the branch that fires when the first half was wrong.
+    """
+
+    def test_appending_refuses_to_leave_a_chain_that_does_not_verify(self):
+        import append_history
+        from history_chain import rebuild
+
+        observations = rebuild([{"observed_at": "2026-09-21T21:25:01Z"}])
+        head = observations[-1]["sha256"]
+        anchor = Path(tempfile.mkdtemp()) / "history-chain-head.txt"
+        anchor.write_text(head + "\n", encoding="utf-8")
+        original_anchor, original_verify = append_history.ANCHOR, append_history.verify
+        append_history.ANCHOR = anchor
+        # append() verifies the series BEFORE extending it and again after, and
+        # only the second is this guard. So the stub answers honestly the first
+        # time and disagrees the second: the pre-check passes, the write
+        # happens, and the post-write verification is what refuses.
+        calls = []
+
+        def verify_then_disagree(observations_seen):
+            calls.append(1)
+            return original_verify(observations_seen) if len(calls) == 1 else "0" * 64
+
+        append_history.verify = verify_then_disagree
+        history = {"observations": observations, "chain_head": head}
+        summary = {"observed_at": "2026-09-26T20:08:35Z",
+                   "tokenised_references_scanned": 792, "tokens_scanned": 1442,
+                   "states": {"no_flags": 792}, "signals": {},
+                   "source_hashes": {"map": "a" * 64}, "rules_version": None}
+        try:
+            with self.assertRaises(SystemExit) as raised:
+                append_history.append(history, summary)
+        finally:
+            append_history.ANCHOR = original_anchor
+            append_history.verify = original_verify
+        self.assertIn("does not verify", str(raised.exception))
+        self.assertIn("nothing was written", str(raised.exception))
+
+    def test_a_published_receipt_is_chosen_by_its_digests_before_its_timestamp(self):
+        # find_published falls back to observed_at so the digest check is not a
+        # tautology, and prefers a digest match when there is one. With two
+        # candidates carrying the same timestamp and only one carrying the
+        # digests, the digests have to decide.
+        import verify_case_receipt
+
+        payload = json.loads((PROOF / "rwa-surface-integrity-latest-replay-2026-09-21.json")
+                             .read_text(encoding="utf-8"))
+        digests = payload["source_hashes"]
+        stamp = payload["observed_at"]
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            # The digest match sorts FIRST and the timestamp-only file last.
+            # The first version of this test had them the other way round, so
+            # the timestamp fallback - which keeps the last match it sees -
+            # landed on the same file the digest branch would have returned,
+            # and the test passed with the digest branch neutered. `make
+            # mutate` reported it as an undefended guard, which is what the
+            # tool is for: a test that cannot fail is worse than no test,
+            # because it is counted.
+            (root / "a-digest-match.json").write_text(
+                json.dumps({"observed_at": stamp, "source_hashes": digests}), encoding="utf-8")
+            (root / "b-timestamp-only.json").write_text(
+                json.dumps({"observed_at": stamp, "source_hashes": {"map": "0" * 64}}),
+                encoding="utf-8")
+            original = verify_case_receipt.SHIPPED_RECEIPTS
+            verify_case_receipt.SHIPPED_RECEIPTS = sorted(root.glob("*.json"))
+            try:
+                found, name = verify_case_receipt.find_published(
+                    {"source_hashes": digests, "observed_at": stamp})
+            finally:
+                verify_case_receipt.SHIPPED_RECEIPTS = original
+        self.assertEqual(name, "a-digest-match.json",
+                         "the receipt was chosen by its timestamp while a digest match existed")
+        self.assertEqual(found["source_hashes"], digests)
+
+
 if __name__ == "__main__":
     unittest.main()
+
