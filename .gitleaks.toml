@@ -1,0 +1,45 @@
+# Bell's whole claim is that the CoinMarketCap key never leaves the publisher
+# process, so the scanner reads the full history rather than the diff. This
+# file exists so that the scan keeps meaning something.
+#
+# The weekly full-history run reported 5,334 findings, all of them
+# `generic-api-key`, and every one was a public on-chain identifier: 3,285
+# Ethereum-style contract addresses, 466 Solana base58 addresses and 94 SHA-256
+# digests, inside the credential-free input package this project publishes on
+# purpose. Those are the fields the product joins on. A scan that fails every
+# Monday on 5,334 non-secrets is a scan nobody reads, and the next real finding
+# arrives in a list of five thousand.
+#
+# So the allowance is written against the SHAPE of a public identifier, not
+# against a filename. Silencing a path would mean a key committed into that
+# path is missed forever; silencing a shape means a key is still caught
+# wherever it is, because a CoinMarketCap key is a dashed UUID and matches none
+# of these.
+
+[extend]
+useDefault = true
+
+[[rules]]
+  id = "generic-api-key"
+  [rules.allowlist]
+    regexTarget = "match"
+    regexes = [
+      # An EVM contract or wallet address. 0x and forty hex digits, which is
+      # the identity CMC returns for a tokenised representation.
+      '''0x[0-9a-fA-F]{40}''',
+      # A SHA-256 digest. The product publishes these as source fingerprints
+      # and case-receipt bindings; they are the evidence, not a credential.
+      '''\b[0-9a-f]{64}\b''',
+      # A Solana address: base58, 32 to 44 characters, no 0/O/I/l.
+      '''\b[1-9A-HJ-NP-Za-km-z]{32,44}\b''',
+    ]
+
+[allowlist]
+  description = "Fixtures that are deliberately not secrets"
+  paths = [
+    # bell/tests/test_case_receipt.py builds "0123456789abcdef" * 4 and
+    # "f" * 64 as forged fingerprints, to assert the verifier refuses a
+    # placeholder. A scanner finding those is the test working.
+    '''bell/tests/test_case_receipt\.py''',
+    '''bell/tests/test_malformed_evidence_is_refused\.py''',
+  ]

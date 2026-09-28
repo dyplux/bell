@@ -16,6 +16,7 @@ import copy
 import json
 from pathlib import Path
 import subprocess
+import tempfile
 import sys
 import unittest
 
@@ -39,6 +40,30 @@ def observation(stamp: str, clear: int = 94) -> dict:
 
 
 class TheChain(unittest.TestCase):
+
+    # Every one of these used to write its forgery into the PUBLISHED history
+    # and put the original back in a `finally`. That works until something
+    # interrupts it, and `make mutate` runs the gate 140 times in a row: the
+    # shipped series was found rewritten in the working tree, with every
+    # digest after observation four re-linked, because one of those runs did
+    # not reach its finally. A test may read a published artefact; it may not
+    # write one.
+    #
+    # The verifier takes --history, so the forgery goes in a temporary file and
+    # the real one is never opened for writing.
+    def verify_against(self, history, repo, *, raw=None):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "history.json"
+            if raw is not None:
+                path.write_bytes(raw)
+            else:
+                path.write_text(json.dumps(history, ensure_ascii=False, indent=2) + "\n",
+                                encoding="utf-8")
+            return subprocess.run(
+                ["python3", "bell/verify_integrity_receipt.py", "--history", str(path)],
+                cwd=repo, capture_output=True, text=True,
+                env={"PYTHONPATH": "bell", "PATH": "/usr/bin:/bin:/usr/local/bin"})
+
     def test_a_clean_series_verifies_and_returns_its_head(self):
         chained = rebuild([observation("2026-09-21T21:25:01Z"), observation("2026-09-26T20:08:35Z")])
         self.assertEqual(verify(chained), chained[-1]["sha256"])
@@ -101,7 +126,6 @@ class TheChain(unittest.TestCase):
         # End to end, not just the library: the command a judge runs has to fail.
         repo = HERE.parent.parent
         history = json.loads(HISTORY.read_text(encoding="utf-8"))
-        original = HISTORY.read_bytes()
         # Internally consistent, exactly as the reviewer's forgery was: the
         # states still sum to the population, so the shape check passes and the
         # chain is what has to catch it.
@@ -109,34 +133,20 @@ class TheChain(unittest.TestCase):
         total = target["tokenised_references_scanned"]
         target["states"] = {"do_not_compare": 0, "investigate": 0, "no_flags": total}
         target["signals"] = {key: 0 for key in target["signals"]}
-        try:
-            HISTORY.write_text(json.dumps(history, ensure_ascii=False, indent=2) + "\n",
-                               encoding="utf-8")
-            result = subprocess.run(["python3", "bell/verify_integrity_receipt.py"], cwd=repo,
-                                    capture_output=True, text=True,
-                                    env={"PYTHONPATH": "bell", "PATH": "/usr/bin:/bin:/usr/local/bin"})
-            self.assertNotEqual(result.returncode, 0,
-                                "the verifier accepted an edited observation")
-            self.assertIn("does not match its own digest", result.stderr)
-        finally:
-            HISTORY.write_bytes(original)
+        result = self.verify_against(history, repo)
+        self.assertNotEqual(result.returncode, 0,
+                            "the verifier accepted an edited observation")
+        self.assertIn("does not match its own digest", result.stderr)
 
     def test_a_truncated_file_is_explained_rather_than_traced(self):
         # A half-written file raised JSONDecodeError and printed a raw stack. A
         # verifier exists to say what is wrong with the evidence; the exit code
         # was already right, the message was not.
         repo = HERE.parent.parent
-        original = HISTORY.read_bytes()
-        try:
-            HISTORY.write_bytes(original[:900])
-            result = subprocess.run(["python3", "bell/verify_integrity_receipt.py"], cwd=repo,
-                                    capture_output=True, text=True,
-                                    env={"PYTHONPATH": "bell", "PATH": "/usr/bin:/bin:/usr/local/bin"})
-            self.assertEqual(result.returncode, 1)
-            self.assertIn("is not readable JSON", result.stderr)
-            self.assertNotIn("Traceback", result.stderr)
-        finally:
-            HISTORY.write_bytes(original)
+        result = self.verify_against(None, repo, raw=HISTORY.read_bytes()[:900])
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("is not readable JSON", result.stderr)
+        self.assertNotIn("Traceback", result.stderr)
 
     def test_a_missing_file_says_which_one(self):
         repo = HERE.parent.parent
@@ -151,6 +161,30 @@ class TheChain(unittest.TestCase):
 
 
 class TheAnchor(unittest.TestCase):
+
+    # Every one of these used to write its forgery into the PUBLISHED history
+    # and put the original back in a `finally`. That works until something
+    # interrupts it, and `make mutate` runs the gate 140 times in a row: the
+    # shipped series was found rewritten in the working tree, with every
+    # digest after observation four re-linked, because one of those runs did
+    # not reach its finally. A test may read a published artefact; it may not
+    # write one.
+    #
+    # The verifier takes --history, so the forgery goes in a temporary file and
+    # the real one is never opened for writing.
+    def verify_against(self, history, repo, *, raw=None):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "history.json"
+            if raw is not None:
+                path.write_bytes(raw)
+            else:
+                path.write_text(json.dumps(history, ensure_ascii=False, indent=2) + "\n",
+                                encoding="utf-8")
+            return subprocess.run(
+                ["python3", "bell/verify_integrity_receipt.py", "--history", str(path)],
+                cwd=repo, capture_output=True, text=True,
+                env={"PYTHONPATH": "bell", "PATH": "/usr/bin:/bin:/usr/local/bin"})
+
     """Rebuilding the whole chain and updating the declared head used to pass.
 
     The head lived inside the file it protects, so a forger who re-linked every
@@ -170,26 +204,18 @@ class TheAnchor(unittest.TestCase):
 
     def test_a_fully_rebuilt_chain_no_longer_verifies(self):
         repo = HERE.parent.parent
-        original = HISTORY.read_bytes()
-        history = json.loads(original)
+        history = json.loads(HISTORY.read_text(encoding="utf-8"))
         target = history["observations"][5]
         target["states"] = {"do_not_compare": 0, "investigate": 0,
                             "no_flags": target["tokenised_references_scanned"]}
         target["signals"] = {key: 0 for key in target["signals"]}
         history["observations"] = rebuild(history["observations"])
         history["chain_head"] = verify(history["observations"])
-        try:
-            HISTORY.write_text(json.dumps(history, ensure_ascii=False, indent=2) + "\n",
-                               encoding="utf-8")
-            result = subprocess.run(["python3", "bell/verify_integrity_receipt.py"], cwd=repo,
-                                    capture_output=True, text=True,
-                                    env={"PYTHONPATH": "bell", "PATH": "/usr/bin:/bin:/usr/local/bin"})
-            self.assertEqual(result.returncode, 1,
-                             "a fully rebuilt chain with a matching head still verified")
-            self.assertIn("history-chain-head.txt anchors", result.stderr)
-            self.assertNotIn("Traceback", result.stderr)
-        finally:
-            HISTORY.write_bytes(original)
+        result = self.verify_against(history, repo)
+        self.assertEqual(result.returncode, 1,
+                         "a fully rebuilt chain with a matching head still verified")
+        self.assertIn("history-chain-head.txt anchors", result.stderr)
+        self.assertNotIn("Traceback", result.stderr)
 
     def test_a_missing_anchor_is_refused_rather_than_skipped(self):
         repo = HERE.parent.parent

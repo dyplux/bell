@@ -9,76 +9,59 @@
       "survivors": [],
       "stated_exceptions": [],
       "source_digest": "a9920e86a65ec3dc41a07124dbb1317f15cebaa2baedd0ecce8df49f9f87f06a",
-      "suite_digest": "221c37b1733ad138fc952f65a4c115d491046c4f782e0b5ab446f66ba6f91127",
-      "measured_at": "2026-09-28T06:42:26Z"
+      "suite_digest": "6b4c1529f85be65c9b665ee084bcb6b9175f55732f6f0506c525d203e4e787c5",
+      "measured_at": "2026-09-28T08:04:45Z"
     },
     "base_rate.py": {
       "guards_mutated": 9,
       "survivors": [],
-      "stated_exceptions": [
-        {
-          "line": 182,
-          "reason": "The single-representation lens sorts every row through if/elif/elif/else, so its four parts always sum to the total and this can never fire today. It is a guard against a future edit that removes the catch-all, which is the change that would silently drop references from the partition. It replaced a bare assert that vanished under python3 -O."
-        }
-      ],
+      "stated_exceptions": [],
       "source_digest": "6f0b02a499d59f8691b03a03fc9f3be11cb32828ad0db617e4c90e17562bce96",
-      "suite_digest": "221c37b1733ad138fc952f65a4c115d491046c4f782e0b5ab446f66ba6f91127",
-      "measured_at": "2026-09-28T06:54:16Z"
+      "suite_digest": "6b4c1529f85be65c9b665ee084bcb6b9175f55732f6f0506c525d203e4e787c5",
+      "measured_at": "2026-09-28T08:17:12Z"
     },
     "history_chain.py": {
       "guards_mutated": 5,
       "survivors": [],
       "stated_exceptions": [],
       "source_digest": "af7473633f166c9ee3b31b447d69286f024ba75c81b97d75813ce20fabaee80b",
-      "suite_digest": "221c37b1733ad138fc952f65a4c115d491046c4f782e0b5ab446f66ba6f91127",
-      "measured_at": "2026-09-28T06:45:00Z"
+      "suite_digest": "6b4c1529f85be65c9b665ee084bcb6b9175f55732f6f0506c525d203e4e787c5",
+      "measured_at": "2026-09-28T08:07:27Z"
     },
     "reference_series.py": {
       "guards_mutated": 18,
       "survivors": [],
       "stated_exceptions": [],
       "source_digest": "844c06377ce8f0341afb4341699dfda69565a91b495a6de94b0660e585de8abb",
-      "suite_digest": "221c37b1733ad138fc952f65a4c115d491046c4f782e0b5ab446f66ba6f91127",
-      "measured_at": "2026-09-28T06:36:46Z"
+      "suite_digest": "6b4c1529f85be65c9b665ee084bcb6b9175f55732f6f0506c525d203e4e787c5",
+      "measured_at": "2026-09-28T07:58:51Z"
     },
     "rwa_integrity.py": {
       "guards_mutated": 9,
-      "survivors": [
-        178
-      ],
-      "stated_exceptions": [
-        {
-          "line": 89,
-          "reason": "number() rejects None and bool before parsing. Decimal(str(True)) and Decimal(str(None)) both raise InvalidOperation, which the except below already turns into None, so removing this changes no result. It states the intent and saves a raise; it does not decide anything."
-        }
-      ],
+      "survivors": [],
+      "stated_exceptions": [],
       "source_digest": "27c1bf906e7fabed0ce66af5753fd3c1fe5a9967aafcc8d5153a747a20e16a1c",
-      "suite_digest": "221c37b1733ad138fc952f65a4c115d491046c4f782e0b5ab446f66ba6f91127",
-      "measured_at": "2026-09-28T06:49:37Z"
+      "suite_digest": "6b4c1529f85be65c9b665ee084bcb6b9175f55732f6f0506c525d203e4e787c5",
+      "measured_at": "2026-09-28T08:12:18Z"
     },
     "verify_case_receipt.py": {
       "guards_mutated": 40,
       "survivors": [],
       "stated_exceptions": [],
       "source_digest": "a14cbf71d2d9be51e0d3c5823820c669a662d5350336e99205281295a47fa6a0",
-      "suite_digest": "221c37b1733ad138fc952f65a4c115d491046c4f782e0b5ab446f66ba6f91127",
-      "measured_at": "2026-09-28T06:27:31Z"
+      "suite_digest": "703f904280e8f5b7bbf6add08a2d7b4dd2c929a8828495e8be2babbbca11bd44",
+      "measured_at": "2026-09-28T07:49:02Z"
     },
     "verify_integrity_receipt.py": {
       "guards_mutated": 48,
       "survivors": [],
       "stated_exceptions": [],
       "source_digest": "be1ffce4d98cbf1d9787163f0f590762d5fd78a729111737b0095ce9c3947883",
-      "suite_digest": "221c37b1733ad138fc952f65a4c115d491046c4f782e0b5ab446f66ba6f91127",
-      "measured_at": "2026-09-28T06:06:58Z"
+      "suite_digest": "703f904280e8f5b7bbf6add08a2d7b4dd2c929a8828495e8be2babbbca11bd44",
+      "measured_at": "2026-09-28T07:27:58Z"
     }
   },
   "files_not_measured": [],
-  "survivors": [
-    {
-      "file": "rwa_integrity.py",
-      "line": 178
-    }
-  ],
+  "survivors": [],
   "note": "Each guard's condition was rewritten so its body cannot run, and the offline gate was run. A survivor is a refusal no test notices, whatever its docstring says. Three reviewers found these by hand before this existed. The totals are the sum of the per-file records below and cover exactly the files listed there, which is why `scope` and `complete` are in the receipt: one file's run is not the repository's coverage. `complete` is about what was measured, not about when. Whether a record still describes this tree is decided by its two digests: source_digest is the file it mutated, suite_digest is the suite that judged it, because 'this guard is defended' means a test in that suite goes red when the guard stops refusing. Recompute both and you know."
 }

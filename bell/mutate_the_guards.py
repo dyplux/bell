@@ -273,6 +273,20 @@ def main(argv: list[str] | None = None) -> int:
         raise SystemExit("the gate is red before any guard was touched, so every mutation "
                          "would read as caught; fix `make check-offline` first")
 
+    # A sweep runs the gate once per guard, and a suite that writes a published
+    # artefact and restores it in a finally will one day be interrupted between
+    # the two. That happened: the dated history was found rewritten in the
+    # working tree after a 140-guard run, one `git add -A` away from being
+    # committed. The suite no longer writes it, and this is the tripwire that
+    # says so if something starts again.
+    def published_diff() -> str:
+        result = subprocess.run(
+            ["git", "diff", "--name-only", "--", "bell/site/proof", "bell/history-chain-head.txt"],
+            cwd=str(ROOT), capture_output=True, text=True)
+        return result.stdout.strip() if result.returncode == 0 else ""
+
+    dirty_before = published_diff()
+
     checked = 0
     for name in targets:
         path = ROOT / "bell" / name
@@ -308,6 +322,16 @@ def main(argv: list[str] | None = None) -> int:
                 "suite_digest": suite_digest(),
                 "measured_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
             }
+
+    dirty_after = published_diff()
+    unexpected = sorted(set(dirty_after.splitlines()) - set(dirty_before.splitlines())
+                        - {"bell/site/proof/guard-coverage.json"})
+    if unexpected:
+        print("a published artefact was rewritten during the sweep and not put back:",
+              file=sys.stderr)
+        for name in unexpected:
+            print(f"  {name}", file=sys.stderr)
+        print("  restore it before reading anything into these numbers", file=sys.stderr)
 
     receipt = assemble(measured)
     out.write_text(json.dumps(receipt, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
