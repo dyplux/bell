@@ -8,7 +8,7 @@ const order = require('../site/index-order.js');
 const withSpread = (rwa_id, spread_bps, extra = {}) => ({
   rwa_id, name: `Ref ${rwa_id}`, symbol: `R${rwa_id}`, asset_type: 'stock',
   token_count: 3, issuer_count: 2,
-  comparison: { spread_bps, route_count: 3, cheapest_is_deepest: true,
+  comparison: { spread_bps, route_count: 3, cheapest_has_highest_reported_volume: true,
                 routes: [{ symbol: `R${rwa_id}A`, issuer_name: 'bStocks', premium_to_cheapest_bps: 0 },
                          { symbol: `R${rwa_id}B`, issuer_name: 'Reality', premium_to_cheapest_bps: spread_bps }] },
   ...extra,
@@ -47,11 +47,21 @@ test('the export row leaves an unobserved spread empty rather than zero', () => 
   const [row] = [order.exportRow(withoutComparison(7), 'SINGLE REPRESENTATION')];
   const spread = row[order.HEADER.indexOf('observed_spread_bps')];
   assert.equal(spread, '', 'an unobserved spread was exported as a number');
-  assert.equal(row[order.HEADER.indexOf('cheapest_is_deepest')], '');
+  assert.equal(row[order.HEADER.indexOf('cheapest_has_highest_reported_volume')], '');
   const measured = order.exportRow(withSpread(8, 12.34), 'COMPARABLE');
   assert.equal(measured[order.HEADER.indexOf('observed_spread_bps')], '12.3');
   assert.equal(measured[order.HEADER.indexOf('cheapest_route_symbol')], 'R8A');
   assert.equal(measured[order.HEADER.indexOf('cheapest_route_issuer')], 'bStocks');
+});
+
+test('the export reads the legacy volume field without calling it depth', () => {
+  const item = withSpread(11, 10, {
+    comparison: { spread_bps: 10, cheapest_is_deepest: false, route_count: 2,
+      routes: [{ symbol: 'A', issuer_name: 'Issuer A', premium_to_cheapest_bps: 0 }] },
+  });
+  const row = order.exportRow(item, 'COMPARABLE');
+  assert.equal(row[order.HEADER.indexOf('cheapest_has_highest_reported_volume')], 'no');
+  assert.ok(!order.HEADER.includes('cheapest_is_deepest'));
 });
 
 test('the page offers every order the module implements, and no other', () => {

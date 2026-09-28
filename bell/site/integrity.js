@@ -1094,7 +1094,7 @@
       return item?.decision?.consequence || '';
     }
     const cheapest = comparison.cheapest || {};
-    const highestVolume = comparison.deepest || {};
+    const highestVolume = comparison.highest_reported_volume || comparison.deepest || {};
     const unresolved = (comparison.unresolved || []).length;
     return `${comparison.route_count} routes under one CMC RWA reference passed Bell's price and reported-volume filters; equivalent units and claims are not established. `
       + `Observed spread ${Number(comparison.spread_bps).toFixed(1)} bps; lowest quote ${cheapest.symbol || 'unknown'}; highest reported 24h volume ${highestVolume.symbol || 'unknown'}.`
@@ -1362,9 +1362,12 @@
       const premium = Number(route.premium_to_cheapest_bps || 0);
       return `<tr><td>${escapeHTML(route.symbol || '')}</td><td>${escapeHTML(route.issuer_name || '')}</td><td class="num">${formatNumber(route.price)}</td><td class="num">${premium === 0 ? 'cheapest' : `+${premium.toFixed(1)} bps`}</td><td class="num">${share}</td></tr>`;
     }).join('');
-    const fill = c.cheapest_is_deepest
+    const highestReportedVolume = c.highest_reported_volume || c.deepest || {};
+    const cheapestHasHighestReportedVolume = c.cheapest_has_highest_reported_volume
+      ?? c.cheapest_is_deepest;
+    const fill = cheapestHasHighestReportedVolume
       ? 'The cheapest route also has the highest reported 24h volume.'
-      : `${escapeHTML(c.deepest.symbol || '')} has higher reported 24h volume than the cheapest route.`;
+      : `${escapeHTML(highestReportedVolume.symbol || '')} has the highest reported 24h volume, not the cheapest route.`;
     const open = (c.unresolved || []).length
       ? `<p class="comparison-open"><span>STILL OPEN</span> ${escapeHTML((c.unresolved || []).join(' · '))}. The route filter drops derivatives, keys on the token id rather than the ticker, and excludes rows without both a price and traded volume, so these do not block the comparison - but they are not resolved.</p>`
       : '';
@@ -2254,12 +2257,12 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     const heroComparison = alert.comparison;
     if (heroComparison) {
       const cheapest = heroComparison.cheapest || {};
-      const deepest = heroComparison.deepest || {};
+      const highestReportedVolume = heroComparison.highest_reported_volume || heroComparison.deepest || {};
       caseFacts.unshift(`${formatNumber(heroComparison.route_count)} comparable routes`);
       caseFacts.push(`${Number(heroComparison.spread_bps).toFixed(1)} bps apart`);
       caseFacts.push(cheapest.symbol
-        ? `cheapest ${cheapest.symbol}${heroComparison.cheapest_is_deepest
-            ? ', highest reported 24h volume' : `; ${deepest.symbol || 'another route'} has higher reported 24h volume`}`
+        ? `cheapest ${cheapest.symbol}${(heroComparison.cheapest_has_highest_reported_volume ?? heroComparison.cheapest_is_deepest)
+            ? ', highest reported 24h volume' : `; ${highestReportedVolume.symbol || 'another route'} has the highest reported 24h volume`}`
         : 'cheapest route published');
     }
     byId('hero-case-fact').textContent = caseFacts.join(' · ') || signals || 'Published rule hit';

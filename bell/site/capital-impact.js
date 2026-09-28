@@ -130,6 +130,9 @@
     const comparison = alert && alert.comparison;
     if (comparison) {
       const cheapest = comparison.cheapest || {};
+      const highestReportedVolume = comparison.highest_reported_volume || comparison.deepest || {};
+      const cheapestHasHighestReportedVolume = comparison.cheapest_has_highest_reported_volume
+        ?? comparison.cheapest_is_deepest;
       const spread = Number(comparison.spread_bps);
       const open = (comparison.unresolved || []).length;
       return {
@@ -139,7 +142,7 @@
         headline: `Compare ${comparison.route_count} routes for ${value.toLocaleString(undefined, { maximumFractionDigits: 0 })}`,
         copy: `These routes share a CoinMarketCap RWA reference and pass Bell's price and reported-volume filters; equivalent units and claims are not established. `
           + `Observed spread ${Number.isFinite(spread) ? spread.toFixed(1) : '?'} bps; cheapest route ${cheapest.symbol || 'unknown'}`
-          + `${comparison.cheapest_is_deepest ? ', also with the highest reported 24h volume' : `; ${(comparison.deepest || {}).symbol || 'another route'} has higher reported 24h volume`}.`,
+          + `${cheapestHasHighestReportedVolume ? ', also with the highest reported 24h volume' : `; ${highestReportedVolume.symbol || 'another route'} has the highest reported 24h volume`}.`,
         note: open
           ? `A price comparison, not an allocation. ${open} check${open === 1 ? '' : 's'} remain open, and backing, redemption, eligibility and custody are not observed here.`
           : 'A price comparison, not an allocation. Backing, redemption, eligibility and custody are not observed here.',

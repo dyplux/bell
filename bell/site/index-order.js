@@ -47,7 +47,7 @@
 
   const HEADER = ['rwa_id', 'reference_name', 'reference_symbol', 'asset_type', 'route',
                   'representations', 'issuers', 'observed_spread_bps', 'cheapest_route_symbol',
-                  'cheapest_route_issuer', 'cheapest_is_deepest', 'tradable_routes'];
+                  'cheapest_route_issuer', 'cheapest_has_highest_reported_volume', 'tradable_routes'];
 
   function exportRow(item, routeLabel) {
     const c = item && item.comparison;
@@ -66,7 +66,7 @@
       spread === null ? '' : spread.toFixed(1),
       c && cheapest ? (cheapest.symbol || '') : '',
       c && cheapest ? (cheapest.issuer_name || '') : '',
-      c ? (c.cheapest_is_deepest ? 'yes' : 'no') : '',
+      c ? ((c.cheapest_has_highest_reported_volume ?? c.cheapest_is_deepest) ? 'yes' : 'no') : '',
       c && c.route_count != null ? c.route_count : '',
     ];
   }

@@ -94,6 +94,25 @@ test('published capital comparison uses only the routes in its receipt', () => {
   assert.match(result.copy, /highest reported 24h volume|higher reported 24h volume/i);
 });
 
+test('published comparison prefers the volume fields with explicit names', () => {
+  const result = assess({
+    state: 'investigate',
+    token_count: 2,
+    comparison: {
+      route_count: 2,
+      routes: [{ symbol: 'A', price: 10, volume_24h: 100 }, { symbol: 'B', price: 11, volume_24h: 300 }],
+      spread_bps: 1000,
+      cheapest: { symbol: 'A' },
+      highest_reported_volume: { symbol: 'B' },
+      cheapest_has_highest_reported_volume: false,
+      deepest: { symbol: 'LEGACY-FIELD' },
+      cheapest_is_deepest: true,
+    },
+  }, 10000);
+  assert.match(result.copy, /B has the highest reported 24h volume/);
+  assert.doesNotMatch(result.copy, /LEGACY-FIELD/);
+});
+
 test('2000 generated cases preserve capital-check invariants', () => {
   let seed = 9217;
   const random = () => {

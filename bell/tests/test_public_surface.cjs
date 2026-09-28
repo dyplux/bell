@@ -236,6 +236,8 @@ test('an affirmative on the page has to carry its consequence', () => {
   assert.match(page, /COMPARABLE = FILTERED PRICE COMPARISON/);
   assert.match(page, /observed spread and 24h volume; units and economic claims remain unverified/);
   assert.doesNotMatch(page, /COMPARABLE = PRICES LINE UP|depth published/);
+  assert.match(page, /whether the cheapest route also has the highest reported 24h volume/);
+  assert.doesNotMatch(page, /whether the cheapest route is also the deepest/);
 });
 
 test('hero search lands on the result it just generated', () => {

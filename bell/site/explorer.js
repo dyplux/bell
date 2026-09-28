@@ -150,7 +150,7 @@
     const answer = cmp
       ? `<p class="explorer-live-answer"><strong>${Number(cmp.spread_bps).toFixed(1)} bps</strong> across `
         + `${cmp.route_count} representations with reported price and 24h volume · lowest quote ${escapeHTML(cmp.cheapest.symbol || '')}`
-        + `${cmp.cheapest_is_deepest ? ', also with the highest reported 24h volume' : `; ${escapeHTML(cmp.deepest.symbol || '')} has the highest reported 24h volume`}.</p>`
+        + `${(cmp.cheapest_has_highest_reported_volume ?? cmp.cheapest_is_deepest) ? ', also with the highest reported 24h volume' : `; ${escapeHTML((cmp.highest_reported_volume || cmp.deepest || {}).symbol || '')} has the highest reported 24h volume`}.</p>`
       : '<p class="explorer-live-answer">No comparison is published for this reference: a coded rule refuses it.</p>';
     return `<div class="explorer-live explorer-live-${escapeHTML(row.state || 'unknown')}">`
       + `<span>${liveIndex.dated ? 'DATED REPLAY VERDICT' : 'CURRENT VERDICT'} · OBSERVED ${escapeHTML(String(liveIndex.observed_at || '').replace('T', ' ').slice(0, 16))} UTC</span>`
