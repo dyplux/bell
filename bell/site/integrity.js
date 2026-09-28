@@ -765,16 +765,18 @@
       // publish, and that went unmentioned above the fold. Lead with what a
       // reader can act on, keep the denominator in the same breath.
       // "cannot honestly be compared at all" was false, and base_rate.py already
-      // knew: 120 of the 158 reasons are a price CoinMarketCap never published,
-      // not a contradiction anyone found. Publishing the unsplit 157 reads as an
-      // indictment of the market when most of it is an incomplete catalogue.
+      // The refusal reasons have three distinct classes: missing source
+      // coverage, data-review triggers, and no eligible spot pair. Keep the
+      // categories separate; a rule hit is not proof of economic conflict.
       // Also: the measurement is pinned to a dated input package, so it says 791
       // while the live receipt re-scans and says 792. Date the sentence instead
       // of aligning the digits - two observations are allowed to differ.
       const split = r.refusal_split || {};
       const coverage = split.source_coverage;
-      const contradiction = split.data_contradiction;
-      const reasons = (coverage || 0) + (contradiction || 0);
+      const dataReview = split.data_review;
+      const noPair = split.not_applicable;
+      const unclassified = split.unclassified || 0;
+      const reasons = split.reason_total || (coverage || 0) + (dataReview || 0) + (noPair || 0) + unclassified;
       findingObservedAt = r.observed_at || null;
       // The strip's sentence claimed the two counts came from different dates.
       // On the dated replay a judge is told to clone they carry the same
@@ -830,17 +832,18 @@
       headline.innerHTML = `<strong>${r.comparable.toLocaleString()}</strong> tokenised assets have a `
         + `<em>cheapest route worth naming</em>${liveNote}<br>`
         + `<span class="finding-counter">${r.refused.toLocaleString()} of the ${n.toLocaleString()} `
-        + `comparable-looking ones are refused, and most of that is a missing price `
-        + `rather than a contradiction</span>`;
+        + `references are refused. Most rule hits reflect missing source coverage; data-review triggers are not proof of economic conflict</span>`;
       lede.innerHTML = `Measured on ${measuredOn} over the whole catalogue, not a sample: `
         + `<strong>${r.population.toLocaleString()}</strong> references, of which `
         + `<strong>${r.excluded_single_representation.toLocaleString()}</strong> carry a single representation `
         + `and cannot be compared at all. Of the <strong>${n.toLocaleString()}</strong> that remain, `
         + `<strong>${r.refused.toLocaleString()}</strong> are refused, a rate of <strong>${pct}%</strong> `
         + `(95% interval ${lo} to ${hi}%).`
-        + (reasons ? ` Behind those refusals are ${reasons} reasons: `
-          + `<strong>${coverage.toLocaleString()}</strong> are a second price the catalogue never published, `
-          + `and <strong>${contradiction.toLocaleString()}</strong> are rows that contradict each other.` : '');
+        + (reasons ? ` Behind those refusals are ${reasons} rule hits: `
+          + `<strong>${coverage.toLocaleString()}</strong> missing-coverage reasons, `
+          + `<strong>${dataReview.toLocaleString()}</strong> price or field review triggers, and `
+          + `<strong>${noPair.toLocaleString()}</strong> with fewer than two eligible spot routes.`
+          + (unclassified ? ` ${unclassified} remain unclassified.` : '') : '');
     } catch (error) {
       // Say what is missing rather than leaving a number-shaped hole - and
       // leave the question standing rather than a claim the measurement has
@@ -986,7 +989,7 @@
     // 64.3%, which is measured over the 244 references where a comparison is
     // something you could attempt. Two rates, two denominators, one word: the
     // exact confusion this product exists to prevent. Print the counts.
-    copy.textContent = `Of ${total.toLocaleString()} scanned references, ${blocked.toLocaleString()} carry a contradiction that blocks comparison and ${investigate.toLocaleString()} need identity or market-data follow-up first. ${comparable.toLocaleString()} are published with the comparison performed. This routes the next question; it is not a safety score or an approval label`;
+    copy.textContent = `Of ${total.toLocaleString()} scanned references, ${blocked.toLocaleString()} hit a critical comparison stop rule and ${investigate.toLocaleString()} need identity or market-data follow-up first. ${comparable.toLocaleString()} have filtered price comparisons. A stop rule routes the next check; it does not prove an economic contradiction`;
     const issuerValues = new Map();
     let positiveRows = 0;
     let nonPositiveRows = 0;
@@ -1792,7 +1795,7 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     // the word the reader just read.
     const state = displayDecisionLabel(item);
     const next = state === 'DO NOT SHORTLIST'
-      ? 'Resolve the identity, unit and quote contradiction before comparing wrappers.'
+      ? 'Resolve the identity or reported-quote issue before comparing wrappers.'
       : state === 'COMPARABLE'
         ? 'Compare the routes below, then complete issuer, redemption and eligibility diligence outside this monitor.'
         : state === 'INVESTIGATE'

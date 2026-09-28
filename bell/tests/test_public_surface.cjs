@@ -463,7 +463,7 @@ test('no rendering path states a rate the measurement does not support', () => {
   assert.ok(!overstated.test(rendered), 'the failure path leaves the overstated headline on screen');
   assert.match(page, /id="finding-headline"/);
   // The measured claim must always carry its denominator in the same sentence.
-  assert.match(integrity, /comparable-looking/);
+  assert.match(integrity, /data-review triggers are not proof of economic conflict/);
 });
 
 test('the one control the product asks you to use is reachable on a phone', () => {

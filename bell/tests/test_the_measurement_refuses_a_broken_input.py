@@ -85,7 +85,7 @@ class TheMeasurementRefusesADegenerateInput(unittest.TestCase):
             {"rwa_id": 3, "signal_codes": ["NO_TRADFI_MARKET"]},
             {"rwa_id": 4, "signal_codes": []},
         ]
-        PARTS = ("contradicting_rows", "incomplete_source_fields", "context_only",
+        PARTS = ("review_trigger_rows", "incomplete_source_fields", "context_only",
                  "fully_reported")
         counted = lens(singles)
         self.assertEqual(counted["references"], len(singles))

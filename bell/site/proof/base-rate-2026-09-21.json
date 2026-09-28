@@ -1,4 +1,5 @@
 {
+  "schema_version": "bell.base_rate.v2",
   "observed_at": "2026-09-21T21:25:01Z",
   "population": 791,
   "excluded_single_representation": 547,
@@ -21,13 +22,25 @@
   },
   "refusal_split": {
     "source_coverage": 107,
-    "data_contradiction": 51,
+    "data_review": 38,
+    "not_applicable": 13,
+    "unclassified": 0,
+    "reason_total": 158,
     "coverage_share": 0.6772,
     "coverage_codes": [
       "REPRESENTATIONS_QUOTED_BUT_UNTRADED",
       "REPRESENTATIONS_WITHOUT_A_PRICE"
     ],
-    "counts": "reasons, not references: one reference can fail more than one rule"
+    "not_applicable_codes": [
+      "FEWER_THAN_TWO_SPOT_REPRESENTATIONS"
+    ],
+    "data_review_codes": [
+      "PRICE_DENOMINATION_BREAK",
+      "PRICE_DISPERSION",
+      "SPREAD_ABOVE_PUBLISHABLE_CEILING",
+      "ZERO_MCAP_POSITIVE_VOLUME"
+    ],
+    "counts": "rule hits, not references: one reference can trigger more than one rule"
   },
   "single_representation_lens": {
     "references": 547,
@@ -38,7 +51,7 @@
     },
     "incomplete_share": 0.8483,
     "partition": "by reference, by the most serious thing observed about each, so the parts sum to the whole. These references are excluded from the refusal rate because there was never a comparison to refuse, not because they were approved.",
-    "contradicting_rows": 2,
+    "review_trigger_rows": 2,
     "incomplete_source_fields": 464,
     "context_only": 4,
     "fully_reported": 77

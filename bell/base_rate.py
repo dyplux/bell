@@ -25,20 +25,19 @@ METHOD, stated before the number so it cannot be tuned afterwards:
                single-representation reference is EXCLUDED, not counted as a
                negative: there is nothing to compare, so the question does not
                arise and scoring it either way would be dishonest.
-  numerator    of those, the ones this monitor refuses to compare, by coded rule:
-               a critical signal (identity, unit or market state contradictory),
-               price dispersion beyond a plausible wrapper spread, or a spread
-               above the published publishable ceiling.
+  numerator    of those, the ones this monitor refuses to compare, by coded
+               review rule. Some rules flag quote or field combinations; they
+               do not prove economic equivalence or contradiction.
   reported     the refusal rate with a Wilson 95% interval, and the refusals
                broken down by which rule fired, so the rate can be argued with
                rather than only believed.
 
 WHAT THIS IS NOT. It measures one captured observation of the catalogue, not a
 24-hour average, and a reference's state can change between runs. "Comparable"
-here means the prices can honestly be set side by side - it says nothing about
-backing, redemption, eligibility or custody, none of which this monitor observes.
-A refusal is not an accusation against an issuer; most refusals are missing or
-contradictory data in the surfaces, not misconduct.
+here means filtered prices can be read side by side - it does not establish
+equivalent units or claims, or backing, redemption, eligibility or custody.
+A refusal is not an accusation against an issuer; missing coverage and review
+triggers are observations about the returned surfaces, not misconduct.
 """
 from __future__ import annotations
 
@@ -114,23 +113,36 @@ def _no_route_reason(representations: list) -> str:
 
 
 COVERAGE_CODES = {'REPRESENTATIONS_WITHOUT_A_PRICE', 'REPRESENTATIONS_QUOTED_BUT_UNTRADED'}
+NOT_APPLICABLE_CODES = {'FEWER_THAN_TWO_SPOT_REPRESENTATIONS'}
+DATA_REVIEW_CODES = {
+    'ZERO_MCAP_POSITIVE_VOLUME', 'PRICE_DENOMINATION_BREAK', 'PRICE_DISPERSION',
+    'SPREAD_ABOVE_PUBLISHABLE_CEILING',
+}
 
 
 def _split_refusals(reasons) -> dict:
-    """Source incompleteness versus data that contradicts itself.
+    """Separate missing coverage, review triggers, and no eligible spot pair.
 
-    Anything unrecognised counts as a contradiction, so a rule added later is
-    never quietly filed under "not our problem".
+    Unknown future rules stay visible in `unclassified`; they are never
+    silently described as contradictions or as source coverage.
     """
     coverage = sum(n for code, n in reasons.items() if code in COVERAGE_CODES)
-    contradiction = sum(n for code, n in reasons.items() if code not in COVERAGE_CODES)
-    total = coverage + contradiction
+    not_applicable = sum(n for code, n in reasons.items() if code in NOT_APPLICABLE_CODES)
+    data_review = sum(n for code, n in reasons.items() if code in DATA_REVIEW_CODES)
+    known = COVERAGE_CODES | NOT_APPLICABLE_CODES | DATA_REVIEW_CODES
+    unclassified = sum(n for code, n in reasons.items() if code not in known)
+    total = coverage + not_applicable + data_review + unclassified
     return {
         'source_coverage': coverage,
-        'data_contradiction': contradiction,
+        'data_review': data_review,
+        'not_applicable': not_applicable,
+        'unclassified': unclassified,
+        'reason_total': total,
         'coverage_share': round(coverage / total, 4) if total else 0.0,
         'coverage_codes': sorted(COVERAGE_CODES),
-        'counts': 'reasons, not references: one reference can fail more than one rule',
+        'not_applicable_codes': sorted(NOT_APPLICABLE_CODES),
+        'data_review_codes': sorted(DATA_REVIEW_CODES),
+        'counts': 'rule hits, not references: one reference can trigger more than one rule',
     }
 
 
@@ -145,22 +157,23 @@ def _single_representation_lens(single: list) -> dict:
 
     The first version of this counted CODES and printed two of them, so the
     published lines added to 541 of 547 and the six in between included two
-    references whose rows contradict each other - the finding this product
-    exists to surface, hidden by the only measurement it makes over most of its
+    references whose fields triggered a review rule, hidden by the only
+    measurement it makes over most of its
     catalogue. A reviewer did the arithmetic.
 
     So it partitions REFERENCES, by the most serious thing observed about each,
     and the parts sum to the whole. A reference can carry several codes; it
-    cannot be in two parts.
+    cannot be in two parts. The market-data category is a review trigger, not
+    proof that the asset itself is inconsistent.
     """
-    contradiction_codes = {'ZERO_MCAP_POSITIVE_VOLUME', 'PRICE_DENOMINATION_BREAK',
-                           'PRICE_DISPERSION', 'SYMBOL_COLLISION', 'DERIVATIVE_MIX',
-                           'SPREAD_ABOVE_PUBLISHABLE_CEILING'}
-    contradicting, incomplete, context_only, complete = [], [], [], []
+    review_codes = {'ZERO_MCAP_POSITIVE_VOLUME', 'PRICE_DENOMINATION_BREAK',
+                    'PRICE_DISPERSION', 'SYMBOL_COLLISION', 'DERIVATIVE_MIX',
+                    'SPREAD_ABOVE_PUBLISHABLE_CEILING'}
+    review, incomplete, context_only, complete = [], [], [], []
     for row in single:
         codes = set(row.get('signal_codes') or [])
-        if codes & contradiction_codes:
-            contradicting.append(row)
+        if codes & review_codes:
+            review.append(row)
         elif 'MARKET_FIELDS_MISSING' in codes or 'TOKEN_INFO_MISSING' in codes:
             incomplete.append(row)
         elif codes:
@@ -169,7 +182,7 @@ def _single_representation_lens(single: list) -> dict:
             complete.append(row)
     total = len(single)
     parts = {
-        'contradicting_rows': len(contradicting),
+        'review_trigger_rows': len(review),
         'incomplete_source_fields': len(incomplete),
         'context_only': len(context_only),
         'fully_reported': len(complete),
@@ -284,6 +297,7 @@ def measure(receipt: dict) -> dict:
 
     lo, hi = wilson(len(refused), len(considered))
     return {
+        'schema_version': 'bell.base_rate.v2',
         'observed_at': receipt.get('observed_at'),
         'population': population,
         'excluded_single_representation': len(single),
@@ -293,12 +307,9 @@ def measure(receipt: dict) -> dict:
         'refusal_rate': (len(refused) / len(considered)) if considered else 0.0,
         'refusal_rate_ci95': [lo, hi],
         'refusal_reasons': dict(reasons.most_common()),
-        # Two different things were being added into one rate. A refusal because
-        # CoinMarketCap publishes no price for the second wrapper is a COVERAGE
-        # fact about the source; a refusal because the rows that exist disagree
-        # is a CONTRADICTION found in the data. Reported as one 64.3%, it reads
-        # as an indictment of the market when most of it is an incomplete
-        # catalogue. Publish the split so nobody has to re-derive it.
+    # Keep source coverage, data-review triggers, and absence of an eligible
+    # pair separate. A review rule is not proof that the underlying asset or
+    # market is contradictory.
         'refusal_split': _split_refusals(reasons),
         'single_representation_lens': _single_representation_lens(single),
         'method': {
@@ -353,11 +364,14 @@ def main() -> int:
           f"n = {result['denominator_two_or_more_representations']})")
     print()
     split = result['refusal_split']
-    reason_total = split['source_coverage'] + split['data_contradiction']
+    reason_total = split['reason_total']
     print(f"  the {reason_total} reasons behind those {result['refused']} refusals:")
     print(f"    {split['source_coverage']:>4}  the catalogue offers no second number to compare "
           f"({split['coverage_share']:.0%})")
-    print(f"    {split['data_contradiction']:>4}  the rows that do exist contradict each other")
+    print(f"    {split['data_review']:>4}  price or field review rules fired; this does not prove an economic contradiction")
+    print(f"    {split['not_applicable']:>4}  fewer than two eligible spot routes; no pair to compare")
+    if split['unclassified']:
+        print(f"    {split['unclassified']:>4}  unclassified rule hits")
     if reason_total != result['refused']:
         # Say it rather than let the arithmetic look wrong: a reference can fail
         # more than one rule, so reasons outnumber references.
@@ -365,7 +379,7 @@ def main() -> int:
               f"a reference can fail more than one rule)")
     print()
     print('  The first group is CoinMarketCap coverage, not a finding about the market.')
-    print('  The second is a contradiction this scanner located in the published data.')
+    print('  The review group is a set of rule triggers, not proof of economic contradiction.')
     print()
     # The 547 excluded references were 69% of the catalogue and the only thing
     # the product said about them was that they were excluded. Excluding them
@@ -375,12 +389,11 @@ def main() -> int:
           f"is nothing to compare:")
     print(f"    {lens['incomplete_source_fields']:>4}  a field CoinMarketCap does not report "
           f"({lens['incomplete_share']:.0%})")
-    print(f"    {lens['contradicting_rows']:>4}  rows that contradict each other, the finding "
-          f"this scanner exists to make")
+    print(f"    {lens['review_trigger_rows']:>4}  references triggered quote or field review rules")
     print(f"    {lens['context_only']:>4}  complete, with a context note such as no tracked "
           f"TradFi market")
     print(f"    {lens['fully_reported']:>4}  complete, with nothing observed against them")
-    print(f"       = {sum((lens['incomplete_source_fields'], lens['contradicting_rows'], lens['context_only'], lens['fully_reported']))}, "
+    print(f"       = {sum((lens['incomplete_source_fields'], lens['review_trigger_rows'], lens['context_only'], lens['fully_reported']))}, "
           f"a partition of references and not a count of reasons")
     print()
     print('  So the majority of the catalogue cannot be compared, and for most of that')
@@ -393,8 +406,9 @@ def main() -> int:
         marker = '  (coverage)' if code in COVERAGE_CODES else ''
         print(f'    {count:>4}  {code}{marker}')
     print()
-    print('  Comparable means the prices can honestly be set side by side. It says')
-    print('  nothing about backing, redemption, eligibility or custody. A refusal is')
+    print('  A published comparison means filtered prices can be read side by side;')
+    print('  equivalent units are not established. It says nothing about backing,')
+    print('  redemption, eligibility or custody. A refusal is')
     print('  a statement about the data, not an accusation against an issuer.')
     print()
 

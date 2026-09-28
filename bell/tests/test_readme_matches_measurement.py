@@ -261,19 +261,22 @@ class TheRefusalSplitIsPublishedAndAddsUp(unittest.TestCase):
         with open(README, encoding='utf-8') as handle:
             cls.text = handle.read()
 
-    def test_the_split_separates_coverage_from_contradiction(self):
+    def test_the_split_separates_coverage_review_and_no_eligible_pair(self):
         split = self.result['refusal_split']
         self.assertGreater(split['source_coverage'], 0)
-        self.assertGreater(split['data_contradiction'], 0)
+        self.assertGreater(split['data_review'], 0)
+        self.assertGreater(split['not_applicable'], 0)
         self.assertEqual(
-            split['source_coverage'] + split['data_contradiction'],
+            split['source_coverage'] + split['data_review']
+            + split['not_applicable'] + split['unclassified'],
             sum(self.result['refusal_reasons'].values()),
             'the split drops or double-counts a reason')
 
     def test_the_readme_states_the_measured_split(self):
         split = self.result['refusal_split']
         self.assertIn(str(split['source_coverage']), self.text)
-        self.assertIn(str(split['data_contradiction']), self.text)
+        self.assertIn(str(split['data_review']), self.text)
+        self.assertIn(str(split['not_applicable']), self.text)
 
     def test_the_readme_admits_reasons_outnumber_references(self):
         # Reasons sum past the reference count because a reference can fail more
@@ -284,12 +287,14 @@ class TheRefusalSplitIsPublishedAndAddsUp(unittest.TestCase):
             self.assertIn(str(reasons), self.text)
             self.assertIn('more than one rule', self.text)
 
-    def test_an_unknown_code_counts_as_a_contradiction_not_coverage(self):
-        # A rule added later must not be quietly filed under "not our problem".
+    def test_an_unknown_code_is_kept_unclassified_not_mislabelled(self):
+        # A future rule must not silently become an asset contradiction or
+        # disappear into source coverage.
         from collections import Counter
         from base_rate import _split_refusals
         split = _split_refusals(Counter({'A_BRAND_NEW_RULE': 5}))
-        self.assertEqual(split['data_contradiction'], 5)
+        self.assertEqual(split['unclassified'], 5)
+        self.assertEqual(split['data_review'], 0)
         self.assertEqual(split['source_coverage'], 0)
 
 

@@ -10,7 +10,7 @@ that matters before a shortlist: can these representations be compared at all?
 | **Live** | <https://bell.dyplux.com/> |
 | **For judges** | <https://bell.dyplux.com/judge> - the claim, the 30-second check and the receipts on one page, no auth |
 | **Track** | Build with CMC API, Real World Assets. MIT licence |
-| **The output** | Of the 244 references carrying more than one representation, **87 have a cheapest route worth naming**, and behind the 157 refusals sit 158 reasons of which **51 are rows that contradict each other**. The other 107 are a second price CoinMarketCap never published, which is a coverage fact rather than a finding, so the two are never added together |
+| **The output** | Of the 244 references carrying more than one representation, **87 have a cheapest route worth naming**. The 157 refusals produced 158 rule hits: 107 missing-coverage reasons, 38 price or field review triggers, and 13 cases with fewer than two eligible spot routes. Review triggers are not proof of economic contradiction |
 | **Run it yourself** | `git clone https://github.com/dyplux/bell.git && cd bell && make base-rate` - 0.3s, no API key, no install |
 | **Verify the whole thing** | `make check-offline` - 536 tests, observed between 17.71 and 25.35 seconds across 2 machines, plus a re-derivation of the published receipt from the shipped inputs. Of the 18 dated observations shipped here, 2 ship their full payload. One of those two has its state distribution compared against the receipt; the other is UNVERIFIED on that split, because it was written under the previous rule set and no code here can re-derive it. Its totals, signals and source digests are checked. The rest are published summaries |
 | **Rules as an executable spec** | `python3 bell/verify_rule_boundaries.py` - 0.2s, 8 boundary checks, no network |
@@ -62,23 +62,25 @@ with `make base-rate`, offline, with no API key:
   Refusal rate  64.3%   (95% CI 58.2% to 70.1%, n = 244)
 ```
 
-Read on its own, 64.3% sounds like a verdict on the market. It is mostly a
-verdict on the catalogue. The 157 refusals break down into two very different
-things:
+Read on its own, 64.3% sounds like a verdict on the market. The reasons include
+missing source coverage, rule triggers that require review, and cases where no
+eligible spot pair exists:
 
 ```
-    120  the catalogue offers no second number to compare   (76%)
-     38  the rows that do exist contradict each other
+    107  the catalogue offers no second number to compare   (68%)
+     38  price or field review rules fired
+     13  fewer than two eligible spot routes; no pair to compare
 ```
 
-The first group is CoinMarketCap coverage: no price published for the second
-wrapper, or a quote with no traded volume behind it. There is nothing to
-compare against, so nothing can be compared — that is a fact about the source,
-not a finding about the assets. The second group is the part this scanner
-actually found: rows that exist and disagree, including 4 references quoted in
-different units and 30 reporting traded volume against a zero market cap.
+The 107 coverage reasons are missing prices or quotes without positive reported
+volume. The 13 no-pair reasons mean the route filter found fewer than two
+eligible spot rows. The 38 review triggers include price-denomination, dispersion,
+market-cap/volume-field and publishable-spread rules: 4 price-denomination, 30
+zero-market-cap/positive-volume field pairs, 3 price-dispersion and 1 spread-ceiling
+trigger. They guide review; they do not prove that two assets have different
+rights or that a market is invalid.
 
-(158 reasons against 157 references: one reference fails more than one rule.)
+(158 rule hits against 157 refused references because one reference can trigger more than one rule.)
 
 The interval is a Wilson score interval, which stays honest near the edges of
 the distribution where the normal approximation does not. The single-

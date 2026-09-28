@@ -48,20 +48,20 @@ def flowed(text: str) -> str:
 
 class HeadlineNumbersArePinned(unittest.TestCase):
     def test_the_two_tiles_state_the_measured_comparison_counts(self):
-        # The refusals tile used to say 157, and 120 of the 158 reasons behind
-        # that number are a price CoinMarketCap never published. A headline of
-        # 157 borrows the weight of a contradiction for a gap in the data, so
-        # the tiles now state the two halves and both are pinned.
+        # Keep coverage, data-review triggers, no-pair cases, and the published
+        # comparison count separate and pinned to the same measurement.
         page = judge_text()
         published = BASE_RATE["comparable"]
-        contradictions = BASE_RATE["refusal_split"]["data_contradiction"]
+        review = BASE_RATE["refusal_split"]["data_review"]
         coverage = BASE_RATE["refusal_split"]["source_coverage"]
-        # The three dated tiles carry the date of the measurement behind them,
+        no_pair = BASE_RATE["refusal_split"]["not_applicable"]
+        # The dated tiles carry the date of the measurement behind them,
         # because /judge ships no JavaScript and cannot show today's: a
         # reviewer read 87 here and found 75 in the live index 400px below,
         # both correct, a week apart, and neither page said so.
         for label, value in (("Comparisons published", published),
-                             ("Contradictions found, by reason", contradictions),
+                             ("Data-review triggers, by reason", review),
+                             ("No eligible spot pair", no_pair),
                              ("Refused for missing coverage", coverage)):
             self.assertRegex(
                 page, rf"<small>{re.escape(label)}[^<]*</small><strong>{value}</strong>",
@@ -80,18 +80,16 @@ class HeadlineNumbersArePinned(unittest.TestCase):
                       flow, "the opening paragraph's denominator is not the measured one")
         self.assertIn(f"<strong>{BASE_RATE['comparable']} have a cheapest route worth naming",
                       flow, "the opening paragraph's affirmative count is not measured")
-        # The paragraph used to end "and 157 are refused by a coded rule", and
-        # 120 of the 158 reasons behind that number are a price CoinMarketCap
-        # never published. It leads with the contradictions now, and both
-        # halves are pinned so neither can drift back into one figure.
+        # These three reason classes remain separate; review rules do not
+        # establish economic contradictions.
         split = BASE_RATE["refusal_split"]
-        reasons = split["data_contradiction"] + split["source_coverage"]
-        self.assertIn(f"behind the {BASE_RATE['refused']} refusals sit {reasons} reasons "
-                      f"of which <strong>{split['data_contradiction']} are rows that "
-                      "contradict each other", flow,
-                      "the opening paragraph no longer leads with the measured contradictions")
-        self.assertIn(f"The other {split['source_coverage']} reasons are a second price", flow,
+        reasons = split["reason_total"]
+        self.assertIn(f"behind the {BASE_RATE['refused']} refusals sit {reasons} rule hits: "
+                      f"<strong>{split['data_review']} triggered price or field review rules", flow,
+                      "the opening paragraph's data-review count is not measured")
+        self.assertIn(f"{split['source_coverage']} are missing-coverage reasons", flow,
                       "the opening paragraph's coverage count is not measured")
+        self.assertIn(f"and {split['not_applicable']} leave fewer than two eligible spot routes", flow)
 
     def test_the_readme_body_states_the_same_measured_counts(self):
         # Outside the fenced block, which is the only part the older test read.
@@ -101,11 +99,10 @@ class HeadlineNumbersArePinned(unittest.TestCase):
         # The README row led with the refusal total too. Both halves of it are
         # pinned here for the same reason the judge page's are.
         split = BASE_RATE["refusal_split"]
-        self.assertIn(f"behind the {BASE_RATE['refused']} refusals sit "
-                      f"{split['data_contradiction'] + split['source_coverage']} reasons of "
-                      f"which **{split['data_contradiction']} are rows that contradict each "
-                      "other**", body)
-        self.assertIn(f"The other {split['source_coverage']} are a second price", body)
+        self.assertIn(f"produced {split['reason_total']} rule hits", body)
+        self.assertIn(f"{split['data_review']} price or field review triggers", body)
+        self.assertIn(f"{split['source_coverage']} missing-coverage reasons", body)
+        self.assertIn(f"{split['not_applicable']} no-pair reasons mean", body)
         self.assertIn(f"Of the {BASE_RATE['denominator_two_or_more_representations']} references",
                       body)
 
@@ -146,8 +143,9 @@ class HeadlineNumbersArePinned(unittest.TestCase):
         pinned = {
             str(BASE_RATE["comparable"]), str(BASE_RATE["refused"]),
             str(BASE_RATE["denominator_two_or_more_representations"]),
-            str(BASE_RATE["refusal_split"]["data_contradiction"]),
+            str(BASE_RATE["refusal_split"]["data_review"]),
             str(BASE_RATE["refusal_split"]["source_coverage"]),
+            str(BASE_RATE["refusal_split"]["not_applicable"]),
         }
         page = judge_text()
         tiles = re.findall(r"<small>([^<]+)</small><strong>([^<]+)</strong>", page)
@@ -185,14 +183,14 @@ class HeadlineNumbersArePinned(unittest.TestCase):
         reasons = sum(BASE_RATE["refusal_reasons"].values()) \
             if isinstance(BASE_RATE.get("refusal_reasons"), dict) else BASE_RATE["refusal_reasons"]
         flow = flowed(judge_text())
-        self.assertIn(f"<strong>{split['source_coverage']} of the {reasons} reasons", flow,
+        self.assertIn(f"<strong>{split['source_coverage']} of the {reasons} rule hits", flow,
                       "the coverage half of the refusal split is not measured")
-        # `assertIn("38 are rows")` is satisfied by "1138 are rows". A pin a
+        # `assertIn("38 triggered")` is satisfied by "1138 triggered". A pin a
         # forger beats by prepending a digit is not a pin; the siblings here
         # survived only because they happen to have a non-digit before the
         # number. Word boundary, everywhere.
-        self.assertRegex(flow, rf"\b{split['data_contradiction']} are rows",
-                         "the contradiction half of the refusal split is not measured")
+        self.assertRegex(flow, rf"\b{split['data_review']} are price or field review triggers",
+                         "the data-review half of the refusal split is not measured")
 
     def test_the_demo_line_states_the_slice_the_receipt_actually_carries(self):
         alerts = len(REPLAY.get("alerts") or [])
@@ -210,23 +208,13 @@ class HeadlineNumbersArePinned(unittest.TestCase):
         self.assertIn(f"contained {references} tokenised references", flowed(readme_text()),
                       "the README states a reference count the replay receipt does not")
 
-    def test_the_named_contradiction_counts_come_from_their_own_denominator(self):
-        # The first version of this pinned the sentence to the receipt's
-        # whole-population signal counts and would have "corrected" a number
-        # that was already right. The sentence is inside the breakdown of the
-        # 157 refusals, so its denominator is the 244 comparable-attemptable
-        # references, and the source is base_rate's refusal_reasons: 30 there
-        # against 32 over the whole population. Two right numbers answering two
-        # questions is exactly what this product exists to keep apart, so the
-        # test has to read the one the sentence is about.
+    def test_the_review_trigger_counts_come_from_their_own_denominator(self):
+        # These are rule hits among the 244 references where a comparison was
+        # attempted, not claims that the market itself is contradictory.
         reasons = BASE_RATE["refusal_reasons"]
         flow = flowed(readme_text())
-        self.assertIn(f"including {reasons['PRICE_DENOMINATION_BREAK']} references quoted in "
-                      "different units", flow,
-                      "the README's unit-mismatch count is not the measured one")
-        self.assertRegex(flow, rf"\b{reasons['ZERO_MCAP_POSITIVE_VOLUME']} reporting traded "
-                               r"volume against a zero market cap",
-                         "the README's zero-market-cap count is not the measured one")
+        self.assertIn(f"{reasons['PRICE_DENOMINATION_BREAK']} price-denomination", flow)
+        self.assertIn(f"{reasons['ZERO_MCAP_POSITIVE_VOLUME']} zero-market-cap/positive-volume field pairs", flow)
 
     def test_the_runtime_tile_cannot_drift_out_of_its_own_stated_band(self):
         # The `<12s` tile sat beside a pinned "2.8 and 12.0 seconds" band and
@@ -310,14 +298,14 @@ class HeadlineNumbersArePinned(unittest.TestCase):
         lens = BASE_RATE.get("single_representation_lens")
         self.assertIsNotNone(lens, "base_rate no longer measures the excluded majority")
         self.assertEqual(lens["references"], BASE_RATE["excluded_single_representation"])
-        parts = ("incomplete_source_fields", "contradicting_rows", "context_only",
+        parts = ("incomplete_source_fields", "review_trigger_rows", "context_only",
                  "fully_reported")
         self.assertEqual(sum(lens[part] for part in parts), lens["references"],
                          "the lens does not partition the references it describes")
         flow = flowed(judge_text())
         self.assertRegex(flow, rf"\b{lens['incomplete_source_fields']} carry a field")
-        self.assertRegex(flow, rf"\b{lens['contradicting_rows']} carry rows\s*that contradict",
-                         "the judge page hides the contradictions inside the excluded majority")
+        self.assertRegex(flow, rf"\b{lens['review_trigger_rows']} trigger quote or field review rules",
+                         "the judge page hides market-data review triggers inside the excluded majority")
         self.assertRegex(flow, rf"sum to {lens['references']}")
 
     # test_the_cold_run_figure_sits_inside_the_stated_band lived here and

@@ -53,24 +53,26 @@
     asset's representations can honestly be compared at all, and publishes the comparison
     when they can. Of the 244 references carrying more than one representation,
     <strong>87 have a cheapest route worth naming</strong>, and behind the 157 refusals
-    sit 158 reasons of which <strong>51 are rows that contradict each other</strong>: a
-    quote denomination that breaks, a market cap of zero under live volume, a spread past
-    the publishable ceiling. Those 38 are what this scanner found. Every number on this
-    page was produced by a command you can run yourself, with no API key. The three
-    counts in the strip below are that dated measurement, so they carry its date: this page
+    sit 158 rule hits: <strong>38 triggered price or field review rules</strong>, 107 are
+    missing-coverage reasons, and 13 leave fewer than two eligible spot routes. Review
+    triggers are not proof of economic contradiction. Every number on this
+    page was produced by a command you can run yourself, with no API key. These
+    dated counts in the strip below are that dated measurement, so they carry its date: this page
     ships no JavaScript and cannot show you today's. The <a href="/">product page</a> reads
     the live receipt and prints both.</p>
 
-    <p>The other 107 reasons are a second price CoinMarketCap never published, which is a
-    fact about catalogue coverage rather than about any issuer. That is why the refusal
-    total is not the headline: 157 borrows the weight of a contradiction for a gap in the
-    data. The two are counted separately everywhere the numbers appear, and both are reasons
-    rather than references, because one reference can fail more than one rule.</p>
+    <p>The 107 coverage reasons are a missing price or quote without positive reported
+    volume; 13 more have fewer than two eligible spot routes. The remaining 38 are price
+    or field review triggers, including the reported zero-market-cap/positive-volume pair.
+    They tell an analyst what to verify, not whether the underlying market is economically
+    contradictory. These are rule hits rather than references, and one reference can trigger
+    more than one rule.</p>
 
     <div class="judge-facts">
-      <div><small>Contradictions found, by reason &middot; 21 Sep</small><strong>51</strong></div>
+      <div><small>Data-review triggers, by reason &middot; 21 Sep</small><strong>38</strong></div>
       <div><small>Comparisons published &middot; 21 Sep</small><strong>87</strong></div>
       <div><small>Refused for missing coverage &middot; 21 Sep</small><strong>107</strong></div>
+      <div><small>No eligible spot pair &middot; 21 Sep</small><strong>13</strong></div>
       <div><small>Tests in the offline gate</small><strong>536</strong></div>
       <div><small>Gate runtime, 2 machines</small><strong>17&ndash;26s</strong></div>
     </div>
@@ -177,17 +179,15 @@ make base-rate</pre>
     <h2>What it refuses to do</h2>
     <p>A monitor that refuses is only worth reading if you know how often, so the rate is
     measured over the whole catalogue rather than argued from examples. The refusals are
-    also split rather than totalled: <strong>107 of the 158 reasons are a second price
-    CoinMarketCap never published</strong>, a coverage fact about the source, and 51 are rows
-    that contradict each other. Reported as one number it would read as an indictment of the
-    market when most of it is an incomplete catalogue.</p>
+    also split rather than totalled: <strong>107 of the 158 rule hits are missing-coverage
+    reasons</strong>, 38 are price or field review triggers, and 13 have no eligible spot pair.
+    A review trigger is not proof of an economic contradiction.</p>
     <p>The same discipline applies to the 547 references the rate excludes. One
     representation is nothing to compare, so they are not scored as passes and not counted
     against the rate. But excluding them was the only thing this product said about 69% of
     the catalogue. So it measures them too, as a partition of references rather than a count
     of reasons, which is the only shape that cannot hide a group: <strong>464 carry a field
-    CoinMarketCap does not report</strong>, <strong>2 carry rows
-    that contradict each other</strong> - the finding this scanner exists to make - 4 are
+    CoinMarketCap does not report</strong>, <strong>2 trigger quote or field review rules</strong>, 4 are
     complete with
     a context note, and 77 are complete with nothing observed against
     them. Those four sum to 547. The majority of the catalogue cannot be
