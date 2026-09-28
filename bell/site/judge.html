@@ -49,9 +49,17 @@
     <p class="eyebrow"><span></span> BUILD WITH CMC API · REAL WORLD ASSETS TRACK</p>
     <h1>Before you compare<br><em>check the wrapper</em></h1>
 
-    <p>CoinMarketCap tells you which tokenised assets exist. Bell checks whether a given
-    asset's representations can honestly be compared at all, and publishes the comparison
-    when they can. Of the 244 references carrying more than one representation,
+    <p><strong>Latest recomputable observation · 28 September 2026, 15:14 UTC.</strong>
+    CoinMarketCap returned 793 tokenised references and 1,449 token rows. Bell routed
+    38 to <b>DO NOT COMPARE</b>, 97 to <b>INVESTIGATE</b>, and 658 to no-rule-hit.
+    88 references include computed quote-comparison fields. The complete
+    normalized inputs and the receipt are linked below; <code>make verify-capture</code>
+    recomputes this observation without an API key. A computed quote comparison is not
+    proof that units, claims or executable liquidity match.</p>
+
+    <p><strong>Historical whole-catalogue base rate · 21 September.</strong>
+    CoinMarketCap tells you which tokenised assets exist. Bell checks whether a given
+    asset's representations can honestly be compared at all. Of the 244 references carrying more than one representation,
     <strong>87 have a cheapest route worth naming</strong>, and behind the 157 refusals
     sit 158 rule hits: <strong>38 triggered price or field review rules</strong>, 107 are
     missing-coverage reasons, and 13 leave fewer than two eligible spot routes. Review
@@ -61,7 +69,7 @@
     ships no JavaScript and cannot show you today's. The <a href="/">product page</a> reads
     the live receipt and prints both.</p>
 
-    <p>The 107 coverage reasons are a missing price or quote without positive reported
+    <p>In that 21 September measurement, the 107 coverage reasons are a missing price or quote without positive reported
     volume; 13 more have fewer than two eligible spot routes. The remaining 38 are price
     or field review triggers, including the reported zero-market-cap/positive-volume pair.
     They tell an analyst what to verify, not whether the underlying market is economically
@@ -86,7 +94,7 @@
       <div><small>Comparisons published &middot; 21 Sep</small><strong>87</strong></div>
       <div><small>Refused for missing coverage &middot; 21 Sep</small><strong>107</strong></div>
       <div><small>No eligible spot pair &middot; 21 Sep</small><strong>13</strong></div>
-      <div><small>Tests in the offline gate</small><strong>550</strong></div>
+      <div><small>Tests in the offline gate</small><strong>551</strong></div>
       <div><small>Gate runtime, 2 machines</small><strong>17&ndash;26s</strong></div>
     </div>
 
@@ -138,20 +146,20 @@ make base-rate</pre>
       <h3>What that gate proves, and what it does not</h3>
       <dl>
         <dt>The suite</dt>
-        <dd>550 tests, 428 Python and 122 JavaScript. One Python test needs a network and a
+        <dd>551 tests, 429 Python and 122 JavaScript. One Python test needs a network and a
         CoinMarketCap key; without them it is skipped and the runner says so.</dd>
 
         <dt>The re-derivation</dt>
-        <dd>The published receipt is recomputed from the 16.5 MB of shipped inputs. The inputs
-        are verified byte for byte and the scan is recomputed from them, so a single changed
-        count fails here.</dd>
+        <dd><code>make check-offline</code> recomputes the 28 September capture from its
+        16 MB normalized inputs and verifies the historical 21 September replay from
+        16.5 MB of shipped inputs. Each scan is recomputed, so a changed count fails the gate.</dd>
 
         <dt>The submission gate</dt>
         <dd>Runs a submission gate over 182 tracked files, inspecting every one for anything
         private or unreleasable.</dd>
 
         <dt class="scope-limit">One observation is UNVERIFIED</dt>
-        <dd class="scope-limit">Of the 18 dated observations shipped in this repository, 2 ship their full payload. The product page reads the LIVE history, which is longer whenever the publisher has run since this commit, so the two pages can state different counts without either being wrong. One of
+        <dd class="scope-limit">Of the 18 dated observations in the population history, 2 ship their full payload. The separate 28 September capture also ships its complete normalized inputs and is recomputed by <code>make verify-capture</code>. The product page reads the LIVE history, which is longer whenever the publisher has run since this commit, so the two pages can state different counts without either being wrong. One of
         those two has its state distribution compared against the receipt. The other does not:
         it was written under the rule set that ran before this one, and no code here can
         re-derive it. Its totals, signals and source digests are checked; the split between

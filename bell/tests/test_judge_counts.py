@@ -52,6 +52,24 @@ def verifier_output():
 
 
 class JudgeCounts(unittest.TestCase):
+    def test_the_opening_summary_matches_the_latest_recomputable_capture(self):
+        import json
+        proof = HERE.parent / "site" / "proof"
+        capture = json.loads((proof / "rwa-surface-integrity-capture-2026-09-28.json")
+                             .read_text(encoding="utf-8"))
+        universe = capture["universe"]
+        page = " ".join(JUDGE.read_text(encoding="utf-8").split())
+        self.assertIn("Latest recomputable observation · 28 September 2026, 15:14 UTC", page)
+        self.assertIn(f"{universe['tokenised_references_scanned']:,} tokenised references", page)
+        self.assertIn(f"{universe['tokens_scanned']:,} token rows", page)
+        for state, label in (("do_not_compare", "DO NOT COMPARE"),
+                             ("investigate", "INVESTIGATE")):
+            self.assertIn(f"{universe['states'][state]} to <b>{label}</b>", page)
+        self.assertIn(f"{universe['states']['no_flags']} to no-rule-hit", page)
+        comparisons = sum(row.get("comparison") is not None for row in capture["alert_index"])
+        self.assertIn(f"{comparisons} references include computed quote-comparison fields", page)
+        self.assertIn("make verify-capture", page)
+
     def test_the_page_states_the_python_count_the_runner_collects(self):
         stated = re.search(r"(\d+) tests, (\d+) Python and (\d+) JavaScript",
                            JUDGE.read_text(encoding="utf-8"))

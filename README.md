@@ -10,11 +10,11 @@ that matters before a shortlist: can these representations be compared at all?
 | **Live** | <https://bell.dyplux.com/> |
 | **For judges** | <https://bell.dyplux.com/judge> - the claim, the 30-second check and the receipts on one page, no auth |
 | **Track** | Build with CMC API, Real World Assets. MIT licence |
-| **The output** | Of the 244 references carrying more than one representation, **87 have a cheapest route worth naming**. The 157 refusals produced 158 rule hits: 107 missing-coverage reasons, 38 price or field review triggers, and 13 cases with fewer than two eligible spot routes. Review triggers are not proof of economic contradiction |
+| **Whole-catalogue base rate · 21 Sep** | Of the 244 references carrying more than one representation, **87 have a cheapest route worth naming**. The 157 refusals produced 158 rule hits: 107 missing-coverage reasons, 38 price or field review triggers, and 13 cases with fewer than two eligible spot routes. Review triggers are not proof of economic contradiction |
 | **Run it yourself** | `git clone https://github.com/dyplux/bell.git && cd bell && make base-rate` - 0.3s, no API key, no install |
-| **Verify the whole thing** | `make check-offline` - 550 tests, observed between 17.71 and 25.35 seconds across 2 machines, plus a re-derivation of the published receipt from the shipped inputs. Of the 18 dated observations shipped here, 2 ship their full payload. One of those two has its state distribution compared against the receipt; the other is UNVERIFIED on that split, because it was written under the previous rule set and no code here can re-derive it. Its totals, signals and source digests are checked. The rest are published summaries |
+| **Verify the whole thing** | `make check-offline` - 551 tests, observed between 17.71 and 25.35 seconds across 2 machines. It verifies the historical 21 Sep replay and recomputes the complete 28 Sep capture from its shipped, credential-free inputs. Of the 18 dated observations in the population history, 2 ship their full payload. One has its state distribution compared against the receipt; the other is UNVERIFIED on that split because it predates the current rule set. The separate 28 Sep capture is fully recomputable with `make verify-capture`. The rest of the history entries are published summaries |
 | **Rules as an executable spec** | `python3 bell/verify_rule_boundaries.py` - 0.2s, 8 boundary checks, no network |
-| **Receipts** | [live](https://bell.dyplux.com/api/integrity) · [dated replay](bell/site/proof/rwa-surface-integrity-latest-replay-2026-09-21.json) · [replay inputs](bell/site/proof/rwa-surface-integrity-inputs-2026-09-21.json) · [base rate](bell/site/proof/base-rate-2026-09-21.json) |
+| **Receipts** | [live](https://bell.dyplux.com/api/integrity) · [latest 28 Sep capture](bell/site/proof/rwa-surface-integrity-capture-2026-09-28.json) · [latest normalized inputs](bell/site/proof/rwa-surface-integrity-inputs-2026-09-28.json) · [historical 21 Sep replay](bell/site/proof/rwa-surface-integrity-latest-replay-2026-09-21.json) · [base rate](bell/site/proof/base-rate-2026-09-21.json) |
 
 
 ## What the product does
@@ -95,14 +95,14 @@ The single public page combines the monitor, the RWA explorer and published
 dossiers. It searches the 7,811-entry dated CMC map snapshot, while keeping
 that catalogue separate from the live integrity receipt.
 
-The receipt observed on 21 September 2026 contained 791 tokenised references
-and 1,435 representation rows. The live page will usually show a different row
-count, because it renders whatever the current receipt observed — every figure
-on it is derived from that receipt, never written into the page. Two different
-numbers here are two different observations, not a disagreement; the dated one
-is fixed so the replay can be checked, and the live one moves. The receipt is published
-server-side and exposes observation time, publication time, freshness state,
-rule evidence and source fingerprints without exposing the CMC credential.
+The historical replay observed on 21 September 2026 contained 791 tokenised references
+and 1,435 representation rows. The later, fully reproducible 28 September capture
+contains 793 references and 1,449 token rows; its normalized inputs let a reviewer
+recompute the receipt without credentials using `make verify-capture`. The live page
+renders the latest server-side receipt and can show a different count again. Each
+dated package is a separate observation, not a conflicting version of the same data.
+The live receipt exposes observation time, publication time, freshness state, rule
+evidence and source fingerprints without exposing the CMC credential.
 
 CMC provides the discovery surfaces. Bell adds the join logic, contradiction
 checks, missing-versus-zero handling, next action and replayable evidence path.
