@@ -53,7 +53,7 @@
     asset's representations can honestly be compared at all, and publishes the comparison
     when they can. Of the 244 references carrying more than one representation,
     <strong>87 have a cheapest route worth naming</strong>, and behind the 157 refusals
-    sit 158 reasons of which <strong>38 are rows that contradict each other</strong>: a
+    sit 158 reasons of which <strong>51 are rows that contradict each other</strong>: a
     quote denomination that breaks, a market cap of zero under live volume, a spread past
     the publishable ceiling. Those 38 are what this scanner found. Every number on this
     page was produced by a command you can run yourself, with no API key. The three
@@ -61,17 +61,17 @@
     ships no JavaScript and cannot show you today's. The <a href="/">product page</a> reads
     the live receipt and prints both.</p>
 
-    <p>The other 120 reasons are a second price CoinMarketCap never published, which is a
+    <p>The other 107 reasons are a second price CoinMarketCap never published, which is a
     fact about catalogue coverage rather than about any issuer. That is why the refusal
     total is not the headline: 157 borrows the weight of a contradiction for a gap in the
     data. The two are counted separately everywhere the numbers appear, and both are reasons
     rather than references, because one reference can fail more than one rule.</p>
 
     <div class="judge-facts">
-      <div><small>Contradictions found, by reason &middot; 21 Sep</small><strong>38</strong></div>
+      <div><small>Contradictions found, by reason &middot; 21 Sep</small><strong>51</strong></div>
       <div><small>Comparisons published &middot; 21 Sep</small><strong>87</strong></div>
-      <div><small>Refused for missing coverage &middot; 21 Sep</small><strong>120</strong></div>
-      <div><small>Tests in the offline gate</small><strong>507</strong></div>
+      <div><small>Refused for missing coverage &middot; 21 Sep</small><strong>107</strong></div>
+      <div><small>Tests in the offline gate</small><strong>514</strong></div>
       <div><small>Gate runtime, 2 machines</small><strong>17&ndash;24s</strong></div>
     </div>
 
@@ -112,7 +112,7 @@ make base-rate</pre>
       <h3>What that gate proves, and what it does not</h3>
       <dl>
         <dt>The suite</dt>
-        <dd>507 tests, 392 Python and 115 JavaScript. One Python test needs a network and a
+        <dd>514 tests, 399 Python and 115 JavaScript. One Python test needs a network and a
         CoinMarketCap key; without them it is skipped and the runner says so.</dd>
 
         <dt>The re-derivation</dt>
@@ -121,7 +121,7 @@ make base-rate</pre>
         count fails here.</dd>
 
         <dt>The submission gate</dt>
-        <dd>Runs a submission gate over 171 tracked files, inspecting every one for anything
+        <dd>Runs a submission gate over 172 tracked files, inspecting every one for anything
         private or unreleasable.</dd>
 
         <dt class="scope-limit">One observation is UNVERIFIED</dt>
@@ -176,8 +176,8 @@ make base-rate</pre>
     <h2>What it refuses to do</h2>
     <p>A monitor that refuses is only worth reading if you know how often, so the rate is
     measured over the whole catalogue rather than argued from examples. The refusals are
-    also split rather than totalled: <strong>120 of the 158 reasons are a second price
-    CoinMarketCap never published</strong>, a coverage fact about the source, and 38 are rows
+    also split rather than totalled: <strong>107 of the 158 reasons are a second price
+    CoinMarketCap never published</strong>, a coverage fact about the source, and 51 are rows
     that contradict each other. Reported as one number it would read as an indictment of the
     market when most of it is an incomplete catalogue.</p>
     <p>The same discipline applies to the 547 references the rate excludes. One

@@ -1,7 +1,7 @@
 {
   "schema_version": "bell.guard_coverage.v2",
-  "complete": true,
-  "scope": "every guarded file",
+  "complete": false,
+  "scope": "part of the guarded set: rwa_integrity.py, base_rate.py not measured",
   "guards_mutated": 122,
   "files": {
     "append_history.py": {
@@ -40,7 +40,10 @@
       "measured_at": "2026-09-28T03:18:19Z"
     }
   },
-  "files_not_measured": [],
+  "files_not_measured": [
+    "rwa_integrity.py",
+    "base_rate.py"
+  ],
   "survivors": [],
   "note": "Each guard's condition was rewritten so its body cannot run, and the offline gate was run. A survivor is a refusal no test notices, whatever its docstring says. Three reviewers found these by hand before this existed. The totals are the sum of the per-file records below and cover exactly the files listed there, which is why `scope` and `complete` are in the receipt: one file's run is not the repository's coverage. `complete` is about what was measured, not about when. Whether a record still describes this tree is decided by its two digests: source_digest is the file it mutated, suite_digest is the suite that judged it, because 'this guard is defended' means a test in that suite goes red when the guard stops refusing. Recompute both and you know."
 }

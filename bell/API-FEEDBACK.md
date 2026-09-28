@@ -70,10 +70,23 @@ mistake the product exists to prevent.
 ## 5. One symbol, more than one instrument
 
 60 references contain a symbol collision across their representations, and 119
-mix a derivative with spot-like wrappers under the same reference. `is_derivative`
-is present and correct, which is what makes the join possible at all — but a
-caller who groups by symbol, as the natural reading of the map invites, silently
-compares a perpetual against a spot wrapper.
+mix a derivative with spot-like wrappers under the same reference. A caller who
+groups by symbol, as the natural reading of the map invites, silently compares
+a perpetual against a spot wrapper.
+
+**And there is no field to group by instead.** This document previously said
+`is_derivative` "is present and correct, which is what makes the join possible
+at all". That was wrong, and wrong in the one artefact whose whole value is
+being right about your contract. The key appears **zero times** in the 16.5 MB
+credential-free capture shipped with this repository, and it is `null` on all
+312 token rows of today's live receipt, including the 42 rows whose `name` ends
+in "(Derivatives)".
+
+So the only way to tell a derivative from a wrapper is to read the words in
+`name`, `asset_type`, `token_type` or `category` and look for "derivative",
+which is string matching against a display field. The request is a boolean the
+API actually sends. We read the flag when it is there and fall back to the
+words when it is not; we would rather not need the fallback.
 
 4 references show a price denomination break: representations of the same
 underlying differ by more than 10×, which is a unit difference (gram versus

@@ -1095,6 +1095,19 @@
   // "1 representations · 1 issuers" was on screen for every single-row
   // reference. A product that reports other people's surfaces saying two
   // things at once should not print a plural over a count of one.
+  // CoinMarketCap does not send is_derivative: zero occurrences in the shipped
+  // input package, null on every row of the live receipt, including the 42
+  // named "(Derivatives)". Reading the flag alone made this column say "no" on
+  // all 1,444 exported rows, so a researcher filtering it concluded the RWA
+  // catalogue contains no derivatives. The comment three lines below records
+  // removing a `quote_source` column for being empty on every row of every
+  // export; this was the same bug beside it.
+  function isDerivativeRow(token) {
+    if (token?.is_derivative === true) return true;
+    return ['name', 'asset_type', 'token_type', 'category']
+      .some(field => String(token?.[field] || '').toLowerCase().includes('derivative'));
+  }
+
   function plural(count, word) {
     const value = Number(count) || 0;
     return `${formatNumber(value)} ${word}${value === 1 ? '' : 's'}`;
@@ -1590,7 +1603,7 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
           marketCapStatus,
           numericValue(token.price) ?? '',
           numericValue(token.volume_24h) ?? '',
-          token.is_derivative ? 'yes' : 'no',
+          isDerivativeRow(token) ? 'yes' : 'no',
           routes.has(String(token.crypto_id)) ? 'yes' : 'no',
           routes.get(String(token.crypto_id))?.premium_to_cheapest_bps?.toFixed(1) ?? '',
         ];

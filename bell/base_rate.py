@@ -52,7 +52,7 @@ from collections import Counter
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 
-from rwa_integrity import BLOCKING_WARNINGS, comparable_routes, number, scan  # noqa: E402
+from rwa_integrity import is_derivative_row, BLOCKING_WARNINGS, comparable_routes, number, scan  # noqa: E402
 
 INPUTS = os.path.join(HERE, 'site', 'proof',
                       'rwa-surface-integrity-inputs-2026-09-21.json')
@@ -88,7 +88,9 @@ def _no_route_reason(representations: list) -> str:
     unpriced = 0
     untraded = 0
     for token in representations:
-        if token.get('is_derivative'):
+        # CMC never sends is_derivative; reading it alone let every derivative
+        # row into this count. One detector, in rwa_integrity.
+        if is_derivative_row(token):
             continue
         price = number(token.get('price'))
         volume = number(token.get('volume_24h'))

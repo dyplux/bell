@@ -43,6 +43,14 @@ GUARDED = (
     "reference_series.py",
     "append_history.py",
     "history_chain.py",
+    # The engine and the measurement were outside this list, so "122 mutated, 0
+    # survive" was a statement about the evidence chain and not about the files
+    # that produce every published number. A reviewer found a filter in
+    # rwa_integrity that had never excluded anything, because it read a field
+    # CoinMarketCap does not send, and no sweep could have reported it: the
+    # file was not in scope.
+    "rwa_integrity.py",
+    "base_rate.py",
 )
 
 
@@ -198,7 +206,23 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--only", help="one filename from the guarded list")
     parser.add_argument("--limit", type=int, help="stop after this many guards")
     parser.add_argument("--output", default=str(HERE / "site" / "proof" / "guard-coverage.json"))
+    parser.add_argument(
+        "--rescope", action="store_true",
+        help=("rewrite the receipt's scope from the current guarded set without measuring "
+              "anything. Adding a file to GUARDED makes an existing receipt incomplete, which "
+              "is true the moment the list changes and has nothing to do with running the "
+              "gate: scope is a function of the list, measurement is not. Without this the "
+              "repository deadlocks, because the receipt can only be corrected by a sweep and "
+              "a sweep refuses to start on the red gate the stale receipt caused."))
     args = parser.parse_args(argv)
+
+    if args.rescope:
+        out = Path(args.output)
+        measured = json.loads(out.read_text(encoding="utf-8")).get("files", {}) if out.exists() else {}
+        receipt = assemble(measured)
+        out.write_text(json.dumps(receipt, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        print(f"rescoped: {receipt['scope']}")
+        return 0
 
     targets = [name for name in GUARDED if not args.only or name == args.only]
     if not targets:

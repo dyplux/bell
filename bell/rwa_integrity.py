@@ -262,6 +262,30 @@ BLOCKING_WARNINGS = frozenset({"PRICE_DISPERSION"})
 MAX_PUBLISHABLE_SPREAD_BPS = 2_000
 
 
+# CoinMarketCap does not send `is_derivative`. It appears zero times in the
+# 16.5 MB input package this repository ships and is null on all 312 token rows
+# of the live receipt, including the 42 rows literally named "(Derivatives)".
+#
+# The route filter read that key alone, so it never excluded anything, and the
+# comparison published a `basis` string saying "Observed CMC quotes for the
+# non-derivative representations". The signal path a few lines below had the
+# working detector the whole time, which is how DERIVATIVE_MIX correctly finds
+# 121 groups: two answers to one question in one file, and the affirmative
+# output was reading the wrong one. That is the defect this product reports
+# about other people's surfaces.
+#
+# The flag is still honoured when it is there, because a source that starts
+# sending it should not be ignored.
+DERIVATIVE_FIELDS = ("name", "asset_type", "token_type", "category")
+
+
+def is_derivative_row(token: dict) -> bool:
+    if token.get("is_derivative") is True:
+        return True
+    return any("derivative" in str(token.get(field) or "").lower()
+               for field in DERIVATIVE_FIELDS)
+
+
 def comparable_routes(tokens: list[dict]) -> dict | None:
     """Rank the tradable representations of one reference.
 
@@ -277,7 +301,7 @@ def comparable_routes(tokens: list[dict]) -> dict | None:
     """
     routes = []
     for token in tokens:
-        if token.get("is_derivative"):
+        if is_derivative_row(token):
             continue
         price = number(token.get("price"))
         volume = number(token.get("volume_24h"))
@@ -341,7 +365,7 @@ def asset_scan(asset: dict, issuer_lookup: dict | None = None, crypto_lookup: di
     zero_mcap_volume = [token for token in tokens if number(token.get("market_cap")) == 0 and (number(token.get("volume_24h")) is not None and number(token.get("volume_24h")) > 0)]
     missing_fields = [token.get("symbol") or token.get("crypto_id") for token in tokens if any(number(token.get(key)) is None or number(token.get(key)) < 0 for key in ("price", "market_cap", "volume_24h"))]
     missing_crypto_info = [token.get("crypto_id") for token in tokens if crypto_info_checked and token.get("crypto_id") is not None and token.get("crypto_info_resolved") is not True]
-    derivative_tokens = [token for token in tokens if token.get("is_derivative") is True or any("derivative" in str(token.get(key) or "").lower() for key in ("name", "asset_type", "token_type", "category"))]
+    derivative_tokens = [token for token in tokens if is_derivative_row(token)]
     non_derivative_tokens = [token for token in tokens if token not in derivative_tokens]
     signals = []
 

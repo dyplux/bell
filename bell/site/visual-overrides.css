@@ -489,3 +489,15 @@ footer{max-width:2200px;padding-left:64px;padding-right:64px;font-size:13px}
   border-left:2px solid var(--gold);background:var(--panel-inset);color:var(--muted);
   font:12px/1.2 var(--font);letter-spacing:.06em;vertical-align:middle;white-space:nowrap}
 @media(max-width:700px){.finding-live{display:block;margin:10px 0 0;white-space:normal}}
+/* The outcome key is the page's own glossary and it was clipped at every
+   desktop width: clientWidth 598 against scrollWidth 790, overflow visible,
+   scrollLeft immovable. The unreachable column was SINGLE REPRESENTATION ·
+   FLAGGED, the legend for the state 545 of 792 references land in. The same
+   overflow pushed the page itself to 825px at a 768px viewport.
+   A fixed four-column grid cannot hold seven entries; this wraps. */
+.outcome-key{grid-template-columns:repeat(auto-fit,minmax(138px,1fr));max-width:100%}
+/* minmax's floor is a floor, not a cap: a cell whose content is wider pushes
+   its track past it, which is how a grid with room to spare still overflowed.
+   The cells have to be allowed to shrink and the words to wrap. */
+.outcome-key>div{min-width:0;overflow-wrap:anywhere}
+@media(max-width:620px){.outcome-key{grid-template-columns:repeat(auto-fit,minmax(124px,1fr))}}

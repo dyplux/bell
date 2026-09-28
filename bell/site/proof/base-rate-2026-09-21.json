@@ -11,17 +11,18 @@
     0.70089393092008
   ],
   "refusal_reasons": {
-    "REPRESENTATIONS_WITHOUT_A_PRICE": 69,
-    "REPRESENTATIONS_QUOTED_BUT_UNTRADED": 51,
+    "REPRESENTATIONS_WITHOUT_A_PRICE": 92,
     "ZERO_MCAP_POSITIVE_VOLUME": 30,
+    "REPRESENTATIONS_QUOTED_BUT_UNTRADED": 15,
+    "FEWER_THAN_TWO_SPOT_REPRESENTATIONS": 13,
     "PRICE_DENOMINATION_BREAK": 4,
     "PRICE_DISPERSION": 3,
     "SPREAD_ABOVE_PUBLISHABLE_CEILING": 1
   },
   "refusal_split": {
-    "source_coverage": 120,
-    "data_contradiction": 38,
-    "coverage_share": 0.7595,
+    "source_coverage": 107,
+    "data_contradiction": 51,
+    "coverage_share": 0.6772,
     "coverage_codes": [
       "REPRESENTATIONS_QUOTED_BUT_UNTRADED",
       "REPRESENTATIONS_WITHOUT_A_PRICE"
