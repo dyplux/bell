@@ -37,14 +37,45 @@
     if (element) element.textContent = text;
   };
   let receipt;
-  let filter = 'all';
-  let sortBy = 'severity';
   const initialURL = new URL(window.location.href);
   const initialReference = initialURL.searchParams.get('reference') || '';
+  // The index's own state is in the URL, because a research tool whose pitch is
+  // a defensible handoff has to be able to hand over the view. Sort, filter,
+  // page size, page number and the index query all used to leave the address
+  // bar reading https://bell.dyplux.com/ , so "here is what I was looking at"
+  // could not be sent to anyone. Only ?reference= and ?map_reference= were
+  // shareable, which are the two a reader reaches by accident.
+  // The index search is the same field as the hero search and already rides
+  // in ?reference=, so it is not given a second name here.
+  const INDEX_STATE = ['state', 'sort', 'size', 'page'];
+  const startingFilter = initialURL.searchParams.get('state');
+  const startingSort = initialURL.searchParams.get('sort');
+  const startingSize = Number(initialURL.searchParams.get('size'));
+  let filter = startingFilter || 'all';
+  let sortBy = (window.BellIndexOrder?.ORDERS || []).includes(startingSort)
+    ? startingSort : 'severity';
   let query = initialReference.trim();
   let searchAttempted = Boolean(query);
-  let pageNumber = 0;
+  let pageNumber = Math.max(0, (Number(initialURL.searchParams.get('page')) || 1) - 1);
   let lastVisibleIndex = [];
+
+  function rememberIndexState() {
+    const url = new URL(window.location.href);
+    const state = {
+      state: filter === 'all' ? null : filter,
+      sort: sortBy === 'severity' ? null : sortBy,
+      size: pageSize === defaultPageSize ? null : String(pageSize),
+      page: pageNumber === 0 ? null : String(pageNumber + 1),
+    };
+    for (const key of INDEX_STATE) {
+      if (state[key] === null) url.searchParams.delete(key);
+      else url.searchParams.set(key, state[key]);
+    }
+    // replaceState, not pushState: changing a filter is not a navigation, and
+    // making the back button walk a reader out through nine filter changes is
+    // its own defect.
+    if (url.toString() !== window.location.href) window.history.replaceState({}, '', url);
+  }
   // Twelve rows at ~350px each made the reference index 4,200px - a third of
   // the whole page - rendered before a first-time visitor had searched for
   // anything. The index is where you go when you want the population; the
@@ -62,7 +93,8 @@
   // raising the number for everyone trades one unusable page for another. The
   // reader chooses, and the pagination gained a jump to the last page and a
   // direct page entry, because "Next" 197 times is not navigation either.
-  let pageSize = window.matchMedia('(max-width: 760px)').matches ? 2 : 4;
+  const defaultPageSize = window.matchMedia('(max-width: 760px)').matches ? 2 : 4;
+  let pageSize = [4, 12, 24].includes(startingSize) ? startingSize : defaultPageSize;
 
   labelDatedReplayLinks();
 
@@ -2381,11 +2413,27 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     filter = button.dataset.filter;
     pageNumber = 0;
     document.querySelectorAll('[data-filter]').forEach(item => item.classList.toggle('selected', item === button));
+    rememberIndexState();
     renderAlerts();
   }));
+  // A shared link has to arrive with its controls already set, or the view is
+  // restored and the page lies about how it got there.
+  (function restoreIndexControls() {
+    const sort = byId('alert-sort');
+    if (sort) sort.value = sortBy;
+    const size = byId('alert-page-size');
+    if (size && [...size.options].some(option => Number(option.value) === pageSize)) {
+      size.value = String(pageSize);
+    }
+    document.querySelectorAll('[data-filter]').forEach(button => {
+      button.classList.toggle('selected', button.dataset.filter === filter);
+    });
+  }());
+
   byId('alert-sort')?.addEventListener('change', event => {
     sortBy = event.target.value;
     pageNumber = 0;
+    rememberIndexState();
     renderAlerts();
   });
   byId('download-index')?.addEventListener('click', downloadIndex);
@@ -2393,6 +2441,7 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     const chosen = Number(event.target.value);
     pageSize = Number.isFinite(chosen) && chosen > 0 ? chosen : pageSize;
     pageNumber = 0;
+    rememberIndexState();
     renderAlerts();
   });
   document.addEventListener('change', event => {
@@ -2401,6 +2450,7 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     if (!Number.isFinite(asked)) return;
     const highest = Number(event.target.max) || 1;
     pageNumber = Math.min(Math.max(1, Math.round(asked)), highest) - 1;
+    rememberIndexState();
     renderAlerts();
   });
   byId('alert-search').addEventListener('input', event => {
@@ -2420,6 +2470,7 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     const button = event.target.closest('[data-page]');
     if (!button || button.disabled) return;
     pageNumber = Math.max(0, Number(button.dataset.page) || 0);
+    rememberIndexState();
     renderAlerts();
     byId('monitor').scrollIntoView({ behavior: 'smooth', block: 'start' });
   });

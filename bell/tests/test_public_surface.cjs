@@ -605,7 +605,10 @@ test('the reference index does not render a third of the page before you search'
   // it is declared with. An earlier version matched `const pageSize` exactly
   // and went red the moment the reader was allowed to change it, which is a
   // test failing on how a line is spelled rather than on what it does.
-  const sizes = (integrity.match(/\b(?:const|let|var) pageSize = [^;]+;/) || [])[0];
+  // The default moved to its own binding when the URL was allowed to carry a
+  // chosen size, so the default is what this reads.
+  const sizes = (integrity.match(/\b(?:const|let|var) defaultPageSize = [^;]+;/)
+    || integrity.match(/\b(?:const|let|var) pageSize = [^;]+;/) || [])[0];
   assert.ok(sizes, 'the index no longer declares a page size');
   const values = (sizes.match(/\b\d+\b/g) || []).map(Number).filter(value => value <= 32);
   assert.ok(values.length, 'the page size no longer resolves to a number');
@@ -1062,7 +1065,7 @@ test('a phone gets fewer index cards without losing any reference', () => {
   // Each index card is about 1.2 screens tall at 390px, so four of them made
   // the reference index five and a half screens of scrolling on a phone.
   const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
-  assert.match(integrity, /\b(?:const|let) pageSize = window\.matchMedia\('\(max-width: 760px\)'\)\.matches \? 2 : 4;/,
+  assert.match(integrity, /\b(?:const|let) defaultPageSize = window\.matchMedia\('\(max-width: 760px\)'\)\.matches \? 2 : 4;/,
     'the phone default is no longer two cards');
   // Fewer cards is only acceptable because nothing becomes unreachable: the
   // pager, the search and every state filter still cover the whole population.
@@ -1094,7 +1097,12 @@ test('the judge page names examples that hold on the receipt it ships', () => {
     path.join(site, 'proof', 'rwa-surface-integrity-latest-replay-2026-09-21.json'), 'utf8'));
   const byName = new Map((replay.alert_index || []).map(item => [item.name, item]));
 
-  const affirmative = judge.match(/<li><strong>([^<]+)<\/strong> returns <strong>COMPARABLE<\/strong>/);
+  // The label may carry a qualifier - COMPARABLE · FLAGGED - and this test is
+  // about which reference is named and whether it carries a comparison. The
+  // exact printed word is pinned by
+  // "the judge page promises the words the product prints for its two examples".
+  const affirmative = judge.match(
+    /<li><strong>([^<]+)<\/strong> returns <strong>COMPARABLE(?:[^<]*)<\/strong>/);
   assert.ok(affirmative, 'the judge page lost its affirmative example');
   const comparable = byName.get(affirmative[1]);
   assert.ok(comparable, `${affirmative[1]} is not in the shipped replay receipt`);
@@ -1546,5 +1554,62 @@ test('the single-representation count the prose states is the count its filter r
   for (const item of flagged) {
     assert.match(label(item, 'FACTS OPEN'), /FLAGGED$/,
       `${item.name} has one representation and a scan flag and reads as unflagged`);
+  }
+});
+
+test('the reference index puts its own view in the URL and reads it back', () => {
+  // "Here is the view I was looking at" could not be sent: sort, filter, page
+  // size and page number all left the address bar reading the bare origin,
+  // while ?reference= and ?map_reference= - the two a reader reaches by
+  // accident - were shareable. For a tool whose pitch is a defensible handoff
+  // that is the wrong way round.
+  const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
+  assert.match(integrity, /const INDEX_STATE = \['state', 'sort', 'size', 'page'\]/,
+    'the index no longer names the state it shares');
+
+  // Written on every control, not just the one that was easiest to reach.
+  const writes = (integrity.match(/rememberIndexState\(\)/g) || []).length;
+  assert.ok(writes >= 6,
+    `only ${writes} references to rememberIndexState: a control changes the view without recording it`);
+
+  // Read back on load, or a shared link restores nothing.
+  for (const pattern of [/initialURL\.searchParams\.get\('state'\)/,
+                         /initialURL\.searchParams\.get\('sort'\)/,
+                         /initialURL\.searchParams\.get\('size'\)/,
+                         /initialURL\.searchParams\.get\('page'\)/]) {
+    assert.match(integrity, pattern, `a shared link's ${pattern} is never read`);
+  }
+  // And the controls have to show it, or the view is restored while the page
+  // says it is on its defaults.
+  assert.match(integrity, /function restoreIndexControls\(\)/,
+    'a restored view leaves its own controls showing the defaults');
+  // replaceState, because a filter change is not a navigation: pushState would
+  // make the back button walk a reader out through every filter they tried.
+  assert.match(integrity, /window\.history\.replaceState\(\{\}, '', url\)/);
+  assert.doesNotMatch(integrity, /history\.pushState/);
+});
+
+test('the judge page promises the words the product prints for its two examples', () => {
+  // The judge page told a reader to search Coinbase and promised COMPARABLE;
+  // the product printed COMPARABLE · FLAGGED. One page asserting what another
+  // page prints, with nothing comparing them - the example chips were pinned
+  // and this prose was not.
+  const judge = fs.readFileSync(path.join(site, 'judge.html'), 'utf8');
+  const replay = JSON.parse(fs.readFileSync(
+    path.join(site, 'proof', 'rwa-surface-integrity-latest-replay-2026-09-21.json'), 'utf8'));
+  const label = runFromSource('displayDecisionLabel', {
+    decisionBucket: runFromSource('decisionBucket'),
+    isFlaggedComparable: runFromSource('isFlaggedComparable'),
+    isFlaggedSingle: runFromSource('isFlaggedSingle'),
+  });
+  const named = [...judge.matchAll(
+    /<li><strong>([^<]+)<\/strong> returns <strong>([^<]+)<\/strong>/g)];
+  assert.ok(named.length >= 2, 'the judge page no longer names two worked examples');
+  for (const [, name, promised] of named) {
+    const item = (replay.alert_index || []).find(row => row.name === name);
+    assert.ok(item, `the judge page names ${name}, which the shipped replay does not carry`);
+    const printed = label(item, 'FACTS OPEN');
+    assert.equal(promised.replace(/&middot;/g, '·').replace(/\s+/g, ' ').trim(), printed,
+      `the judge page promises "${promised}" for ${name} and the product prints "${printed}"`);
   }
 });
