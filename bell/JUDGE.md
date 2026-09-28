@@ -62,8 +62,8 @@ current submission and does not require an API key.
    export keeps positive, missing and non-positive market-cap states separate.
 8. Open `Inspect this evidence` to see the published receipt, rule evidence, identity/unit/
    market checks, token rows and the resolution route. The case card can also export a
-   compact `bell.case-receipt.v1` JSON containing the selected rows, signals, source
-   fingerprints and join method.
+   compact `bell.case-receipt.v2` JSON containing the selected rows, signals, source
+   fingerprints, join method and the exact included token IDs plus excluded-row reasons.
 9. Open `Explore RWA` and search a reference without a published case. Bell routes it to the
    complete map instead of inventing a clean result.
 

@@ -6,7 +6,7 @@ credential-free proof for a reviewer who wants to inspect the build quickly.
 ## User-facing route
 
 - `site/index.html` contains the single public product page and its accessible controls
-- `site/integrity.js` loads the dated `/api/integrity` receipt, renders decisions and exports the brief and `bell.case-receipt.v1`
+- `site/integrity.js` loads the dated `/api/integrity` receipt, renders calibrated decisions and exports `bell.case-receipt.v2` with its exact comparison set
 - `site/integrity.js` also exports a row-level population attribution CSV with stable reference, token and issuer IDs; positive, missing and non-positive market-cap states stay distinct
 - `site/capital-impact.js` contains the deterministic capital scenario calculation used by the blocked-case panel
 

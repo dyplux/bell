@@ -316,8 +316,11 @@ def verify(payload: Any, against: tuple | None = None) -> dict[str, Any]:
     missing = REQUIRED_TOP_LEVEL - payload.keys()
     if missing:
         raise ValueError(f"missing top-level fields: {', '.join(sorted(missing))}")
-    if payload["schema_version"] != "bell.case-receipt.v1":
+    version = payload["schema_version"]
+    if version not in {"bell.case-receipt.v1", "bell.case-receipt.v2"}:
         raise ValueError("unsupported schema_version")
+    if version == "bell.case-receipt.v2" and "comparison" not in payload:
+        raise ValueError("missing top-level fields: comparison")
     # This demanded "/api/integrity" and nothing else, which switched off the
     # strongest claim in the submission. The README documents an offline path -
     # serve bell/site and open it - and a case exported there is stamped with
@@ -380,6 +383,11 @@ def verify(payload: Any, against: tuple | None = None) -> dict[str, Any]:
                 f"source_hashes.{name} is {digest[0] * 4}...: a single repeated character is a "
                 "placeholder, not the fingerprint of a payload")
     recomputed = rederive(payload)
+    comparison_verified = version == "bell.case-receipt.v2"
+    if comparison_verified and payload.get("comparison") != recomputed.get("comparison"):
+        raise ValueError(
+            "the case comparison does not match the exact routes and exclusion reasons "
+            "recomputed from its token rows")
     published, published_name = against if against else find_published(payload)
     if published is None:
         binding = ("not bound: no receipt in this repository carries these source fingerprints, "
@@ -400,6 +408,7 @@ def verify(payload: Any, against: tuple | None = None) -> dict[str, Any]:
         "token_rows": len(tokens),
         "source_hashes": len(payload["source_hashes"]),
         "verdict_rederived_from_rows": (recomputed.get("decision") or {}).get("state"),
+        "comparison_rederived_from_rows": comparison_verified,
         "signals_rederived": sorted(codes_of(recomputed.get("signals")) & ROW_DERIVED_SIGNALS),
         "signals_not_rederived": sorted(CONTEXT_SIGNALS),
         "rows_binding": binding,

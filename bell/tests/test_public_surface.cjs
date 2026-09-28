@@ -138,6 +138,9 @@ test('population lens keeps an auditable row-level export available', () => {
   assert.match(page, /id="download-population-attribution"/);
   assert.match(page, /Inspect source fields/);
   assert.match(integrity, /function downloadPopulationAttribution/);
+  assert.match(integrity, /comparison_exclusion_reasons/);
+  assert.match(integrity, /included_crypto_ids/);
+  assert.match(integrity, /excluded_crypto_ids/);
   assert.match(integrity, /market_cap_status/);
   assert.match(integrity, /zero_or_non_positive/);
   assert.match(integrity, /reference\.rwa_id/);
@@ -154,7 +157,8 @@ test('case results can be shared as stable single-URL deep links', () => {
   assert.match(integrity, /const exactMatches = normalizedQuery/);
   assert.match(integrity, /const matchLabel = exact/);
   assert.match(integrity, /heroSearchInput\.value = alert\.name/);
-  assert.match(integrity, /bell\.case-receipt\.v1/);
+  assert.match(integrity, /bell\.case-receipt\.v2/);
+  assert.match(integrity, /comparison: comparisonForCaseReceipt\(item\)/);
   assert.match(integrity, /Download case JSON/);
   assert.match(integrity, /source_hashes: receipt\?\.source_hashes/);
 });
@@ -444,7 +448,7 @@ test('every column the population export offers is one Bell actually observed', 
   }
   // Names the export derives rather than reads straight off a row.
   const derived = new Set(['reference_name', 'reference_symbol', 'token_symbol', 'token_name',
-    'market_cap_status', 'in_published_comparison', 'premium_to_cheapest_bps']);
+    'market_cap_status', 'in_published_comparison', 'comparison_exclusion_reasons', 'premium_to_cheapest_bps']);
 
   const unbacked = columns.filter(column => !observed.has(column) && !derived.has(column));
   assert.deepEqual(unbacked, [],

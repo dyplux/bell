@@ -35,7 +35,7 @@ REPLAY = json.loads((HERE.parent / "site" / "proof"
 def receipt_for(alert: dict) -> dict:
     """The exported case shape, built from a real alert in the shipped receipt."""
     return {
-        "schema_version": "bell.case-receipt.v1",
+        "schema_version": "bell.case-receipt.v2",
         "observed_at": REPLAY["observed_at"],
         "published_at": REPLAY["observed_at"],
         "source": "/api/integrity",
@@ -48,6 +48,7 @@ def receipt_for(alert: dict) -> dict:
             "tradfi_market_count": alert.get("tradfi_market_count") or 0,
         },
         "decision": copy.deepcopy(alert["decision"]),
+        "comparison": copy.deepcopy(alert.get("comparison")),
         "next_action": alert.get("next_action") or "continue external diligence",
         "signals": copy.deepcopy(alert["signals"]),
         "tokens": copy.deepcopy(alert["tokens"]),
@@ -76,6 +77,16 @@ class CaseReceiptTests(unittest.TestCase):
         self.assertEqual(result["status"], "valid public case receipt")
         self.assertEqual(result["token_rows"], len(self.alert["tokens"]))
         self.assertEqual(result["verdict_rederived_from_rows"], self.alert["decision"]["state"])
+        self.assertTrue(result["comparison_rederived_from_rows"])
+
+    def test_published_comparison_set_and_exclusion_reasons_are_rederived(self):
+        alert = next(item for item in REPLAY["alerts"] if item.get("comparison"))
+        payload = receipt_for(alert)
+        result = verify(payload)
+        self.assertTrue(result["comparison_rederived_from_rows"])
+        payload["comparison"]["included_crypto_ids"] = []
+        with self.assertRaisesRegex(ValueError, "exact routes and exclusion reasons"):
+            verify(payload)
 
     def test_every_shipped_case_verifies(self):
         # Without this the refusals below prove nothing: a verifier that refuses
@@ -354,7 +365,7 @@ class TheDocumentedCommandRefusesAnUnboundSubject(unittest.TestCase):
                             .read_text(encoding="utf-8"))
         alert = next(item for item in replay["alerts"] if item.get("tokens"))
         self.case = {
-            "schema_version": "bell.case-receipt.v1",
+            "schema_version": "bell.case-receipt.v2",
             "observed_at": replay["observed_at"], "published_at": replay["observed_at"],
             "source": "proof/rwa-surface-integrity-latest-replay-2026-09-21.json",
             "credential_free": True,
@@ -364,7 +375,8 @@ class TheDocumentedCommandRefusesAnUnboundSubject(unittest.TestCase):
                           "token_count": len(alert["tokens"]),
                           "issuer_count": alert.get("issuer_count") or 1,
                           "tradfi_market_count": alert.get("tradfi_market_count") or 0},
-            "decision": alert["decision"], "next_action": alert.get("next_action"),
+            "decision": alert["decision"], "comparison": alert.get("comparison"),
+            "next_action": alert.get("next_action"),
             "signals": alert["signals"], "tokens": alert["tokens"],
             "method": {"join_key": "rwa_id", "token_join_key": "crypto_id", "rules": []},
             "source_hashes": replay["source_hashes"],

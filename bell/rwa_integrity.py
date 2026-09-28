@@ -298,24 +298,41 @@ def comparable_routes(tokens: list[dict]) -> dict | None:
     statement about backing, redemption, eligibility or custody, none of which
     this monitor observes.
     """
-    routes = []
+    candidates = []
+    excluded = []
     for token in tokens:
+        reasons = []
+        crypto_id = token.get("crypto_id")
+        if crypto_id is None:
+            reasons.append("missing_crypto_id")
         if is_derivative_row(token):
-            continue
+            reasons.append("derivative_label")
         price = number(token.get("price"))
         volume = number(token.get("volume_24h"))
         if price is None or price <= 0:
-            continue
+            reasons.append("missing_or_non_positive_price")
         if volume is None or volume <= 0:
+            reasons.append("missing_or_non_positive_volume")
+        if reasons:
+            excluded.append({"crypto_id": crypto_id, "symbol": token.get("symbol"), "reasons": reasons})
             continue
-        routes.append({
-            "crypto_id": token.get("crypto_id"),
+        candidates.append({
+            "crypto_id": crypto_id,
+            "crypto_id_key": str(crypto_id),
             "symbol": token.get("symbol"),
             "name": token.get("name"),
             "issuer_name": token.get("issuer_name"),
             "price": float(price),
             "volume_24h": float(volume),
         })
+    id_counts = Counter(route["crypto_id_key"] for route in candidates)
+    routes = []
+    for route in candidates:
+        if id_counts[route["crypto_id_key"]] > 1:
+            excluded.append({"crypto_id": route["crypto_id"], "symbol": route["symbol"], "reasons": ["duplicate_crypto_id"]})
+            continue
+        route.pop("crypto_id_key")
+        routes.append(route)
     if len(routes) < 2:
         return None
     routes.sort(key=lambda route: route["price"])
@@ -342,14 +359,16 @@ def comparable_routes(tokens: list[dict]) -> dict | None:
     highest_volume = max(routes, key=lambda route: route["volume_24h"])
     return {
         "routes": routes,
+        "included_crypto_ids": [route["crypto_id"] for route in routes],
+        "excluded_crypto_ids": excluded,
         "route_count": len(routes),
         "cheapest": {"symbol": cheapest["symbol"], "issuer_name": cheapest["issuer_name"], "price": cheapest["price"]},
         # This is reported 24h volume, not market depth or executable capacity.
-        "deepest": {"symbol": highest_volume["symbol"], "issuer_name": highest_volume["issuer_name"], "volume_24h": highest_volume["volume_24h"]},
+        "highest_reported_volume": {"symbol": highest_volume["symbol"], "issuer_name": highest_volume["issuer_name"], "volume_24h": highest_volume["volume_24h"]},
         "spread_bps": round(spread_bps, 1),
         "traded_volume_24h": traded,
         # Tickers can collide. Compare the actual route row, never its symbol.
-        "cheapest_is_deepest": cheapest is highest_volume,
+        "cheapest_has_highest_reported_volume": cheapest is highest_volume,
         "basis": "Observed CMC quotes for the non-derivative representations of this reference that carry both a price and 24h volume.",
         "limits": "A price comparison only. Backing, redemption, eligibility, custody and settlement are not observed by this monitor.",
     }
@@ -492,11 +511,12 @@ def asset_scan(asset: dict, issuer_lookup: dict | None = None, crypto_lookup: di
             "state": "comparable",
             "label": "COMPARABLE, NOT ENDORSED",
             "consequence": (
-                f"{comparison['route_count']} representations share an identity, a unit and a market "
-                f"state, so their prices can be set side by side. Observed spread "
+                f"{comparison['route_count']} token routes grouped under one CMC RWA reference passed "
+                f"Bell's price and reported-volume filters; this does not establish equivalent units "
+                f"or claims. Observed quote spread "
                 f"{comparison['spread_bps']:.1f} bps; cheapest route {cheapest['symbol']}"
-                + ("" if comparison["cheapest_is_deepest"]
-                   else f", though {comparison['deepest']['symbol']} carries more 24h volume")
+                + ("" if comparison["cheapest_has_highest_reported_volume"]
+                   else f"; {comparison['highest_reported_volume']['symbol']} has the highest reported 24h volume")
                 + "."
             ),
             "allocation_effect": (

@@ -1101,6 +1101,35 @@
       + (unresolved ? ` ${unresolved} rule check${unresolved === 1 ? '' : 's'} remain open.` : '');
   }
 
+  function decisionForCaseReceipt(item) {
+    const decision = item?.decision;
+    if (!decision) return null;
+    const comparison = item?.comparison;
+    if (!comparison) return { ...decision, consequence: displayDecisionConsequence(item) };
+    const cheapest = comparison.cheapest || {};
+    const highestVolume = comparison.highest_reported_volume || comparison.deepest || {};
+    const cheapestHasHighestVolume = comparison.cheapest_has_highest_reported_volume
+      ?? comparison.cheapest_is_deepest;
+    return {
+      ...decision,
+      consequence: `${comparison.route_count} token routes grouped under one CMC RWA reference passed Bell's price and reported-volume filters; this does not establish equivalent units or claims. Observed quote spread ${Number(comparison.spread_bps).toFixed(1)} bps; cheapest route ${cheapest.symbol || 'unknown'}`
+        + (cheapestHasHighestVolume ? '' : `; ${highestVolume.symbol || 'another route'} has the highest reported 24h volume`)
+        + '.',
+    };
+  }
+
+  function comparisonForCaseReceipt(item) {
+    if (!item?.comparison) return null;
+    const { deepest, cheapest_is_deepest, ...current } = item.comparison;
+    return {
+      ...current,
+      highest_reported_volume: current.highest_reported_volume || deepest,
+      cheapest_has_highest_reported_volume: current.cheapest_has_highest_reported_volume
+        ?? cheapest_is_deepest,
+      ...comparisonRouteSet(item),
+    };
+  }
+
   // A reference can carry a published comparison AND have been flagged by the
   // scan. 39 of the 75 comparisons in the live receipt are in that position,
   // and all of them read COMPARABLE, in the affirmative word, over the most
@@ -1365,13 +1394,53 @@
     const highestReportedVolume = c.highest_reported_volume || c.deepest || {};
     const cheapestHasHighestReportedVolume = c.cheapest_has_highest_reported_volume
       ?? c.cheapest_is_deepest;
+    const routeSet = comparisonRouteSet(item);
+    const includedIds = routeSet.included_crypto_ids
+      .map(id => escapeHTML(id ?? 'missing'));
+    const excludedRows = routeSet.excluded_crypto_ids;
+    const routeSetDetails = `<details class="comparison-route-set"><summary>Inspect token IDs · ${includedIds.length} included · ${excludedRows.length} excluded</summary><p>Included crypto_id values: ${includedIds.join(', ') || 'none'}</p><ul>${excludedRows.map(row => `<li>${escapeHTML(row.crypto_id ?? 'no crypto_id')} · ${escapeHTML(row.symbol || 'unknown symbol')} · ${escapeHTML((row.reasons || []).join(', ') || 'excluded')}</li>`).join('') || '<li>No excluded rows recorded.</li>'}</ul></details>`;
     const fill = cheapestHasHighestReportedVolume
       ? 'The cheapest route also has the highest reported 24h volume.'
       : `${escapeHTML(highestReportedVolume.symbol || '')} has the highest reported 24h volume, not the cheapest route.`;
     const open = (c.unresolved || []).length
       ? `<p class="comparison-open"><span>STILL OPEN</span> ${escapeHTML((c.unresolved || []).join(' · '))}. The route filter drops derivatives, keys on the token id rather than the ticker, and excludes rows without both a price and traded volume, so these do not block the comparison - but they are not resolved.</p>`
       : '';
-    return `<div class="comparison-block"><span class="comparison-scroll-hint">SWIPE FOR PRICE · VS CHEAPEST · SHARE OF VOLUME →</span><div class="comparison-head"><span>FILTERED PRICE COMPARISON</span><strong>${Number(c.spread_bps).toFixed(1)} bps</strong><small>${c.route_count} token routes under this CMC RWA reference</small></div><p class="comparison-fill">${fill}</p><table class="comparison-table"><thead><tr><th>route</th><th>issuer</th><th class="num">price</th><th class="num">vs cheapest</th><th class="num">share of volume</th></tr></thead><tbody>${rows}</tbody></table>${open}<p class="comparison-limits">A price comparison of the representations CoinMarketCap returned. Equivalent units and claims are not established. ${NOT_OBSERVED_SHORT}</p></div>`;
+    return `<div class="comparison-block"><span class="comparison-scroll-hint">SWIPE FOR PRICE · VS CHEAPEST · SHARE OF VOLUME →</span><div class="comparison-head"><span>FILTERED PRICE COMPARISON</span><strong>${Number(c.spread_bps).toFixed(1)} bps</strong><small>${c.route_count} token routes under this CMC RWA reference</small></div><p class="comparison-fill">${fill}</p><table class="comparison-table"><thead><tr><th>route</th><th>issuer</th><th class="num">price</th><th class="num">vs cheapest</th><th class="num">share of volume</th></tr></thead><tbody>${rows}</tbody></table>${routeSetDetails}${open}<p class="comparison-limits">A price comparison of the representations CoinMarketCap returned. Equivalent units and claims are not established. ${NOT_OBSERVED_SHORT}</p></div>`;
+  }
+
+  function comparisonRouteSet(item) {
+    const comparison = item?.comparison || {};
+    const routes = Array.isArray(comparison.routes) ? comparison.routes : [];
+    const included = comparison.included_crypto_ids || routes.map(route => route.crypto_id);
+    if (Array.isArray(comparison.excluded_crypto_ids)) {
+      return { included_crypto_ids: included, excluded_crypto_ids: comparison.excluded_crypto_ids };
+    }
+    const includedKeys = new Set(included.map(id => String(id)));
+    const tokens = item?.tokens || item?.representations || [];
+    const eligibleCounts = new Map();
+    for (const token of tokens) {
+      const id = token?.crypto_id;
+      const price = numericValue(token?.price);
+      const volume = numericValue(token?.volume_24h);
+      if (id != null && !isDerivativeRow(token) && price > 0 && volume > 0) {
+        const key = String(id);
+        eligibleCounts.set(key, (eligibleCounts.get(key) || 0) + 1);
+      }
+    }
+    const excluded = tokens.filter(token => !includedKeys.has(String(token?.crypto_id))).map(token => {
+      const id = token?.crypto_id;
+      const price = numericValue(token?.price);
+      const volume = numericValue(token?.volume_24h);
+      const reasons = [];
+      if (id == null) reasons.push('missing_crypto_id');
+      if (isDerivativeRow(token)) reasons.push('derivative_label');
+      if (price === null || price <= 0) reasons.push('missing_or_non_positive_price');
+      if (volume === null || volume <= 0) reasons.push('missing_or_non_positive_volume');
+      if (id != null && eligibleCounts.get(String(id)) > 1) reasons.push('duplicate_crypto_id');
+      if (!reasons.length) reasons.push('not_in_published_route_set');
+      return { crypto_id: id ?? null, symbol: token?.symbol || null, reasons };
+    });
+    return { included_crypto_ids: included, excluded_crypto_ids: excluded };
   }
 
   function renderAlertRow(alert) {
@@ -1502,7 +1571,7 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
   function caseReceipt(item) {
     const publication = receipt?._publication || {};
     return {
-      schema_version: 'bell.case-receipt.v1',
+      schema_version: 'bell.case-receipt.v2',
       observed_at: receipt?.observed_at || null,
       published_at: publication.published_at || null,
       // This was hard-coded to '/api/integrity' even when the page had fallen
@@ -1521,7 +1590,11 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
         issuer_count: item.issuer_count || null,
         tradfi_market_count: item.tradfi_market_count ?? null,
       },
-      decision: item.decision || null,
+      decision: decisionForCaseReceipt(item),
+      // The case carries the exact crypto_id set used for its published
+      // comparison. The v2 verifier recomputes this object from the exported
+      // token rows and rejects edits to either side of the relationship.
+      comparison: comparisonForCaseReceipt(item),
       // The engine's own label is "DO NOT SELECT A WRAPPER", which is more
       // precise about what is being refused, but the public vocabulary the
       // page and verify_submission.py both declare is "DO NOT SHORTLIST". An
@@ -1619,7 +1692,10 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
       // A route the comparison published carries its rank and its premium to
       // the cheapest. Everything else is a representation Bell would not put
       // side by side, and the export has to say which is which.
+      const routeSet = comparisonRouteSet(reference);
       const routes = new Map((reference.comparison?.routes || []).map(route => [String(route.crypto_id), route]));
+      const exclusions = new Map(routeSet.excluded_crypto_ids
+        .map(row => [String(row.crypto_id), (row.reasons || []).join('|')]));
       return representations.map(token => {
         const marketCap = numericValue(token.market_cap);
         const marketCapStatus = marketCap === null ? 'missing' : marketCap <= 0 ? 'zero_or_non_positive' : 'positive';
@@ -1640,6 +1716,7 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
           numericValue(token.volume_24h) ?? '',
           isDerivativeRow(token) ? 'yes' : 'no',
           routes.has(String(token.crypto_id)) ? 'yes' : 'no',
+          exclusions.get(String(token.crypto_id)) || '',
           routes.get(String(token.crypto_id))?.premium_to_cheapest_bps?.toFixed(1) ?? '',
         ];
       });
@@ -1647,7 +1724,7 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     // `quote_source` was in this header and empty on every row of every export:
     // a column promising provenance and delivering nothing. These four are
     // fields Bell actually observed.
-    const header = ['rwa_id', 'reference_name', 'reference_symbol', 'asset_type', 'state', 'crypto_id', 'token_symbol', 'token_name', 'issuer_id', 'issuer_name', 'market_cap', 'market_cap_status', 'price', 'volume_24h', 'is_derivative', 'in_published_comparison', 'premium_to_cheapest_bps'];
+    const header = ['rwa_id', 'reference_name', 'reference_symbol', 'asset_type', 'state', 'crypto_id', 'token_symbol', 'token_name', 'issuer_id', 'issuer_name', 'market_cap', 'market_cap_status', 'price', 'volume_24h', 'is_derivative', 'in_published_comparison', 'comparison_exclusion_reasons', 'premium_to_cheapest_bps'];
     const csv = [header, ...rows].map(row => row.map(csvCell).join(',')).join('\n') + '\n';
     const link = document.createElement('a');
     link.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));

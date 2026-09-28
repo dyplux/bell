@@ -44,6 +44,8 @@ class ComparableRoutes(unittest.TestCase):
         self.assertIsNotNone(result)
         self.assertEqual(result["route_count"], 2)
         self.assertEqual(result["cheapest"]["symbol"], "AAA")
+        self.assertEqual(result["included_crypto_ids"], ["AAA", "BBB"])
+        self.assertEqual(result["excluded_crypto_ids"], [])
         # 102/100 - 1 = 2%, which is 200 basis points.
         self.assertAlmostEqual(result["spread_bps"], 200.0, places=1)
         self.assertAlmostEqual(result["routes"][1]["premium_to_cheapest_bps"], 200.0, places=1)
@@ -55,10 +57,10 @@ class ComparableRoutes(unittest.TestCase):
             token("SHARED", 101.0, 900_000, crypto_id=202),
         ])
         self.assertEqual(result["cheapest"]["symbol"], "SHARED")
-        self.assertEqual(result["deepest"]["symbol"], "SHARED")
+        self.assertEqual(result["highest_reported_volume"]["symbol"], "SHARED")
         # A ticker collision must not make two different token IDs look like
         # the same route.
-        self.assertFalse(result["cheapest_is_deepest"])
+        self.assertFalse(result["cheapest_has_highest_reported_volume"])
 
     def test_volume_shares_sum_to_one(self):
         result = comparable_routes([
@@ -85,6 +87,37 @@ class ComparableRoutes(unittest.TestCase):
         self.assertIsNone(comparable_routes([
             token("SPOT", 100.0, 50_000),
             token("PERP", 100.5, 900_000, derivative=True),
+        ]))
+
+    def test_excluded_rows_keep_stable_ids_and_reasons(self):
+        no_id = token("NO-ID", 98.0, 10_000)
+        no_id["crypto_id"] = None
+        result = comparable_routes([
+            token("AAA", 100.0, 50_000, crypto_id=101),
+            token("BBB", 101.0, 40_000, crypto_id=202),
+            token("NO-VOLUME", 99.0, 0, crypto_id=303),
+            no_id,
+            token("PERP", 100.5, 900_000, crypto_id=404, derivative=True),
+        ])
+        self.assertEqual(result["included_crypto_ids"], [101, 202])
+        excluded = {row["symbol"]: row for row in result["excluded_crypto_ids"]}
+        self.assertEqual(excluded["NO-VOLUME"]["reasons"], ["missing_or_non_positive_volume"])
+        self.assertEqual(excluded["NO-ID"]["reasons"], ["missing_crypto_id"])
+        self.assertEqual(excluded["PERP"]["reasons"], ["derivative_label"])
+
+    def test_duplicate_crypto_ids_do_not_become_two_routes(self):
+        result = comparable_routes([
+            token("DUP-A", 100.0, 50_000, crypto_id=101),
+            token("DUP-B", 101.0, 40_000, crypto_id=101),
+            token("OTHER", 99.0, 30_000, crypto_id=202),
+            token("OTHER-2", 102.0, 20_000, crypto_id=303),
+        ])
+        self.assertEqual(result["included_crypto_ids"], [202, 303])
+        self.assertEqual(len(result["excluded_crypto_ids"]), 2)
+        self.assertTrue(all(row["reasons"] == ["duplicate_crypto_id"] for row in result["excluded_crypto_ids"]))
+        self.assertIsNone(comparable_routes([
+            token("DUP-A", 100.0, 50_000, crypto_id=101),
+            token("DUP-B", 101.0, 40_000, crypto_id=101),
         ]))
 
     def test_single_representation_produces_no_comparison(self):
@@ -225,6 +258,8 @@ class TheDecisionMatchesWhatTheReaderHolds(unittest.TestCase):
         self.assertEqual(scan["decision"]["label"], "COMPARABLE, NOT ENDORSED")
         self.assertIn("bps", scan["decision"]["consequence"])
         self.assertIn("AAA", scan["decision"]["consequence"])
+        self.assertIn("equivalent units or claims", scan["decision"]["consequence"])
+        self.assertNotIn("share an identity, a unit", scan["decision"]["consequence"])
 
     def test_the_decision_still_refuses_to_endorse(self):
         # Naming the comparison must not turn into an allocation claim.

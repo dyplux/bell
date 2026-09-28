@@ -3,17 +3,18 @@
 > **Live demo:** [bell.dyplux.com](https://bell.dyplux.com/) · **Track:** Real World Assets
 
 Bell is the pre-comparison integrity gate for tokenised stocks, ETFs and commodities. It
-does not rank wrappers or tell an investor what to buy. It checks whether representations
-grouped under one CMC reference have enough identity, unit and market evidence to be compared
-fairly, then records the next diligence action.
+does not rank wrappers or tell an investor what to buy. It checks identity and quote fields
+for representations grouped under one CMC reference, publishes a filtered price comparison
+when its rules allow, and keeps equivalent units, claims and executable markets explicitly
+unverified.
 
 ## The 60-second judge path
 
 1. Open the [live monitor](https://bell.dyplux.com/)
 2. Search `Silver` and read the `DO NOT SHORTLIST` route, observed endpoints and capital hold
-3. Search `Marvell` and see the `COMPARABLE` route: the representations clear the
-   identity, unit and market checks, so the spread and cheapest route are named
-   without a wrapper being ranked
+3. Search `Marvell` and see the filtered price comparison: the rows pass Bell's
+   identity and quote filters, while equivalent units and claims remain unverified;
+   Bell names the observed spread without ranking a wrapper
 4. Search `Gold` and open the repeat-window evidence
 5. Scroll to `POPULATION SHAPE` to see the full-scan route counts and observed spread bands
 6. Open `Receipt` or `Inspect credential-free receipt` to verify the dated source evidence

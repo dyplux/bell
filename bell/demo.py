@@ -120,7 +120,7 @@ def main() -> int:
             routes = asset['comparison']
             name = (asset.get('name') or asset.get('symbol') or '?')[:25]
             cheapest = (routes['cheapest']['symbol'] or '?')[:15]
-            same = 'yes' if routes['cheapest_is_deepest'] else f"no, {routes['deepest']['symbol'][:12]} has more"
+            same = 'yes' if routes['cheapest_has_highest_reported_volume'] else f"no, {routes['highest_reported_volume']['symbol'][:12]} has the highest reported volume"
             print(f'  {name:<26}{cheapest:<16}{routes["spread_bps"]:>7.1f} bps  '
                   f'{same:<28}{money(routes["traded_volume_24h"]):<12}'
                   f'{len(routes["unresolved"])}')
