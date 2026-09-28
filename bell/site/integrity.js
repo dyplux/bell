@@ -817,8 +817,15 @@
       // apart. So the live count stands beside the dated one, in the headline
       // itself, whenever the loaded receipt disagrees with it.
       const liveComparable = (receipt?.alert_index || []).filter(item => item?.comparison).length;
+      const receiptDate = receipt?.observed_at ? new Date(receipt.observed_at) : null;
+      const receiptStamp = receiptDate && Number.isFinite(receiptDate.getTime())
+        ? receiptDate.toLocaleString('en-GB', {
+          day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit',
+          timeZone: 'UTC'
+        }) + ' UTC'
+        : 'the loaded receipt';
       const liveNote = (liveComparable && liveComparable !== r.comparable)
-        ? `<span class="finding-live">${liveComparable.toLocaleString()} in today's scan</span>`
+        ? `<span class="finding-live">${liveComparable.toLocaleString()} in receipt observed ${receiptStamp}</span>`
         : '';
       headline.innerHTML = `<strong>${r.comparable.toLocaleString()}</strong> tokenised assets have a `
         + `<em>cheapest route worth naming</em>${liveNote}<br>`

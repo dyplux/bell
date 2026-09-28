@@ -350,6 +350,8 @@ test('the headline finding is read from the measurement, never typed into the pa
   // measurement and not be written into the markup.
   assert.match(integrity, /async function renderFinding/);
   assert.match(integrity, /base-rate-[0-9]{4}-[0-9]{2}-[0-9]{2}\.json/);
+  assert.match(integrity, /in receipt observed \$\{receiptStamp\}/);
+  assert.doesNotMatch(integrity, /in today's scan/);
   assert.match(index, /id="finding-headline"/);
   assert.match(index, /id="finding-lede"/);
   // No percentage, interval or count may be hardcoded in the hero copy.
