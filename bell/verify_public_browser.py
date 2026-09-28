@@ -400,17 +400,16 @@ def main() -> int:
             require(case_download.suggested_filename.endswith("-case-receipt.json"), f"unexpected case receipt filename: {case_download.suggested_filename!r}")
             with open(case_download.path(), encoding="utf-8") as case_file:
                 case_receipt = json.load(case_file)
-            case_verification = verify_case_receipt(case_receipt)
-            # A case exported from the LIVE endpoint describes an observation no
-            # receipt in this repository carries, so its rows cannot be bound to
-            # a published scan and the verifier says so rather than printing
-            # "valid" over a question it did not answer. Both outcomes are
-            # acceptable here; silence about which one is not.
-            require(case_verification["status"] in (
-                        "valid public case receipt",
-                        "internally consistent; rows not bound to a published receipt"),
-                    f"downloaded case receipt failed its public contract: "
-                    f"{case_verification.get('status')!r}")
+            require(case_receipt.get("schema_version") == "bell.case-receipt.v3",
+                    "downloaded case receipt does not expose the v3 provenance contract")
+            require(case_receipt.get("receipt_id") and case_receipt.get("ruleset") == universe["rules_version"],
+                    "downloaded case receipt lacks its stable ID or the source ruleset")
+            case_verification = verify_case_receipt(case_receipt, against=(receipt, "live /api/integrity"))
+            require(case_verification["status"] == "valid public case receipt",
+                    f"downloaded case receipt did not bind to the live scan: "
+                    f"{case_verification.get('rows_binding')!r}")
+            require(case_verification["rows_binding"].startswith("bound"),
+                    "the case verifier did not bind rows to the exact live receipt")
             require(case_verification.get("rows_binding"),
                     "the case verifier stopped reporting whether it bound the rows to a scan")
             require(case_verification.get("verdict_rederived_from_rows"),
@@ -522,6 +521,39 @@ def main() -> int:
                     f"Tesla rendered a state outside the published vocabulary: {tesla_state!r}")
 
             marvell_state = search_and_check("Marvell")
+            marvell_brief_button = page.locator("#decision-hero [data-brief-id]").first
+            require(marvell_brief_button.count() == 1,
+                    "Marvell does not expose its human-readable decision brief")
+            with page.expect_download(timeout=30_000) as marvell_brief_info:
+                marvell_brief_button.click()
+            marvell_brief = marvell_brief_info.value
+            with open(marvell_brief.path(), encoding="utf-8") as brief_file:
+                marvell_brief_text = brief_file.read()
+            require("Included crypto IDs:" in marvell_brief_text
+                    and "Excluded crypto IDs and reasons:" in marvell_brief_text
+                    and "Comparison membership" in marvell_brief_text,
+                    "Marvell's brief dropped the exact route set or row membership")
+            marvell_case_button = page.locator("#decision-hero [data-case-receipt]").first
+            require(marvell_case_button.count() == 1,
+                    "Marvell does not expose its machine-readable case receipt")
+            with page.expect_download(timeout=30_000) as marvell_case_info:
+                marvell_case_button.click()
+            with open(marvell_case_info.value.path(), encoding="utf-8") as case_file:
+                marvell_case = json.load(case_file)
+            require(marvell_case["comparison"]["included_crypto_ids"]
+                    and set(map(str, marvell_case["comparison"]["included_crypto_ids"]))
+                    <= set(map(str, [token.get("crypto_id") for token in marvell_case["tokens"]])),
+                    "Marvell's case receipt does not bind its included route IDs to its rows")
+            marvell_live_response = page.request.get(args.base.rstrip("/") + "/api/integrity", timeout=30_000)
+            require(marvell_live_response.ok, "could not reload the receipt for Marvell binding")
+            marvell_live = marvell_live_response.json()
+            require(marvell_case["observed_at"] == marvell_live["observed_at"],
+                    "the live receipt changed while the Marvell case was being checked")
+            marvell_verification = verify_case_receipt(
+                marvell_case, against=(marvell_live, "live /api/integrity"))
+            require(marvell_verification["rows_binding"].startswith("bound"),
+                    f"Marvell's case did not bind to the full alert index: "
+                    f"{marvell_verification['rows_binding']!r}")
             marvell_details = page.locator("#alert-list .alert-details").first
             marvell_details.locator("summary").click()
             selectors = marvell_details.locator("[data-wrapper-select]")
