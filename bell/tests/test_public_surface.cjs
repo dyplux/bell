@@ -232,6 +232,10 @@ test('an affirmative on the page has to carry its consequence', () => {
   assert.doesNotMatch(explorer, /tradable representations/);
   assert.match(integrity, /reported-field inconsistency, not proof that no market exists/);
   assert.match(integrity, /checked by crypto_id/);
+  assert.match(page, /A shared CMC reference does not establish equivalent units, claims or executable markets/);
+  assert.match(page, /COMPARABLE = FILTERED PRICE COMPARISON/);
+  assert.match(page, /observed spread and 24h volume; units and economic claims remain unverified/);
+  assert.doesNotMatch(page, /COMPARABLE = PRICES LINE UP|depth published/);
 });
 
 test('hero search lands on the result it just generated', () => {
@@ -596,9 +600,9 @@ test('the control sits under the finding on desktop too, not under the caveats',
 test('the outcome key on the first screen includes the affirmative', () => {
   // It listed three ways to be refused and no way to be answered, directly
   // under a headline that already leads with a refusal count.
-  assert.match(page, /COMPARABLE = PRICES LINE UP/);
+  assert.match(page, /COMPARABLE = FILTERED PRICE COMPARISON/);
   const key = page.indexOf('OUTCOME KEY');
-  const affirmative = page.indexOf('COMPARABLE = PRICES LINE UP');
+  const affirmative = page.indexOf('COMPARABLE = FILTERED PRICE COMPARISON');
   const refusal = page.indexOf('DO NOT SHORTLIST = BLOCKED');
   assert.ok(key < affirmative && affirmative < refusal,
     'the affirmative does not lead the outcome key');
