@@ -403,6 +403,7 @@ test('filtered route comparisons expose the instrument name beside ticker and is
 test('comparison evidence is attached to exact token IDs and flags the Alphabet class mismatch', () => {
   const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
   const evidence = fs.readFileSync(path.join(site, 'issuer-evidence.js'), 'utf8');
+  const styles = fs.readFileSync(path.join(site, 'integrity.css'), 'utf8');
   assert.match(integrity, /issuerEvidenceMarkup\(item, c\.routes\)/);
   assert.match(integrity, /const rows = c\.routes\.map\(route =>/);
   assert.match(integrity, /catalogue\[String\(route\.crypto_id\)\]/);
@@ -412,6 +413,8 @@ test('comparison evidence is attached to exact token IDs and flags the Alphabet 
   assert.match(integrity, /alphabetClassScopeSentence\(item\)/);
   assert.match(integrity, /CMC-GROUPED QUOTE SPREAD · CLASS A \+ C/);
   assert.match(integrity, /the displayed spread therefore combines Class A and Class C routes, not one share class/);
+  assert.match(integrity, /classScope \? `<p class="share-class-scope">/);
+  assert.match(styles, /\.search-result \.share-class-scope/);
   assert.match(integrity, /CMC groups GOOGon \(Alphabet Class C\) under its Class A reference/);
   assert.match(integrity, /byId\('hero-mobile-note'\)\.textContent = alphabetClassScopeSentence\(alert\)/);
   assert.match(integrity, /return issuerEvidenceMarkup\(item, tokenRowsFor\(item\)\)/);

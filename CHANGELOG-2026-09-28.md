@@ -18,9 +18,9 @@ also marks that CMC groups Ondo's Class C `GOOGon` under its Class A reference,
 and says whether that route is in the filtered quote table. When included, the
 comparison heading now names the CMC-grouped Class A + C quote spread and says
 beside the value that it is not a same-share-class spread. The same caveat is
-present in the mobile preview and decision consequence. The comparison table
-renders every included route, so its rows match the published route count and
-evidence IDs.
+present in the mobile preview, post-search summary and decision consequence.
+The comparison table renders every included route, so its rows match the
+published route count and evidence IDs.
 
 The complete offline gate passes (428 Python, 104 JavaScript and 18 Worker
 tests, plus receipt, catalogue, capture and submission checks). A local
