@@ -204,7 +204,10 @@ does not infer liquidity, solvency, ownership rights, causality or an action.
 - [Tesla repeat-window receipt](site/proof/tesla-live-2026-09-17.json)
 - [Tesla repeat-window replay payload](site/proof/tesla-live-2026-09-17.payload.json)
 - [Population integrity history](site/proof/rwa-surface-integrity-history.json)
-- [Latest normalized population inputs](site/proof/rwa-surface-integrity-inputs-2026-09-21.json)
+- [28 September receipt capture](site/proof/rwa-surface-integrity-capture-2026-09-28.json)
+- [28 September normalized population inputs](site/proof/rwa-surface-integrity-inputs-2026-09-28.json)
+  - Reproduce this exact dated capture with `make verify-capture`, without an API key.
+- [Historical 21 September normalized population inputs](site/proof/rwa-surface-integrity-inputs-2026-09-21.json)
   - This file is 16 MB, and that is deliberate. It is the credential-free
     capture of every CMC surface the 21 September scan read. Without it,
     "replayable" would mean "trust the receipt"; with it, `make verify`

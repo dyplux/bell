@@ -81,16 +81,19 @@ run `python3 bell/integrity_review.py` to inspect the latest credential-free rep
 `bell/site/index.html` for the visual receipt.
 The receipt comparison utility in [`receipt_compare.py`](receipt_compare.py)
 compares two dated windows and reports flat-bar diagnostics without treating them as liquidity.
-The public integrity receipt also has a [sanitized input manifest](site/proof/rwa-surface-integrity-inputs-2026-09-21.json)
+The public integrity receipt also has a [sanitized input manifest](site/proof/rwa-surface-integrity-inputs-2026-09-28.json)
 with surface counts, stable-ID join coverage and source fingerprints.
 The 18-observation population history is at
 [`site/proof/rwa-surface-integrity-history.json`](site/proof/rwa-surface-integrity-history.json),
-and the latest credential-free normalized input package is at
-[`site/proof/rwa-surface-integrity-inputs-2026-09-21.json`](site/proof/rwa-surface-integrity-inputs-2026-09-21.json).
-`python3 bell/verify_integrity_receipt.py` recomputes the latest receipt from those inputs and
-checks its published counts and fingerprints. Authenticated request headers and transport
-metadata are not committed. The replay package is a dated 21 September artifact; the live
-receipt can move independently when the scheduled publisher observes a new window.
+and the latest committed credential-free normalized input package is at
+[`site/proof/rwa-surface-integrity-inputs-2026-09-28.json`](site/proof/rwa-surface-integrity-inputs-2026-09-28.json), paired with its
+[dated receipt](site/proof/rwa-surface-integrity-capture-2026-09-28.json).
+`python3 bell/verify_integrity_receipt.py` verifies the historical 21 September receipt against
+the 18-observation archive. Authenticated request headers and transport metadata are not
+committed. That replay is a dated artifact; the live receipt can move independently when the
+scheduled publisher observes a new window.
+Run `make verify-capture` to reproduce the 28 September capture as a self-contained receipt/input
+pair; this remains verifiable after the live endpoint advances.
 `python3 bell/verify_public_surface.py` performs a credential-free smoke check against the public
 page, health endpoint, live receipt and published Gold dossier; it does not call CMC directly.
 For the visitor journey and the product boundary, read [USER-GUIDE.md](USER-GUIDE.md).

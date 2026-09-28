@@ -8,9 +8,18 @@ The live receipt at [`/api/integrity`](https://bell.dyplux.com/api/integrity) is
 
 The live receipt is allowed to change when the scheduled publisher observes a new source window. It is the current observation, not a permanent dataset.
 
+The 28 September 2026 publication is also preserved as a dated, credential-free capture so its exact inputs can be checked after the live endpoint advances:
+
+- [published receipt capture](rwa-surface-integrity-capture-2026-09-28.json)
+- [normalized CMC inputs](rwa-surface-integrity-inputs-2026-09-28.json)
+- Observed at `2026-09-28T15:14:11Z`; 793 tokenised references and 1,449 token rows.
+- The publisher reports 38 stop-state references, 97 requiring investigation, 658 with no rule hit, and 88 filtered price comparisons.
+
+Run `make verify-capture` to recompute this dated capture from the normalized inputs without an API key. The collection manifest records endpoint hashes, request counts and status codes, but excludes API credentials and transport headers.
+
 ## Credential-free replay
 
-The latest committed replay package is dated 21 September 2026
+The committed historical replay package below is dated 21 September 2026
 
 - [normalized replay receipt](rwa-surface-integrity-latest-replay-2026-09-21.json)
 - [normalized input surfaces](rwa-surface-integrity-inputs-2026-09-21.json)

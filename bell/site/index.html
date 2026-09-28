@@ -21,7 +21,7 @@
   <title>RWA Surface Integrity Monitor | Bell</title>
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="integrity.css?v=20260926-1">
-    <link rel="stylesheet" href="visual-overrides.css?v=20260926-1">
+    <link rel="stylesheet" href="visual-overrides.css?v=20260928-1">
 </head>
 <body>
   <header class="topbar">
@@ -54,7 +54,7 @@
           <div id="hero-mobile-decision" class="hero-mobile-decision" aria-live="polite" hidden><div><span>DECISION PREVIEW</span><strong id="hero-mobile-case">Loading current case</strong></div><b id="hero-mobile-outcome">READING RECEIPT</b><p id="hero-mobile-note">The full evidence card follows below</p><a href="#decision">Open full case ↓</a></div>
           <small>Search a reference to see its decision and next check</small>
           <div class="quick-search" aria-label="Example references"><span>TRY AN EXAMPLE</span><button type="button" data-example-search="Silver">Silver <em>blocked</em></button><button type="button" data-example-search="Marvell">Marvell <em>comparable</em></button><button type="button" data-example-search="SPY">SPY <em>blocked</em></button></div>
-          <div class="outcome-key" aria-label="Bell outcome key"><span>OUTCOME KEY</span><div class="outcome-affirmative"><b>COMPARABLE = FILTERED PRICE COMPARISON</b><small>observed spread and 24h volume; units and economic claims remain unverified</small></div><div class="outcome-affirmative"><b>COMPARABLE · FLAGGED</b><small>the comparison is published and the scan also raised a flag; the flags are on the card under the verdict, and the COMPARABLE filter gathers both</small></div><div><b>DO NOT SHORTLIST = BLOCKED</b><small>critical contradiction found; stop comparison</small></div><div><b>FACTS OPEN = DESCRIPTIVE ONLY</b><small>no critical rule fired; inspect, then diligence</small></div><div><b>INVESTIGATE = EVIDENCE INCOMPLETE</b><small>a warning fired; classify before comparing</small></div><div><b>SINGLE REPRESENTATION</b><small>one wrapper only; no ranking</small></div><div><b>SINGLE REPRESENTATION · FLAGGED</b><small>one wrapper, and the scan flagged that row’s own fields; there is nothing here to compare, so the flag is about the row and not about a mismatch between rows</small></div></div>
+          <div class="outcome-key" aria-label="Bell outcome key"><span>OUTCOME KEY</span><div class="outcome-affirmative"><b>COMPARABLE = FILTERED PRICE COMPARISON</b><small>observed spread and 24h volume; units and economic claims remain unverified</small></div><div class="outcome-affirmative"><b>COMPARABLE · FLAGGED</b><small>a filtered comparison is published and the scan also raised a follow-up flag; both appear on the result</small></div><div><b>DO NOT SHORTLIST = BLOCKED</b><small>a stop rule or incomplete evidence blocks this comparison; it is a review route, not proof of an economic contradiction</small></div><div><b>FACTS OPEN = DESCRIPTIVE ONLY</b><small>no critical rule fired; inspect, then diligence</small></div><div><b>INVESTIGATE = EVIDENCE INCOMPLETE</b><small>a warning fired; classify before comparing</small></div><div><b>SINGLE REPRESENTATION</b><small>one wrapper only; no cross-wrapper price comparison</small></div><div><b>SINGLE REPRESENTATION · FLAGGED</b><small>one wrapper triggered a row-level follow-up; no comparison between rows is implied</small></div></div>
         </form>
         <div class="hero-meta"><span>CMC API / MAP + ASSET LIST + QUOTES</span><span>LIVE WHEN FRESH · DATED REPLAY IF NEEDED</span><span id="observed-at">LOADING RECEIPT</span></div>
         <p id="hero-example" class="hero-example">Live example: loading the current decision path.</p>
@@ -104,6 +104,6 @@
   </main>
 
   <footer><span>Bell · RWA integrity evidence</span><span>Built by Dyplux · Lisbon</span><span>Research, not a trading signal</span></footer>
-  <script src="capital-impact.js?v=20260924-1" defer></script><script src="index-order.js?v=20260928-1" defer></script><script src="integrity.js?v=20260926-1" defer></script><script src="explorer.js?v=20260926-1" defer></script>
+  <script src="capital-impact.js?v=20260924-1" defer></script><script src="index-order.js?v=20260928-1" defer></script><script src="integrity.js?v=20260928-1" defer></script><script src="explorer.js?v=20260926-1" defer></script>
 </body>
 </html>

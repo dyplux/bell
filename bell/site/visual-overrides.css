@@ -495,9 +495,9 @@ footer{max-width:2200px;padding-left:64px;padding-right:64px;font-size:13px}
    FLAGGED, the legend for the state 545 of 792 references land in. The same
    overflow pushed the page itself to 825px at a 768px viewport.
    A fixed four-column grid cannot hold seven entries; this wraps. */
-.outcome-key{grid-template-columns:repeat(auto-fit,minmax(138px,1fr));max-width:100%}
+.outcome-key{grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));max-width:720px}
 /* minmax's floor is a floor, not a cap: a cell whose content is wider pushes
    its track past it, which is how a grid with room to spare still overflowed.
    The cells have to be allowed to shrink and the words to wrap. */
-.outcome-key>div{min-width:0;overflow-wrap:anywhere}
-@media(max-width:620px){.outcome-key{grid-template-columns:repeat(auto-fit,minmax(124px,1fr))}}
+.outcome-key>div{min-width:0;overflow-wrap:break-word;word-break:normal}
+@media(max-width:620px){.outcome-key{grid-template-columns:repeat(auto-fit,minmax(min(100%,165px),1fr))}}

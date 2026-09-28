@@ -21,6 +21,7 @@ import json
 from pathlib import Path
 import sys
 import unittest
+from urllib.parse import quote
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent))
@@ -34,8 +35,20 @@ REPLAY = json.loads((HERE.parent / "site" / "proof"
 
 def receipt_for(alert: dict) -> dict:
     """The exported case shape, built from a real alert in the shipped receipt."""
+    source_hashes = copy.deepcopy(REPLAY["source_hashes"])
+    tokens = copy.deepcopy(alert.get("tokens") or alert.get("representations") or [])
+    signals = copy.deepcopy(alert.get("signals") or [
+        {"code": code, "severity": severity, "message": "Recorded in population index.",
+         "evidence": (alert.get("signal_evidence") or {}).get(code, {})}
+        for code, severity in zip(alert.get("signal_codes") or [],
+                                  alert.get("signal_severities") or [])
+    ])
+    receipt_id = (f"bell.integrity/{quote(REPLAY['observed_at'], safe='')}/"
+                  + "&".join(f"{key}={source_hashes[key]}" for key in sorted(source_hashes)))
     return {
-        "schema_version": "bell.case-receipt.v2",
+        "schema_version": "bell.case-receipt.v3",
+        "receipt_id": receipt_id,
+        "ruleset": REPLAY["universe"]["rules_version"],
         "observed_at": REPLAY["observed_at"],
         "published_at": REPLAY["observed_at"],
         "source": "/api/integrity",
@@ -43,22 +56,30 @@ def receipt_for(alert: dict) -> dict:
         "question": "Can these representations be compared?",
         "reference": {
             "rwa_id": alert["rwa_id"], "name": alert["name"], "symbol": alert["symbol"],
-            "asset_type": alert.get("asset_type"), "token_count": len(alert["tokens"]),
+            "asset_type": alert.get("asset_type"), "token_count": len(tokens),
             "issuer_count": alert.get("issuer_count") or 1,
-            "tradfi_market_count": alert.get("tradfi_market_count") or 0,
+            "tradfi_market_count": alert.get("tradfi_market_count"),
         },
         "decision": copy.deepcopy(alert["decision"]),
         "comparison": copy.deepcopy(alert.get("comparison")),
         "next_action": alert.get("next_action") or "continue external diligence",
-        "signals": copy.deepcopy(alert["signals"]),
-        "tokens": copy.deepcopy(alert["tokens"]),
+        "signals": signals,
+        "tokens": tokens,
         "method": {"join_key": "rwa_id", "token_join_key": "crypto_id", "rules": []},
         # The published digests, because the receipt now binds to the
         # published scan and a made-up fingerprint is exactly what that
         # binding exists to refuse.
-        "source_hashes": copy.deepcopy(REPLAY["source_hashes"]),
+        "source_hashes": source_hashes,
         "limits": ["Observed fields do not prove liquidity"],
     }
+
+
+def refresh_receipt_id(payload: dict) -> None:
+    payload["receipt_id"] = (
+        f"bell.integrity/{quote(payload['observed_at'], safe='')}/"
+        + "&".join(f"{key}={payload['source_hashes'][key]}"
+                   for key in sorted(payload["source_hashes"]))
+    )
 
 
 def blocked_alert() -> dict:
@@ -100,6 +121,24 @@ class CaseReceiptTests(unittest.TestCase):
             checked += 1
         self.assertGreaterEqual(checked, 40,
                                 f"only {checked} shipped cases were exercised")
+
+    def test_case_outside_full_alert_cap_binds_from_complete_alert_index(self):
+        full_ids = {str(item["rwa_id"]) for item in REPLAY["alerts"]}
+        candidate = next(item for item in REPLAY["alert_index"]
+                         if str(item["rwa_id"]) not in full_ids and item.get("comparison"))
+        payload = receipt_for(candidate)
+        result = verify(payload)
+        self.assertTrue(result["rows_binding"].startswith("bound"))
+
+    def test_v3_receipt_id_and_ruleset_are_bound_to_publication(self):
+        payload = receipt_for(self.alert)
+        payload["receipt_id"] += "&forged=1"
+        with self.assertRaisesRegex(ValueError, "receipt_id"):
+            verify(payload)
+        payload = receipt_for(self.alert)
+        payload["ruleset"] = "bell.rules.v999"
+        with self.assertRaisesRegex(ValueError, "ruleset"):
+            verify(payload)
 
     def test_token_count_must_match_rows(self):
         payload = receipt_for(self.alert)
@@ -146,6 +185,7 @@ class CaseReceiptTests(unittest.TestCase):
         # there. This file accepted sixty-four f's six times over.
         payload = receipt_for(self.alert)
         payload["source_hashes"] = {"map": "f" * 64}
+        refresh_receipt_id(payload)
         with self.assertRaisesRegex(ValueError, "placeholder"):
             verify(payload)
 
@@ -207,9 +247,11 @@ class CaseReceiptTests(unittest.TestCase):
         # fingerprints that observation did not have, and that is refused by
         # name rather than softened to "not bound".
         payload["source_hashes"] = {key: "0123456789abcdef" * 4
-                                    for key in payload["source_hashes"]}
+                                     for key in payload["source_hashes"]}
+        refresh_receipt_id(payload)
         payload["observed_at"] = "2099-01-01T00:00:00Z"
         payload["published_at"] = "2099-01-01T00:00:00Z"
+        refresh_receipt_id(payload)
         result = verify(payload)
         self.assertEqual(result["status"],
                          "internally consistent; rows not bound to a published receipt")
@@ -272,7 +314,9 @@ class CaseReceiptTests(unittest.TestCase):
         # falling through to the softer unbound status.
         payload = receipt_for(self.alert)
         payload["source_hashes"] = {key: "0123456789abcdef" * 4
-                                    for key in payload["source_hashes"]}
+                                     for key in payload["source_hashes"]}
+        refresh_receipt_id(payload)
+        refresh_receipt_id(payload)
         with self.assertRaisesRegex(ValueError, "source fingerprints"):
             verify(payload)
 
@@ -365,8 +409,12 @@ class TheDocumentedCommandRefusesAnUnboundSubject(unittest.TestCase):
                             .read_text(encoding="utf-8"))
         alert = next(item for item in replay["alerts"] if item.get("tokens"))
         self.case = {
-            "schema_version": "bell.case-receipt.v2",
+            "schema_version": "bell.case-receipt.v3",
             "observed_at": replay["observed_at"], "published_at": replay["observed_at"],
+            "receipt_id": (f"bell.integrity/{quote(replay['observed_at'], safe='')}/"
+                           + "&".join(f"{key}={replay['source_hashes'][key]}"
+                                     for key in sorted(replay["source_hashes"]))),
+            "ruleset": replay["universe"]["rules_version"],
             "source": "proof/rwa-surface-integrity-latest-replay-2026-09-21.json",
             "credential_free": True,
             "question": "Can these representations be compared?",
@@ -374,7 +422,7 @@ class TheDocumentedCommandRefusesAnUnboundSubject(unittest.TestCase):
                           "symbol": alert["symbol"], "asset_type": alert.get("asset_type"),
                           "token_count": len(alert["tokens"]),
                           "issuer_count": alert.get("issuer_count") or 1,
-                          "tradfi_market_count": alert.get("tradfi_market_count") or 0},
+                          "tradfi_market_count": alert.get("tradfi_market_count")},
             "decision": alert["decision"], "comparison": alert.get("comparison"),
             "next_action": alert.get("next_action"),
             "signals": alert["signals"], "tokens": alert["tokens"],

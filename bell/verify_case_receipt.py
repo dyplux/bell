@@ -145,8 +145,14 @@ def bind(payload: dict, published: dict, name: str) -> None:
             f"the receipt describes {payload['observed_at']} and {name} currently serves "
             f"{published.get('observed_at')}. A live endpoint moves on; bind against a receipt "
             "of the same observation, or export a fresh case.")
+    # `alerts` is a deliberately capped, full-detail list. The complete
+    # `alert_index` carries every reference and its complete normalized rows
+    # under `representations`, which is enough to bind exported cases outside
+    # that cap without pretending the scan omitted them.
     index = {str(item.get("rwa_id")): item
-             for item in (published.get("alerts") or []) if isinstance(item, dict)}
+             for item in (published.get("alert_index") or []) if isinstance(item, dict)}
+    index.update({str(item.get("rwa_id")): item
+                  for item in (published.get("alerts") or []) if isinstance(item, dict)})
     reference = index.get(str(payload["reference"].get("rwa_id")))
     if reference is None:
         # The published receipt truncates its full-row `alerts` array, so a
@@ -177,14 +183,16 @@ def bind(payload: dict, published: dict, name: str) -> None:
         if field == "rwa_id":
             continue
         claimed = payload["reference"].get(field)
-        actual = reference.get(field) if field != "token_count" else len(reference.get("tokens") or [])
+        published_tokens = reference.get("tokens") or reference.get("representations") or []
+        actual = reference.get(field) if field != "token_count" else len(published_tokens)
         if field == "issuer_count" and actual is None:
             continue
         if claimed != actual:
             raise ValueError(
                 f"the receipt calls this reference {field}={claimed!r} and {name} publishes "
                 f"{actual!r}. A case receipt about the wrong subject is worse than no receipt.")
-    published_rows = sorted(str(row.get("crypto_id")) for row in reference.get("tokens") or [])
+    published_tokens = reference.get("tokens") or reference.get("representations") or []
+    published_rows = sorted(str(row.get("crypto_id")) for row in published_tokens)
     receipt_rows = sorted(str(row.get("crypto_id")) for row in payload["tokens"])
     if published_rows != receipt_rows:
         missing = sorted(set(published_rows) - set(receipt_rows))
@@ -209,7 +217,7 @@ def bind(payload: dict, published: dict, name: str) -> None:
     # row and the exported row have the same keys, so the whole dict is
     # compared and nothing has to keep up with anything.
     for row in payload["tokens"]:
-        published_row = next((item for item in reference["tokens"]
+        published_row = next((item for item in published_tokens
                               if str(item.get("crypto_id")) == str(row.get("crypto_id"))), None)
         if row != published_row:
             differing = sorted(
@@ -317,10 +325,21 @@ def verify(payload: Any, against: tuple | None = None) -> dict[str, Any]:
     if missing:
         raise ValueError(f"missing top-level fields: {', '.join(sorted(missing))}")
     version = payload["schema_version"]
-    if version not in {"bell.case-receipt.v1", "bell.case-receipt.v2"}:
+    if version not in {"bell.case-receipt.v1", "bell.case-receipt.v2", "bell.case-receipt.v3"}:
         raise ValueError("unsupported schema_version")
-    if version == "bell.case-receipt.v2" and "comparison" not in payload:
+    if version in {"bell.case-receipt.v2", "bell.case-receipt.v3"} and "comparison" not in payload:
         raise ValueError("missing top-level fields: comparison")
+    if version == "bell.case-receipt.v3":
+        if not payload.get("receipt_id") or not payload.get("ruleset"):
+            raise ValueError("v3 requires receipt_id and ruleset")
+        hashes = payload.get("source_hashes")
+        if not isinstance(hashes, dict):
+            raise ValueError("source_hashes must be an object")
+        from urllib.parse import quote
+        expected_id = (f"bell.integrity/{quote(payload.get('observed_at') or 'unknown', safe='')}/"
+                       + "&".join(f"{key}={hashes[key]}" for key in sorted(hashes or {})))
+        if payload["receipt_id"] != expected_id:
+            raise ValueError("receipt_id does not match observed_at and source_hashes")
     # This demanded "/api/integrity" and nothing else, which switched off the
     # strongest claim in the submission. The README documents an offline path -
     # serve bell/site and open it - and a case exported there is stamped with
@@ -353,6 +372,14 @@ def verify(payload: Any, against: tuple | None = None) -> dict[str, Any]:
         raise ValueError("signals must be an array")
     if not isinstance(payload["source_hashes"], dict):
         raise ValueError("source_hashes must be an object")
+    if version == "bell.case-receipt.v3":
+        if against:
+            published = against[0]
+        else:
+            published, _ = find_published(payload)
+        published_rules = (published or {}).get("universe", {}).get("rules_version")
+        if published_rules and payload["ruleset"] != published_rules:
+            raise ValueError("ruleset does not match the published receipt")
     if not isinstance(payload["limits"], list) or not payload["limits"]:
         raise ValueError("limits must be a non-empty array")
     method = payload["method"]
@@ -383,7 +410,7 @@ def verify(payload: Any, against: tuple | None = None) -> dict[str, Any]:
                 f"source_hashes.{name} is {digest[0] * 4}...: a single repeated character is a "
                 "placeholder, not the fingerprint of a payload")
     recomputed = rederive(payload)
-    comparison_verified = version == "bell.case-receipt.v2"
+    comparison_verified = version in {"bell.case-receipt.v2", "bell.case-receipt.v3"}
     if comparison_verified and payload.get("comparison") != recomputed.get("comparison"):
         raise ValueError(
             "the case comparison does not match the exact routes and exclusion reasons "

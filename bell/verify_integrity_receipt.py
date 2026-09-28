@@ -339,6 +339,23 @@ def verify_public_inputs(inputs_path: Path, receipt_path: Path) -> None:
         surfaces["info"], surfaces["issuers"],
         observed_at=package["observed_at"], crypto_info_payload=surfaces["crypto_info"],
     )
+    # The live publisher adds this credential-free marker after `scan()` so
+    # consumers can distinguish an authenticated collection from a replay.
+    # Recreate that deterministic envelope here; otherwise a perfectly
+    # reproducible live receipt can never verify against its own published
+    # normalized input package.
+    expected_provenance = {
+        "mode": "server_side_authenticated_collection",
+        "credential_free": True,
+        "api_key_published": False,
+        "transport_headers_published": False,
+        "replay_index_url": "/proof/rwa-surface-integrity-replay-index.md",
+        "replay_package_note": "The live receipt is current; the linked replay package is a dated credential-free recomputation artifact.",
+    }
+    if "collection_provenance" in receipt:
+        if receipt["collection_provenance"] != expected_provenance:
+            raise ValueError("live collection provenance is not the publisher's credential-free marker")
+        recomputed["collection_provenance"] = expected_provenance
     if recomputed != receipt:
         raise ValueError("public input package does not recompute the bundled receipt")
     print(f"public inputs: verified ({inputs_path.stat().st_size:,} bytes)")
@@ -374,7 +391,14 @@ def main() -> int:
     parser.add_argument("--receipt", type=Path, default=DEFAULT_RECEIPT)
     parser.add_argument("--latest", type=Path, default=DEFAULT_LATEST)
     parser.add_argument("--inputs", type=Path, default=DEFAULT_INPUTS)
+    parser.add_argument("--capture-only", action="store_true",
+                        help="verify only the explicitly paired --inputs and --latest capture")
     args = parser.parse_args()
+
+    if args.capture_only:
+        verify_public_inputs(args.inputs, args.latest)
+        print("capture verification: ok (paired receipt and normalized public inputs)")
+        return 0
 
     history = load(args.history)
     if history.get("schema_version") != "bell.rwa_surface_integrity.history.v1":

@@ -157,10 +157,27 @@ test('case results can be shared as stable single-URL deep links', () => {
   assert.match(integrity, /const exactMatches = normalizedQuery/);
   assert.match(integrity, /const matchLabel = exact/);
   assert.match(integrity, /heroSearchInput\.value = alert\.name/);
-  assert.match(integrity, /bell\.case-receipt\.v2/);
+  assert.match(integrity, /bell\.case-receipt\.v3/);
+  assert.match(integrity, /receipt_id: receiptId/);
+  assert.match(integrity, /ruleset: receipt\?\.universe\?\.rules_version/);
+  assert.match(integrity, /decision_interpretation: displayDecisionConsequence\(item\)/);
   assert.match(integrity, /comparison: comparisonForCaseReceipt\(item\)/);
   assert.match(integrity, /Download case JSON/);
-  assert.match(integrity, /source_hashes: receipt\?\.source_hashes/);
+  assert.match(integrity, /source_hashes: sourceHashes/);
+});
+
+test('human-readable and JSON handoffs preserve the comparison set and its rule context', () => {
+  const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
+  const verifier = fs.readFileSync(path.resolve(__dirname, '../verify_case_receipt.py'), 'utf8');
+  assert.match(integrity, /## Published comparison set/);
+  assert.match(integrity, /Included crypto IDs:/);
+  assert.match(integrity, /Excluded crypto IDs and reasons:/);
+  assert.match(integrity, /Comparison membership/);
+  assert.match(integrity, /published_rule_text:/);
+  assert.match(integrity, /ruleset_note:/);
+  assert.match(verifier, /bell\.case-receipt\.v3/);
+  assert.match(verifier, /receipt_id does not match observed_at and source_hashes/);
+  assert.match(verifier, /published\.get\("alert_index"\)/);
 });
 
 test('search result exposes the observed quote endpoints before the evidence table', () => {

@@ -1091,6 +1091,9 @@
       if (signalCodes.has('ZERO_MCAP_POSITIVE_VOLUME')) {
         return 'CoinMarketCap reports positive 24h volume alongside a zero market-cap field. This is a reported-field inconsistency, not proof that no market exists. Keep the route out of a shortlist until the quote is checked by crypto_id.';
       }
+      if (signalCodes.has('PRICE_DENOMINATION_BREAK')) {
+        return 'Observed CMC quotes span at least 10× within this reference. Verify units, wrapper claims and quote identity before comparing; the threshold is a review trigger, not proof of an economic mismatch.';
+      }
       return item?.decision?.consequence || '';
     }
     const cheapest = comparison.cheapest || {};
@@ -1476,7 +1479,12 @@
       if (evidence.symbols) facts.push(`symbols ${evidence.symbols.join(', ')}`);
       return `- ${signalLabels[signal.code] || signal.code}: ${signal.message}${facts.length ? ` (${facts.join('; ')})` : ''}`;
     }).join('\n') : '- No published rule hit in this scan.';
-    const tokenLines = (item.tokens || item.representations || []).map(token => {
+    const tokens = item.tokens || item.representations || [];
+    const comparison = comparisonForCaseReceipt(item);
+    const included = new Set((comparison?.included_crypto_ids || []).map(String));
+    const excluded = new Map((comparison?.excluded_crypto_ids || [])
+      .map(row => [String(row.crypto_id), row.reasons || []]));
+    const tokenLines = tokens.map(token => {
       const issuerURL = externalURL(token.issuer_website);
       const issuer = token.issuer_name || token.issuer_catalogue_name || 'unlinked';
       const issuerCell = issuerURL ? `[${issuer}](${issuerURL})` : issuer;
@@ -1485,7 +1493,11 @@
       const platforms = (token.platforms || []).map(platform => `${platform.name || 'unknown chain'}: ${platform.contract_address || 'no contract'}`).join('<br>') || 'not resolved';
       const sourceURLs = [token.cmc_url, token.issuer_website, token.project_url, ...(token.explorer_urls || []), ...(token.technical_doc_urls || [])].filter(Boolean);
       const sourceCells = sourceURLs.length ? sourceURLs.map(url => `[link](${url})`).join(' ') : 'none';
-      return `| ${tokenCell} (${token.crypto_id || 'no id'}) | ${token.name || 'N/A'} | ${issuerCell} (${token.issuer_id || 'no id'}) | ${platforms} | ${formatNumber(token.price)} | ${formatNumber(token.market_cap)} | ${formatNumber(token.volume_24h)} | ${sourceCells} |`;
+      const id = String(token.crypto_id || '');
+      const membership = included.has(id) ? 'Included in filtered price comparison'
+        : excluded.has(id) ? `Excluded: ${excluded.get(id).join(', ') || 'not eligible'}`
+          : comparison ? 'Outside published comparison set' : 'No filtered comparison published';
+      return `| ${tokenCell} (${token.crypto_id || 'no id'}) | ${membership} | ${token.name || 'N/A'} | ${issuerCell} (${token.issuer_id || 'no id'}) | ${platforms} | ${formatNumber(token.price)} | ${formatNumber(token.market_cap)} | ${formatNumber(token.volume_24h)} | ${sourceCells} |`;
     }).join('\n');
     const worksheet = readWorksheet(item.rwa_id);
     const worksheetLines = worksheetChecks.map(([key, label]) => `- [${worksheet.checks[key] ? 'x' : ' '}] ${label}`).join('\n');
@@ -1503,6 +1515,8 @@ Generated from the credential-free Bell receipt. This is research triage, not in
 - Consequence: ${displayDecisionConsequence(item) || 'No allocation status is produced by this monitor'}
 - Observed: ${receipt.observed_at || 'N/A'}
 - Published: ${receipt._publication?.published_at || 'N/A'}
+- Receipt ID: ${caseReceipt(item).receipt_id}
+- Ruleset: ${receipt.universe?.rules_version || 'unrecorded'}
 
 ## Evidence
 
@@ -1527,10 +1541,14 @@ ${item.next_action || 'Continue external diligence before comparing or allocatin
 - obtain venue access, depth, spread and size-specific execution evidence;
 - rerun the comparison only after the unresolved contradiction has an evidence-backed explanation.
 
+## Published comparison set
+
+${comparison ? `- Included crypto IDs: ${(comparison.included_crypto_ids || []).join(', ') || 'none'}\n- Excluded crypto IDs and reasons: ${(comparison.excluded_crypto_ids || []).map(row => `${row.crypto_id} (${(row.reasons || []).join(', ') || 'not eligible'})`).join('; ') || 'none'}\n- Filtered routes: ${comparison.route_count}; observed spread: ${formatNumber(comparison.spread_bps)} bps\n- Boundary: this is a filtered CMC quote comparison; it does not establish equivalent units, backing, redemption, eligibility, custody or executable liquidity.` : 'No filtered price comparison was published for this reference.'}
+
 ## Representation rows
 
-| Token | Representation | Issuer | Chain / contract | Price | Market cap | 24h volume | Source paths |
-|---|---|---|---|---:|---:|---:|---|
+| Token | Comparison membership | Representation | Issuer | Chain / contract | Price | Market cap | 24h volume | Source paths |
+|---|---|---|---|---|---:|---:|---:|---|
 ${tokenLines || '| Detailed token rows are not retained for this queue item. | | | | | |'}
 
 ## Local research worksheet
@@ -1570,8 +1588,13 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
 
   function caseReceipt(item) {
     const publication = receipt?._publication || {};
+    const sourceHashes = receipt?.source_hashes || {};
+    const receiptId = `bell.integrity/${encodeURIComponent(receipt?.observed_at || 'unknown')}/`
+      + Object.keys(sourceHashes).sort().map(surface => `${surface}=${sourceHashes[surface]}`).join('&');
     return {
-      schema_version: 'bell.case-receipt.v2',
+      schema_version: 'bell.case-receipt.v3',
+      receipt_id: receiptId,
+      ruleset: receipt?.universe?.rules_version || null,
       observed_at: receipt?.observed_at || null,
       published_at: publication.published_at || null,
       // This was hard-coded to '/api/integrity' even when the page had fallen
@@ -1591,6 +1614,7 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
         tradfi_market_count: item.tradfi_market_count ?? null,
       },
       decision: decisionForCaseReceipt(item),
+      decision_interpretation: displayDecisionConsequence(item),
       // The case carries the exact crypto_id set used for its published
       // comparison. The v2 verifier recomputes this object from the exported
       // token rows and rejects edits to either side of the relationship.
@@ -1621,8 +1645,15 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
       method: {
         join_key: receipt?.method?.join_key || 'rwa_id',
         token_join_key: receipt?.method?.token_join_key || 'crypto_id',
-        rules: receipt?.method?.rules || [],
+        rules: [
+          'A 10x observed quote spread is a review trigger; it does not prove a denomination break.',
+          'Positive reported volume beside a zero market-cap field is a data-review trigger; it does not prove an economic contradiction.',
+          'Only non-derivative rows with positive price and positive reported 24h volume enter a published comparison.',
+          'CMC reference membership does not establish equivalent units, backing, redemption, eligibility, custody or executable liquidity.',
+        ],
+        published_rule_text: receipt?.method?.rules || [],
       },
+      ruleset_note: `Ruleset ${receipt?.universe?.rules_version || 'unrecorded'} is the version stamped on this published observation. The interpretation above calibrates what its triggers establish; it does not rewrite the source receipt.`,
       // A hash proves the payload did not change. It does not tell a reader
       // which endpoint produced it, nor how to get back to it. Pair each hash
       // with the surface it came from and the command that recomputes this
@@ -1660,7 +1691,7 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
           ? `This case was read from ${receiptSource}.`
           : 'This case was read from the live credential-free receipt.',
       },
-      source_hashes: receipt?.source_hashes || {},
+      source_hashes: sourceHashes,
       limits: [
         'Observed CMC fields do not prove backing, redemption, custody, eligibility, solvency, liquidity or executable size',
         'The case is a research triage record, not an investment recommendation',
@@ -1982,7 +2013,7 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     const maxBand = Math.max(...bands.map(band => band.value), 1);
     const spreadVisual = bands.map(band => `<div class="spread-row"><span>${band.label}</span><div class="spread-track"><i style="width:${Math.max((band.value / maxBand) * 100, band.value ? 2 : 0)}%"></i></div><strong>${band.value.toLocaleString()}</strong></div>`).join('');
     const insufficientReferences = Number(calibration.references_with_insufficient_positive_prices || Math.max(total - pricedReferences, 0));
-    target.innerHTML = `<article class="population-chart-panel state-panel"><div class="population-chart-top"><span class="eyebrow">ROUTE BY STATE</span><strong>${total.toLocaleString()} references</strong></div><h3>Most references need investigation before comparison</h3><div class="population-states">${stateVisual}</div><div class="population-stacked" aria-label="Stacked population state bar">${stateRows.map(([key, label, tone]) => `<i class="${tone}" style="width:${Math.max((Number(states[key] || 0) / total) * 100, Number(states[key] || 0) ? 1 : 0)}%" title="${label}: ${Number(states[key] || 0).toLocaleString()}"></i>`).join('')}</div></article><article class="population-chart-panel spread-panel"><div class="population-chart-top"><span class="eyebrow">OBSERVED QUOTE SPREAD</span><strong>${pricedReferences.toLocaleString()} comparable</strong></div><h3>Where multiple priced representations diverge</h3><div class="spread-rows">${spreadVisual}</div><p class="population-chart-note">${insufficientReferences.toLocaleString()} references had fewer than two positive prices and stay outside this chart. The observed bands identify a review route, not a fair-value gap</p></article>`;
+    target.innerHTML = `<article class="population-chart-panel state-panel"><div class="population-chart-top"><span class="eyebrow">ROUTE BY STATE</span><strong>${total.toLocaleString()} references</strong></div><h3>Most references need investigation before comparison</h3><div class="population-states">${stateVisual}</div><div class="population-stacked" aria-label="Stacked population state bar">${stateRows.map(([key, label, tone]) => `<i class="${tone}" style="width:${Math.max((Number(states[key] || 0) / total) * 100, Number(states[key] || 0) ? 1 : 0)}%" title="${label}: ${Number(states[key] || 0).toLocaleString()}"></i>`).join('')}</div></article><article class="population-chart-panel spread-panel"><div class="population-chart-top"><span class="eyebrow">OBSERVED QUOTE SPREAD</span><strong>${pricedReferences.toLocaleString()} with ≥2 priced routes</strong></div><h3>Where multiple priced representations diverge</h3><div class="spread-rows">${spreadVisual}</div><p class="population-chart-note">${insufficientReferences.toLocaleString()} references had fewer than two positive prices and stay outside this chart. These are population spread observations; only references passing the additional reported-volume and spot-route filters receive a published comparison. The bands identify a review route, not a fair-value gap.</p></article>`;
   }
 
   function renderConcentrationVisual() {

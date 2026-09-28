@@ -11,7 +11,7 @@ WORKER := cloudflare
 
 .DEFAULT_GOAL := help
 
-.PHONY: help install sync-counts audit-tests time-gate mutate test test-py test-js test-worker demo base-rate liveness verify check check-offline check-live browser-audit clean
+.PHONY: help install sync-counts audit-tests time-gate mutate test test-py test-js test-worker demo base-rate liveness verify verify-capture check check-offline check-live browser-audit clean
 
 help: ## Show the targets a reviewer needs
 	@echo "make demo     - answer one comparability question, keyless, ~1s"
@@ -75,7 +75,10 @@ verify: ## Recompute the published receipt from the shipped inputs
 # against the code. Nothing in the gate ran the verifier itself. It costs 0.09s.
 	$(PY) $(PKG)/verify_rule_boundaries.py
 
-check-offline: test verify ## The gate with no network and no browser
+verify-capture: ## Verify the newest dated receipt against its paired credential-free inputs
+	$(PY) $(PKG)/verify_integrity_receipt.py --capture-only --latest $(PKG)/site/proof/rwa-surface-integrity-capture-2026-09-28.json --inputs $(PKG)/site/proof/rwa-surface-integrity-inputs-2026-09-28.json
+
+check-offline: test verify verify-capture ## The gate with no network and no browser
 	$(PY) $(PKG)/verify_submission.py
 
 check: check-offline browser-audit ## The full gate; drives a real browser if one is installed
