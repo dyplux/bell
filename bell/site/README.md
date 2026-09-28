@@ -61,6 +61,7 @@ observation rather than a discount, parity claim or execution estimate.
 - `workspace.html` is the focused monitor and reads the latest published receipt
 - `index.html` is the research, population and evidence surface
 - `workspace.js` renders the selected reference and live scan from the receipt
+- `assets/bell-x-promo-20260928.png` is the ready-to-share 1200×675 X artwork
 - `integrity.js` renders search, filters, routes, evidence and exports
 - `integrity.css` and `visual-overrides.css` define the responsive interface
 - `catalog.json` is the browser-served credential-free map snapshot regenerated from CMC on 22 September 2026

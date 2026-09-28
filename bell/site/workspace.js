@@ -90,7 +90,7 @@
     const compLine = comparison
       ? `${number(comparison.route_count)} quote routes · ${Number(comparison.spread_bps).toFixed(1)} bps observed spread`
       : 'No filtered price comparison in this route';
-    const rows = representations.map(row => `<tr><td class="token"><strong>${escapeHTML(row.symbol || '—')}</strong><small>${escapeHTML(row.name || 'Unnamed CMC row')}</small></td><td>${escapeHTML(row.issuer_name || 'Issuer not resolved')}</td><td>${money(row.price)}</td><td>${money(row.market_cap)}</td><td>${money(row.volume_24h)}</td></tr>`).join('');
+    const rows = representations.map(row => `<tr><td class="token"><strong>${escapeHTML(row.symbol || '—')}</strong><small>${escapeHTML(row.name || 'Unnamed CMC row')}</small></td><td data-label="Issuer">${escapeHTML(row.issuer_name || 'Issuer not resolved')}</td><td data-label="Quote">${money(row.price)}</td><td data-label="Market cap">${money(row.market_cap)}</td><td data-label="24h volume">${money(row.volume_24h)}</td></tr>`).join('');
     const date = receipt?._publication?.observed_at || receipt?.observed_at;
     const dateText = date ? new Date(date).toISOString().replace('T', ' ').slice(0, 16) + ' UTC' : 'dated receipt';
     result.innerHTML = `<article class="review-result">
