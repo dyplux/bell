@@ -15,7 +15,12 @@
     "base_rate.py": {
       "guards_mutated": 9,
       "survivors": [],
-      "stated_exceptions": [],
+      "stated_exceptions": [
+        {
+          "line": 195,
+          "reason": "The single-representation lens sorts every row through if/elif/elif/else, so its four parts always sum to the total and this can never fire today. It is a guard against a future edit that removes the catch-all, which is the change that would silently drop references from the partition. It replaced a bare assert that vanished under python3 -O."
+        }
+      ],
       "source_digest": "6f0b02a499d59f8691b03a03fc9f3be11cb32828ad0db617e4c90e17562bce96",
       "suite_digest": "6b4c1529f85be65c9b665ee084bcb6b9175f55732f6f0506c525d203e4e787c5",
       "measured_at": "2026-09-28T08:17:12Z"
@@ -39,7 +44,12 @@
     "rwa_integrity.py": {
       "guards_mutated": 9,
       "survivors": [],
-      "stated_exceptions": [],
+      "stated_exceptions": [
+        {
+          "line": 89,
+          "reason": "number() rejects None and bool before parsing. Decimal(str(True)) and Decimal(str(None)) both raise InvalidOperation, which the except below already turns into None, so removing this changes no result. It states the intent and saves a raise; it does not decide anything."
+        }
+      ],
       "source_digest": "27c1bf906e7fabed0ce66af5753fd3c1fe5a9967aafcc8d5153a747a20e16a1c",
       "suite_digest": "6b4c1529f85be65c9b665ee084bcb6b9175f55732f6f0506c525d203e4e787c5",
       "measured_at": "2026-09-28T08:12:18Z"

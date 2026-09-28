@@ -169,6 +169,11 @@ class TheDriftCheckWaitsForAPushToBecomeADeploy(unittest.TestCase):
         self.assertRegex(workflow, r"verify_deployment_matches\.py --wait \d+",
                          "CI runs the drift check with no wait, so every push races its deploy")
 
+    def test_production_drift_is_checked_only_after_a_manual_publish(self):
+        workflow = (HERE.parent.parent / ".github" / "workflows" / "bell-quality.yml").read_text()
+        job = workflow.split("post-deployment-drift:", 1)[1].split("\n  deployed-interface:", 1)[0]
+        self.assertIn("if: github.event_name == 'workflow_dispatch'", job)
+
 
 if __name__ == "__main__":
     unittest.main()

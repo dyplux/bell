@@ -173,6 +173,11 @@ class AStatedExceptionCarriesItsReason(unittest.TestCase):
         stated = [(name, entry["line"], entry["reason"])
                   for name, record in self.receipt["files"].items()
                   for entry in record.get("stated_exceptions", [])]
+        self.assertEqual(
+            {(name, line) for name, line, _ in stated}, set(mutate.STATED_EXCEPTIONS),
+            "the receipt must carry every stated exception; an empty list must not pass "
+            "because the loop below had nothing to check",
+        )
         survivors = {(entry["file"], entry["line"]) for entry in self.receipt["survivors"]}
         for name, line, reason in stated:
             self.assertEqual(reason, mutate.STATED_EXCEPTIONS[(name, line)],

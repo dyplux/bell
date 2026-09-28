@@ -7,6 +7,9 @@ on:
   push:
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   verify:
     runs-on: ubuntu-latest
@@ -50,18 +53,12 @@ jobs:
         # time, and a gate that doubles in length stops being run.
         run: make audit-tests
 
-  deployment-drift:
-    # "Never on a push, so a site outage cannot redden a commit that is fine"
-    # is right about an OUTAGE and wrong about DRIFT. While that reasoning held
-    # for both, the deployed site fell behind this repository by a whole
-    # redesign - /judge answered 404, the outcome key omitted a published
-    # state, and an example chip stated the wrong verdict - and every gate was
-    # green, because no gate compared the two. A reviewer found it instead.
-    #
-    # So drift is separated from outage and runs on every push: unreachable is
-    # reported and skipped, different is named and failed. It compares bytes,
-    # needs no browser and takes a second. Behaviour stays with the browser
-    # audit below, which stays on the schedule for the original reason.
+  post-deployment-drift:
+    # A source push is not a deployment. Comparing production on every push
+    # races the independent Cloudflare publish and turns a healthy code check
+    # red before deployment has a chance to finish. Run this explicitly after
+    # publishing; the scheduled browser audit remains the independent monitor.
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
