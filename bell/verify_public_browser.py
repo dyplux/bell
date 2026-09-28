@@ -174,7 +174,10 @@ def main() -> int:
                     "the population sentence no longer renders its count from the receipt; it is "
                     "written into the page again, which is what put a stale 87 beside a filter "
                     "showing 78")
-            stated_comparable = stated.inner_text().strip()
+            # The count lives inside a closed <details> disclosure. inner_text()
+            # correctly omits text hidden by a closed disclosure, while
+            # text_content() reads the value the page will show when opened.
+            stated_comparable = (stated.text_content() or "").strip()
             page.locator("[data-filter='COMPARABLE']").first.click()
             page.wait_for_timeout(1_000)
             monitor = page.locator("#monitor").inner_text()
