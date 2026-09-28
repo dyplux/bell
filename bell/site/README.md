@@ -1,8 +1,10 @@
 # Bell public website
 
-This directory is the public, credential-free Bell surface. It is a single
-page product: search a stock, ETF, commodity or other CMC RWA reference, read
-the current route, inspect the evidence and open the relevant receipt.
+This directory is the public, credential-free Bell surface. The workspace is
+the direct product flow: search a stock, ETF, commodity or other CMC RWA
+reference, read the current route, inspect its representation rows and open the
+full evidence record. The home page carries the wider population analysis and
+the dated verification archive.
 
 The browser does not call CMC and no API key is bundled in the assets. The
 public Worker serves the page and published dossiers. A live receipt is marked
@@ -16,12 +18,14 @@ cd bell/site
 python3 -m http.server 8080
 ```
 
-Open <http://localhost:8080>. The static page works without installation or
+Open <http://localhost:8080/workspace.html> for the monitor (production route:
+<https://bell.dyplux.com/workspace>), or
+<http://localhost:8080> for the research and evidence surface. The static page works without installation or
 credentials. It uses the committed map snapshot and published evidence files.
 
 ## Product flow
 
-1. Search a published reference such as Silver, Gold, Tesla or SPY
+1. Search a reference such as Silver, Gold, Tesla or SPY in `workspace.html`
 2. Read the route: `COMPARABLE, NOT ENDORSED`, `DO NOT SHORTLIST`, `INVESTIGATE`,
    `FACTS OPEN`, `SINGLE REPRESENTATION` or `REFERENCE ONLY`
 3. Read the observed quote endpoints, ratio and boundary note before opening deeper evidence
@@ -54,7 +58,9 @@ observation rather than a discount, parity claim or execution estimate.
 
 ## Public evidence
 
-- `index.html` is the single public product page
+- `workspace.html` is the focused monitor and reads the latest published receipt
+- `index.html` is the research, population and evidence surface
+- `workspace.js` renders the selected reference and live scan from the receipt
 - `integrity.js` renders search, filters, routes, evidence and exports
 - `integrity.css` and `visual-overrides.css` define the responsive interface
 - `catalog.json` is the browser-served credential-free map snapshot regenerated from CMC on 22 September 2026

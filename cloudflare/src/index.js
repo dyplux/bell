@@ -358,6 +358,16 @@ async function handle(request, env) {
         }
         return asset;
       }
+      // The research home is long by design; keep the operational monitor one
+      // short, stable route away. Resolve it explicitly so the header link does
+      // not depend on asset-layer extensionless HTML defaults.
+      if ((url.pathname === '/workspace' || url.pathname === '/workspace/') && request.method === 'GET') {
+        const asset = await env.ASSETS.fetch(new Request(new URL('/workspace.html', request.url), request));
+        if (asset.status >= 300 && asset.status < 400) {
+          return env.ASSETS.fetch(new Request(new URL('/workspace', request.url), request));
+        }
+        return asset;
+      }
       return env.ASSETS.fetch(request);
     } catch (error) {
       return json({ error: 'publication service error' }, 500);

@@ -360,6 +360,30 @@ test('/judge does not redirect to itself when the asset layer drops the extensio
   }
 });
 
+test('the workspace route resolves its static page with or without extension redirects', async () => {
+  const asked = [];
+  const env = {
+    ASSETS: {
+      fetch: async request => {
+        const { pathname } = new URL(request.url);
+        asked.push(pathname);
+        if (pathname === '/workspace.html') {
+          return new Response(null, { status: 307, headers: { location: '/workspace' } });
+        }
+        return new Response('<!doctype html>workspace', { status: 200 });
+      },
+    },
+  };
+  for (const pathname of ['/workspace', '/workspace/']) {
+    asked.length = 0;
+    const response = await worker.fetch(new Request(`https://bell.dyplux.com${pathname}`), env, {});
+    assert.equal(response.status, 200, `${pathname} did not return the workspace`);
+    assert.equal(await response.text(), '<!doctype html>workspace');
+    assert.ok(asked.includes('/workspace.html'));
+    assert.ok(asked.includes('/workspace'));
+  }
+});
+
 test('a retired URL lands on the section it was named after', async () => {
   // /integrity redirected to the top of the root page, so a reviewer who
   // fetched it and compared it byte for byte with / reported the two
@@ -415,7 +439,7 @@ test('the policy allows what the site loads and nothing it does not', async () =
   assert.match(policy, /frame-ancestors 'none'/);
   assert.match(policy, /object-src 'none'/);
 
-  for (const page of ['index.html', 'judge.html']) {
+  for (const page of ['index.html', 'judge.html', 'workspace.html']) {
     const html = fs.readFileSync(path.join(site, page), 'utf8');
     assert.doesNotMatch(html, /<script(?![^>]*\bsrc=)[^>]*>/,
       `${page} gained an inline script, which the policy above forbids`);

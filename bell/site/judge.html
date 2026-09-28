@@ -94,7 +94,7 @@
       <div><small>Comparisons published &middot; 21 Sep</small><strong>87</strong></div>
       <div><small>Refused for missing coverage &middot; 21 Sep</small><strong>107</strong></div>
       <div><small>No eligible spot pair &middot; 21 Sep</small><strong>13</strong></div>
-      <div><small>Tests in the offline gate</small><strong>554</strong></div>
+      <div><small>Tests in the offline gate</small><strong>555</strong></div>
       <div><small>Gate runtime, 2 machines</small><strong>17&ndash;26s</strong></div>
     </div>
 
@@ -146,7 +146,7 @@ make base-rate</pre>
       <h3>What that gate proves, and what it does not</h3>
       <dl>
         <dt>The suite</dt>
-        <dd>554 tests, 429 Python and 125 JavaScript. One Python test needs a network and a
+        <dd>555 tests, 429 Python and 126 JavaScript. One Python test needs a network and a
         CoinMarketCap key; without them it is skipped and the runner says so.</dd>
 
         <dt>The re-derivation</dt>
@@ -155,7 +155,7 @@ make base-rate</pre>
         16.5 MB of shipped inputs. Each scan is recomputed, so a changed count fails the gate.</dd>
 
         <dt>The submission gate</dt>
-        <dd>Runs a submission gate over 182 tracked files, inspecting every one for anything
+        <dd>Runs a submission gate over 192 tracked files, inspecting every one for anything
         private or unreleasable.</dd>
 
         <dt class="scope-limit">One observation is UNVERIFIED</dt>

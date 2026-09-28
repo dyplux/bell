@@ -303,7 +303,7 @@ test('mobile navigation keeps every primary destination visible', () => {
 
   // Every destination must lead somewhere that exists: an anchor on this page,
   // or a route the site actually serves.
-  const routes = new Set(['/', '/judge']);
+  const routes = new Set(['/', '/judge', '/workspace']);
   for (const [, href] of page.matchAll(/<nav[^>]*>[\s\S]*?<\/nav>/g).next().value[0]
     .matchAll(/href="([^"]+)"/g)) {
     if (href.startsWith('#')) {

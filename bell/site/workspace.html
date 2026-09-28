@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Search tokenised real-world assets and inspect Bell's evidence route before comparing wrappers.">
+  <meta name="theme-color" content="#0a1018">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="workspace.css?v=20260928-1">
+  <title>Bell Workspace · RWA Surface Integrity Monitor</title>
+</head>
+<body>
+  <header class="appbar">
+    <a class="brand" href="/" aria-label="Bell home">bell<span>.</span></a>
+    <span class="app-name">RWA MONITOR <i>·</i> WORKSPACE</span>
+    <nav aria-label="Main navigation"><a class="current" href="/workspace.html">Workspace</a><a href="/#evidence">Evidence</a><a href="/judge">For judges</a><a href="https://github.com/dyplux/bell" target="_blank" rel="noopener">GitHub ↗</a></nav>
+    <span id="freshness" class="freshness"><i></i> Connecting</span>
+  </header>
+
+  <main>
+    <section class="intro">
+      <div><p class="kicker">THE CHECK BEFORE THE SHORTLIST <span>01 / 03</span></p><h1>Compare the wrapper<br><em>after the evidence.</em></h1><p class="intro-copy">Search an underlying asset. Bell checks the CMC reference, representation rows and reported market fields, then shows what to verify next.</p></div>
+      <aside class="intro-note"><span>DECISION STANDARD</span><strong>A shared ticker is not a shared instrument.</strong><small>Bell reports a review route. It does not certify backing, redemption, custody, solvency or executable liquidity.</small></aside>
+    </section>
+
+    <section class="workbench" aria-label="RWA reference monitor">
+      <div class="workbench-head"><div><span class="section-label">REFERENCE MONITOR</span><h2>Start with the asset</h2></div><div class="receipt-meta"><span>LIVE CMC RECEIPT</span><strong id="receipt-time">Reading latest observation…</strong></div></div>
+      <form id="search-form" role="search">
+        <label class="sr-only" for="asset-search">Search a stock, ETF or commodity</label>
+        <span class="search-icon" aria-hidden="true">⌕</span><input id="asset-search" type="search" placeholder="Try Silver, Tesla, Gold or SPY" autocomplete="off" aria-controls="search-suggestions" aria-expanded="false"><button type="submit">Review asset <span>↗</span></button>
+        <div id="search-suggestions" class="suggestions" role="listbox" hidden></div>
+      </form>
+      <div class="example-row"><span>QUICK REVIEW</span><button type="button" data-example="Silver">Silver <b>BLOCKED</b></button><button type="button" data-example="Tesla">Tesla <b>INVESTIGATE</b></button><button type="button" data-example="SPY">SPY <b>INVESTIGATE</b></button><button type="button" data-example="Marvell">Marvell <b>FACTS OPEN</b></button></div>
+
+      <section id="result" class="result" aria-live="polite" aria-atomic="true">
+        <div class="empty-state"><span class="empty-orbit">B</span><div><span class="section-label">YOUR REVIEW WILL APPEAR HERE</span><h3>One reference. A clear next step.</h3><p>Search an asset above, or pick one of the examples.</p></div></div>
+      </section>
+      <div class="workbench-foot"><span><i class="mini-dot"></i> Missing data stays missing; it is never silently changed to zero.</span><a href="/#monitor">Open the full reference index ↗</a></div>
+    </section>
+
+    <section class="how-row" aria-label="How Bell works">
+      <article><span>01</span><div><h3>Resolve identity</h3><p>Keep the underlying reference, token and issuer joins visible.</p></div></article>
+      <article><span>02</span><div><h3>Read the route</h3><p>Compare filtered quote rows, or stop when evidence needs review.</p></div></article>
+      <article><span>03</span><div><h3>Carry the diligence</h3><p>Open the source fields and take the unresolved questions forward.</p></div></article>
+    </section>
+
+    <section class="population" aria-label="Current population scan">
+      <div class="population-copy"><span class="section-label">WHOLE CATALOGUE · LIVE RECEIPT</span><h2>One scan.<br><em>Different routes.</em></h2><p>Bell checks every tokenised CMC RWA reference in the receipt, not a hand-picked list of examples. These counts describe the scan; they are not a market-wide quality score.</p><a href="/#evidence">Inspect methods and dated receipts ↗</a></div>
+      <div id="population-stats" class="population-stats"><div><strong>—</strong><span>references</span></div><div><strong>—</strong><span>representation rows</span></div><div><strong>—</strong><span>need a different route</span></div></div>
+    </section>
+  </main>
+  <footer><a class="brand" href="/">bell<span>.</span></a><span>Research, not a trading signal.</span><nav><a href="/judge">Submission brief</a><a href="https://github.com/dyplux/bell" target="_blank" rel="noopener">Open source ↗</a></nav></footer>
+  <script src="workspace.js?v=20260928-1" defer></script>
+</body>
+</html>

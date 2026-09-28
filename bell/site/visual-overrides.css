@@ -25,6 +25,8 @@ body{font-size:17px}
 .topbar nav a{padding:23px 0;border-bottom:2px solid transparent;transition:color .18s,border-color .18s}
 .topbar nav a:hover,.topbar nav a:focus-visible{color:var(--paper);border-color:var(--gold)}
 .topbar nav a.active{border-color:var(--gold)}
+.topbar nav a.workspace-link{color:var(--gold)}
+.topbar nav a.workspace-link:hover{color:var(--paper)}
 main{max-width:2200px;padding:62px 64px 98px}
 .hero{grid-template-columns:minmax(0,1.12fr) minmax(460px,.88fr);gap:clamp(48px,6vw,120px);align-items:start}
 .hero h1{font-size:clamp(60px,6.3vw,112px);max-width:920px;margin-top:30px}
