@@ -412,6 +412,14 @@ test('comparison cards carry sourced issuer structures with explicit scope limit
   assert.match(integrity, /economic claims remain unreviewed/);
 });
 
+test('mobile decision preview opens the exact rendered case card', () => {
+  const index = fs.readFileSync(path.join(site, 'index.html'), 'utf8');
+  const styles = fs.readFileSync(path.join(site, 'visual-overrides.css'), 'utf8');
+  assert.match(index, /id="hero-mobile-decision"[\s\S]*href="#decision-hero"/);
+  assert.match(index, /id="decision-hero"/);
+  assert.match(styles, /\.decision-hero\{scroll-margin-top:80px\}/);
+});
+
 test('a missing measurement says so instead of leaving a number-shaped hole', () => {
   const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
   assert.match(integrity, /could not be loaded/);

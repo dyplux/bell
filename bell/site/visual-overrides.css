@@ -9,6 +9,7 @@
 .output-grid{align-self:end}
 .output-grid article{min-height:150px}
 .decision-story{margin-top:72px}
+.decision-hero{scroll-margin-top:80px}
 .decision-story-copy h2{font-size:clamp(38px,4.8vw,72px)}
 .decision-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:17px}
 .decision-actions .brief-button{border-color:var(--gold);color:var(--gold);padding:9px 11px}
