@@ -444,7 +444,7 @@ def main() -> int:
             page.goto(f"{args.base.rstrip(chr(47))}/?reference=4",
                       wait_until="domcontentloaded", timeout=30_000)
             wait_for_text(page, "#receipt-status-label", "LOADING", absent=True)
-            pair_review = page.locator("#decision-hero .pair-review")
+            pair_review = page.locator(".pair-review")
             pair_review.wait_for(state="visible", timeout=15_000)
             pair_text = pair_review.inner_text()
             require("DO NOT COMPARE AS LIKE-FOR-LIKE" in pair_text,

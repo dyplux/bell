@@ -177,6 +177,8 @@ test('case results can be shared as stable single-URL deep links', () => {
   assert.match(integrity, /receipt_id: receiptId/);
   assert.match(integrity, /ruleset: receipt\?\.universe\?\.rules_version/);
   assert.match(integrity, /decision_interpretation: displayDecisionConsequence\(item\)/);
+  assert.match(integrity, /if \(!comparison\) \{\s*\/\/ Keep the machine-derived consequence byte-for-byte aligned with the\s*\/\/ rule engine\.[\s\S]*?return \{ \.\.\.decision \};/,
+    'reference-specific narrative must not alter the machine-verifiable verdict');
   assert.match(integrity, /comparison: comparisonForCaseReceipt\(item\)/);
   assert.match(integrity, /Download case JSON/);
   assert.match(integrity, /source_hashes: sourceHashes/);

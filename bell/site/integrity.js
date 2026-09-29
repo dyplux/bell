@@ -1160,8 +1160,11 @@
     if (!decision) return null;
     const comparison = item?.comparison;
     if (!comparison) {
-      const classScope = alphabetClassScopeSentence(item);
-      return classScope ? { ...decision, consequence: [decision.consequence, classScope].filter(Boolean).join(' ') } : { ...decision };
+      // Keep the machine-derived consequence byte-for-byte aligned with the
+      // rule engine. Reference-specific class context belongs in the separate
+      // decision_interpretation field, where it cannot make the exported
+      // verdict fail independent re-derivation from its own token rows.
+      return { ...decision };
     }
     const cheapest = comparison.cheapest || {};
     const highestVolume = comparison.highest_reported_volume || comparison.deepest || {};
