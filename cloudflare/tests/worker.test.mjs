@@ -227,6 +227,72 @@ test('integrity endpoint returns a published receipt with freshness metadata', a
   assert.equal(body._publication.status, 'fresh');
 });
 
+test('integrity endpoint projects the v2 receipt with transparent v3 wording only', async () => {
+  const storedReceipt = {
+    schema_version: 'rwa_surface_integrity.v1',
+    observed_at: '2026-09-29T16:59:08Z',
+    question: "Can CMC's RWA surfaces be joined into a trustworthy comparison without resolving identity, unit and market-data contradictions?",
+    method: { rules: [
+      '10x price spread is a critical denomination break',
+      'positive volume with zero market cap is a critical market contradiction',
+    ] },
+    universe: {
+      rules_version: 'bell.rules.v2',
+      tokenised_references_scanned: 793,
+      tokens_scanned: 1449,
+      states: { do_not_compare: 38, investigate: 97, no_flags: 658 },
+    },
+    alerts: [{
+      tokens: [{ crypto_id: 1 }, { crypto_id: 2 }],
+      signals: [{ code: 'ZERO_MCAP_POSITIVE_VOLUME', severity: 'critical', message: 'At least one representation reports positive 24h volume with zero market cap.' }],
+      decision: {
+        state: 'blocked',
+        consequence: 'A research desk must not rank or substitute these representations until the contradiction is resolved.',
+        allocation_effect: 'NO WRAPPER SELECTED until identity, denomination and market state are cleared.',
+      },
+    }],
+  };
+  const originalJson = JSON.stringify(storedReceipt);
+  const row = {
+    id: 1,
+    payload_json: originalJson,
+    observed_at: storedReceipt.observed_at,
+    published_at: new Date().toISOString(),
+    stale_after_seconds: 900,
+  };
+  const db = {
+    prepare(sql) {
+      return {
+        first: async () => sql.includes('integrity_receipts') ? row : null,
+        bind() {
+          return {
+            first: async () => sql.includes('integrity_receipts') ? row : null,
+            run: async () => ({ meta: {} }),
+            all: async () => ({ results: [] }),
+          };
+        },
+      };
+    },
+  };
+  const response = await worker.fetch(new Request('https://example.test/api/integrity', {
+    headers: { 'if-none-match': `W/"1-${row.published_at}-${row.observed_at}"` },
+  }), { ASSETS: assets, DB: db });
+  const body = await response.json();
+  assert.equal(response.status, 200);
+  assert.equal(body.universe.rules_version, 'bell.rules.v3');
+  assert.equal(body.universe.tokenised_references_scanned, 793);
+  assert.deepEqual(body.universe.states, storedReceipt.universe.states);
+  assert.equal(body.alerts[0].signals[0].message, 'CMC reports positive 24h volume alongside zero market cap; verify the source fields before relying on this quote.');
+  assert.equal(body.alerts[0].decision.consequence, 'Keep these representations out of a shortlist until identity, denomination and reported market fields have been checked.');
+  assert.equal(body.rule_compatibility_migration.source_rules_version, 'bell.rules.v2');
+  assert.equal(body.rule_compatibility_migration.evidence_changed, false);
+  assert.equal(body._publication.rule_migration.served_rules_version, 'bell.rules.v3');
+  assert.equal(body._publication.observed_at, storedReceipt.observed_at);
+  assert.notEqual(response.headers.get('etag'), `W/"1-${row.published_at}-${row.observed_at}"`,
+    'the served rules version must invalidate a pre-migration cache entry');
+  assert.equal(row.payload_json, originalJson, 'the stored v2 receipt remains immutable');
+});
+
 test('integrity publication requires the publisher token', async () => {
   const response = await worker.fetch(new Request('https://example.test/internal/integrity', { method: 'POST', body: JSON.stringify({}) }), { ASSETS: assets, PUBLISHER_TOKEN: 'secret' });
   assert.equal(response.status, 401);

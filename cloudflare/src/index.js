@@ -149,8 +149,8 @@ async function published(request, env) {
 // answer is `no-cache` plus an entity tag: the browser always asks, and gets
 // 304 with no body when the publication has not moved. Freshness is unchanged;
 // the redundant transfer is not.
-function receiptETag(row) {
-  return `W/"${row.id ?? 1}-${row.published_at ?? ''}-${row.observed_at ?? ''}"`;
+function receiptETag(row, servedRulesVersion = 'unversioned') {
+  return `W/"${row.id ?? 1}-${row.published_at ?? ''}-${row.observed_at ?? ''}-${servedRulesVersion}"`;
 }
 
 function notModified(etag) {
@@ -169,17 +169,85 @@ async function integrity(request, env) {
   } catch (error) {
     return json({ error: 'stored integrity receipt is invalid JSON' }, 500);
   }
+  const ruleMigration = migrateV2IntegrityReceipt(payload);
   const publication = publicationStatus(row);
   payload._publication = {
     source: 'cloudflare.d1',
     observed_at: row.observed_at,
     published_at: row.published_at,
     credential_free: true,
+    ...(ruleMigration ? { rule_migration: ruleMigration } : {}),
     ...publication,
   };
-  const etag = receiptETag(row);
+  const etag = receiptETag(row, payload.universe?.rules_version || 'unversioned');
   if (request.headers.get('if-none-match') === etag) return notModified(etag);
   return json(payload, 200, { 'cache-control': 'no-cache', etag });
+}
+
+// v3 changes the interpretation text for positive volume with zero reported
+// market cap; it does not change the signal, severity, decision, counts or any
+// numeric calculation. The Mac mini may continue publishing a fresh v2 scan
+// until its checkout is updated. Serve that exact snapshot using v3 wording,
+// while exposing the source ruleset and unchanged observation time so a judge
+// cannot mistake this compatibility projection for a new CMC collection.
+function migrateV2IntegrityReceipt(receipt) {
+  const universe = receipt?.universe;
+  if (universe?.rules_version !== 'bell.rules.v2') return null;
+
+  const migration = {
+    source_rules_version: 'bell.rules.v2',
+    served_rules_version: 'bell.rules.v3',
+    mode: 'wording-only compatibility projection',
+    observed_at: receipt.observed_at || null,
+    evidence_changed: false,
+    note: 'No CMC inputs were recollected. Counts, states, signals and numeric evidence are unchanged; only the rule wording and decision copy were updated.',
+  };
+
+  universe.rules_version = 'bell.rules.v3';
+  receipt.question = "Which CMC RWA rows pass the quote filters, and which identity, denomination or reported-field checks remain open?";
+  if (receipt.method && Array.isArray(receipt.method.rules)) {
+    receipt.method.rules = [
+      '10x price spread blocks a filtered quote comparison pending unit and claim review',
+      'positive volume with zero market cap is a reported-field review trigger, not proof of an economic contradiction',
+      'derivative mixing, symbol collision, missing fields and missing token identity require investigation',
+      'never join by ticker when crypto_id or issuer_id exists',
+    ];
+  }
+
+  const oldSignal = 'At least one representation reports positive 24h volume with zero market cap.';
+  const newSignal = 'CMC reports positive 24h volume alongside zero market cap; verify the source fields before relying on this quote.';
+  const oldMultiConsequence = 'A research desk must not rank or substitute these representations until the contradiction is resolved.';
+  const oldSingleConsequence = 'This reference has one representation and that row contradicts itself, so there is nothing here to compare and nothing to rank. Resolve the contradiction before treating the row as a price.';
+  const oldMultiAllocation = 'NO WRAPPER SELECTED until identity, denomination and market state are cleared.';
+  const oldSingleAllocation = "NO WRAPPER SELECTED until the row's own market state is cleared.";
+
+  for (const key of ['alerts', 'alert_index']) {
+    const rows = receipt[key];
+    if (!Array.isArray(rows)) continue;
+    for (const row of rows) {
+      for (const signal of Array.isArray(row?.signals) ? row.signals : []) {
+        if (signal?.code === 'ZERO_MCAP_POSITIVE_VOLUME' && signal.message === oldSignal) {
+          signal.message = newSignal;
+        }
+      }
+      const decision = row?.decision;
+      if (decision?.state !== 'blocked') continue;
+      const single = (row.tokens || row.representations || []).length === 1;
+      if (decision.consequence === oldSingleConsequence || decision.consequence === oldMultiConsequence) {
+        decision.consequence = single
+          ? "This reference has one representation, so there is no cross-wrapper comparison. The reported market fields need verification before relying on its quote."
+          : 'Keep these representations out of a shortlist until identity, denomination and reported market fields have been checked.';
+      }
+      if (decision.allocation_effect === oldSingleAllocation || decision.allocation_effect === oldMultiAllocation) {
+        decision.allocation_effect = single
+          ? "NO WRAPPER SELECTED until the row's reported market fields are verified."
+          : 'NO WRAPPER SELECTED until identity, denomination and reported market fields are checked.';
+      }
+    }
+  }
+
+  receipt.rule_compatibility_migration = migration;
+  return migration;
 }
 
 async function jobs(request, env) {

@@ -946,9 +946,11 @@
       : `OBSERVED ${observedStamp} UTC${ageLabel}`;
     const replayNote = byId('replay-receipt-note');
     if (replayNote) {
-      replayNote.textContent = publication?.source === 'dated_static'
-        ? 'This receipt is the byte-verifiable replay receipt.'
-        : 'This is the current receipt. The byte-verifiable replay receipt is the dated one linked below, and it is a different observation.';
+      replayNote.textContent = publication?.rule_migration
+        ? `This CMC observation was collected under ${publication.rule_migration.source_rules_version}. The served v3 wording is a compatibility projection: values, findings and observation time are unchanged; no new collection was made.`
+        : publication?.source === 'dated_static'
+          ? 'This receipt is the byte-verifiable replay receipt.'
+          : 'This is the current receipt. The byte-verifiable replay receipt is the dated one linked below, and it is a different observation.';
     }
     // The chip said "CURRENT RECEIPT" in the markup, so it kept saying it over
     // five-day-old replay data while the banner above read "DATED REPLAY".

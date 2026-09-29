@@ -76,6 +76,15 @@ The integrity monitor is refreshed independently from the per-asset queue:
 CMC_API_KEY="..." python3 bell/integrity_publisher.py
 ```
 
+While the publisher checkout catches up to `bell.rules.v3`, the Worker applies a
+wording-only compatibility projection when it reads a stored `bell.rules.v2`
+receipt. The API exposes both ruleset versions and states that no CMC inputs were
+recollected; counts, findings, numeric evidence and the original observation
+time are preserved. This projection is temporary and does not rewrite the D1
+receipt. Its ETag includes the served ruleset so clients discard a cached v2
+response after deployment. Once the Mac mini publishes v3 directly, the Worker
+serves that receipt unchanged.
+
 The example launchd job is [`../bell/launchd/com.dyplux.bell-integrity-publisher.plist.example`](../bell/launchd/com.dyplux.bell-integrity-publisher.plist.example).
 The public page first reads `/api/integrity` and falls back to the dated receipt
 only when no live receipt exists. It labels the source and freshness state.
