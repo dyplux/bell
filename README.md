@@ -14,9 +14,10 @@ representations pass its reported-price filters, and what still needs review?
 | **Local interface** | `make app` - visual workspace, local agent API, and optional own CMC key |
 | **Whole-catalogue base rate · 21 Sep** | In that dated capture, 87 of the 244 references carrying more than one representation had a filtered quote comparison. The other 157 were routed to review and produced 158 rule hits: 107 missing-coverage reasons, 38 price or field review triggers, and 13 cases with fewer than two eligible spot routes. A review trigger is not proof of economic contradiction |
 | **Run it yourself** | `git clone https://github.com/dyplux/bell.git && cd bell && make app` - local visual workspace at `http://127.0.0.1:8080/workspace.html`; no API key or install required for dated evidence. `make base-rate` reproduces the keyless population calculation |
-| **Verify the whole thing** | `make check-offline` - 566 tests, observed between 17.71 and 25.35 seconds across 2 machines. No credentials or network required. It verifies the historical 21 Sep replay and recomputes the complete 28 Sep capture from its shipped, credential-free inputs. Of the 24 dated observations in the population history, 2 ship their full payload. One has its state distribution compared against the receipt; the other is UNVERIFIED on that split because it predates the current rule set. The separate 28 Sep capture is fully recomputable with `make verify-capture`. The rest of the history entries are published summaries |
+| **Verify the whole thing** | `make check-offline` - 569 tests, observed between 17.71 and 25.35 seconds across 2 machines. No credentials or network required. It verifies the historical 21 Sep replay and recomputes the complete 28 Sep capture from its shipped, credential-free inputs. Of the 24 dated observations in the population history, 2 ship their full payload. One has its state distribution compared against the receipt; the other is UNVERIFIED on that split because it predates the current rule set. The separate 28 Sep capture is fully recomputable with `make verify-capture`. The rest of the history entries are published summaries |
 | **Rules as an executable spec** | `python3 bell/verify_rule_boundaries.py` - 0.2s, 8 boundary checks, no network |
 | **Receipts** | [live](https://bell.dyplux.com/api/integrity) · [latest 28 Sep capture](bell/site/proof/rwa-surface-integrity-capture-2026-09-28.json) · [latest normalized inputs](bell/site/proof/rwa-surface-integrity-inputs-2026-09-28.json) · [historical 21 Sep replay](bell/site/proof/rwa-surface-integrity-latest-replay-2026-09-21.json) · [base rate](bell/site/proof/base-rate-2026-09-21.json) |
+| **Alphabet pair review** | [dated GOOGLX / GOOGLon terms check](bell/site/proof/alphabet-class-a-pair-review-2026-09-29.json) · `make verify-pair-review` checks its CMC rows and capture hash |
 
 
 ## What the product does
@@ -36,6 +37,14 @@ stable identifiers, then routes each reference into the honest workflow:
 
 The product is not a safety score, investment recommendation or proof of
 backing, redemption, custody, solvency or executable liquidity.
+
+For the Alphabet Class A reference, the comparison view also includes a
+source-backed pair review of GOOGLX and GOOGLon. It records what the two issuer
+pages align on, the unit evidence each page publishes, the missing current
+GOOGLX multiplier, and the resulting `DO NOT COMPARE AS LIKE-FOR-LIKE` action.
+CMC quotes are dated 28 September 2026; issuer pages were checked 29 September
+2026. The review is an example of Bell withholding a cheapest-route claim when
+shared reference labels do not establish equivalent units or claims.
 
 For a selected reference, the public page also makes the immediate review
 consequence visible: an illustrative amount can be kept uncommitted, held for

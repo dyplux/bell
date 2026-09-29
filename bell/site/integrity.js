@@ -1506,6 +1506,31 @@
     return `<section class="issuer-evidence" aria-label="Issuer-published terms by token ID"><div class="issuer-evidence-heading"><span>TERMS BY TOKEN ID</span><p>Each note is attached to the exact CMC crypto_id shown. Sources describe issuer-published claims; they do not independently verify backing, redemption, eligibility or custody.</p></div>${cards ? `<div class="issuer-evidence-grid">${cards}</div>` : ''}${gapNote}${classWarning}</section>`;
   }
 
+  function pairReviewMarkup(item, routes) {
+    const pair = window.BELL_PAIR_REVIEWS?.[`${item?.rwa_id}:37013:38001`];
+    const ids = new Set((routes || []).map(route => String(route.crypto_id)));
+    if (!pair || !ids.has('37013') || !ids.has('38001')) return '';
+    const sources = pair.sources.map(source => {
+      const url = externalURL(source.url);
+      return url ? `<a href="${escapeHTML(url)}" target="_blank" rel="noopener">${escapeHTML(source.label)} ↗</a>` : '';
+    }).filter(Boolean).join('');
+    return `<aside class="pair-review" aria-label="Pairwise RWA terms review"><div class="pair-review-head"><div><span>DATED PAIRWISE TERMS CHECK</span><h4>${escapeHTML(pair.title)}</h4></div><strong>${escapeHTML(pair.decision)}</strong></div><dl><div><dt>CMC pair snapshot</dt><dd>${escapeHTML(pair.cmcObserved)}</dd></div><div><dt>Issuer pages checked</dt><dd>${escapeHTML(pair.termsChecked)}</dd></div></dl><p><b>What aligns:</b> ${escapeHTML(pair.alignment)}</p><p><b>What remains open:</b> ${escapeHTML(pair.gap)}</p><p class="pair-review-next"><b>Next check:</b> ${escapeHTML(pair.next)}</p><div class="issuer-evidence-links">${sources}</div><small>The pair review is a dated research artifact; the live quote table above has its own receipt time. Issuer pages are linked, not archived. This does not establish legal equivalence, backing, redemption, or fair value.</small></aside>`;
+  }
+
+  function pairwiseReviewRecord(item) {
+    const pair = window.BELL_PAIR_REVIEWS?.[`${item?.rwa_id}:37013:38001`];
+    const rows = item?.tokens || item?.representations || [];
+    const ids = new Set(rows.map(token => String(token.crypto_id)));
+    if (!pair || !ids.has('37013') || !ids.has('38001')) return null;
+    return {
+      schema_version: 'bell.pairwise-terms-review.v1',
+      review_id: 'alphabet-class-a-googlx-googlon-2026-09-29',
+      receipt: 'proof/alphabet-class-a-pair-review-2026-09-29.json',
+      receipt_sha256: 'eee4eae050f3f320de6caad30c2a92254a75b0286b25479555dcdce7203c8b3f',
+      relationship: 'This is a separately dated terms review, not a claim that those terms were observed in the live quote timestamp above.',
+    };
+  }
+
   function renderComparison(item) {
     const c = item.comparison;
     if (!c || !Array.isArray(c.routes) || c.routes.length < 2) {
@@ -1539,7 +1564,7 @@
       ? `CMC groups Class A and Class C routes here; this is not a same-share-class spread. `
       : '';
     const scopeNotice = `<aside class="comparison-scope-notice"><span>TERMS CHECK · BEFORE THE QUOTE</span><p><strong>Equivalent units and claims are not established.</strong> ${unitScope}${routeNotes} of ${c.routes.length} included routes have token-specific issuer-source notes. Those notes describe published terms; they do not verify rights or backing.</p></aside>`;
-    return `<div class="comparison-block"><span class="comparison-scroll-hint">SWIPE FOR PRICE · VS CHEAPEST · SHARE OF VOLUME →</span>${scopeNotice}<div class="comparison-head"><span>${comparisonTitle}</span><strong>${Number(c.spread_bps).toFixed(1)} bps</strong><small>${c.route_count} token routes under this CMC RWA reference</small></div><p class="comparison-fill">${fill}</p><table class="comparison-table"><thead><tr><th>route</th><th>issuer</th><th class="num">price</th><th class="num">vs cheapest</th><th class="num">share of volume</th></tr></thead><tbody>${rows}</tbody></table>${issuerEvidenceMarkup(item, c.routes)}${routeSetDetails}${open}<p class="comparison-limits">Observed CMC price and reported-volume fields are not execution, depth, backing or redemption evidence. ${NOT_OBSERVED_SHORT}</p></div>`;
+    return `<div class="comparison-block"><span class="comparison-scroll-hint">SWIPE FOR PRICE · VS CHEAPEST · SHARE OF VOLUME →</span>${scopeNotice}<div class="comparison-head"><span>${comparisonTitle}</span><strong>${Number(c.spread_bps).toFixed(1)} bps</strong><small>${c.route_count} token routes under this CMC RWA reference</small></div><p class="comparison-fill">${fill}</p><table class="comparison-table"><thead><tr><th>route</th><th>issuer</th><th class="num">price</th><th class="num">vs cheapest</th><th class="num">share of volume</th></tr></thead><tbody>${rows}</tbody></table>${issuerEvidenceMarkup(item, c.routes)}${pairReviewMarkup(item, c.routes)}${routeSetDetails}${open}<p class="comparison-limits">Observed CMC price and reported-volume fields are not execution, depth, backing or redemption evidence. ${NOT_OBSERVED_SHORT}</p></div>`;
   }
 
   function comparisonRouteSet(item) {
@@ -1720,6 +1745,7 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
   function caseReceipt(item) {
     const publication = receipt?._publication || {};
     const sourceHashes = receipt?.source_hashes || {};
+    const pairwiseTermsReview = pairwiseReviewRecord(item);
     const receiptId = `bell.integrity/${encodeURIComponent(receipt?.observed_at || 'unknown')}/`
       + Object.keys(sourceHashes).sort().map(surface => `${surface}=${sourceHashes[surface]}`).join('&');
     return {
@@ -1827,6 +1853,7 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
         'Observed CMC fields do not prove backing, redemption, custody, eligibility, solvency, liquidity or executable size',
         'The case is a research triage record, not an investment recommendation',
       ],
+      ...(pairwiseTermsReview ? { pairwise_terms_review: pairwiseTermsReview } : {}),
     };
   }
 

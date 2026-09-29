@@ -1,0 +1,69 @@
+{
+  "schema_version": "bell.pairwise-terms-review.v1",
+  "review_id": "alphabet-class-a-googlx-googlon-2026-09-29",
+  "reference": {
+    "rwa_id": 4,
+    "name": "Alphabet Inc Class A",
+    "symbol": "GOOGL"
+  },
+  "cmc_observation": {
+    "observed_at": "2026-09-28T15:14:11Z",
+    "source": "rwa-surface-integrity-capture-2026-09-28.json",
+    "sha256": "72a12449fdd38c615d10c6c6aee8aa13d3bff42963a2a182a676eea3cf906d8e",
+    "routes": [
+      {
+        "crypto_id": 37013,
+        "symbol": "GOOGLX",
+        "name": "Alphabet tokenized stock (xStock)",
+        "issuer_name": "Backed Assets",
+        "price": 341.6092203910553,
+        "volume_24h": 6946198.6246138,
+        "market_cap": 36476720.02,
+        "cmc_url": "https://coinmarketcap.com/currencies/alphabet-tokenized-stock-xstock/",
+        "project_url": "https://assets.backed.fi/products/alphabet-xstock"
+      },
+      {
+        "crypto_id": 38001,
+        "symbol": "GOOGLon",
+        "name": "Alphabet Class A Tokenized Stock (Ondo)",
+        "issuer_name": "Ondo Assets",
+        "price": 342.2070304963147,
+        "volume_24h": 9690458.97486311,
+        "market_cap": 19934490.97,
+        "cmc_url": "https://coinmarketcap.com/currencies/alphabet-class-a-tokenized-stock-ondo/",
+        "project_url": "https://app.ondo.finance/assets/googlon"
+      }
+    ]
+  },
+  "issuer_sources_checked_at": "2026-09-29",
+  "issuer_evidence": [
+    {
+      "crypto_id": 37013,
+      "issuer": "Backed / xStocks",
+      "source": "https://assets.backed.fi/products/alphabet-xstock",
+      "finding": "The product page identifies GOOGLX as a tracker certificate for Alphabet Class A. The xStocks dividend and split documentation says balance multipliers can change with corporate actions and dividend reinvestment. The reviewed product page does not state the current GOOGLX multiplier."
+    },
+    {
+      "crypto_id": 38001,
+      "issuer": "Ondo Global Markets",
+      "source": "https://app.ondo.finance/assets/googlon",
+      "finding": "The asset page identifies Alphabet Class A and states 1 GOOGLon = 1.00 GOOGL."
+    },
+    {
+      "crypto_id": null,
+      "issuer": "xStocks documentation",
+      "source": "https://docs.xstocks.fi/docs/dividends-and-stock-splits",
+      "finding": "Multiplier handling accounts for corporate actions, including dividends and stock splits."
+    }
+  ],
+  "decision": {
+    "state": "do_not_compare_as_like_for_like",
+    "reason": "Both issuers point to the same CMC underlying reference, but the current GOOGLX multiplier was not established in the reviewed source set. Shared reference identity does not establish matching effective units or equivalent claims.",
+    "next_check": "Retrieve the current GOOGLX multiplier and compare the applicable product terms before naming a cheaper route."
+  },
+  "limits": [
+    "Issuer-published descriptions were not independently verified against legal terms.",
+    "This review does not establish ownership rights, backing, redemption, custody, eligibility, execution or fair value.",
+    "The CMC snapshot and issuer-source review are separately dated; do not read the CMC quote pair as a live price observation."
+  ]
+}

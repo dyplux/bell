@@ -436,6 +436,17 @@ footer .footer-meta{width:100%;display:flex;justify-content:space-between;gap:12
 .issuer-evidence-card small{display:block;margin-top:7px}
 .issuer-evidence-links{display:flex;flex-wrap:wrap;gap:6px 12px;margin-top:8px}
 .issuer-evidence-links a{color:#e1c16e;font:11px var(--font);text-decoration:underline;text-underline-offset:2px}
+.pair-review{margin-top:14px;padding:12px;border:1px solid rgba(170,184,201,.2);border-left:2px solid #e1c16e;background:rgba(7,13,20,.58)}
+.pair-review-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.pair-review-head>div>span{color:#e1c16e;font:700 11px var(--font);letter-spacing:.1em}
+.pair-review h4{margin:4px 0 0;color:#e8eef5;font:600 14px/1.35 var(--font)}
+.pair-review-head>strong{max-width:27ch;color:#f0cd81;font:700 11px/1.4 var(--font);letter-spacing:.06em;text-align:right}
+.pair-review dl{display:flex;gap:8px 20px;flex-wrap:wrap;margin:10px 0;color:#9eacbd;font:11px var(--font)}
+.pair-review dl>div{display:flex;gap:5px}.pair-review dd{margin:0;color:#dbe5ef}
+.pair-review p{margin:8px 0;color:#c3cfdb;font:12px/1.5 var(--font)}
+.pair-review-next{padding-left:9px;border-left:2px solid rgba(225,193,110,.5)}
+.pair-review small{display:block;margin-top:9px;color:#9eacbd;font:11px/1.45 var(--font)}
+.pair-review .issuer-evidence-links a{font-size:11px}
 .issuer-contracts{margin-top:7px;color:#aebccd;font:11px/1.45 var(--font)}
 .issuer-contracts summary{cursor:pointer;color:#e1c16e}
 .issuer-contracts ul{margin:5px 0;padding-left:16px;list-style:disc}
@@ -633,6 +644,7 @@ footer .footer-meta{width:100%;display:flex;justify-content:space-between;gap:12
 .outcome-key>div{min-width:0;overflow-wrap:break-word;word-break:normal}
 @media(max-width:620px){.outcome-key{grid-template-columns:repeat(auto-fit,minmax(min(100%,165px),1fr))}}
 @media(max-width:620px){.issuer-evidence-grid{grid-template-columns:1fr}.issuer-evidence-card{padding:9px}.comparison-scope-notice{grid-template-columns:1fr;gap:4px}}
+@media(max-width:620px){.pair-review{padding:10px}.pair-review-head>strong{text-align:left}}
 
 .dated-capture-links{display:flex;align-items:baseline;flex-wrap:wrap;gap:9px 18px;padding:14px 16px;margin:18px 0;border:1px solid var(--line);border-left:2px solid var(--gold);background:var(--panel-inset);color:var(--muted);font:12px/1.5 var(--font)}
 .dated-capture-links strong{flex-basis:100%;color:var(--gold);font:500 12px var(--font);letter-spacing:.1em}

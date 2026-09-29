@@ -17,6 +17,7 @@ run against evidence the product actually produced.
 from __future__ import annotations
 
 import copy
+import hashlib
 import json
 from pathlib import Path
 import sys
@@ -107,6 +108,24 @@ class CaseReceiptTests(unittest.TestCase):
         self.assertTrue(result["comparison_rederived_from_rows"])
         payload["comparison"]["included_crypto_ids"] = []
         with self.assertRaisesRegex(ValueError, "exact routes and exclusion reasons"):
+            verify(payload)
+
+    def test_alphabet_case_binds_its_separate_pair_review_receipt(self):
+        alert = next(item for item in REPLAY["alerts"] if item.get("rwa_id") == 4)
+        payload = receipt_for(alert)
+        review_path = HERE.parent / "site" / "proof" / "alphabet-class-a-pair-review-2026-09-29.json"
+        review = json.loads(review_path.read_text(encoding="utf-8"))
+        payload["pairwise_terms_review"] = {
+            "schema_version": review["schema_version"],
+            "review_id": review["review_id"],
+            "receipt": "proof/alphabet-class-a-pair-review-2026-09-29.json",
+            "receipt_sha256": hashlib.sha256(review_path.read_bytes()).hexdigest(),
+            "relationship": "separately dated review",
+        }
+        result = verify(payload)
+        self.assertTrue(result["pairwise_terms_review_verified"])
+        payload["pairwise_terms_review"]["receipt_sha256"] = "0" * 64
+        with self.assertRaisesRegex(ValueError, "fingerprint does not match"):
             verify(payload)
 
     def test_every_shipped_case_verifies(self):

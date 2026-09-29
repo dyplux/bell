@@ -214,6 +214,18 @@ No wrapper dossier or session review is published for those entries until the se
 publisher completes the work. This is a valid catalogue result, not an API failure or proof that
 the asset has insufficient history.
 
+The Alphabet Class A case has a dated pairwise review for GOOGLX and GOOGLon.
+It records the CMC route rows from the 28 September capture and issuer pages
+checked on 29 September: Ondo states a 1.00 GOOGL share unit, while the checked
+Backed page does not state the current GOOGLX multiplier. The result is to
+withhold a like-for-like price comparison until that unit is established. Open
+the [pair-review receipt](site/proof/alphabet-class-a-pair-review-2026-09-29.json)
+or run `make verify-pair-review` to match its route values and source hash to
+the shipped CMC capture. The linked issuer pages are dated references, not
+archived legal documents; this review does not establish equivalent rights,
+backing, redemption or fair value. A case JSON export includes a fingerprinted
+link to this separate review when its token rows contain both exact CMC IDs.
+
 For a code-first review, use the [public source map](SOURCE-MAP.md). It links the live
 rendering path, receipt publisher, exact CMC endpoints and the credential-free case-receipt
 verifier in one place.

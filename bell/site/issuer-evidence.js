@@ -90,3 +90,24 @@ window.BELL_INSTRUMENT_EVIDENCE = {
     ],
   },
 };
+
+// A focused example of the evidence Bell needs before treating two quotes as
+// like-for-like. Dates distinguish the CMC observation from issuer-page review.
+window.BELL_PAIR_REVIEWS = {
+  '4:37013:38001': {
+    title: 'Alphabet Class A · GOOGLX / GOOGLon',
+    cmcObserved: '28 Sep 2026 · dated case snapshot',
+    termsChecked: '29 Sep 2026',
+    alignment: 'Both issuer product pages identify Alphabet Class A exposure.',
+    gap: 'Backed describes GOOGLX as a tracker certificate and says xStock multipliers can change with corporate actions and dividend reinvestment. Ondo reports 1 GOOGLon = 1.00 GOOGL on its asset page. The reviewed Backed page does not state GOOGLX’s current multiplier, so the pair’s effective units are not established.',
+    decision: 'DO NOT COMPARE AS LIKE-FOR-LIKE',
+    next: 'Retrieve the GOOGLX multiplier and compare the applicable product terms before naming a cheaper route.',
+    sources: [
+      { label: 'CMC paired capture · 28 Sep', url: 'https://bell.dyplux.com/proof/rwa-surface-integrity-capture-2026-09-28.json' },
+      { label: 'Open pair-review JSON receipt', url: 'https://bell.dyplux.com/proof/alphabet-class-a-pair-review-2026-09-29.json' },
+      { label: 'Backed · Alphabet xStock', url: 'https://assets.backed.fi/products/alphabet-xstock' },
+      { label: 'xStocks · dividends and splits', url: 'https://docs.xstocks.fi/docs/dividends-and-stock-splits' },
+      { label: 'Ondo · GOOGLon asset page', url: 'https://app.ondo.finance/assets/googlon' },
+    ],
+  },
+};

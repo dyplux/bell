@@ -22,6 +22,7 @@ would make this refuse honest receipts.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import sys
 import urllib.request
@@ -455,6 +456,30 @@ def verify(payload: Any, against: tuple | None = None) -> dict[str, Any]:
         raise ValueError(
             "the case comparison does not match the exact routes and exclusion reasons "
             "recomputed from its token rows")
+    pair_review_verified = False
+    pair_ref = payload.get("pairwise_terms_review")
+    if pair_ref is not None:
+        if version != "bell.case-receipt.v3" or not isinstance(pair_ref, dict):
+            raise ValueError("pairwise_terms_review requires a v3 receipt object")
+        expected_path = "proof/alphabet-class-a-pair-review-2026-09-29.json"
+        if pair_ref.get("receipt") != expected_path:
+            raise ValueError("pairwise terms review must reference the shipped dated review")
+        if pair_ref.get("review_id") != "alphabet-class-a-googlx-googlon-2026-09-29":
+            raise ValueError("pairwise terms review identity does not match the shipped review")
+        artifact = ROOT / "site" / expected_path
+        digest = hashlib.sha256(artifact.read_bytes()).hexdigest()
+        if pair_ref.get("receipt_sha256") != digest:
+            raise ValueError("pairwise terms review fingerprint does not match the shipped artifact")
+        from verify_pair_review import verify as verify_pair_review
+        checked_pair = verify_pair_review()
+        if checked_pair.get("review") != pair_ref.get("review_id"):
+            raise ValueError("pairwise terms review failed its own source verification")
+        if int(reference.get("rwa_id") or 0) != 4:
+            raise ValueError("pairwise terms review is attached to the wrong RWA reference")
+        available_ids = {str(row.get("crypto_id")) for row in tokens if row.get("crypto_id") is not None}
+        if not {"37013", "38001"}.issubset(available_ids):
+            raise ValueError("pairwise terms review routes are missing from the case token rows")
+        pair_review_verified = True
     return {
         "schema_version": payload["schema_version"],
         "reference": reference.get("name") or reference.get("symbol") or reference.get("rwa_id"),
@@ -463,6 +488,7 @@ def verify(payload: Any, against: tuple | None = None) -> dict[str, Any]:
         "source_hashes": len(payload["source_hashes"]),
         "verdict_rederived_from_rows": (recomputed.get("decision") or {}).get("state"),
         "comparison_rederived_from_rows": comparison_verified,
+        "pairwise_terms_review_verified": pair_review_verified,
         "signals_rederived": sorted(codes_of(recomputed.get("signals")) & ROW_DERIVED_SIGNALS),
         "signals_not_rederived": sorted(CONTEXT_SIGNALS),
         "rows_binding": binding,

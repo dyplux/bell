@@ -6,7 +6,7 @@ credential-free proof for a reviewer who wants to inspect the build quickly.
 ## User-facing route
 
 - `site/index.html` contains the single public product page and its accessible controls
-- `site/integrity.js` loads the dated `/api/integrity` receipt, renders calibrated decisions and exports `bell.case-receipt.v2` with its exact comparison set
+- `site/integrity.js` loads the dated `/api/integrity` receipt, renders calibrated decisions and exports `bell.case-receipt.v3` with its exact comparison set
 - `site/integrity.js` also exports a row-level population attribution CSV with stable reference, token and issuer IDs; positive, missing and non-positive market-cap states stay distinct
 - `site/capital-impact.js` contains the deterministic capital scenario calculation used by the blocked-case panel
 
@@ -16,10 +16,10 @@ credential-free proof for a reviewer who wants to inspect the build quickly.
 - `population_attribution()` reconciles positive token-level market caps with CMC's asset-level `tokenized_market_cap` field and computes issuer concentration without converting missing values to zero
 - `rule_calibration()` publishes the observed population around Bell's 2x dispersion and 10x denomination boundaries, so the thresholds can be inspected rather than treated as unexplained constants
 - `integrity_publisher.py` publishes only the normalized credential-free receipt
-### The 10 verifiers, and why each one exists
+### The 11 verifiers, and why each one exists
 
-10 scripts whose names all start with `verify_` invites a fair question: is
-this one job split 10 ways? Each answers a different question, about a
+11 scripts whose names all start with `verify_` invites a fair question: is
+this one job split 11 ways? Each answers a different question, about a
 different artefact, for a different reader. Two that did not are gone — one
 duplicated the documentation-link check that already runs inside `make check`,
 and one audited the same public endpoint as `verify_public_surface.py` with a
@@ -30,6 +30,7 @@ different set of assertions, so neither was the answer to "how do I check this".
 | `verify_integrity_receipt.py` | does the published receipt recompute from the shipped inputs? | committed inputs + receipt | nothing |
 | `verify_catalogue_receipt.py` | does the dated map snapshot match its refresh record? | committed catalogue | nothing |
 | `verify_case_receipt.py` | does this downloaded case follow from its own rows, and are those the published rows? | a file the reader supplies | nothing |
+| `verify_pair_review.py` | does the dated Alphabet pair-review match its exact CMC rows and capture fingerprint? | pair-review JSON + shipped CMC capture | nothing |
 | `verify_rule_boundaries.py` | do the coded thresholds behave as the page claims? | the rules themselves | nothing |
 | `verify_demo_manifest.py` | does the demo do what the demo script says? | committed manifest | nothing |
 | `verify_submission.py` | is anything private or unreleasable about to ship? | the tree | nothing |
@@ -38,7 +39,7 @@ different set of assertions, so neither was the answer to "how do I check this".
 | `verify_deployment_matches.py` | is the deployed site the same bytes as this commit? | `bell.dyplux.com` | network |
 | `verify_tests_assert.py` | did every test actually check something? | this suite | nothing |
 
-Seven need no network and no key. Three leave the machine, and all three run
+Eight need no network and no key. Three leave the machine, and all three run
 without credentials.
 
 - `verify_integrity_receipt.py` recomputes the public population summary from committed normalized inputs
@@ -97,6 +98,7 @@ From the repository root:
 ```sh
 python3 bell/verify_integrity_receipt.py
 python3 bell/verify_catalogue_receipt.py
+python3 bell/verify_pair_review.py
 python3 bell/verify_case_receipt.py /path/to/downloaded-case-receipt.json \
   --against https://bell.dyplux.com/api/integrity
 python3 bell/verify_rule_boundaries.py
@@ -118,6 +120,11 @@ that 10x is an inclusive comparison stop, that a single representation does not
 produce a wrapper ranking, that missing or zero prices do not create a ratio, and
 that unresolved versus resolved `crypto_id` joins remain visible, including
 chain and contract fields.
+
+`verify_pair_review.py` checks the GOOGLX/GOOGLon pair-review artifact against
+the dated 28 September CMC capture. It confirms the exact two `crypto_id` rows,
+their observed values and the capture's SHA-256. It does not archive or verify
+the issuer pages linked by the review.
 
 ## What is evidence and what is not
 
