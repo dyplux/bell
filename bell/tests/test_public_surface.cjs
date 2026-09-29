@@ -45,8 +45,8 @@ test('dated pair review appears with the searched case and its export points to 
   assert.match(integrity, /class="pair-review-details"/,
     'secondary dates and methodology must be available through native disclosure');
   assert.match(issuerEvidence, /summary: 'Same Alphabet Class A reference, but quote units remain unresolved/);
-  assert.match(page, /id="hero-search-form"[\s\S]*?<small>Search a reference[\s\S]*?<div id="search-result"[\s\S]*?<div class="quick-search"/,
-    'the answer should render directly below search help and before example and glossary blocks');
+  assert.match(page, /id="hero-search-form"[\s\S]*?<small>Search a reference[^<]*<\/small>\s*<\/form>\s*<div id="search-result"[\s\S]*?<div class="quick-search"/,
+    'the answer should render below the search control, outside its native form validation, and before examples');
   assert.match(page, /class="hero-search-control"/);
   assert.match(integrityCss, /\.hero-search-control\{display:flex/);
   assert.doesNotMatch(integrityCss, /\.hero-search>div\{display:flex/,

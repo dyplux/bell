@@ -101,6 +101,10 @@ def main() -> int:
             desktop = browser.new_context(
                 viewport={"width": 1440, "height": 1100},
                 permissions=["clipboard-read", "clipboard-write"],
+                # Search intentionally moves the evidence card into view. The
+                # page honors this preference so repeated checks do not race a
+                # multi-second smooth-scroll animation in headless Chromium.
+                reduced_motion="reduce",
             )
             page = desktop.new_page()
             # The two heaviest things this page can fetch are the receipt and
@@ -297,12 +301,30 @@ def main() -> int:
                 return expected_states.get(item.get("state"), "REFERENCE ONLY")
 
             def search_and_check(name: str) -> str:
+                # Prior actions can leave Chromium far down the long review
+                # page. The search is in the sticky-header overlap when it
+                # minimally scrolls the input into view, so return to the
+                # primary task controls before submitting the next example.
+                page.evaluate("window.scrollTo(0, 0)")
+                require(not page.locator("#hero-search-form").evaluate(
+                    "form => form.contains(document.querySelector('#search-result'))"),
+                    "the live search result was nested in the search form; its capital inputs can block later submissions")
                 page.locator("#hero-search").fill(name)
+                require(page.locator("#hero-search-form").evaluate("form => form.checkValidity()"),
+                        f"the search form has an invalid child control before submitting {name}")
                 page.locator("#hero-search-form button[type=submit]").click()
                 result = page.locator("#search-result")
                 result.wait_for(state="visible", timeout=30_000)
                 result_text = result.inner_text()
+                # Visibility alone can still be true for the previous query.
+                # In particular, the page scrolls smoothly after each search;
+                # without reduced motion an immediate next click may land while
+                # that scroll is still in progress and leave a stale result on
+                # screen. Require the displayed case to match this query.
                 expected = expected_for(name)
+                expected_name = (matched_item or {}).get("name")
+                require(bool(expected_name) and str(expected_name).lower() in result_text.lower(),
+                        f"{name} left a stale or mismatched search result: {result_text[:300]!r}")
                 require(expected in result_text, f"{name} did not mirror receipt state {expected!r}: {result_text[:500]!r}")
                 observed_stamp = str(receipt.get("observed_at") or "").replace("T", " ")[:16]
                 require(f"RECEIPT OBSERVED · {observed_stamp} UTC" in result_text,

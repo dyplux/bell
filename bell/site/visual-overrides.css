@@ -296,8 +296,8 @@ footer{max-width:2200px;padding-left:64px;padding-right:64px;font-size:13px}
 
 /* The route definitions remain available without dominating the search. */
 .outcome-key{display:block;max-width:600px;margin-top:13px}
-.hero-search>.quick-search{border:0;background:transparent;padding:0}
-.hero-search>.outcome-key{display:block!important;max-width:600px;border:0;background:transparent;padding:0}
+.hero>div:first-of-type>.quick-search{border:0;background:transparent;padding:0}
+.hero>div:first-of-type>.outcome-key{display:block!important;max-width:600px;border:0;background:transparent;padding:0}
 .outcome-key>span{display:inline;color:var(--gold);font-size:11px;margin-right:9px}
 .outcome-key>details{display:inline}
 .outcome-key>details[open]{display:block}
@@ -500,8 +500,8 @@ footer .footer-meta{width:100%;display:flex;justify-content:space-between;gap:12
    Every child needs an explicit order. A flex child without one defaults to 0,
    so the first version of this rule silently hoisted the four-step task panel
    above the headline - a reader met a checklist before learning what the page
-   was for. The search result now belongs to the form, directly after its
-   helper line, so it cannot float above the question. Unlisted children land
+   was for. The search result follows the form directly and stays above its
+   examples, outside native form validation. Unlisted children land
    at the end rather than the top. */
 @media(max-width:620px){
   .hero>div:first-of-type{display:flex;flex-direction:column}
