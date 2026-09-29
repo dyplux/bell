@@ -890,7 +890,7 @@ function runFromSource(name, deps = {}) {
   return new Function(...names, `return ${src.slice(at, end + 1)}`)(...names.map(k => deps[k]));
 }
 
-function runWorkspaceFromSource(name) {
+function runWorkspaceFromSource(name, deps = {}) {
   const src = fs.readFileSync(path.join(site, 'workspace.js'), 'utf8');
   const at = src.indexOf(`function ${name}(`);
   assert.ok(at > 0, `${name} no longer exists in workspace.js`);
@@ -899,12 +899,14 @@ function runWorkspaceFromSource(name) {
     if (src[i] === '{') depth++;
     else if (src[i] === '}' && --depth === 0) { end = i; break; }
   }
-  return new Function(`return ${src.slice(at, end + 1)}`)();
+  const names = Object.keys(deps);
+  return new Function(...names, `return ${src.slice(at, end + 1)}`)(...names.map(key => deps[key]));
 }
 
 test('workspace labels the published decision and marks its exact comparison rows', () => {
   const label = runWorkspaceFromSource('displayDecisionLabel');
   const membership = runWorkspaceFromSource('comparisonMembership');
+  const counts = runWorkspaceFromSource('comparisonCounts', { comparisonMembership: membership });
   assert.equal(label({ state: 'no_flags', token_count: 6, comparison: { route_count: 6 } }), 'COMPARABLE');
   assert.equal(label({ state: 'investigate', token_count: 3, comparison: { route_count: 2 } }), 'COMPARABLE · FLAGGED');
   assert.equal(label({ state: 'do_not_compare', decision: { state: 'blocked' }, token_count: 4,
@@ -915,6 +917,10 @@ test('workspace labels the published decision and marks its exact comparison row
   assert.deepEqual(membership({ comparison: { included_crypto_ids: [101], excluded_crypto_ids: [
     { crypto_id: 202, reasons: ['derivative_label'] },
   ] } }, { crypto_id: 202 }), { label: 'Excluded', reason: 'derivative label' });
+  assert.deepEqual(counts({
+    representations: [{ crypto_id: 101 }, { crypto_id: 202 }, { crypto_id: 303 }],
+    comparison: { routes: [{ crypto_id: 101 }], included_crypto_ids: [101] },
+  }), { included: 1, excluded: 2 });
 });
 
 test('the public label follows the decision, executed not grepped', () => {

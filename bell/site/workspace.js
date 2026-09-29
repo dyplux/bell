@@ -66,6 +66,16 @@
     return { label: 'Excluded', reason: reasons.join(', ') || 'Not in the published comparison set' };
   }
 
+  function comparisonCounts(entry) {
+    const counts = { included: 0, excluded: 0 };
+    if (!entry?.comparison) return counts;
+    for (const row of entry.representations || []) {
+      const membership = comparisonMembership(entry, row);
+      counts[membership.label === 'Included' ? 'included' : 'excluded']++;
+    }
+    return counts;
+  }
+
   function freshnessLabel(pub) {
     const observed = new Date(pub.observed_at);
     const shown = Number.isNaN(observed.getTime()) ? pub.observed_at : observed.toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'UTC', timeZoneName: 'short' });
@@ -125,15 +135,13 @@
     }).join('');
     const date = receipt?._publication?.observed_at || receipt?.observed_at;
     const dateText = date ? new Date(date).toISOString().replace('T', ' ').slice(0, 16) + ' UTC' : 'dated receipt';
-    const includedCount = entry.comparison?.included_crypto_ids?.length
-      ?? entry.comparison?.routes?.length ?? 0;
-    const excludedCount = entry.comparison?.excluded_crypto_ids?.length ?? 0;
+    const { included: includedCount, excluded: excludedCount } = comparisonCounts(entry);
     const decisionCopy = entry.decision?.consequence || nextSteps[entry.state]
       || 'Inspect the published reference fields and keep each unverified claim open.';
     result.innerHTML = `<article class="review-result">
       <div class="verdict" data-state="${escapeHTML(entry.state)}"><span class="section-label">CMC RWA #${escapeHTML(entry.rwa_id)} · ${escapeHTML(entry.asset_type || 'reference')}</span><h3>${escapeHTML(route)}</h3><p>${escapeHTML(decisionCopy)}</p><p class="limits">A route through reported fields. It is not a backing or liquidity assessment.</p></div>
       <div><div class="result-data"><div><strong>${number(entry.token_count)}</strong><span>representations</span></div><div><strong>${number(entry.issuer_count)}</strong><span>issuer labels</span></div><div><strong>${comparison ? Number(comparison.spread_bps).toFixed(1) + ' bp' : '—'}</strong><span>observed spread</span></div></div><ul class="finding-list">${findings || '<li>No coded warning in this receipt</li>'}</ul></div>
-      <section class="representation-table"><header><h4>REPRESENTATION ROWS</h4><span>${escapeHTML(compLine)}${comparison ? ` · ${includedCount} included / ${excludedCount} excluded` : ''}</span></header><table><thead><tr><th>Token / row</th><th>Comparison set</th><th>Issuer field</th><th>Quote</th><th>Market cap</th><th>24h volume</th></tr></thead><tbody>${rows}</tbody></table></section>
+      <section class="representation-table"><header><h4>REPRESENTATION ROWS</h4><span>${escapeHTML(compLine)}${comparison ? ` · ${includedCount} rows included / ${excludedCount} rows excluded` : ''}</span></header><table><thead><tr><th>Token / row</th><th>Comparison set</th><th>Issuer field</th><th>Quote</th><th>Market cap</th><th>24h volume</th></tr></thead><tbody>${rows}</tbody></table></section>
       <div class="review-next"><strong>NEXT DILIGENCE</strong><span>${escapeHTML(entry.next_action || nextSteps[entry.state] || 'Keep unobserved claims open and inspect the issuer evidence.')}</span></div>
       <a class="evidence-link" href="/?reference=${encodeURIComponent(entry.rwa_id)}#decision">Open full Bell evidence and case receipt ↗</a>
     </article>`;
