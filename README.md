@@ -1,7 +1,7 @@
 # Bell - RWA Surface Integrity
 
-Bell turns CoinMarketCap RWA discovery into an evidence gate for the question
-that matters before a shortlist: can these representations be compared at all?
+Bell turns CoinMarketCap RWA discovery into a pre-shortlist check: which
+representations pass its reported-price filters, and what still needs review?
 
 ## At a glance
 
@@ -12,7 +12,7 @@ that matters before a shortlist: can these representations be compared at all?
 | **BUIDL logo** | [`bell/site/assets/buidl-logo-480.png`](bell/site/assets/buidl-logo-480.png) - 480 × 480 PNG of Bell's wordmark; the vector source is beside it |
 | **Track** | Build with CMC API, Real World Assets. MIT licence |
 | **Local interface** | `make app` - visual workspace, local agent API, and optional own CMC key |
-| **Whole-catalogue base rate · 21 Sep** | Of the 244 references carrying more than one representation, **87 have a cheapest route worth naming**. The 157 refusals produced 158 rule hits: 107 missing-coverage reasons, 38 price or field review triggers, and 13 cases with fewer than two eligible spot routes. Review triggers are not proof of economic contradiction |
+| **Whole-catalogue base rate · 21 Sep** | In that dated capture, 87 of the 244 references carrying more than one representation had a filtered quote comparison. The other 157 were routed to review and produced 158 rule hits: 107 missing-coverage reasons, 38 price or field review triggers, and 13 cases with fewer than two eligible spot routes. A review trigger is not proof of economic contradiction |
 | **Run it yourself** | `git clone https://github.com/dyplux/bell.git && cd bell && make app` - local visual workspace at `http://127.0.0.1:8080/workspace.html`; no API key or install required for dated evidence. `make base-rate` reproduces the keyless population calculation |
 | **Verify the whole thing** | `make check-offline` - 565 tests, observed between 17.71 and 25.35 seconds across 2 machines. No credentials or network required. It verifies the historical 21 Sep replay and recomputes the complete 28 Sep capture from its shipped, credential-free inputs. Of the 24 dated observations in the population history, 2 ship their full payload. One has its state distribution compared against the receipt; the other is UNVERIFIED on that split because it predates the current rule set. The separate 28 Sep capture is fully recomputable with `make verify-capture`. The rest of the history entries are published summaries |
 | **Rules as an executable spec** | `python3 bell/verify_rule_boundaries.py` - 0.2s, 8 boundary checks, no network |
@@ -24,7 +24,7 @@ that matters before a shortlist: can these representations be compared at all?
 Bell joins CMC RWA references, token rows, quotes, metadata and issuers through
 stable identifiers, then routes each reference into the honest workflow:
 
-- `COMPARABLE, NOT ENDORSED` when routes under one CMC RWA reference pass Bell's
+- `COMPARABLE` (a filtered quote comparison, not an endorsement) when routes under one CMC RWA reference pass Bell's
   price and reported-volume filters. This does not establish equivalent units
   or claims. Bell names the observed spread, the cheapest route and which route
   has the highest reported 24h volume; that volume is not market depth.
@@ -44,7 +44,7 @@ quote rows exist, Bell shows the observed quote band, each row's distance from
 the observed median and the reported 24-hour volume state. These are evidence
 fields, not a discount, fair-value, liquidity or execution claim.
 
-## How often is a comparison safe at all?
+## What did the historical filter observe?
 
 A monitor that refuses is only worth reading if you know how often it refuses,
 so the rate is measured over the whole catalogue rather than argued from
@@ -106,8 +106,8 @@ dated package is a separate observation, not a conflicting version of the same d
 The live receipt exposes observation time, publication time, freshness state, rule
 evidence and source fingerprints without exposing the CMC credential.
 
-CMC provides the discovery surfaces. Bell adds the join logic, contradiction
-checks, missing-versus-zero handling, next action and replayable evidence path.
+CMC provides the discovery surfaces. Bell adds stable-ID joins, reported-field
+review triggers, missing-versus-zero handling, next action and a replayable evidence path.
 The result is a research handoff rather than another RWA leaderboard: the user
 gets a decision state, the rows that produced it and the next unresolved check.
 Each selected case can also be exported as a compact `bell.case-receipt.v1`

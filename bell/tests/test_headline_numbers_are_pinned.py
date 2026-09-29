@@ -95,7 +95,12 @@ class HeadlineNumbersArePinned(unittest.TestCase):
         # Outside the fenced block, which is the only part the older test read.
         body = readme_text()
         body = flowed(body)
-        self.assertIn(f"**{BASE_RATE['comparable']} have a cheapest route worth naming**", body)
+        self.assertIn(
+            f"In that dated capture, {BASE_RATE['comparable']} of the "
+            f"{BASE_RATE['denominator_two_or_more_representations']} references carrying more "
+            "than one representation had a filtered quote comparison",
+            body,
+        )
         # The README row led with the refusal total too. Both halves of it are
         # pinned here for the same reason the judge page's are.
         split = BASE_RATE["refusal_split"]
@@ -103,8 +108,11 @@ class HeadlineNumbersArePinned(unittest.TestCase):
         self.assertIn(f"{split['data_review']} price or field review triggers", body)
         self.assertIn(f"{split['source_coverage']} missing-coverage reasons", body)
         self.assertIn(f"{split['not_applicable']} no-pair reasons mean", body)
-        self.assertIn(f"Of the {BASE_RATE['denominator_two_or_more_representations']} references",
-                      body)
+        self.assertIn(
+            f"{BASE_RATE['denominator_two_or_more_representations']} references carrying more "
+            "than one representation",
+            body,
+        )
 
     def test_the_catalogue_reconciliation_states_the_receipt_s_own_figures(self):
         page = judge_text()

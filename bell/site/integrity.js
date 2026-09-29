@@ -830,12 +830,9 @@
       const measuredOn = new Date(r.observed_at).toLocaleDateString('en-GB', {
         day: 'numeric', month: 'long'
       });
-      // The headline figure is the dated measurement, and the index on the same
-      // page renders today's. A reviewer found 87 in the hero and 75 in the
-      // filter 400px below it, both correct, both labelled, and nobody reading
-      // top to bottom would know they were different questions asked a week
-      // apart. So the live count stands beside the dated one, in the headline
-      // itself, whenever the loaded receipt disagrees with it.
+      // Keep one observation in the first screen. Historical base-rate counts
+      // remain available below as a dated, expandable note rather than competing
+      // with the live receipt in the headline.
       const liveComparable = (receipt?.alert_index || []).filter(item => item?.comparison).length;
       const receiptDate = receipt?.observed_at ? new Date(receipt.observed_at) : null;
       const receiptStamp = receiptDate && Number.isFinite(receiptDate.getTime())
@@ -844,13 +841,9 @@
           timeZone: 'UTC'
         }) + ' UTC'
         : 'the loaded receipt';
-      const liveNote = (liveComparable && liveComparable !== r.comparable)
-        ? `<span class="finding-live">${liveComparable.toLocaleString()} in receipt observed ${receiptStamp}</span>`
-        : '';
-      headline.innerHTML = `<strong>${r.comparable.toLocaleString()}</strong> tokenised assets have a `
-        + `<em>cheapest route worth naming</em>${liveNote}<br>`
-        + `<span class="finding-counter">${r.refused.toLocaleString()} of the ${n.toLocaleString()} `
-        + `references are refused. Most rule hits reflect missing source coverage; data-review triggers are not proof of economic conflict</span>`;
+      headline.innerHTML = `<strong>${liveComparable.toLocaleString()}</strong> references have a `
+        + `<em>filtered quote comparison</em><br>`
+        + `<span class="finding-counter">Current CMC receipt observed ${receiptStamp}. Price and reported-volume filters pass; equivalent units, claims and executable markets are not established.</span>`;
       const measurementDetail = `Measured on ${measuredOn} over the whole catalogue, not a sample: `
         + `<strong>${r.population.toLocaleString()}</strong> references, of which `
         + `<strong>${r.excluded_single_representation.toLocaleString()}</strong> carry a single representation `
@@ -862,8 +855,9 @@
           + `<strong>${dataReview.toLocaleString()}</strong> price or field review triggers, and `
           + `<strong>${noPair.toLocaleString()}</strong> with fewer than two eligible spot routes.`
           + (unclassified ? ` ${unclassified} remain unclassified.` : '') : '');
-      lede.innerHTML = `<strong>${r.refused.toLocaleString()} of ${n.toLocaleString()} multi-wrapper references refused (${pct}%).</strong>`
-        + `<details class="finding-methodology"><summary>Measurement and refusal reasons</summary>`
+      lede.innerHTML = `<strong>${r.refused.toLocaleString()} of ${n.toLocaleString()} multi-wrapper references were refused (${pct}%).</strong> `
+        + `This is a separate, historical population measurement, not today's receipt. `
+        + `<details class="finding-methodology"><summary>Denominator and refusal reasons</summary>`
         + `<p>${measurementDetail}</p></details>`;
     } catch (error) {
       // Say what is missing rather than leaving a number-shaped hole - and
@@ -1538,10 +1532,12 @@
     const comparisonTitle = alphabetScope?.included
       ? 'CMC-GROUPED QUOTE SPREAD · CLASS A + C'
       : 'FILTERED PRICE COMPARISON';
-    const comparisonScope = alphabetScope?.included
-      ? '<p class="comparison-limits">This CMC-grouped spread includes Alphabet Class A and Class C routes. It is not a same-share-class spread.</p>'
+    const routeNotes = c.routes.filter(route => window.BELL_INSTRUMENT_EVIDENCE?.[String(route.crypto_id)]).length;
+    const unitScope = alphabetScope?.included
+      ? `CMC groups Class A and Class C routes here; this is not a same-share-class spread. `
       : '';
-    return `<div class="comparison-block"><span class="comparison-scroll-hint">SWIPE FOR PRICE · VS CHEAPEST · SHARE OF VOLUME →</span><div class="comparison-head"><span>${comparisonTitle}</span><strong>${Number(c.spread_bps).toFixed(1)} bps</strong><small>${c.route_count} token routes under this CMC RWA reference</small></div>${comparisonScope}<p class="comparison-fill">${fill}</p><table class="comparison-table"><thead><tr><th>route</th><th>issuer</th><th class="num">price</th><th class="num">vs cheapest</th><th class="num">share of volume</th></tr></thead><tbody>${rows}</tbody></table>${issuerEvidenceMarkup(item, c.routes)}${routeSetDetails}${open}<p class="comparison-limits">A price comparison of the representations CoinMarketCap returned. Equivalent units and claims are not established. ${NOT_OBSERVED_SHORT}</p></div>`;
+    const scopeNotice = `<aside class="comparison-scope-notice"><span>TERMS CHECK · BEFORE THE QUOTE</span><p><strong>Equivalent units and claims are not established.</strong> ${unitScope}${routeNotes} of ${c.routes.length} included routes have token-specific issuer-source notes. Those notes describe published terms; they do not verify rights or backing.</p></aside>`;
+    return `<div class="comparison-block"><span class="comparison-scroll-hint">SWIPE FOR PRICE · VS CHEAPEST · SHARE OF VOLUME →</span>${scopeNotice}<div class="comparison-head"><span>${comparisonTitle}</span><strong>${Number(c.spread_bps).toFixed(1)} bps</strong><small>${c.route_count} token routes under this CMC RWA reference</small></div><p class="comparison-fill">${fill}</p><table class="comparison-table"><thead><tr><th>route</th><th>issuer</th><th class="num">price</th><th class="num">vs cheapest</th><th class="num">share of volume</th></tr></thead><tbody>${rows}</tbody></table>${issuerEvidenceMarkup(item, c.routes)}${routeSetDetails}${open}<p class="comparison-limits">Observed CMC price and reported-volume fields are not execution, depth, backing or redemption evidence. ${NOT_OBSERVED_SHORT}</p></div>`;
   }
 
   function comparisonRouteSet(item) {

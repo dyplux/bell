@@ -7,7 +7,7 @@ No API key, no account, no network. It reads the receipt this repository ships,
 re-derives every number it prints from that receipt, and shows both halves of the
 product on one screen:
 
-  the refusal  - references whose representations cannot honestly be compared,
+  the refusal  - references withheld from a filtered quote comparison,
                  and the coded rule that blocked each one
   the answer   - references that clear every rule, with the comparison actually
                  performed: cheapest route, spread, and whether the cheapest is

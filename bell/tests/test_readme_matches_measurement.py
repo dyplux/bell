@@ -80,7 +80,7 @@ class ReadmeMatchesTheMeasurement(unittest.TestCase):
     def test_the_readme_states_the_affirmative_decision(self):
         # The monitor can say yes. If that disappears from the front page, the
         # product reads as a gate with no door again.
-        self.assertIn('COMPARABLE, NOT ENDORSED', self.text)
+        self.assertIn('COMPARABLE` (a filtered quote comparison, not an endorsement)', self.text)
 
 
 class ApiFeedbackMatchesTheReceipt(unittest.TestCase):

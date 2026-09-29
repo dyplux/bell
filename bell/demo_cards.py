@@ -29,7 +29,7 @@ CARDS = [
      f"{R['representations']} representations"),
     ('Start from the asset you are researching',
      'No account, no key, no trading signal'),
-    ('A contradiction between two published surfaces,\nnot a discount and not fraud',
+    ('A reported-field review trigger,\nnot a discount and not fraud',
      'Route: DO NOT SHORTLIST · read from the receipt, not from this video'),
     ('The shape of the whole scan,\nnot one hand-picked case',
      None),

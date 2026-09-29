@@ -113,7 +113,7 @@ class ComparisonRespectsTheVersion(unittest.TestCase):
         # off, so two lines of JSON rewrote a whole distribution through a green
         # gate. The publisher stamps RULES_VERSION or nothing; anything else is
         # an edit.
-        for declared in ("bell.rules.v1", "bell.rules.v3", "anything"):
+        for declared in ("bell.rules.v1", "bell.rules.v2.1", "bell.rules.v4", "anything"):
             with self.subTest(declared=declared), self.assertRaises(ValueError) as raised:
                 verify_observation(
                     observation({"do_not_compare": 1, "investigate": 2, "no_flags": 7}),

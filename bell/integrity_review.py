@@ -63,7 +63,7 @@ def render(result: dict) -> str:
     lines += [
         "",
         "Decision rule:",
-        "Do not compare or rank wrappers until identity, denomination and market-data contradictions are resolved.",
+        "Keep wrappers out of the filtered quote comparison until identity, denomination and reported-field review is complete.",
         "",
         f"Receipt hash: {receipt_hash(result)}",
         "CMC fields are observations. This monitor does not prove backing, redemption, legal eligibility or executable liquidity.",

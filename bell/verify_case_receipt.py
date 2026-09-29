@@ -32,7 +32,9 @@ ROOT = Path(__file__).resolve().parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from rwa_integrity import asset_scan
+from rwa_integrity import RULES_VERSION, asset_scan
+
+LEGACY_TEXT_RULES_VERSION = "bell.rules.v2"
 
 # Signals that are a function of the token rows in the receipt and nothing else,
 # so they can be recomputed from the receipt alone. Measured against the
@@ -262,7 +264,25 @@ def rederive(payload: dict) -> dict:
     # The engine writes the public decision block itself, so it is compared
     # directly rather than through a mapping written here. A second copy of the
     # vocabulary in this file would be a second thing to drift.
-    expected = recomputed.get("decision") or {}
+    expected = dict(recomputed.get("decision") or {})
+    ruleset = payload.get("ruleset")
+    if ruleset == LEGACY_TEXT_RULES_VERSION:
+        if expected.get("state") == "blocked":
+            single = len(payload["tokens"]) == 1
+            expected["consequence"] = (
+                "This reference has one representation and that row contradicts itself, so "
+                "there is nothing here to compare and nothing to rank. Resolve the "
+                "contradiction before treating the row as a price."
+                if single else
+                "A research desk must not rank or substitute these representations until the contradiction is resolved."
+            )
+            expected["allocation_effect"] = (
+                "NO WRAPPER SELECTED until the row's own market state is cleared."
+                if single else
+                "NO WRAPPER SELECTED until identity, denomination and market state are cleared."
+            )
+    elif ruleset not in {None, RULES_VERSION}:
+        raise ValueError(f"unsupported ruleset for case re-derivation: {ruleset!r}")
     for field in ("state", "label", "consequence", "allocation_effect"):
         if decision.get(field) != expected.get(field):
             raise ValueError(
@@ -409,12 +429,6 @@ def verify(payload: Any, against: tuple | None = None) -> dict[str, Any]:
             raise ValueError(
                 f"source_hashes.{name} is {digest[0] * 4}...: a single repeated character is a "
                 "placeholder, not the fingerprint of a payload")
-    recomputed = rederive(payload)
-    comparison_verified = version in {"bell.case-receipt.v2", "bell.case-receipt.v3"}
-    if comparison_verified and payload.get("comparison") != recomputed.get("comparison"):
-        raise ValueError(
-            "the case comparison does not match the exact routes and exclusion reasons "
-            "recomputed from its token rows")
     published, published_name = against if against else find_published(payload)
     if published is None:
         binding = ("not bound: no receipt in this repository carries these source fingerprints, "
@@ -428,6 +442,19 @@ def verify(payload: Any, against: tuple | None = None) -> dict[str, Any]:
             binding = f"bound to {published_name}"
         except LookupError as reason:
             binding = f"not bound to {published_name}: {reason}"
+
+    derivation_payload = payload
+    if not payload.get("ruleset") and published:
+        # v1 case receipts predate the explicit ruleset field. When bound to a
+        # dated population receipt, re-derive with the version that produced
+        # that exact capture instead of applying today's copy to old evidence.
+        derivation_payload = {**payload, "ruleset": published.get("universe", {}).get("rules_version")}
+    recomputed = rederive(derivation_payload)
+    comparison_verified = version in {"bell.case-receipt.v2", "bell.case-receipt.v3"}
+    if comparison_verified and payload.get("comparison") != recomputed.get("comparison"):
+        raise ValueError(
+            "the case comparison does not match the exact routes and exclusion reasons "
+            "recomputed from its token rows")
     return {
         "schema_version": payload["schema_version"],
         "reference": reference.get("name") or reference.get("symbol") or reference.get("rwa_id"),

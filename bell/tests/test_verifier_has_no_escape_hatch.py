@@ -81,7 +81,7 @@ class Forgery(unittest.TestCase):
         # never stamped by any publisher in this tree - and rewrote the whole
         # distribution through a green 306-test gate. One value of a field is
         # not the field, so every value that is not the current one is tried.
-        for declared in ("bell.rules.v1", "bell.rules.v2.1", "bell.rules.v3", ""):
+        for declared in ("bell.rules.v1", "bell.rules.v2.1", "bell.rules.v4", ""):
             receipt = copy.deepcopy(self.dated)
             receipt["universe"]["states"] = {"do_not_compare": 0, "investigate": 0,
                                              "no_flags": 790}

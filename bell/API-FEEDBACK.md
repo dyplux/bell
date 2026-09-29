@@ -53,19 +53,20 @@ says so on the page.
 **Suggested fix:** nothing in the payload; document that absence is expected at
 this scale so integrators do not read it as a zero.
 
-## 4. Positive 24h volume alongside a zero market cap
+## 4. Positive 24h volume alongside a zero reported market cap
 
-32 references carry at least one representation reporting real traded volume and
-a market cap of exactly `0` — not `null`, which would mean unknown, but zero.
-Two fields on the same row contradict each other, and a consumer has no way to
-tell which is authoritative.
+32 references carry at least one representation with positive reported 24h
+volume and a market-cap field of exactly `0` — not `null`, which is missing.
+The pair warrants checking the field definitions and source state, but these two
+values alone do not establish an economic contradiction or identify which field
+is authoritative.
 
 Example from the capture: Kinesis Silver (`KAG`, crypto_id 24439) prints
 `market_cap: 0` with `volume_24h: 109,159.66`.
 
-Bell treats this as critical and refuses to compare through it, because ranking
-a wrapper on a market cap that the volume field contradicts is exactly the
-mistake the product exists to prevent.
+Bell routes this pattern to review and blocks it from the filtered quote
+comparison until checked. This is a conservative response to ambiguous reported
+fields, not a claim that the market itself is contradictory.
 
 ## 5. One symbol, more than one instrument
 
@@ -166,7 +167,7 @@ Receipt of 21 September 2026: 791 tokenised references, 1,435 representations.
 | Missing market fields | 646 | info | reported, does not decide a verdict |
 | Derivative mixed with spot-like wrappers | 119 | warning | separate instrument types |
 | Symbol collision | 60 | warning | resolve identity before using the ticker |
-| Positive volume with zero market cap | 32 | critical | do not compare through the contradiction |
+| Positive volume with zero market cap | 32 | critical review route | verify the reported fields before relying on the quote |
 | No tracked TradFi market | 13 | info | underlying relationship left unresolved |
 | Price denomination break | 4 | critical | check units, decimals and wrapper claims |
 | Missing token information | 4 | warning | resolve chain and contract identity |

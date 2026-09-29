@@ -98,7 +98,7 @@ Generated from the credential-free public receipt. Read this file immediately be
 
 ## Narration boundary
 
-Say that Bell observed a contradiction and routes the user to diligence. Do not call the spread a discount, parity gap, fraud finding, executable saving or investment recommendation.
+Say that Bell observed quote and reported-field conditions and routes the user to diligence. Do not call the spread a discount, parity gap, fraud finding, executable saving or investment recommendation.
 """
 
 

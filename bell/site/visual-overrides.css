@@ -1,5 +1,10 @@
 /* Product-scale pass: readable on large screens and usable on touch screens */
 .hero-proof{margin-top:0}
+/* Keep the frozen base-rate context available without competing with the live receipt. */
+.historical-base-rate{margin-top:14px;color:var(--muted);font:12px var(--font)}
+.historical-base-rate>summary{cursor:pointer;color:var(--link);text-underline-offset:3px}
+.historical-base-rate[open]{max-width:760px;padding:12px 14px;border-left:2px solid var(--line);background:var(--panel-inset)}
+.historical-base-rate .lede{font:13px/1.6 Arial,sans-serif;margin:10px 0 0}
 .concentration-definition{display:block;color:#718095;font-size:12px;line-height:1.5;margin-top:9px}
 .watchlist-panel{border:1px solid var(--line);background:var(--panel);padding:20px 22px;margin:20px 0 0}.watchlist-panel[hidden]{display:none}.watchlist-head{display:flex;justify-content:space-between;align-items:end;gap:16px}.watchlist-head h3{font:500 21px/1.15 var(--font);letter-spacing:-.04em;margin:10px 0 0}.watchlist-head>span{color:var(--muted);font:12px var(--font);white-space:nowrap}.watchlist-panel>p{color:var(--muted);font-size:13px;line-height:1.5;margin:14px 0 6px}.watchlist-row{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:18px;border-top:1px solid var(--line);padding:12px 0}.watchlist-row strong{display:block;font:500 14px var(--font)}.watchlist-row small{display:block;color:var(--muted);font-size:12px;margin-top:4px}.watchlist-state{font:12px var(--font);letter-spacing:.08em;color:var(--muted)}.watchlist-state.changed{color:var(--gold)}.watch-button,.watch-remove{border:1px solid var(--line);background:transparent;color:var(--muted);font:12px var(--font);padding:7px 9px;cursor:pointer}.watch-button:hover,.watch-button.is-watched{border-color:var(--gold);color:var(--gold)}.watch-remove{font-size:12px;padding:6px 8px}
 .reference-concentration-panel{border:1px solid var(--line);border-left:2px solid var(--gold);background:var(--panel-inset);padding:18px 20px;margin-top:16px}.reference-concentration-head{display:flex;justify-content:space-between;align-items:baseline;gap:14px;color:var(--muted);font:12px var(--font);letter-spacing:.11em}.reference-concentration-head b{color:var(--gold);font-weight:500;white-space:nowrap}.reference-concentration-panel h4{font:500 19px/1.2 var(--font);letter-spacing:-.035em;margin:12px 0 16px}.reference-concentration-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);margin-top:10px}.reference-concentration-metrics div{background:var(--panel);padding:13px 12px}.reference-concentration-metrics strong{display:block;font:500 19px var(--font);font-variant-numeric:tabular-nums}.reference-concentration-metrics span{display:block;color:var(--muted);font:12px var(--font);letter-spacing:.06em;margin-top:5px}.reference-concentration-panel p,.reference-concentration-panel small{display:block;color:var(--muted);font-size:12px;line-height:1.5;margin:12px 0 0}.reference-concentration-panel small{color:#718095;margin-top:7px}
@@ -403,6 +408,10 @@ footer .footer-meta{width:100%;display:flex;justify-content:space-between;gap:12
 /* The affirmative half of the monitor: when the gate clears a reference, the
    comparison it performed is shown rather than only the refusal. */
 .comparison-block{margin:12px 0 4px;padding:12px 14px;border:1px solid rgba(255,204,0,.28);border-radius:8px;background:var(--panel-inset)}
+.comparison-scope-notice{display:grid;grid-template-columns:minmax(145px,.35fr) minmax(0,1fr);gap:6px 14px;align-items:start;padding:9px 11px;margin:0 0 12px;border-left:2px solid var(--gold);background:rgba(255,204,0,.035)}
+.comparison-scope-notice>span{color:var(--gold);font:600 11px/1.4 var(--font);letter-spacing:.1em}
+.comparison-scope-notice p{margin:0;color:var(--muted);font:12px/1.5 Arial,sans-serif}
+.comparison-scope-notice strong{color:var(--paper);font-weight:600}
 .comparison-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
 .comparison-head span{font:12px var(--font);letter-spacing:.08em;font-weight:700;color:var(--affirm)}
 .comparison-head strong{font-size:17px;font-variant-numeric:tabular-nums;color:#e6edf5}
@@ -623,7 +632,7 @@ footer .footer-meta{width:100%;display:flex;justify-content:space-between;gap:12
    The cells have to be allowed to shrink and the words to wrap. */
 .outcome-key>div{min-width:0;overflow-wrap:break-word;word-break:normal}
 @media(max-width:620px){.outcome-key{grid-template-columns:repeat(auto-fit,minmax(min(100%,165px),1fr))}}
-@media(max-width:620px){.issuer-evidence-grid{grid-template-columns:1fr}.issuer-evidence-card{padding:9px}}
+@media(max-width:620px){.issuer-evidence-grid{grid-template-columns:1fr}.issuer-evidence-card{padding:9px}.comparison-scope-notice{grid-template-columns:1fr;gap:4px}}
 
 .dated-capture-links{display:flex;align-items:baseline;flex-wrap:wrap;gap:9px 18px;padding:14px 16px;margin:18px 0;border:1px solid var(--line);border-left:2px solid var(--gold);background:var(--panel-inset);color:var(--muted);font:12px/1.5 var(--font)}
 .dated-capture-links strong{flex-basis:100%;color:var(--gold);font:500 12px var(--font);letter-spacing:.1em}

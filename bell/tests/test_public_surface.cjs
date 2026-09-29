@@ -425,16 +425,17 @@ test('publication history labels stay distinct when receipts share a day', () =>
   assert.match(integrity, /Short series/);
 });
 
-test('the headline finding is read from the measurement, never typed into the page', () => {
+test('the headline uses one current receipt and keeps the historical rate separate', () => {
   const index = fs.readFileSync(path.join(site, 'index.html'), 'utf8');
   const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
-  // The page and the receipt drifting apart is the exact defect this product
-  // exists to catch, so the headline number must come from the published
-  // measurement and not be written into the markup.
+  // Do not make a visitor reconcile a frozen base rate with the current scan
+  // before they can understand Bell's first result.
   assert.match(integrity, /async function renderFinding/);
   assert.match(integrity, /base-rate-[0-9]{4}-[0-9]{2}-[0-9]{2}\.json/);
-  assert.match(integrity, /in receipt observed \$\{receiptStamp\}/);
-  assert.doesNotMatch(integrity, /in today's scan/);
+  assert.match(integrity, /Current CMC receipt observed \$\{receiptStamp\}/);
+  assert.match(integrity, /filtered quote comparison/);
+  assert.match(index, /<details class="historical-base-rate">/);
+  assert.match(index, /Historical base rate · 21 September/);
   assert.match(index, /id="finding-headline"/);
   assert.match(index, /id="finding-lede"/);
   // No percentage, interval or count may be hardcoded in the hero copy.
@@ -456,6 +457,7 @@ test('comparison evidence is attached to exact token IDs and flags the Alphabet 
   const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
   const evidence = fs.readFileSync(path.join(site, 'issuer-evidence.js'), 'utf8');
   const styles = fs.readFileSync(path.join(site, 'integrity.css'), 'utf8');
+  const overrides = fs.readFileSync(path.join(site, 'visual-overrides.css'), 'utf8');
   const explorer = fs.readFileSync(path.join(site, 'explorer.js'), 'utf8');
   const browserAudit = fs.readFileSync(path.resolve(__dirname, '../verify_public_browser.py'), 'utf8');
   assert.match(integrity, /issuerEvidenceMarkup\(item, c\.routes\)/);
@@ -489,6 +491,12 @@ test('comparison evidence is attached to exact token IDs and flags the Alphabet 
   assert.match(evidence, /Final Terms checked/);
   assert.match(integrity, /Issuer terms not mapped for \$\{unmapped\.length\} included route/);
   assert.match(integrity, /if \(!documented\.length && !classMismatch\) return ''/);
+  assert.match(integrity, /Equivalent units and claims are not established/);
+  assert.match(integrity, /token-specific issuer-source notes/);
+  const comparison = integrity.slice(integrity.indexOf('function renderComparison'), integrity.indexOf('function comparisonRouteSet'));
+  assert.ok(comparison.indexOf('${scopeNotice}') < comparison.indexOf('<div class="comparison-head">'),
+    'the unit/claim boundary must be visible before the quote spread');
+  assert.match(overrides, /\.comparison-scope-notice/);
 });
 
 test('mobile decision preview opens the exact rendered case card', () => {
@@ -600,7 +608,8 @@ test('no rendering path states a rate the measurement does not support', () => {
   assert.ok(!overstated.test(rendered), 'the failure path leaves the overstated headline on screen');
   assert.match(page, /id="finding-headline"/);
   // The measured claim must always carry its denominator in the same sentence.
-  assert.match(integrity, /data-review triggers are not proof of economic conflict/);
+  assert.match(integrity, /liveComparable\.toLocaleString\(\)/);
+  assert.match(integrity, /This is a separate, historical population measurement, not today's receipt/);
 });
 
 test('the one control the product asks you to use is reachable on a phone', () => {

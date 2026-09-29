@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """RWA Surface Integrity Monitor.
 
-The monitor checks whether CoinMarketCap's RWA surfaces can safely be joined
-before a user compares wrappers. It is deliberately a rule engine, not an
+The monitor checks which CoinMarketCap RWA rows pass its reported-price filters
+before a user shortlists wrappers. It is deliberately a rule engine, not an
 opaque risk score. The same receipt can be produced from a live CMC run or
 replayed from credential-free JSON responses.
 """
@@ -250,7 +250,7 @@ def index_evidence(evidence: dict) -> dict:
 # references and drove 84% of the catalogue to INVESTIGATE, so the published
 # state distribution restated one API coverage fact instead of describing any
 # reference.
-RULES_VERSION = "bell.rules.v2"
+RULES_VERSION = "bell.rules.v3"
 
 # Warnings that block a comparison from being published even though the state
 # survives. base_rate.py had its own hardcoded copy of this set and re-ran the
@@ -397,7 +397,12 @@ def asset_scan(asset: dict, issuer_lookup: dict | None = None, crypto_lookup: di
     elif ratio is not None and ratio >= 2:
         add("PRICE_DISPERSION", "warning", "Token prices span at least 2x inside one CMC reference; resolve units and claim type before ranking.", {"max_min_ratio": float(ratio), "prices": [float(price) for price in prices]})
     if zero_mcap_volume:
-        add("ZERO_MCAP_POSITIVE_VOLUME", "critical", "At least one representation reports positive 24h volume with zero market cap.", {"tokens": zero_mcap_volume})
+        add(
+            "ZERO_MCAP_POSITIVE_VOLUME",
+            "critical",
+            "CMC reports positive 24h volume alongside zero market cap; verify the source fields before relying on this quote.",
+            {"tokens": zero_mcap_volume},
+        )
     if derivative_tokens and non_derivative_tokens:
         add("DERIVATIVE_MIX", "warning", "Derivative-labelled and non-derivative representations are grouped under one reference.", {"derivatives": [token.get("symbol") for token in derivative_tokens], "other": [token.get("symbol") for token in non_derivative_tokens]})
     if repeated_symbols:
@@ -444,16 +449,15 @@ def asset_scan(asset: dict, issuer_lookup: dict | None = None, crypto_lookup: di
             "state": "blocked",
             "label": "DO NOT SELECT A WRAPPER",
             "consequence": (
-                "This reference has one representation and that row contradicts itself, so "
-                "there is nothing here to compare and nothing to rank. Resolve the "
-                "contradiction before treating the row as a price."
+                "This reference has one representation, so there is no cross-wrapper comparison. "
+                "The reported market fields need verification before relying on its quote."
                 if single else
-                "A research desk must not rank or substitute these representations until the "
-                "contradiction is resolved."),
+                "Keep these representations out of a shortlist until identity, denomination and "
+                "reported market fields have been checked."),
             "allocation_effect": (
-                "NO WRAPPER SELECTED until the row's own market state is cleared."
+                "NO WRAPPER SELECTED until the row's reported market fields are verified."
                 if single else
-                "NO WRAPPER SELECTED until identity, denomination and market state are cleared."),
+                "NO WRAPPER SELECTED until identity, denomination and reported market fields are checked."),
         }
     elif state == "investigate":
         decision = {
@@ -483,8 +487,8 @@ def asset_scan(asset: dict, issuer_lookup: dict | None = None, crypto_lookup: di
     # The distinction that matters is not "did any rule fire" but "does the rule
     # that fired make these prices incomparable".
     #
-    #   critical   - identity, unit or market state is contradictory. Never
-    #                compare: that is the error this monitor exists to prevent.
+    #   critical   - identity, denomination or a reported-field condition
+    #                blocks the filtered quote comparison pending review.
     #   dispersion - the prices themselves disagree beyond any plausible wrapper
     #                spread, so the disagreement is the finding. Withhold.
     #   the rest   - derivative mixing, symbol collision, missing market fields,
@@ -780,7 +784,7 @@ def scan(map_payload: dict, list_payload: dict, quotes_payload: dict, info_paylo
     return {
         "schema_version": "rwa_surface_integrity.v1",
         "observed_at": observed_at or datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z"),
-        "question": "Can CMC's RWA surfaces be joined into a trustworthy comparison without resolving identity, unit and market-data contradictions?",
+        "question": "Which CMC RWA rows pass the quote filters, and which identity, denomination or reported-field checks remain open?",
         "method": {
             "map": "/v5/real-world-assets/map",
             "asset_list": "/v5/real-world-assets/assets/list",
@@ -797,7 +801,7 @@ def scan(map_payload: dict, list_payload: dict, quotes_payload: dict, info_paylo
                 "quotes": "60 seconds",
             },
             "surface_drift_note": "The endpoints have separate update and caching cadences. A row without rwa_id is unjoinable in this run; it is not, by itself, proof of a CMC defect.",
-            "rules": ["10x price spread is a critical denomination break", "positive volume with zero market cap is a critical market contradiction", "derivative mixing, symbol collision, missing fields and missing token identity require investigation", "never join by ticker when crypto_id or issuer_id exists"],
+            "rules": ["10x price spread blocks a filtered quote comparison pending unit and claim review", "positive volume with zero market cap is a reported-field review trigger, not proof of an economic contradiction", "derivative mixing, symbol collision, missing fields and missing token identity require investigation", "never join by ticker when crypto_id or issuer_id exists"],
             "scan_status": scan_status,
             "input_integrity": {
                 "required_surfaces": list(required_surfaces),

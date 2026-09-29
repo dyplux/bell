@@ -14,7 +14,8 @@ returns a comparison state, the evidence behind it and the next diligence
 question. It never turns a clean scan into a buy approval.
 
 The monitor scans the CMC RWA population, joins the available surfaces through
-stable identifiers, and turns contradictions into a visible next action.
+stable identifiers, and turns identity, denomination and reported-field review
+triggers into a visible next action.
 
 ## A normal user's journey
 
@@ -36,7 +37,7 @@ stable identifiers, and turns contradictions into a visible next action.
    REPRESENTATION` when there is one wrapper, or `REFERENCE ONLY` / `DOSSIER
    PENDING` when comparison evidence is not available. A map entry is not
    silently treated as a clean comparison. If a single wrapper still has a
-   critical contradiction or unresolved warning, that evidence state takes
+   critical stop rule or unresolved warning, that evidence state takes
    priority over the single-token label.
 4. Check the receipt badge. `LIVE RECEIPT · FRESH` means the current publication
    is inside its 15-minute freshness contract. `STALE` means the last observed
@@ -44,8 +45,9 @@ stable identifiers, and turns contradictions into a visible next action.
    page is using the bundled evidence snapshot.
 5. Read the four population numbers: tokenised references, representations,
    blocked comparisons and rows without a stable RWA ID.
-6. Follow the decision path: scan the population, join by stable IDs, stop the
-   wrapper choice, then route the contradiction to diligence.
+6. Follow the decision path: scan the population, join by stable IDs, keep a
+   blocked wrapper out of the filtered quote comparison, then route the open
+   check to diligence.
 7. Open the current flagged case, normally Silver or another highest-severity
    reference. Expand `Inspect evidence` or `Inspect representations` to see
    the RWA ID to `crypto_id` and `issuer_id` identity path, CMC token links, chain/contract identity, prices, issuers, issuer
@@ -73,7 +75,7 @@ stable identifiers, and turns contradictions into a visible next action.
    | State | Meaning | What the user may do |
    |---|---|---|
    | `COMPARABLE, NOT ENDORSED` | Routes under one CMC RWA reference passed Bell's price and reported-volume filters. Equivalent units and claims are not established. | Read the filtered spread and reported volume; volume is not depth or executable capacity. Not an endorsement of any wrapper. |
-   | `DO NOT SHORTLIST` | A critical comparison stop rule fired, such as an extreme quote ratio or a positive-volume/zero-market-cap field pair. The latter is a verification trigger, not proof that no market exists. | Stop ranking or substituting a wrapper until the identity or quote fields are checked by stable ID. |
+| `DO NOT SHORTLIST` | A critical comparison stop rule fired, such as an extreme quote ratio or a positive-volume/zero-market-cap field pair. The latter is a reported-field review trigger, not proof that the market is contradictory. | Keep the wrapper out of the filtered quote comparison until the identity, unit or source fields are checked by stable ID. |
    | `INVESTIGATE` | A warning fired, such as derivative mixing, symbol collision or missing fields. | Continue research, but do not present the rows as equivalent exposure. |
    | `FACTS OPEN` | No published Bell rule fired for a reference with multiple representations. | Inspect the observed rows and compare facts, then complete external diligence. This is not approval. |
    | `SINGLE REPRESENTATION` | CMC returned one representation for the reference. | There is no wrapper ranking to perform. Verify the instrument and issuer externally. |

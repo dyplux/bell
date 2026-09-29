@@ -11,6 +11,7 @@ from __future__ import annotations
 from history_chain import verify as verify_chain
 
 import argparse
+import copy
 import hashlib
 import json
 import re
@@ -24,9 +25,9 @@ if str(ROOT) not in sys.path:
 
 from rwa_integrity import RULES_VERSION, digest, scan
 
-# What a bundled receipt is allowed to declare: the rule set the publisher
-# stamps today, or nothing, which is what receipts written before versioning
-# existed carry. Nothing else.
+# What a bundled receipt is allowed to declare: the current rule set, the
+# immediately preceding published rule set (whose dated receipts remain
+# immutable), or nothing for pre-versioned history. Nothing else.
 #
 # The first version of this allowlist also admitted "bell.rules.v1", on the
 # reasoning that it is a set this repository really published. That reasoning
@@ -39,7 +40,8 @@ from rwa_integrity import RULES_VERSION, digest, scan
 # No code in this tree stamps v1. `integrity_publisher` writes RULES_VERSION,
 # and receipts older than the field have it absent. A bundled receipt carrying
 # any other value was edited after it was written.
-ALLOWED_RULES_VERSIONS = frozenset({RULES_VERSION})
+LEGACY_TEXT_RULES_VERSION = "bell.rules.v2"
+ALLOWED_RULES_VERSIONS = frozenset({RULES_VERSION, LEGACY_TEXT_RULES_VERSION})
 
 DEFAULT_HISTORY = ROOT / "site/proof/rwa-surface-integrity-history.json"
 DEFAULT_RECEIPT = ROOT / "site/proof/rwa-surface-integrity-2026-09-15.json"
@@ -84,6 +86,61 @@ def load(path: Path) -> dict:
 def assert_equal(label: str, actual, expected) -> None:
     if actual != expected:
         raise ValueError(f"{label}: expected {expected!r}, got {actual!r}")
+
+
+def serialize_as_v2(result: dict) -> dict:
+    """Recreate the exact published v2 JSON copy without editing old receipts.
+
+    Version 3 changes only claims and labels: it describes zero-cap/positive-
+    volume as a reported-field review trigger and narrows the question to the
+    filtered quote checks. The dated v2 packages must continue to verify as
+    written, so the verifier retains this strict, allowlisted serializer.
+    Unknown v2 copy is not normalized and will still fail exact comparison.
+    """
+    legacy = copy.deepcopy(result)
+    universe = legacy.get("universe")
+    if not isinstance(universe, dict) or universe.get("rules_version") != RULES_VERSION:
+        raise ValueError("cannot serialize a receipt as v2 from a different current rule set")
+    universe["rules_version"] = LEGACY_TEXT_RULES_VERSION
+    method = legacy.get("method")
+    if not isinstance(method, dict):
+        raise ValueError("current scan has no method block to serialize as v2")
+    legacy["question"] = "Can CMC's RWA surfaces be joined into a trustworthy comparison without resolving identity, unit and market-data contradictions?"
+    method["rules"] = [
+        "10x price spread is a critical denomination break",
+        "positive volume with zero market cap is a critical market contradiction",
+        "derivative mixing, symbol collision, missing fields and missing token identity require investigation",
+        "never join by ticker when crypto_id or issuer_id exists",
+    ]
+
+    old_message = "At least one representation reports positive 24h volume with zero market cap."
+    old_multi_consequence = "A research desk must not rank or substitute these representations until the contradiction is resolved."
+    old_single_consequence = (
+        "This reference has one representation and that row contradicts itself, so "
+        "there is nothing here to compare and nothing to rank. Resolve the "
+        "contradiction before treating the row as a price."
+    )
+    old_multi_allocation = "NO WRAPPER SELECTED until identity, denomination and market state are cleared."
+    old_single_allocation = "NO WRAPPER SELECTED until the row's own market state is cleared."
+    for key in ("alerts", "alert_index"):
+        rows = legacy.get(key, [])
+        if not isinstance(rows, list):
+            continue
+        for row in rows:
+            if not isinstance(row, dict):
+                continue
+            signals = row.get("signals", [])
+            if isinstance(signals, list):
+                for signal in signals:
+                    if isinstance(signal, dict) and signal.get("code") == "ZERO_MCAP_POSITIVE_VOLUME":
+                        signal["message"] = old_message
+            decision = row.get("decision")
+            if isinstance(decision, dict) and decision.get("state") == "blocked":
+                representations = row.get("tokens") or row.get("representations") or []
+                single = len(representations) == 1
+                decision["consequence"] = old_single_consequence if single else old_multi_consequence
+                decision["allocation_effect"] = old_single_allocation if single else old_multi_allocation
+    return legacy
 
 
 def verify_observation(observation: dict, receipt: dict, label: str) -> bool:
@@ -356,6 +413,11 @@ def verify_public_inputs(inputs_path: Path, receipt_path: Path) -> None:
         if receipt["collection_provenance"] != expected_provenance:
             raise ValueError("live collection provenance is not the publisher's credential-free marker")
         recomputed["collection_provenance"] = expected_provenance
+    recorded_rules = receipt.get("universe", {}).get("rules_version")
+    if recorded_rules == LEGACY_TEXT_RULES_VERSION:
+        recomputed = serialize_as_v2(recomputed)
+    elif recorded_rules != RULES_VERSION:
+        raise ValueError(f"public receipt declares unsupported rules version: {recorded_rules!r}")
     if recomputed != receipt:
         raise ValueError("public input package does not recompute the bundled receipt")
     print(f"public inputs: verified ({inputs_path.stat().st_size:,} bytes)")

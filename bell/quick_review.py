@@ -45,7 +45,7 @@ def render(result: dict) -> str:
     evidence = result.get("evidence", {})
     tokens = evidence.get("tokens", []) if isinstance(evidence, dict) else []
     next_action = {
-        "do_not_compare": "Resolve denomination, representation and market-data contradictions before comparing prices or ranking wrappers.",
+        "do_not_compare": "Check denomination, representation and reported market fields before comparing filtered quotes or ranking wrappers.",
         "investigate": "Separate issuer, ticker, derivative and venue evidence before treating the wrappers as peers.",
         "provisionally_comparable": "Run the session review and repeat it across four independent windows before making a persistence claim.",
         "insufficient_evidence": "Load the missing token, issuer or market evidence; do not convert absence into zero.",
@@ -65,7 +65,7 @@ def render(result: dict) -> str:
     if findings:
         lines.extend(f"[{item.get('severity', 'unknown').upper()}] {str(item.get('code') or 'finding').upper()}: {item.get('message')}" for item in findings)
     else:
-        lines.append("No deterministic contradiction was returned.")
+        lines.append("No deterministic rule was triggered in the available fields.")
     lines += ["", "Next action:", next_action, "", "Execution boundary:", "CMC evidence can expose quoted price, volume and venue surfaces when returned. It does not provide a size-specific executable quote, depth guarantee or settlement route.", "", "Evidence rule:", "CMC fields are observations. This review does not prove backing, redemption, legal eligibility, liquidity or suitability."]
     return "\n".join(lines) + "\n"
 
