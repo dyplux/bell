@@ -286,7 +286,11 @@ def verify_alert_index(universe: dict, alert_index: object, label: str) -> None:
     if not isinstance(alert_index, list) or not alert_index:
         raise ValueError(f"{label}.alert_index is missing or empty")
     ids: set[int] = set()
-    states: Counter = Counter()
+    states: Counter = Counter({
+        "do_not_compare": 0,
+        "investigate": 0,
+        "no_flags": 0,
+    })
     signals: Counter = Counter()
     token_count = 0
     for position, row in enumerate(alert_index):
@@ -300,12 +304,17 @@ def verify_alert_index(universe: dict, alert_index: object, label: str) -> None:
             raise ValueError(f"{label}.alert_index repeats rwa_id {rwa_id}")
         ids.add(rwa_id)
         state = row.get("state")
-        if not isinstance(state, str) or not state:
-            raise ValueError(f"{row_label}.state is missing")
+        if not isinstance(state, str) or state not in states:
+            raise ValueError(f"{row_label}.state is unknown or missing")
         states[state] += 1
         count = row.get("token_count")
         if isinstance(count, bool) or not isinstance(count, int) or count < 0:
             raise ValueError(f"{row_label}.token_count is invalid")
+        representations = row.get("representations")
+        if representations is not None:
+            if not isinstance(representations, list):
+                raise ValueError(f"{row_label}.representations is invalid")
+            assert_equal(f"{row_label}.representation count", len(representations), count)
         token_count += count
         row_signals = row.get("signal_codes")
         if not isinstance(row_signals, list) or any(

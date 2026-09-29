@@ -161,6 +161,14 @@ class Forgery(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "alert_index token count"):
             self.verify_observation(self.dated_observation(), receipt, "changed row count")
 
+    def test_retained_representations_must_match_each_row_token_count(self):
+        receipt = copy.deepcopy(self.dated)
+        row = next(row for row in receipt["alert_index"] if row["token_count"] > 0)
+        row["representations"] = [{} for _ in range(row["token_count"])]
+        row["representations"].pop()
+        with self.assertRaisesRegex(ValueError, "representation count"):
+            self.verify_observation(self.dated_observation(), receipt, "short representations")
+
     def test_alert_index_cannot_repeat_a_reference_id(self):
         receipt = copy.deepcopy(self.dated)
         receipt["alert_index"][1]["rwa_id"] = receipt["alert_index"][0]["rwa_id"]
@@ -169,7 +177,8 @@ class Forgery(unittest.TestCase):
 
     def test_alert_index_states_and_signals_must_match_their_population_totals(self):
         for field, mutate, expected in (
-                ("state", lambda row: row.update(state="forged-state"),
+                ("state", lambda row: row.update(
+                    state="investigate" if row["state"] != "investigate" else "no_flags"),
                  "alert_index states"),
                 ("signal", lambda row: row["signal_codes"].append("FORGED_SIGNAL"),
                  "alert_index signals")):

@@ -27,6 +27,7 @@ def receipt(states, rules_version=RULES_VERSION, refs=10, rows=20):
             "rwa_id": index + 1,
             "state": state_rows[index] if index < len(state_rows) else "no_flags",
             "token_count": token_counts[index],
+            "representations": [{} for _ in range(token_counts[index])],
             "signal_codes": [signal_codes[index]] if index < len(signal_codes) else [],
         })
     universe = {
@@ -81,6 +82,11 @@ class RulesVersionIsPublished(unittest.TestCase):
 
 
 class ComparisonRespectsTheVersion(unittest.TestCase):
+    def test_zero_state_counts_reconcile_as_explicit_zeroes(self):
+        states = {"do_not_compare": 0, "investigate": 0, "no_flags": 10}
+        self.assertTrue(verify_observation(observation(states, RULES_VERSION), receipt(states),
+                                           "zero states"))
+
     def test_same_version_still_compares_states_strictly(self):
         # Had no assertion at all: it called the function and discarded the
         # answer, so it passed whatever the function did. A reviewer counted
