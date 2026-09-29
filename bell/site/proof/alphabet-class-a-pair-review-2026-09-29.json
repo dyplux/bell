@@ -36,6 +36,12 @@
     ]
   },
   "issuer_sources_checked_at": "2026-09-29",
+  "issuer_page_capture": {
+    "source": "ondo-googlon-page-capture-2026-09-29.txt",
+    "sha256": "fa366c29563076d5a5c4adce486aa67b1fd64f0aed19f29d104dd6d0efa4d110",
+    "captured_at": "2026-09-29T18:15:11.264618Z",
+    "method": "Visible text extracted from the public Ondo asset page in Chromium; excerpt retained below. This is an observation snapshot, not a signed issuer statement."
+  },
   "issuer_evidence": [
     {
       "crypto_id": 37013,
@@ -47,7 +53,7 @@
       "crypto_id": 38001,
       "issuer": "Ondo Global Markets",
       "source": "https://app.ondo.finance/assets/googlon",
-      "finding": "The asset page identifies Alphabet Class A and states 1 GOOGLon = 1.00 GOOGL."
+      "finding": "The asset page identifies Alphabet Class A and currently displays Shares Per Token as 1 GOOGLon = 1.0025 GOOGL. This observed value is time-sensitive and is not evidence of the unit basis used by CoinMarketCap's displayed quote."
     },
     {
       "crypto_id": null,
@@ -58,11 +64,12 @@
   ],
   "decision": {
     "state": "do_not_compare_as_like_for_like",
-    "reason": "Both issuers point to the same CMC underlying reference, but the current GOOGLX multiplier was not established in the reviewed source set. Shared reference identity does not establish matching effective units or equivalent claims.",
-    "next_check": "Retrieve the current GOOGLX multiplier and compare the applicable product terms before naming a cheaper route."
+    "reason": "Both products identify Alphabet Class A exposure, but their product structures and effective units differ or remain unresolved. Ondo currently displays 1.0025 GOOGL per GOOGLon; the reviewed sources do not establish the current GOOGLX unit or whether CMC's displayed quotes use raw token units, adjusted share units, or another normalization. Shared reference identity does not establish matching quote units or equivalent claims.",
+    "next_check": "Establish each token's effective unit for the relevant chain and venue at the CMC observation time, and verify the quote-unit basis before making a like-for-like price comparison."
   },
   "limits": [
-    "Issuer-published descriptions were not independently verified against legal terms.",
+    "Issuer-page content is a dated browser observation, not an issuer-signed or archived legal statement; recheck before relying on time-sensitive unit values.",
+    "The current Ondo shares-per-token display may differ from its value at the CMC capture time. The capture does not establish CoinMarketCap's quote-unit normalization.",
     "This review does not establish ownership rights, backing, redemption, custody, eligibility, execution or fair value.",
     "The CMC snapshot and issuer-source review are separately dated; do not read the CMC quote pair as a live price observation."
   ]

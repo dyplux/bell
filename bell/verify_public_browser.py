@@ -444,13 +444,20 @@ def main() -> int:
             page.goto(f"{args.base.rstrip(chr(47))}/?reference=4",
                       wait_until="domcontentloaded", timeout=30_000)
             wait_for_text(page, "#receipt-status-label", "LOADING", absent=True)
-            pair_review = page.locator(".pair-review")
+            pair_review = page.locator("#search-result .pair-review")
             pair_review.wait_for(state="visible", timeout=15_000)
+            pair_box = pair_review.bounding_box()
+            require(pair_box is not None and pair_box["y"] < 1800 and pair_box["width"] >= 420,
+                    f"pairwise review is not discoverable near the searched case: {pair_box}")
             pair_text = pair_review.inner_text()
             require("DO NOT COMPARE AS LIKE-FOR-LIKE" in pair_text,
                     "Alphabet pair review did not withhold a like-for-like price claim")
             require("28 Sep 2026" in pair_text and "29 Sep 2026" in pair_text,
                     "Alphabet pair review did not show its separate evidence dates")
+            require("1 GOOGLon = 1.0025 GOOGL" in pair_text,
+                    "Alphabet pair review does not show the dated Ondo unit observation")
+            require("unit basis" in pair_text.lower(),
+                    "Alphabet pair review does not say that the CMC quote-unit basis remains open")
             with page.expect_download(timeout=30_000) as pair_download_info:
                 page.locator('#decision-hero [data-case-receipt="4"]').first.click()
             pair_download = pair_download_info.value

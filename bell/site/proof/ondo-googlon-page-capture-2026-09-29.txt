@@ -1,0 +1,11 @@
+Source URL: https://app.ondo.finance/assets/googlon
+Captured at: 2026-09-29T18:15:11.264618Z (UTC)
+Capture method: Headless Chromium; navigate to the public asset page, wait for DOM content, wait 2 seconds, extract body.inner_text().
+Scope: Relevant visible-text excerpt, not the full page and not a signed issuer statement.
+
+Alphabet Class A
+GOOGLon
+Underlying Asset Ticker
+GOOGL
+Shares Per Token
+1 GOOGLon = 1.0025 GOOGL

@@ -60,11 +60,34 @@ def verify() -> dict[str, object]:
     if review.get("issuer_sources_checked_at") != "2026-09-29":
         raise ValueError("issuer source review date is missing")
 
+    page_capture = review.get("issuer_page_capture") or {}
+    capture_name = page_capture.get("source")
+    if not isinstance(capture_name, str) or Path(capture_name).name != capture_name:
+        raise ValueError("Ondo source capture must be a shipped proof filename")
+    capture_path = SITE / "proof" / capture_name
+    if not capture_path.is_file():
+        raise ValueError(f"Ondo source capture is not shipped: {capture_name}")
+    capture_bytes = capture_path.read_bytes()
+    capture_hash = hashlib.sha256(capture_bytes).hexdigest()
+    if capture_hash != page_capture.get("sha256"):
+        raise ValueError("Ondo source capture SHA-256 does not match the pair review")
+    capture_text = capture_bytes.decode("utf-8")
+    expected_observation = "1 GOOGLon = 1.0025 GOOGL"
+    if (page_capture.get("captured_at") != "2026-09-29T18:15:11.264618Z"
+            or expected_observation not in capture_text
+            or "Shares Per Token" not in capture_text):
+        raise ValueError("Ondo source capture does not contain the dated unit observation")
+    ondo = next(row for row in review["issuer_evidence"] if row.get("crypto_id") == 38001)
+    if expected_observation not in ondo.get("finding", ""):
+        raise ValueError("Ondo finding does not match its dated source capture")
+
     return {
         "review": review["review_id"],
         "cmc_observed_at": observation["observed_at"],
         "route_ids_verified": [row["crypto_id"] for row in routes],
         "source_sha256_verified": actual_hash,
+        "ondo_page_capture_sha256_verified": capture_hash,
+        "ondo_page_captured_at": page_capture["captured_at"],
         "decision": decision["state"],
         "issuer_source_archive": "not included; linked issuer pages are dated references",
     }

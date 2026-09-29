@@ -216,12 +216,13 @@ the asset has insufficient history.
 
 The Alphabet Class A case has a dated pairwise review for GOOGLX and GOOGLon.
 It records the CMC route rows from the 28 September capture and issuer pages
-checked on 29 September: Ondo states a 1.00 GOOGL share unit, while the checked
-Backed page does not state the current GOOGLX multiplier. The result is to
-withhold a like-for-like price comparison until that unit is established. Open
+checked on 29 September: Ondo's asset page displayed 1.0025 GOOGL per GOOGLon
+at 18:15:11 UTC. The checked sources do not establish GOOGLX's effective unit
+or the unit basis of CMC's displayed quote. The result is to withhold a
+like-for-like price comparison until both are established. Open
 the [pair-review receipt](site/proof/alphabet-class-a-pair-review-2026-09-29.json)
 or run `make verify-pair-review` to match its route values and source hash to
-the shipped CMC capture. The linked issuer pages are dated references, not
+the shipped CMC capture and check the dated Ondo text excerpt. The linked issuer pages are dated references, not
 archived legal documents; this review does not establish equivalent rights,
 backing, redemption or fair value. A case JSON export includes a fingerprinted
 link to this separate review when its token rows contain both exact CMC IDs.

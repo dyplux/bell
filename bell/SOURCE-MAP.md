@@ -122,9 +122,10 @@ that unresolved versus resolved `crypto_id` joins remain visible, including
 chain and contract fields.
 
 `verify_pair_review.py` checks the GOOGLX/GOOGLon pair-review artifact against
-the dated 28 September CMC capture. It confirms the exact two `crypto_id` rows,
-their observed values and the capture's SHA-256. It does not archive or verify
-the issuer pages linked by the review.
+the dated 28 September CMC capture and the retained Ondo page excerpt. It
+confirms the exact two `crypto_id` rows, their observed values and capture
+fingerprints, and checks that the excerpted unit value matches the finding.
+The excerpt is a browser observation, not a signed issuer statement.
 
 ## What is evidence and what is not
 

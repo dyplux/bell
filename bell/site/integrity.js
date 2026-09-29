@@ -1517,7 +1517,7 @@
       const url = externalURL(source.url);
       return url ? `<a href="${escapeHTML(url)}" target="_blank" rel="noopener">${escapeHTML(source.label)} ↗</a>` : '';
     }).filter(Boolean).join('');
-    return `<aside class="pair-review" aria-label="Pairwise RWA terms review"><div class="pair-review-head"><div><span>DATED PAIRWISE TERMS CHECK</span><h4>${escapeHTML(pair.title)}</h4></div><strong>${escapeHTML(pair.decision)}</strong></div><dl><div><dt>CMC pair snapshot</dt><dd>${escapeHTML(pair.cmcObserved)}</dd></div><div><dt>Issuer pages checked</dt><dd>${escapeHTML(pair.termsChecked)}</dd></div></dl><p><b>What aligns:</b> ${escapeHTML(pair.alignment)}</p><p><b>What remains open:</b> ${escapeHTML(pair.gap)}</p><p class="pair-review-next"><b>Next check:</b> ${escapeHTML(pair.next)}</p><div class="issuer-evidence-links">${sources}</div><small>This is a dated research artifact separate from the live integrity result, which carries its own observation time. Issuer pages are linked, not archived. This does not establish legal equivalence, backing, redemption, or fair value.</small></aside>`;
+    return `<aside class="pair-review" aria-label="Pairwise RWA terms review"><div class="pair-review-head"><div><span>DATED PAIRWISE TERMS CHECK</span><h4>${escapeHTML(pair.title)}</h4></div><strong>${escapeHTML(pair.decision)}</strong></div><dl><div><dt>CMC pair snapshot</dt><dd>${escapeHTML(pair.cmcObserved)}</dd></div><div><dt>Issuer pages checked</dt><dd>${escapeHTML(pair.termsChecked)}</dd></div></dl><p><b>What aligns:</b> ${escapeHTML(pair.alignment)}</p><p><b>What remains open:</b> ${escapeHTML(pair.gap)}</p><p class="pair-review-next"><b>Next check:</b> ${escapeHTML(pair.next)}</p><div class="issuer-evidence-links">${sources}</div><small>This dated research artifact is separate from the live integrity result. The Ondo page excerpt is retained and hashed; the linked issuer pages are not archived legal documents. This does not establish legal equivalence, backing, redemption, or fair value.</small></aside>`;
   }
 
   function pairwiseReviewRecord(item) {
@@ -1529,7 +1529,7 @@
       schema_version: 'bell.pairwise-terms-review.v1',
       review_id: 'alphabet-class-a-googlx-googlon-2026-09-29',
       receipt: 'proof/alphabet-class-a-pair-review-2026-09-29.json',
-      receipt_sha256: 'eee4eae050f3f320de6caad30c2a92254a75b0286b25479555dcdce7203c8b3f',
+      receipt_sha256: '03b00fcae4b10d65049b66dcadf9432627f477626c0380692fcba0a98990c3e6',
       relationship: 'This is a separately dated terms review, not a claim that those terms were observed in the live quote timestamp above.',
     };
   }
@@ -1538,7 +1538,7 @@
     const c = item.comparison;
     if (!c || !Array.isArray(c.routes) || c.routes.length < 2) {
       const routes = tokenRowsFor(item);
-      return issuerEvidenceMarkup(item, routes) + pairReviewMarkup(item, routes);
+      return issuerEvidenceMarkup(item, routes);
     }
     const rows = c.routes.map(route => {
       const share = Number.isFinite(route.volume_share) ? `${(route.volume_share * 100).toFixed(1)}%` : '--';
@@ -1568,7 +1568,7 @@
       ? `CMC groups Class A and Class C routes here; this is not a same-share-class spread. `
       : '';
     const scopeNotice = `<aside class="comparison-scope-notice"><span>TERMS CHECK · BEFORE THE QUOTE</span><p><strong>Equivalent units and claims are not established.</strong> ${unitScope}${routeNotes} of ${c.routes.length} included routes have token-specific issuer-source notes. Those notes describe published terms; they do not verify rights or backing.</p></aside>`;
-    return `<div class="comparison-block"><span class="comparison-scroll-hint">SWIPE FOR PRICE · VS CHEAPEST · SHARE OF VOLUME →</span>${scopeNotice}<div class="comparison-head"><span>${comparisonTitle}</span><strong>${Number(c.spread_bps).toFixed(1)} bps</strong><small>${c.route_count} token routes under this CMC RWA reference</small></div><p class="comparison-fill">${fill}</p><table class="comparison-table"><thead><tr><th>route</th><th>issuer</th><th class="num">price</th><th class="num">vs cheapest</th><th class="num">share of volume</th></tr></thead><tbody>${rows}</tbody></table>${issuerEvidenceMarkup(item, c.routes)}${pairReviewMarkup(item, c.routes)}${routeSetDetails}${open}<p class="comparison-limits">Observed CMC price and reported-volume fields are not execution, depth, backing or redemption evidence. ${NOT_OBSERVED_SHORT}</p></div>`;
+    return `<div class="comparison-block"><span class="comparison-scroll-hint">SWIPE FOR PRICE · VS CHEAPEST · SHARE OF VOLUME →</span>${scopeNotice}<div class="comparison-head"><span>${comparisonTitle}</span><strong>${Number(c.spread_bps).toFixed(1)} bps</strong><small>${c.route_count} token routes under this CMC RWA reference</small></div><p class="comparison-fill">${fill}</p><table class="comparison-table"><thead><tr><th>route</th><th>issuer</th><th class="num">price</th><th class="num">vs cheapest</th><th class="num">share of volume</th></tr></thead><tbody>${rows}</tbody></table>${issuerEvidenceMarkup(item, c.routes)}${routeSetDetails}${open}<p class="comparison-limits">Observed CMC price and reported-volume fields are not execution, depth, backing or redemption evidence. ${NOT_OBSERVED_SHORT}</p></div>`;
   }
 
   function comparisonRouteSet(item) {
@@ -2080,7 +2080,7 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     result.hidden = false;
     const exact = [item.name, item.symbol, item.rwa_id].some(value => String(value || '').trim().toLowerCase() === normalizedQuery);
     const matchLabel = exact ? `${matches.filter(candidate => [candidate.name, candidate.symbol, candidate.rwa_id].some(value => String(value || '').trim().toLowerCase() === normalizedQuery)).length || 1} MATCH · EXACT MATCH` : `${matches.length} MATCH${matches.length === 1 ? '' : 'ES'} · ${matches.length === 1 ? 'CLOSEST NAME' : 'SHOWING FIRST'}`;
-    result.innerHTML = `<span>SEARCHED REFERENCE · ${matchLabel}</span><strong>${escapeHTML(item.name || item.symbol || 'Reference')} · ${escapeHTML(item.symbol || 'RWA')}</strong><p>${plural(item.token_count, 'representation')} · ${plural(item.issuer_count, 'issuer')} · <b>${state}</b></p>${classScope ? `<p class="share-class-scope"><strong>Share-class scope:</strong> ${escapeHTML(classScope)}</p>` : ''}<p>${escapeHTML(next)}</p>${capitalPanel(item)}${observedQuoteEndpoints(item)}<div class="search-result-actions"><a href="#monitor">Inspect this evidence ↓</a><a href="#explorer" data-open-map-query="${escapeHTML(item.rwa_id || item.name || item.symbol || '')}">Open live dossier context ↓</a></div>`;
+    result.innerHTML = `<span>SEARCHED REFERENCE · ${matchLabel}</span><strong>${escapeHTML(item.name || item.symbol || 'Reference')} · ${escapeHTML(item.symbol || 'RWA')}</strong><p>${plural(item.token_count, 'representation')} · ${plural(item.issuer_count, 'issuer')} · <b>${state}</b></p>${classScope ? `<p class="share-class-scope"><strong>Share-class scope:</strong> ${escapeHTML(classScope)}</p>` : ''}<p>${escapeHTML(next)}</p>${capitalPanel(item)}${observedQuoteEndpoints(item)}${pairReviewMarkup(item, tokenRowsFor(item))}<div class="search-result-actions"><a href="#monitor">Inspect this evidence ↓</a><a href="#explorer" data-open-map-query="${escapeHTML(item.rwa_id || item.name || item.symbol || '')}">Open live dossier context ↓</a></div>`;
   }
 
   function searchFromHero(event) {

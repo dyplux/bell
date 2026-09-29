@@ -37,6 +37,22 @@ class PairReviewTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, "SHA-256"):
                     verify_pair_review.verify()
 
+    def test_modified_issuer_page_capture_is_refused(self):
+        with tempfile.TemporaryDirectory() as directory:
+            site = Path(directory) / "site"
+            proof = site / "proof"
+            proof.mkdir(parents=True)
+            shutil.copy2(verify_pair_review.REVIEW_PATH, proof / verify_pair_review.REVIEW_PATH.name)
+            review = json.loads((proof / verify_pair_review.REVIEW_PATH.name).read_text())
+            cmc_capture = verify_pair_review.SITE / "proof" / review["cmc_observation"]["source"]
+            shutil.copy2(cmc_capture, proof / cmc_capture.name)
+            original = verify_pair_review.SITE / "proof" / review["issuer_page_capture"]["source"]
+            (proof / original.name).write_text(original.read_text() + "tampered\n")
+            with patch.object(verify_pair_review, "SITE", site), patch.object(
+                    verify_pair_review, "REVIEW_PATH", proof / verify_pair_review.REVIEW_PATH.name):
+                with self.assertRaisesRegex(ValueError, "SHA-256"):
+                    verify_pair_review.verify()
+
 
 if __name__ == "__main__":
     unittest.main()

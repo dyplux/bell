@@ -36,15 +36,21 @@ test('public release includes a credential-free executable rule specification', 
   assert.equal(receipt.checks.every(check => check.pass), true);
 });
 
-test('dated pair review appears on blocked cases and its export points to the checked receipt', () => {
+test('dated pair review appears with the searched case and its export points to the checked receipt', () => {
   assert.match(issuerEvidence, /'4:37013:38001'/);
   assert.match(integrity, /if \(!pair \|\| !ids\.has\('37013'\) \|\| !ids\.has\('38001'\)\) return ''/);
-  assert.match(integrity, /return issuerEvidenceMarkup\(item, routes\) \+ pairReviewMarkup\(item, routes\)/,
-    'a reference without a published comparison must still display the specific review');
+  assert.match(integrity, /observedQuoteEndpoints\(item\)\}\$\{pairReviewMarkup\(item, tokenRowsFor\(item\)\)\}/,
+    'the pairwise review must appear beside the searched case, before the population index');
+  assert.match(page, /data-example-search="Alphabet"/,
+    'the featured pairwise review must be discoverable from the first screen');
+  assert.doesNotMatch(integrity.slice(integrity.indexOf('function renderComparison(item)'), integrity.indexOf('function comparisonRouteSet')), /pairReviewMarkup/,
+    'the pairwise review must not be squeezed into a narrow population row');
   assert.match(integrity, /pairwise_terms_review: pairwiseTermsReview/);
   const verifier = fs.readFileSync(path.resolve(__dirname, '../verify_pair_review.py'), 'utf8');
   assert.match(verifier, /CMC source SHA-256 does not match/);
   assert.match(verifier, /route .* does not match the shipped CMC row/);
+  assert.match(verifier, /Ondo source capture SHA-256 does not match/);
+  assert.match(verifier, /1 GOOGLon = 1\.0025 GOOGL/);
 });
 
 test('public release names the observed threshold population and inclusivity', () => {
@@ -494,7 +500,9 @@ test('comparison evidence is attached to exact token IDs and flags the Alphabet 
   assert.match(browserAudit, /this observation has no published filtered quote set/);
   assert.match(integrity, /CMC groups GOOGon \(Alphabet Class C\) under its Class A reference/);
   assert.match(integrity, /byId\('hero-mobile-note'\)\.textContent = alphabetClassScopeSentence\(alert\)/);
-  assert.match(integrity, /return issuerEvidenceMarkup\(item, routes\) \+ pairReviewMarkup\(item, routes\)/);
+  assert.match(integrity, /observedQuoteEndpoints\(item\)\}\$\{pairReviewMarkup\(item, tokenRowsFor\(item\)\)\}/);
+  assert.match(page, /data-example-search="Alphabet"/);
+  assert.doesNotMatch(integrity.slice(integrity.indexOf('function renderComparison(item)'), integrity.indexOf('function comparisonRouteSet')), /pairReviewMarkup/);
   assert.match(evidence, /window\.BELL_INSTRUMENT_EVIDENCE/);
   assert.match(evidence, /'37013'/);
   assert.match(evidence, /'42272'/);
@@ -1559,11 +1567,18 @@ test('every example chip promises the word the product prints for it', () => {
     const match = [...byName.entries()].find(([name, item]) =>
       name.toLowerCase().startsWith(needle) || String(item.symbol || '').toLowerCase() === needle);
     assert.ok(match, `the example "${query}" matches nothing in the shipped replay`);
+    if (promised.trim().toLowerCase() === 'pair review') {
+      assert.equal(String(match[1].rwa_id), '4', 'the pair-review shortcut must resolve the featured Alphabet case');
+      assert.match(integrity, /pairReviewMarkup\(item, tokenRowsFor\(item\)\)/,
+        'the Alphabet shortcut must show the pair review with its searched case');
+      continue;
+    }
     const printed = label(match[1]);
     // The chips use the shorthand the page's own outcome key defines, so
     // resolve through that key rather than comparing strings letter for letter.
     const shorthand = {
       blocked: 'DO NOT SHORTLIST',
+      investigate: 'INVESTIGATE',
       comparable: 'COMPARABLE',
       'facts open': 'FACTS OPEN',
       'single representation': 'SINGLE REPRESENTATION',
