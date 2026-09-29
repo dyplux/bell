@@ -330,12 +330,20 @@ def main() -> int:
             if any(str(token.get("crypto_id")) == "42272" for token in alphabet_tokens):
                 search_and_check("Alphabet Inc Class A")
                 search_summary = page.locator("#search-result").inner_text()
-                require("spread therefore combines Class A and Class C routes" in search_summary,
-                        "the post-search summary drops the Alphabet class-scope warning")
                 decision_text = page.locator("#decision-hero").inner_text()
                 require("CMC groups GOOGon (Alphabet Class C) under its Class A reference" in decision_text,
                         "the Alphabet decision does not disclose the Class A/Class C CMC grouping")
                 comparison = (alphabet or {}).get("comparison") or {}
+                class_scope_expectation = (
+                    "spread therefore combines Class A and Class C routes"
+                    if any(str(route.get("crypto_id")) == "42272"
+                           for route in comparison.get("routes", []))
+                    else "this observation has no published filtered quote set"
+                    if not comparison
+                    else "displayed spread uses the remaining Class A routes only"
+                )
+                require(class_scope_expectation in search_summary,
+                        f"the post-search Alphabet class-scope text should say {class_scope_expectation!r}")
                 if comparison:
                     expected_membership = (
                         "Class C route is included in this filtered quote set"
@@ -357,8 +365,8 @@ def main() -> int:
                 explorer_verdict = page.locator("#explorer-dossier .explorer-live")
                 explorer_verdict.wait_for(state="visible", timeout=30_000)
                 explorer_text = explorer_verdict.inner_text()
-                require("spread therefore combines Class A and Class C routes" in explorer_text,
-                        "the live Alphabet dossier drops the class-scope warning")
+                require(class_scope_expectation in explorer_text,
+                        f"the live Alphabet dossier should state {class_scope_expectation!r}")
 
             # A digits-only query is a reference id. It used to be a substring
             # over every field joined together, so ?reference=0 reached SPY

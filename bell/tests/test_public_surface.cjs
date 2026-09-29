@@ -433,8 +433,9 @@ test('comparison evidence is attached to exact token IDs and flags the Alphabet 
   assert.match(integrity, /window\.BellAlphabetClassScopeSentence = alphabetClassScopeSentence/);
   assert.match(explorer, /window\.BellAlphabetClassScopeSentence\?\.\(row\)/);
   assert.match(explorer, /class="explorer-live-scope"/);
-  assert.match(browserAudit, /the post-search summary drops the Alphabet class-scope warning/);
-  assert.match(browserAudit, /the live Alphabet dossier drops the class-scope warning/);
+  assert.match(browserAudit, /class_scope_expectation in search_summary/);
+  assert.match(browserAudit, /class_scope_expectation in explorer_text/);
+  assert.match(browserAudit, /this observation has no published filtered quote set/);
   assert.match(integrity, /CMC groups GOOGon \(Alphabet Class C\) under its Class A reference/);
   assert.match(integrity, /byId\('hero-mobile-note'\)\.textContent = alphabetClassScopeSentence\(alert\)/);
   assert.match(integrity, /return issuerEvidenceMarkup\(item, tokenRowsFor\(item\)\)/);
@@ -985,8 +986,9 @@ test('workspace labels the published decision and marks its exact comparison row
     representations: [
       { crypto_id: 101, symbol: 'EX', name: 'Example (xStock)', issuer_name: 'Issuer A', price: 12.5,
         market_cap: 1000, volume_24h: 25, cmc_url: 'https://coinmarketcap.com/currencies/example/',
-        project_url: 'https://issuer.example/project', technical_doc_urls: ['https://issuer.example/docs.pdf'],
-        explorer_urls: ['https://scan.example/token/101'] },
+        project_url: 'https://issuer.example/project', technical_doc_urls: [
+          'https://issuer.example/docs.pdf', 'https://issuer.example/docs-2.pdf', 'https://issuer.example/docs-3.pdf',
+        ], explorer_urls: ['https://scan.example/token/101', 'https://scan.example/token/102'] },
       { crypto_id: 202, symbol: 'EX', name: 'Example Derivative', issuer_name: 'Issuer B', price: 13,
         project_url: 'https://issuer.example/project?filter=a|b',
         market_cap: 2000, volume_24h: 50 },
@@ -1007,7 +1009,9 @@ test('workspace labels the published decision and marks its exact comparison row
   assert.match(savedBrief, /\[CMC\]\(<https:\/\/coinmarketcap\.com\/currencies\/example\/>\)/);
   assert.match(savedBrief, /\[Project\]\(<https:\/\/issuer\.example\/project>\)/);
   assert.match(savedBrief, /\[Document\]\(<https:\/\/issuer\.example\/docs\.pdf>\)/);
+  assert.match(savedBrief, /\[Document\]\(<https:\/\/issuer\.example\/docs-3\.pdf>\)/);
   assert.match(savedBrief, /\[Explorer\]\(<https:\/\/scan\.example\/token\/101>\)/);
+  assert.match(savedBrief, /\[Explorer\]\(<https:\/\/scan\.example\/token\/102>\)/);
   assert.match(savedBrief, /\[Project\]\(<https:\/\/issuer\.example\/project\?filter=a%7Cb>\)/);
   assert.match(savedBrief, /Source URLs are reported by CMC/);
   assert.match(savedBrief, /https:\/\/bell\.dyplux\.com\/\?reference=77#decision/);

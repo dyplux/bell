@@ -138,8 +138,8 @@
         mdLink('CMC', row?.cmc_url),
         mdLink('Issuer', row?.issuer_website),
         mdLink('Project', row?.project_url),
-        ...documents.slice(0, 2).map(url => mdLink('Document', url)),
-        ...explorerURLs.filter(url => !/\.pdf(?:$|[?#])/i.test(String(url || ''))).slice(0, 2)
+        ...documents.map(url => mdLink('Document', url)),
+        ...explorerURLs.filter(url => !/\.pdf(?:$|[?#])/i.test(String(url || '')))
           .map(url => mdLink('Explorer', url)),
       ].filter(Boolean);
       return `| ${md(row?.crypto_id)} | ${md(row?.symbol)} — ${md(row?.name)} | ${md(row?.issuer_name)} | ${set} | ${md(money(row?.price))} | ${md(money(row?.market_cap))} | ${md(money(row?.volume_24h))} | ${sourceLinks.join('<br>') || '—'} |`;
