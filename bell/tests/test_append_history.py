@@ -138,14 +138,15 @@ class AppendHistory(unittest.TestCase):
         with self.assertRaises(SystemExit):
             summarise({"universe": {"states": {}}})
 
-    def test_the_shipped_history_carries_a_rule_set_on_its_newest_observation(self):
-        # Item one of this work made the page refuse a delta across a rule
-        # boundary. The shipped latest entry remains a v2 historical receipt;
-        # asserting today's v3 would rewrite history instead of preserving it.
+    def test_the_newest_history_observation_uses_a_supported_rule_set(self):
+        # The workflow runs this after appending the live receipt, so the newest
+        # observation may be the preserved v2 history or the newly appended v3
+        # record. Both are valid; the test must not freeze the old boundary.
         path = HERE.parent / "site" / "proof" / "rwa-surface-integrity-history.json"
         observations = json.loads(path.read_text(encoding="utf-8"))["observations"]
         self.assertIn("rules_version", observations[-1])
-        self.assertEqual(observations[-1]["rules_version"], "bell.rules.v2")
+        self.assertIn(observations[-1]["rules_version"],
+                      {"bell.rules.v2", RULES_VERSION})
 
     def test_new_observation_summaries_record_the_current_rule_set(self):
         summary = summarise(receipt("2026-09-30T00:00:00Z", RULES_VERSION))
