@@ -194,7 +194,7 @@ footer{max-width:2200px;padding-left:64px;padding-right:64px;font-size:13px}
   .hero>div:first-child{overflow:visible}
   .lede{width:100%;max-width:100%;min-width:0;inline-size:100%;overflow-wrap:anywhere;white-space:normal}
   .hero-search{width:100%;max-width:100%;min-width:0;inline-size:100%}
-  .hero-search>div{width:100%;max-width:100%;min-width:0;inline-size:100%}
+  .hero-search-control{width:100%;max-width:100%;min-width:0;inline-size:100%}
   .hero-search button{display:block;min-height:42px}
   .hero-meta{width:100%;max-width:100%;min-width:0;overflow-wrap:anywhere;white-space:normal}
   .hero-example,.investor-task,.quick-search,.outcome-key{width:100%;max-width:100%;min-width:0;inline-size:100%;overflow-wrap:anywhere}

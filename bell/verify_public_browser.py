@@ -829,6 +829,23 @@ def main() -> int:
             shown_states = [state for state in PUBLIC_STATES if state in mobile_text]
             require(bool(shown_states),
                     f"mobile decision preview shows no published state: {mobile_text[:200]!r}")
+            mobile_page.locator("#hero-search").fill("Alphabet")
+            mobile_page.locator("#hero-search-form button[type=submit]").click()
+            mobile_pair = mobile_page.locator("#search-result .pair-review")
+            mobile_pair.wait_for(state="visible", timeout=15_000)
+            mobile_pair_box = None
+            for _ in range(40):
+                mobile_pair_box = mobile_pair.bounding_box()
+                if (mobile_pair_box is not None and mobile_pair_box["y"] >= 0
+                        and mobile_pair_box["y"] + mobile_pair_box["height"] <= 844):
+                    break
+                mobile_page.wait_for_timeout(100)
+            require(mobile_pair_box is not None and mobile_pair_box["y"] >= 0
+                    and mobile_pair_box["y"] + mobile_pair_box["height"] <= 844,
+                    f"mobile search did not scroll the compact pair decision into view: {mobile_pair_box}")
+            require(mobile_pair.locator(".pair-review-receipt").is_visible()
+                    and "DO NOT COMPARE AS LIKE-FOR-LIKE" in mobile_pair.inner_text(),
+                    "mobile pair result hides its decision or dated receipt")
             mobile.close()
 
             narrow_mobile = {}
