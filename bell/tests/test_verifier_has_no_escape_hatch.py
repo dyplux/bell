@@ -169,6 +169,21 @@ class Forgery(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "representation count"):
             self.verify_observation(self.dated_observation(), receipt, "short representations")
 
+    def test_a_modern_receipt_cannot_omit_or_null_the_representation_rows(self):
+        archive = PROOF / "rwa-surface-integrity-receipts" / "2026-09-29T23-08-10Z.json.gz"
+        with gzip.open(archive, "rt", encoding="utf-8") as handle:
+            receipt = json.load(handle)
+        observation = next(item for item in self.history["observations"]
+                           if item["observed_at"] == receipt["observed_at"])
+        for mode in ("delete", "null"):
+            forged = copy.deepcopy(receipt)
+            if mode == "delete":
+                forged["alert_index"][0].pop("representations")
+            else:
+                forged["alert_index"][0]["representations"] = None
+            with self.subTest(mode=mode), self.assertRaisesRegex(ValueError, "representations"):
+                self.verify_observation(observation, forged, f"missing representations: {mode}")
+
     def test_alert_index_cannot_repeat_a_reference_id(self):
         receipt = copy.deepcopy(self.dated)
         receipt["alert_index"][1]["rwa_id"] = receipt["alert_index"][0]["rwa_id"]

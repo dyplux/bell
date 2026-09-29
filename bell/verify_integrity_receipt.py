@@ -43,6 +43,7 @@ from rwa_integrity import RULES_VERSION, digest, scan
 # any other value was edited after it was written.
 LEGACY_TEXT_RULES_VERSION = "bell.rules.v2"
 ALLOWED_RULES_VERSIONS = frozenset({RULES_VERSION, LEGACY_TEXT_RULES_VERSION})
+LEGACY_RECEIPT_WITHOUT_REPRESENTATION_ROWS = "2026-09-15T22:22:00Z"
 
 DEFAULT_HISTORY = ROOT / "site/proof/rwa-surface-integrity-history.json"
 DEFAULT_RECEIPT = ROOT / "site/proof/rwa-surface-integrity-2026-09-15.json"
@@ -231,7 +232,7 @@ def verify_observation(observation: dict, receipt: dict, label: str) -> bool:
     signals = universe.get("signals")
     if not isinstance(signals, dict):
         raise ValueError(f"{label}.universe.signals is missing")
-    verify_alert_index(universe, receipt.get("alert_index"), label)
+    verify_alert_index(universe, receipt.get("alert_index"), receipt.get("observed_at"), label)
     # This compared {key: signals.get(key) for key in observation["signals"]}
     # against observation["signals"] - a projection of the receipt onto the
     # keys the HISTORY RECORD claims. An empty claim therefore compared nothing
@@ -279,7 +280,7 @@ def verify_observation(observation: dict, receipt: dict, label: str) -> bool:
     return not rules_differ
 
 
-def verify_alert_index(universe: dict, alert_index: object, label: str) -> None:
+def verify_alert_index(universe: dict, alert_index: object, observed_at: object, label: str) -> None:
     """Reconcile population totals with the per-reference rows they summarize."""
     from collections import Counter
 
@@ -311,9 +312,9 @@ def verify_alert_index(universe: dict, alert_index: object, label: str) -> None:
         if isinstance(count, bool) or not isinstance(count, int) or count < 0:
             raise ValueError(f"{row_label}.token_count is invalid")
         representations = row.get("representations")
-        if representations is not None:
+        if observed_at != LEGACY_RECEIPT_WITHOUT_REPRESENTATION_ROWS or "representations" in row:
             if not isinstance(representations, list):
-                raise ValueError(f"{row_label}.representations is invalid")
+                raise ValueError(f"{row_label}.representations is missing or invalid")
             assert_equal(f"{row_label}.representation count", len(representations), count)
         token_count += count
         row_signals = row.get("signal_codes")
