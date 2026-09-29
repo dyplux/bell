@@ -53,6 +53,12 @@ test('dated pair review appears with the searched case and its export points to 
     'the input-row layout must not collapse other result blocks inside the form');
   assert.match(page, /data-example-search="Alphabet"/,
     'the featured pairwise review must be discoverable from the first screen');
+  assert.match(page, /id="hero-comparison-coverage"/);
+  assert.match(integrity, /receipt\.alert_index[\s\S]*?Number\(item\?\.token_count \|\| 0\) >= 2[\s\S]*?item\?\.comparison/,
+    'the first-screen numerator and denominator must come from the same current receipt');
+  assert.match(page, /id="source-build"/);
+  assert.match(integrity, /fetch\('\/api\/health'[\s\S]*?health\.release_sha[\s\S]*?github\.com\/dyplux\/bell\/commit/,
+    'the visible source link must resolve the deployed Worker revision');
   assert.doesNotMatch(integrity.slice(integrity.indexOf('function renderComparison(item)'), integrity.indexOf('function comparisonRouteSet')), /pairReviewMarkup/,
     'the pairwise review must not be squeezed into a narrow population row');
   assert.match(integrity, /pairwise_terms_review: pairwiseTermsReview/);

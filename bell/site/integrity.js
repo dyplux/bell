@@ -921,6 +921,14 @@
   function renderMetrics() {
     const universe = receipt.universe;
     byId('observed-at').textContent = `OBSERVED ${receipt.observed_at}`;
+    const comparisonScope = byId('hero-comparison-coverage');
+    if (comparisonScope) {
+      const indexed = Array.isArray(receipt.alert_index) ? receipt.alert_index : [];
+      const multiRepresentation = indexed.filter(item => Number(item?.token_count || 0) >= 2);
+      const filteredComparisons = multiRepresentation.filter(item => item?.comparison).length;
+      comparisonScope.textContent = `FILTERED QUOTE CHECK · ${filteredComparisons} / ${multiRepresentation.length} REFERENCES WITH 2+ ROWS`;
+      comparisonScope.title = 'Counts come from this receipt: references with at least two representation rows, and the subset that passes Bell’s filtered quote comparison. This does not establish equivalent units or claims.';
+    }
     const publication = receipt._publication;
     const status = freshnessStatus(publication);
     // "FRESH" was read as "measured just now" when it only meant "published
@@ -2675,6 +2683,26 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
   let announceReceipt;
   window.BellReceipt = new Promise(resolve => { announceReceipt = resolve; });
 
+  async function renderSourceBuild() {
+    const link = byId('source-build');
+    if (!link) return;
+    try {
+      const response = await fetch('/api/health', { cache: 'no-store', headers: { Accept: 'application/json' } });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const health = await response.json();
+      const sha = String(health.release_sha || '').toLowerCase();
+      if (!/^[a-f0-9]{40}$/.test(sha)) throw new Error('release SHA is missing');
+      link.href = `https://github.com/dyplux/bell/commit/${sha}`;
+      link.textContent = `SOURCE ${sha.slice(0, 7)} ↗`;
+      link.dataset.releaseSha = sha;
+      link.title = `Deployed source commit ${sha}`;
+    } catch {
+      link.href = '/api/health';
+      link.textContent = 'SOURCE VERSION UNAVAILABLE';
+      link.removeAttribute('data-release-sha');
+    }
+  }
+
   async function boot() {
     try {
       const sources = isLocalHost
@@ -2707,6 +2735,7 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
             receipt = candidate;
             receiptSource = source;
             announceReceipt(candidate);
+            renderSourceBuild();
             break;
           }
           throw new Error('unexpected receipt schema');

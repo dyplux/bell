@@ -55,6 +55,20 @@ def wait_for_text(page, selector: str, contains: str, *, absent: bool = False,
         f"{selector} never {'lost' if absent else 'showed'} {contains!r}; last saw {seen[:200]!r}")
 
 
+def wait_for_attribute(page, selector: str, attribute: str, pattern: str,
+                       *, timeout: int = 30_000) -> str:
+    """Wait for an asynchronously hydrated DOM attribute without page eval."""
+    import time as _time
+    deadline = _time.monotonic() + timeout / 1000
+    while _time.monotonic() < deadline:
+        target = page.locator(selector)
+        value = target.get_attribute(attribute) if target.count() else None
+        if value and re.fullmatch(pattern, value):
+            return value
+        page.wait_for_timeout(120)
+    raise AssertionError(f"{selector} did not expose {attribute} matching {pattern!r}")
+
+
 def require(condition: bool, message: str) -> None:
     if not condition:
         raise RuntimeError(message)
@@ -123,6 +137,10 @@ def main() -> int:
             page.goto(args.base.rstrip("/") + "/", wait_until="domcontentloaded", timeout=30_000)
             page.locator("#receipt-status-label").wait_for(state="visible", timeout=30_000)
             wait_for_text(page, "#receipt-status-label", "LOADING", absent=True)
+            release_sha = wait_for_attribute(page, "#source-build", "data-release-sha", r"[a-f0-9]{40}")
+            require(page.locator("#source-build").get_attribute("href")
+                    == f"https://github.com/dyplux/bell/commit/{release_sha}",
+                    "visible source link does not point to the release SHA reported by /api/health")
             status = page.locator("#receipt-status-label").inner_text()
             # The label used to read "LIVE RECEIPT / FRESH"; it now states the
             # observation time instead, because "fresh" was read as "measured
@@ -206,6 +224,13 @@ def main() -> int:
             receipt_response = page.request.get(args.base.rstrip("/") + "/api/integrity", timeout=30_000)
             require(receipt_response.ok, f"integrity receipt request failed: {receipt_response.status}")
             receipt = receipt_response.json()
+            indexed = receipt.get("alert_index", [])
+            multi_representation = [item for item in indexed if int(item.get("token_count") or 0) >= 2]
+            comparison_count = sum(1 for item in multi_representation if item.get("comparison"))
+            expected_scope = (f"FILTERED QUOTE CHECK · {comparison_count} / {len(multi_representation)} "
+                              "REFERENCES WITH 2+ ROWS")
+            require(page.locator("#hero-comparison-coverage").inner_text() == expected_scope,
+                    "the first-screen comparison numerator/denominator do not match the current receipt")
             wait_for_text(page, "#publication-history", receipt["observed_at"])
             # Every population figure the page prints must equal the receipt it
             # is reading AT THIS MOMENT, not a figure from any other observation.

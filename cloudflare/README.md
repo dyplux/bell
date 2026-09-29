@@ -61,11 +61,16 @@ local receipt. The publisher reports remote publication failure rather than clai
 
 ## Deploy
 
-The checked-in `wrangler.toml` targets the current Dyplux Cloudflare account. Deploy with:
+The checked-in `wrangler.toml` targets the current Dyplux Cloudflare account. From the repository
+root, deploy a clean commit with:
 
 ```bash
-npx wrangler deploy
+make deploy
 ```
+
+The deploy script stamps that exact Git commit into `/api/health`. The public page links to the
+deployed commit beside the receipt timestamp, so reviewers can verify which source revision is
+serving the interface. Use `make deploy` for releases; a bare Wrangler deploy has no source SHA.
 
 The public product hostname is [`https://bell.dyplux.com/`](https://bell.dyplux.com/). The
 `workers.dev` hostname remains only as a technical fallback.

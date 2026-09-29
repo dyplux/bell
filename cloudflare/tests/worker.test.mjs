@@ -20,9 +20,15 @@ const mapWith = (...slugs) => ({
 });
 
 test('health endpoint is public and JSON', async () => {
-  const response = await worker.fetch(new Request('https://example.test/api/health'), { ASSETS: assets });
+  const releaseSha = 'a'.repeat(40);
+  const response = await worker.fetch(new Request('https://example.test/api/health'), {
+    ASSETS: assets,
+    RELEASE_SHA: releaseSha,
+  });
   assert.equal(response.status, 200);
-  assert.equal((await response.json()).ok, true);
+  const health = await response.json();
+  assert.equal(health.ok, true);
+  assert.equal(health.release_sha, releaseSha);
 });
 
 test('publisher endpoints require the publisher token', async () => {

@@ -194,7 +194,11 @@ the gate degrades honestly instead of quietly checking less than it claims.
 make install        # installs Playwright and a browser, so check can verify the UI
 make check-offline  # the same gate with no network and no browser
 make check-live     # force the browser audit and fail if it cannot run
+make deploy         # deploy a clean commit and stamp its SHA in the public health route
 ```
+
+The homepage shows the current comparison count with its multi-representation
+denominator, plus a link to the exact Git commit reported by the deployed Worker.
 
 `make check-offline` is what CI runs: a red build should mean this repository is
 wrong, never that a deployed site was briefly unreachable.

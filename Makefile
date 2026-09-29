@@ -11,7 +11,7 @@ WORKER := cloudflare
 
 .DEFAULT_GOAL := help
 
-.PHONY: help app install sync-counts audit-tests time-gate mutate test test-py test-js test-worker demo base-rate liveness verify verify-capture verify-pair-review check check-offline check-live browser-audit clean
+.PHONY: help app install sync-counts audit-tests time-gate mutate test test-py test-js test-worker demo base-rate liveness verify verify-capture verify-pair-review check check-offline check-live browser-audit deploy clean
 
 help: ## Show the targets a reviewer needs
 	@echo "make demo     - answer one comparability question, keyless, ~1s"
@@ -23,6 +23,7 @@ help: ## Show the targets a reviewer needs
 	@echo "make check    - the full gate; drives a real browser if one is installed"
 	@echo "make check-offline - the same gate with no network and no browser"
 	@echo "make check-live- force the browser audit and fail if it cannot run"
+	@echo "make deploy    - deploy a clean commit and expose its source SHA"
 	@echo "make install  - suites run without it; installs the browser for check"
 
 install: ## Dev dependencies. The suites below run without them.
@@ -107,6 +108,9 @@ check-live: check-offline ## Force the browser audit and fail if it cannot run
 	# it is how you find out that the live assertions have rotted, which they
 	# had - the README shipped a command that failed for anyone who ran it.
 	PYTHONPATH=$(PKG) $(PY) $(PKG)/verify_public_browser.py --channel ""
+
+deploy: ## Deploy clean source and stamp the Worker with its commit SHA
+	./cloudflare/deploy.sh
 
 clean:
 	find . -name '__pycache__' -type d -prune -exec rm -rf {} +

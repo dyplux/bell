@@ -659,3 +659,6 @@ footer .footer-meta{width:100%;display:flex;justify-content:space-between;gap:12
 .dated-capture-links a{color:var(--link);text-decoration:underline;text-decoration-color:var(--gold);text-underline-offset:3px}
 .dated-capture-links code{color:var(--paper);font:12px ui-monospace,SFMono-Regular,Menlo,monospace}
 .dated-capture-links span{flex-basis:100%;font:12px/1.45 Arial,sans-serif}
+
+#hero-comparison-coverage{color:var(--gold)}
+#source-build{color:var(--link);text-decoration:underline;text-decoration-color:var(--gold);text-underline-offset:3px}

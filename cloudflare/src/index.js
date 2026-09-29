@@ -388,7 +388,12 @@ async function handle(request, env) {
     if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: CORS_HEADERS });
     const url = new URL(request.url);
     try {
-      if (url.pathname === '/api/health') return json({ ok: true, service: 'dyplux-rwa-publication', now: now() });
+      if (url.pathname === '/api/health') {
+        const releaseSha = /^[a-f0-9]{40}$/i.test(String(env.RELEASE_SHA || ''))
+          ? String(env.RELEASE_SHA).toLowerCase()
+          : null;
+        return json({ ok: true, service: 'dyplux-rwa-publication', now: now(), release_sha: releaseSha });
+      }
       if (url.pathname === '/api/published' && request.method === 'GET') return published(request, env);
       if (url.pathname === '/api/integrity' && request.method === 'GET') return integrity(request, env);
       if (url.pathname === '/internal/jobs' && request.method === 'GET') return jobs(request, env);
