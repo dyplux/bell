@@ -20,6 +20,7 @@ import gzip
 import hashlib
 import json
 from pathlib import Path
+import shutil
 import sys
 import tempfile
 import unittest
@@ -40,7 +41,9 @@ def history_with(*stamps: str) -> dict:
 
 import reference_series  # noqa: E402
 from reference_series import (  # noqa: E402
-    BASE, DELTAS, apply, delta, digest_of_state, index_digest, record, series_for, snapshot_of)
+    BASE, DELTAS, apply, build_versioned_series, delta, digest_of_state, index_digest,
+    record, record_versioned_series, series_for, snapshot_of, verify_versioned_series,
+    verify_versioned_series_document)
 
 BASE_DOC = json.loads(BASE.read_text(encoding="utf-8"))
 REPLAY = json.loads((HERE.parent / "site" / "proof"
@@ -235,6 +238,56 @@ class TheShippedSeriesIsWhatTheCodeDerives(unittest.TestCase):
         self.assertLess(per_observation, BASE.stat().st_size / 4,
                         f"a point costs {per_observation:,.0f} bytes against a "
                         f"{BASE.stat().st_size:,}-byte snapshot; the delta is not paying for itself")
+
+
+class RetainedRuleVersionSeries(unittest.TestCase):
+    def setUp(self):
+        self.history = json.loads((HERE.parent / "site" / "proof"
+                                   / "rwa-surface-integrity-history.json")
+                                  .read_text(encoding="utf-8"))
+
+    def test_v3_segment_is_derived_only_from_the_two_retained_v3_receipts(self):
+        document = build_versioned_series(self.history, "bell.rules.v3")
+        self.assertEqual(document["schema_version"], "bell.reference_deltas_by_rules.v1")
+        self.assertEqual(document["base"]["observed_at"], "2026-09-29T23:08:10Z")
+        self.assertEqual(len(document["observations"]), 1)
+        step = document["observations"][0]
+        self.assertEqual(step["observed_at"], "2026-09-29T23:23:34Z")
+        self.assertEqual(len(step["changed"]), 2)
+        self.assertEqual(step["removed"], [])
+        self.assertEqual(step["changed"]["140"]["state"], "investigate")
+        self.assertNotIn("ZERO_MCAP_POSITIVE_VOLUME", step["changed"]["140"]["signal_codes"])
+
+    def test_shipped_v3_segment_replays_from_retained_receipts(self):
+        notes = verify_versioned_series(self.history)
+        self.assertEqual(len(notes), 1)
+        self.assertIn("2 reference changes verified", notes[0])
+
+    def test_append_path_rebuilds_the_versioned_file_from_retained_history(self):
+        with tempfile.TemporaryDirectory() as temp:
+            proof = Path(temp)
+            receipts = [item for item in self.history["observations"]
+                        if item.get("rules_version") == "bell.rules.v3" and item.get("receipt_path")]
+            for item in receipts:
+                source = reference_series.PROOF / item["receipt_path"]
+                destination = proof / item["receipt_path"]
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(source, destination)
+            original = reference_series.PROOF
+            reference_series.PROOF = proof
+            try:
+                notes = record_versioned_series(self.history)
+                self.assertEqual(len(notes), 1)
+                self.assertEqual(len(verify_versioned_series(self.history)), 1)
+            finally:
+                reference_series.PROOF = original
+
+    def test_v3_segment_cannot_claim_a_different_row_change(self):
+        path = HERE.parent / "site" / "proof" / "reference-deltas-v3.json"
+        shipped = json.loads(path.read_text(encoding="utf-8"))
+        shipped["observations"][0]["changed"]["140"]["state"] = "no_flags"
+        with self.assertRaisesRegex(ValueError, "differs from the series derived"):
+            verify_versioned_series_document(shipped, self.history, "bell.rules.v3")
 
 
 class TheSeriesAnswersToThePublishedHistory(unittest.TestCase):

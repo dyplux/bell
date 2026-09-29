@@ -1869,6 +1869,47 @@ test('the reference snapshot is the dated receipt, and carries its rule set', ()
   assert.ok(bytes < 200_000, `the snapshot grew to ${bytes} bytes; it exists to avoid the 3.42 MiB receipt`);
 });
 
+test('a live v3 case uses the retained v3 segment without crossing the v2 baseline', async () => {
+  const proof = path.join(site, 'proof');
+  const publishedSeries = JSON.parse(fs.readFileSync(path.join(proof, 'reference-deltas-v3.json'), 'utf8'));
+  assert.equal(publishedSeries.rules_version, 'bell.rules.v3');
+  assert.match(integrity, /proof\/reference-deltas-v\$\{match\[1\]\}\.json/);
+  const judge = fs.readFileSync(path.join(site, 'judge.html'), 'utf8');
+  assert.match(judge, /first 15-minute interval[\s\S]*?not a[\s\S]*?monthly history/);
+  const series = {
+    schema_version: 'bell.reference_deltas_by_rules.v1',
+    rules_version: 'bell.rules.v3',
+    base: { observed_at: '2026-09-29T23:08:10Z', references: {
+      '140': { state: 'do_not_compare', representations: 3,
+        comparison_published: false, signal_codes: ['ZERO_MCAP_POSITIVE_VOLUME'] },
+    } },
+    observations: [{ observed_at: '2026-09-29T23:23:34Z', changed: {
+      '140': { state: 'investigate', representations: 3,
+        comparison_published: false, signal_codes: [] },
+    }, removed: [] }],
+  };
+  const container = { dataset: { forId: '140' }, hidden: true,
+    set innerHTML(value) { this.html = value; }, get innerHTML() { return this.html; } };
+  const render = runFromSource('renderRetainedRuleVersionChange', {
+    loadVersionedReferenceSeries: () => Promise.resolve(series),
+    applyReferenceSeries: (base, observations) => ({ ...base, ...observations[0].changed }),
+    seriesFor: () => [
+      { observed_at: '2026-09-29T23:08:10Z', baseline: true },
+      { observed_at: '2026-09-29T23:23:34Z', baseline: false },
+    ],
+    describeChange: () => [['ROUTE', 'DO NOT COMPARE → INVESTIGATE']],
+    escapeHTML: value => String(value ?? ''),
+    receipt: { observed_at: '2026-09-29T23:38:56Z' },
+  });
+  assert.equal(await render({ rwa_id: 140 }, container, 'bell.rules.v3'), true);
+  assert.equal(container.hidden, false);
+  assert.match(container.html, /<b>2<\/b> retained observations, 15m 24s apart/);
+  assert.match(container.html, /LATEST RECEIPT VS LAST RETAINED ARCHIVE/);
+  assert.match(container.html, /bell\.rules\.v3/);
+  assert.match(container.html, /live point is not yet archived/);
+  assert.match(container.html, /separate from the v2 series/);
+});
+
 test('the single-representation count the prose states is the count its filter returns', () => {
   // The hero said 547 carry a single representation; the filter beside it
   // returned 545, because two of them were bucketed DO NOT SHORTLIST. A reader

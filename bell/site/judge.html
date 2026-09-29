@@ -97,7 +97,7 @@
       <div><small>Comparisons published &middot; 28 Sep</small><strong>88</strong></div>
       <div><small>Refused for missing coverage &middot; 28 Sep</small><strong>107</strong></div>
       <div><small>No eligible spot pair &middot; 28 Sep</small><strong>16</strong></div>
-      <div><small>Tests in the offline gate</small><strong>594</strong></div>
+      <div><small>Tests in the offline gate</small><strong>599</strong></div>
       <div><small>Gate runtime, 2 machines</small><strong>17&ndash;34s</strong></div>
     </div>
 
@@ -152,7 +152,7 @@ make base-rate</pre>
       <h3>What that gate proves, and what it does not</h3>
       <dl>
         <dt>The suite</dt>
-        <dd>594 tests, 462 Python and 132 JavaScript. One Python test needs a network and a
+        <dd>599 tests, 466 Python and 133 JavaScript. One Python test needs a network and a
         CoinMarketCap key; without them it is skipped and the runner says so.</dd>
 
         <dt>The re-derivation</dt>
@@ -163,7 +163,7 @@ make base-rate</pre>
         Each scan is recomputed, so a changed count fails the gate.</dd>
 
         <dt>The submission gate</dt>
-        <dd>Runs a submission gate over 211 tracked files, inspecting every one for anything
+        <dd>Runs a submission gate over 212 tracked files, inspecting every one for anything
         private or unreleasable.</dd>
 
         <dt>The recovered 21 September distribution is replayed</dt>
@@ -187,6 +187,14 @@ make base-rate</pre>
         who rewrites the whole file, the chain and the committed anchor together, because all
         three live in this repository. There is no external attestation and no date attestation,
         and the module says so in its own docstring.</dd>
+
+        <dt>Reference changes stay within one rule set</dt>
+        <dd>The retained v3 receipts form their own short segment, separate from v2. Across the
+        first 15-minute interval, iShares Russell 2000 ETF moved from
+        <code>do_not_compare</code> to <code>investigate</code> as
+        <code>ZERO_MCAP_POSITIVE_VOLUME</code> disappeared. This is two observed points, not a
+        daily or monthly history. The per-reference deltas are derived from the retained receipts
+        and checked by <code>make verify</code>.</dd>
 
         <dt class="scope-limit">Older per-reference rows are not value-checked</dt>
         <dd class="scope-limit">Every newly retained receipt is checked against the full history

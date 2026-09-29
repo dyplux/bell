@@ -656,6 +656,10 @@ def main() -> int:
         if receipt_checked < len(notes):
             print(f"UNVERIFIED: {len(notes) - receipt_checked} older step(s) have no retained "
                   "receipt; their row detail cannot be re-derived from the shipped evidence.")
+        from reference_series import verify_versioned_series
+        versioned_notes = verify_versioned_series(history)
+        for note in versioned_notes:
+            print(f"retained rule-version series: {note}")
     except ValueError as error:
         raise ValueError(f"reference series: {error}")
     return 0

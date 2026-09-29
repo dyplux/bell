@@ -149,6 +149,7 @@
   // boundary would state a rule change as a market change. That comparison is
   // refused here for the same reason the publication history refuses a delta.
   let referenceSeries = null;
+  const versionedReferenceSeries = new Map();
   function loadReferenceSeries() {
     // The deltas: one entry per published observation, holding only the
     // references that moved. 4.4 KB today against 95 KB for a second full
@@ -160,6 +161,77 @@
       .then(response => (response.ok ? response.json() : null))
       .catch(() => null);
     return referenceSeries;
+  }
+
+  function loadVersionedReferenceSeries(rulesVersion) {
+    const match = /^bell\.rules\.v(\d+)$/.exec(String(rulesVersion || ''));
+    if (!match) return Promise.resolve(null);
+    const path = `proof/reference-deltas-v${match[1]}.json`;
+    if (!versionedReferenceSeries.has(path)) {
+      versionedReferenceSeries.set(path, fetch(path,
+        { cache: 'force-cache', headers: { Accept: 'application/json' } })
+        .then(response => (response.ok ? response.json() : null))
+        .catch(() => null));
+    }
+    return versionedReferenceSeries.get(path);
+  }
+
+  function applyReferenceSeries(base, observations) {
+    const state = Object.fromEntries(Object.entries(base || {}).map(([key, value]) =>
+      [key, { ...value }]));
+    for (const step of observations || []) {
+      for (const [key, value] of Object.entries(step.changed || {})) state[key] = { ...value };
+      for (const key of step.removed || []) delete state[key];
+    }
+    return state;
+  }
+
+  function renderRetainedRuleVersionChange(alert, container, liveRules) {
+    const id = String(alert?.rwa_id || '');
+    return loadVersionedReferenceSeries(liveRules).then(series => {
+      if (!series || series.rules_version !== liveRules || !series.base?.references
+          || !Array.isArray(series.observations) || !series.observations.length
+          || container.dataset.forId !== id) return false;
+      const archived = applyReferenceSeries(series.base.references, series.observations);
+      const lastStep = series.observations[series.observations.length - 1];
+      const lastAt = String(lastStep.observed_at || '');
+      const points = seriesFor(id, series.base, series);
+      const movement = points.filter(point => !point.baseline);
+      const before = archived[id];
+      if (!before) {
+        container.innerHTML = `<span class="eyebrow">${escapeHTML(liveRules)} · RETAINED SERIES</span>`
+          + `<p class="change-refused">This reference is outside the retained same-rule observations. No change is inferred.</p>`;
+        container.hidden = false;
+        return true;
+      }
+      const changes = describeChange(before, alert);
+      const body = changes.length
+        ? `<div class="change-rows">${changes.map(([label, value]) =>
+            `<div><span>${escapeHTML(label)}</span><strong>${escapeHTML(value)}</strong></div>`).join('')}</div>`
+        : `<p class="change-none">No additional tracked field changed in the latest receipt.</p>`;
+      const firstAt = String(series.base.observed_at || '');
+      const spanMs = Date.parse(lastAt) - Date.parse(firstAt);
+      const spanMinutes = Number.isFinite(spanMs) && spanMs >= 0 ? Math.floor(spanMs / 60000) : null;
+      const spanSeconds = Number.isFinite(spanMs) && spanMs >= 0
+        ? Math.floor((spanMs % 60000) / 1000) : null;
+      const currentAt = String(receipt?.observed_at || '');
+      const liveIsArchived = currentAt === lastAt;
+      const movedLine = movement.length
+        ? `Across the archived interval, this reference changed at ${movement.map(point =>
+            escapeHTML(String(point.observed_at || '').replace('T', ' ').replace('Z', ' UTC'))).join(', ')}.`
+        : 'This reference did not change between the archived observations.';
+      const liveLine = liveIsArchived ? ''
+        : ` The latest published receipt (${escapeHTML(currentAt.replace('T', ' ').replace('Z', ' UTC'))}) is compared with the last retained archive (${escapeHTML(lastAt.replace('T', ' ').replace('Z', ' UTC'))}); the live point is not yet archived.`;
+      container.innerHTML = `<span class="eyebrow">SAME RULE SET · ${escapeHTML(liveRules)}</span>`
+        + `<span class="eyebrow">LATEST RECEIPT VS LAST RETAINED ARCHIVE</span>${body}`
+        + `<p class="change-series"><b>${series.observations.length + 1}</b> retained observations, `
+        + `${spanMinutes === null ? 'time span unavailable' : `${spanMinutes}m ${spanSeconds}s apart`}. `
+        + `${movedLine}${liveLine}</p>`
+        + `<small class="change-limit">This v3 segment starts at ${escapeHTML(firstAt.replace('T', ' ').replace('Z', ' UTC'))}. `
+        + `It is separate from the v2 series; this short interval is not a daily or monthly history.</small>`;
+      container.hidden = false;
+      return true;
+    }).catch(() => false);
   }
 
   function seriesFor(referenceId, snapshot, deltas) {
@@ -243,12 +315,15 @@
       const datedOn = String(snapshot.observed_at || '').replace('T', ' ').slice(0, 16);
       const liveRules = receipt?.universe?.rules_version || null;
       if (!snapshot.rules_version || !liveRules || snapshot.rules_version !== liveRules) {
-        container.innerHTML = `<span class="eyebrow">SINCE ${escapeHTML(datedOn)} UTC</span>`
-          + `<p class="change-refused">No change is stated. The dated observation was produced under `
-          + `${escapeHTML(snapshot.rules_version || 'an unrecorded rule set')} and this receipt under `
-          + `${escapeHTML(liveRules || 'an unrecorded rule set')}. Subtracting them would report a rule `
-          + `change as a market change, which is the error this monitor exists to refuse.</p>`;
-        container.hidden = false;
+        renderRetainedRuleVersionChange(alert, container, liveRules).then(rendered => {
+          if (rendered || container.dataset.forId !== String(alert?.rwa_id || '')) return;
+          container.innerHTML = `<span class="eyebrow">SINCE ${escapeHTML(datedOn)} UTC</span>`
+            + `<p class="change-refused">No change is stated. The dated observation was produced under `
+            + `${escapeHTML(snapshot.rules_version || 'an unrecorded rule set')} and this receipt under `
+            + `${escapeHTML(liveRules || 'an unrecorded rule set')}. Subtracting them would report a rule `
+            + `change as a market change, which this monitor refuses.</p>`;
+          container.hidden = false;
+        });
         return;
       }
       const before = (snapshot.references || {})[String(alert.rwa_id)];

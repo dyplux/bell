@@ -105,6 +105,11 @@ The dated-series job now archives each new full receipt as deterministic gzip an
 to the chained history record. `make verify` checks every retained archive against the complete
 history summary, including observations that cannot enter the current comparable series after a
 rule change. For series steps with retained receipts it also checks every per-reference row.
+Retained observations under a newer rule set form a separate same-rule segment in
+[`reference-deltas-v3.json`](site/proof/reference-deltas-v3.json); it is never merged into the v2
+series. The first v3 interval records two observations 15 minutes apart, including the iShares
+Russell 2000 ETF route changing from `do_not_compare` to `investigate` as
+`ZERO_MCAP_POSITIVE_VOLUME` disappears. This is a short observed interval, not a daily history.
 Older history entries are not backfilled from later data and remain explicitly unverified at row
 level where no receipt was retained.
 `python3 bell/verify_public_surface.py` performs a credential-free smoke check against the public

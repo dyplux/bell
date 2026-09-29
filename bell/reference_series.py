@@ -35,6 +35,7 @@ PROOF = HERE / "site" / "proof"
 BASE = PROOF / "reference-snapshot-2026-09-21.json"
 DELTAS = PROOF / "reference-deltas.json"
 SCHEMA = "bell.reference_deltas.v1"
+VERSIONED_SERIES_SCHEMA = "bell.reference_deltas_by_rules.v1"
 
 FIELDS = ("state", "representations", "comparison_published", "signal_codes")
 
@@ -319,6 +320,115 @@ def record(receipt: dict, history: dict | None = None) -> tuple:
     deltas_doc["observations"].append(step)
     return deltas_doc, (f"recorded {observed_at}: {moved} references moved, "
                         f"series is now {len(deltas_doc['observations']) + 1} points")
+
+
+def versioned_series_path(rules_version: str) -> Path:
+    slug = re.fullmatch(r"bell\.rules\.v([0-9]+)", rules_version or "")
+    if not slug:
+        raise ValueError(f"unsupported rule version for a retained series: {rules_version!r}")
+    return PROOF / f"reference-deltas-v{slug.group(1)}.json"
+
+
+def build_versioned_series(history: dict, rules_version: str) -> dict:
+    """Derive a same-rules per-reference series only from retained receipts."""
+    retained = []
+    for observation in history.get("observations") or []:
+        if observation.get("rules_version") != rules_version:
+            continue
+        receipt = load_retained_receipt(observation, f"{rules_version} observation")
+        if receipt is None:
+            continue
+        if (receipt.get("universe") or {}).get("rules_version") != rules_version:
+            raise ValueError(f"{rules_version} retained receipt declares another rule version")
+        retained.append((observation, receipt))
+    retained.sort(key=lambda pair: pair[0].get("observed_at") or "")
+    if len(retained) < 2:
+        raise ValueError(f"{rules_version} has fewer than two retained observations")
+
+    first_observation, first_receipt = retained[0]
+    previous = snapshot_of(first_receipt)
+    base = {
+        "observed_at": first_observation["observed_at"],
+        "receipt_path": first_observation["receipt_path"],
+        "receipt_sha256": first_observation["receipt_sha256"],
+        "references": previous,
+    }
+    steps = []
+    for observation, receipt in retained[1:]:
+        current = snapshot_of(receipt)
+        change = delta(previous, current)
+        change.update({
+            "observed_at": observation["observed_at"],
+            "receipt_path": observation["receipt_path"],
+            "receipt_sha256": observation["receipt_sha256"],
+            "source_hashes": observation.get("source_hashes") or {},
+            "alert_index_sha256": index_digest(receipt),
+        })
+        steps.append(change)
+        previous = current
+    return {
+        "schema_version": VERSIONED_SERIES_SCHEMA,
+        "rules_version": rules_version,
+        "base": base,
+        "observations": steps,
+    }
+
+
+def verify_versioned_series(history: dict) -> list[str]:
+    """Require each multi-receipt rule segment to match its immutable receipts."""
+    versions = {}
+    for observation in history.get("observations") or []:
+        if observation.get("rules_version") and observation.get("receipt_path"):
+            versions.setdefault(observation["rules_version"], 0)
+            versions[observation["rules_version"]] += 1
+
+    notes = []
+    expected_paths = set()
+    for rules_version, count in versions.items():
+        if count < 2:
+            continue
+        path = versioned_series_path(rules_version)
+        expected_paths.add(path.name)
+        if not path.is_file():
+            raise ValueError(f"{path.name} is missing for {count} retained {rules_version} receipts")
+        try:
+            recorded = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as error:
+            raise ValueError(f"{path.name} is unreadable: {error}") from None
+        derived = verify_versioned_series_document(recorded, history, rules_version, path.name)
+        notes.append(f"{rules_version}: {count} retained observations, "
+                     f"{sum(len(step['changed']) + len(step['removed']) for step in derived['observations'])} reference changes verified")
+
+    unexpected = {path.name for path in PROOF.glob("reference-deltas-v*.json")} - expected_paths
+    if unexpected:
+        raise ValueError(f"versioned reference series has no matching retained segment: {', '.join(sorted(unexpected))}")
+    return notes
+
+
+def verify_versioned_series_document(recorded: dict, history: dict,
+                                     rules_version: str, label: str = "versioned series") -> dict:
+    derived = build_versioned_series(history, rules_version)
+    if recorded != derived:
+        raise ValueError(f"{label} differs from the series derived from retained receipts")
+    return derived
+
+
+def record_versioned_series(history: dict) -> list[str]:
+    """Refresh separate delta files for rule versions with retained receipt pairs."""
+    versions = {item.get("rules_version") for item in history.get("observations") or []
+                if item.get("rules_version") and item.get("receipt_path")}
+    notes = []
+    for rules_version in sorted(versions):
+        count = sum(bool(item.get("rules_version") == rules_version and item.get("receipt_path"))
+                    for item in history.get("observations") or [])
+        if count < 2:
+            continue
+        document = build_versioned_series(history, rules_version)
+        path = versioned_series_path(rules_version)
+        path.write_text(json.dumps(document, ensure_ascii=False, separators=(",", ":")) + "\n",
+                        encoding="utf-8")
+        notes.append(f"{rules_version}: {count} retained observations in {path.name}")
+    return notes
 
 
 def main(argv: list[str] | None = None) -> int:

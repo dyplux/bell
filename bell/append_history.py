@@ -303,6 +303,12 @@ def main(argv: list[str] | None = None) -> int:
             # A refusal here is a real finding, not a reason to lose the
             # observation that was just appended and written.
             print(f"reference series not extended: {refusal}", file=sys.stderr)
+        try:
+            from reference_series import record_versioned_series
+            for note in record_versioned_series(history):
+                print(f"retained reference series: {note}")
+        except (OSError, ValueError) as error:
+            print(f"retained reference series not updated: {error}", file=sys.stderr)
     elif changed:
         print(f"dry run: would take the series to {len(history['observations'])} observations")
     return 0
