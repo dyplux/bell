@@ -39,8 +39,8 @@ test('public release includes a credential-free executable rule specification', 
 test('dated pair review appears with the searched case and its export points to the checked receipt', () => {
   assert.match(issuerEvidence, /'4:37013:38001'/);
   assert.match(integrity, /if \(!pair \|\| !ids\.has\('37013'\) \|\| !ids\.has\('38001'\)\) return ''/);
-  assert.match(integrity, /observedQuoteEndpoints\(item\)\}\$\{pairReviewMarkup\(item, tokenRowsFor\(item\)\)\}/,
-    'the pairwise review must appear beside the searched case, before the population index');
+  assert.match(integrity, /pairReviewMarkup\(item, tokenRowsFor\(item\)\)\}\$\{capitalPanel\(item\)\}\$\{observedQuoteEndpoints\(item\)\}/,
+    'the pairwise review must appear first beside the searched case, before secondary quote details');
   assert.match(page, /data-example-search="Alphabet"/,
     'the featured pairwise review must be discoverable from the first screen');
   assert.doesNotMatch(integrity.slice(integrity.indexOf('function renderComparison(item)'), integrity.indexOf('function comparisonRouteSet')), /pairReviewMarkup/,
@@ -500,7 +500,7 @@ test('comparison evidence is attached to exact token IDs and flags the Alphabet 
   assert.match(browserAudit, /this observation has no published filtered quote set/);
   assert.match(integrity, /CMC groups GOOGon \(Alphabet Class C\) under its Class A reference/);
   assert.match(integrity, /byId\('hero-mobile-note'\)\.textContent = alphabetClassScopeSentence\(alert\)/);
-  assert.match(integrity, /observedQuoteEndpoints\(item\)\}\$\{pairReviewMarkup\(item, tokenRowsFor\(item\)\)\}/);
+  assert.match(integrity, /pairReviewMarkup\(item, tokenRowsFor\(item\)\)\}\$\{capitalPanel\(item\)\}\$\{observedQuoteEndpoints\(item\)\}/);
   assert.match(page, /data-example-search="Alphabet"/);
   assert.doesNotMatch(integrity.slice(integrity.indexOf('function renderComparison(item)'), integrity.indexOf('function comparisonRouteSet')), /pairReviewMarkup/);
   assert.match(evidence, /window\.BELL_INSTRUMENT_EVIDENCE/);
