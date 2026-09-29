@@ -15,6 +15,20 @@ from verify_integrity_receipt import verify_observation
 
 
 def receipt(states, rules_version=RULES_VERSION, refs=10, rows=20):
+    alert_index = []
+    state_rows = [state for state, count in states.items() for _ in range(count)]
+    token_counts = [rows // refs + (1 if index < rows % refs else 0)
+                    for index in range(refs)]
+    signal_codes = []
+    for code, count in {"PRICE_DENOMINATION_BREAK": 1}.items():
+        signal_codes.extend([code] * count)
+    for index in range(refs):
+        alert_index.append({
+            "rwa_id": index + 1,
+            "state": state_rows[index] if index < len(state_rows) else "no_flags",
+            "token_count": token_counts[index],
+            "signal_codes": [signal_codes[index]] if index < len(signal_codes) else [],
+        })
     universe = {
         "tokenised_references_scanned": refs,
         "tokens_scanned": rows,
@@ -24,6 +38,7 @@ def receipt(states, rules_version=RULES_VERSION, refs=10, rows=20):
     if rules_version is not None:
         universe["rules_version"] = rules_version
     return {"observed_at": "2026-09-21T21:25:01Z", "universe": universe,
+            "alert_index": alert_index,
             "source_hashes": {name: MAP_DIGEST for name in
                           ("map", "asset_list", "quotes", "info", "issuers")}}
 

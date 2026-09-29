@@ -150,6 +150,36 @@ class Forgery(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.verify_observation(observation, receipt, "current but rewritten")
 
+    def test_full_rows_reconcile_the_published_population_summaries(self):
+        observation = self.dated_observation()
+        self.assertTrue(self.verify_observation(observation, copy.deepcopy(self.dated),
+                                                "row-reconciled control"))
+
+    def test_alert_index_token_count_cannot_disagree_with_the_population(self):
+        receipt = copy.deepcopy(self.dated)
+        receipt["alert_index"][0]["token_count"] += 1
+        with self.assertRaisesRegex(ValueError, "alert_index token count"):
+            self.verify_observation(self.dated_observation(), receipt, "changed row count")
+
+    def test_alert_index_cannot_repeat_a_reference_id(self):
+        receipt = copy.deepcopy(self.dated)
+        receipt["alert_index"][1]["rwa_id"] = receipt["alert_index"][0]["rwa_id"]
+        with self.assertRaisesRegex(ValueError, "repeats rwa_id"):
+            self.verify_observation(self.dated_observation(), receipt, "duplicate reference")
+
+    def test_alert_index_states_and_signals_must_match_their_population_totals(self):
+        for field, mutate, expected in (
+                ("state", lambda row: row.update(state="forged-state"),
+                 "alert_index states"),
+                ("signal", lambda row: row["signal_codes"].append("FORGED_SIGNAL"),
+                 "alert_index signals")):
+            receipt = copy.deepcopy(self.dated)
+            with self.subTest(field=field):
+                mutate(receipt["alert_index"][0])
+                with self.assertRaisesRegex(ValueError, expected):
+                    self.verify_observation(self.dated_observation(), receipt,
+                                            f"forged {field}")
+
 
     def test_emptying_the_claimed_signals_does_not_empty_the_comparison(self):
         # A reviewer emptied the history record's signals, zeroed every signal

@@ -231,6 +231,7 @@ def verify_observation(observation: dict, receipt: dict, label: str) -> bool:
     signals = universe.get("signals")
     if not isinstance(signals, dict):
         raise ValueError(f"{label}.universe.signals is missing")
+    verify_alert_index(universe, receipt.get("alert_index"), label)
     # This compared {key: signals.get(key) for key in observation["signals"]}
     # against observation["signals"] - a projection of the receipt onto the
     # keys the HISTORY RECORD claims. An empty claim therefore compared nothing
@@ -276,6 +277,50 @@ def verify_observation(observation: dict, receipt: dict, label: str) -> bool:
 
     verify_observation_shape(observation, label)
     return not rules_differ
+
+
+def verify_alert_index(universe: dict, alert_index: object, label: str) -> None:
+    """Reconcile population totals with the per-reference rows they summarize."""
+    from collections import Counter
+
+    if not isinstance(alert_index, list) or not alert_index:
+        raise ValueError(f"{label}.alert_index is missing or empty")
+    ids: set[int] = set()
+    states: Counter = Counter()
+    signals: Counter = Counter()
+    token_count = 0
+    for position, row in enumerate(alert_index):
+        row_label = f"{label}.alert_index[{position}]"
+        if not isinstance(row, dict):
+            raise ValueError(f"{row_label} is not an object")
+        rwa_id = row.get("rwa_id")
+        if isinstance(rwa_id, bool) or not isinstance(rwa_id, int) or rwa_id < 1:
+            raise ValueError(f"{row_label}.rwa_id is not a positive integer")
+        if rwa_id in ids:
+            raise ValueError(f"{label}.alert_index repeats rwa_id {rwa_id}")
+        ids.add(rwa_id)
+        state = row.get("state")
+        if not isinstance(state, str) or not state:
+            raise ValueError(f"{row_label}.state is missing")
+        states[state] += 1
+        count = row.get("token_count")
+        if isinstance(count, bool) or not isinstance(count, int) or count < 0:
+            raise ValueError(f"{row_label}.token_count is invalid")
+        token_count += count
+        row_signals = row.get("signal_codes")
+        if not isinstance(row_signals, list) or any(
+                not isinstance(code, str) or not code for code in row_signals):
+            raise ValueError(f"{row_label}.signal_codes is invalid")
+        if len(set(row_signals)) != len(row_signals):
+            raise ValueError(f"{row_label}.signal_codes contains a duplicate")
+        signals.update(row_signals)
+
+    assert_equal(f"{label}.alert_index population", len(alert_index),
+                 universe.get("tokenised_references_scanned"))
+    assert_equal(f"{label}.alert_index token count", token_count,
+                 universe.get("tokens_scanned"))
+    assert_equal(f"{label}.alert_index states", dict(states), universe.get("states"))
+    assert_equal(f"{label}.alert_index signals", dict(signals), universe.get("signals"))
 
 
 def verify_observation_shape(observation: dict, label: str) -> None:
