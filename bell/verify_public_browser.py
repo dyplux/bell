@@ -297,6 +297,9 @@ def main() -> int:
                 result_text = result.inner_text()
                 expected = expected_for(name)
                 require(expected in result_text, f"{name} did not mirror receipt state {expected!r}: {result_text[:500]!r}")
+                observed_stamp = str(receipt.get("observed_at") or "").replace("T", " ")[:16]
+                require(f"RECEIPT OBSERVED · {observed_stamp} UTC" in result_text,
+                        f"{name} capital check does not identify the receipt timestamp: {result_text[:700]!r}")
                 # A quote band needs two rows to compare. This asked for one
                 # whenever the STATE was not "SINGLE REPRESENTATION", which is a
                 # different question: a reference can carry one representation

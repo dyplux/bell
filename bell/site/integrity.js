@@ -1285,6 +1285,7 @@
 
   function capitalPanel(alert) {
     const assessment = window.BellCapitalImpact.assess(alert, readCapitalBudget(alert.rwa_id));
+    const observedAt = String(receipt?.observed_at || '').replace('T', ' ').slice(0, 16);
     const rangeMetrics = assessment.metrics?.ratio
       ? `<div><span>${capitalRangeScope(alert, true).label}</span><strong>${formatRatio(assessment.metrics.ratio)}×</strong></div><div><span>NOMINAL TOKEN UNITS AT LOW QUOTE</span><strong>${formatNumber(assessment.metrics.unitsAtLowQuote)}</strong></div><div><span>NOMINAL TOKEN UNITS AT HIGH QUOTE</span><strong>${formatNumber(assessment.metrics.unitsAtHighQuote)}</strong></div>`
       : '';
@@ -1295,7 +1296,7 @@
       ? `<div class="capital-metrics">${rangeMetrics}${volumeMetrics}</div><small class="capital-metrics-note">${capitalMetricsNote(assessment.mode, 'Nominal quote units only.', alert?.token_count, alert, Boolean(assessment.metrics?.ratio))}</small>`
       : '<div class="capital-metrics capital-metrics-empty"><span>Fewer than two positive quote rows; no range is shown.</span></div>';
     return `<section class="capital-panel capital-${assessment.mode}" data-capital-panel="${escapeHTML(alert.rwa_id || '')}">
-      <div class="capital-panel-head"><span>CAPITAL CHECK</span><b>Make the financial consequence visible</b></div>
+      <div class="capital-panel-head"><span>CAPITAL CHECK</span><b>RECEIPT OBSERVED · ${escapeHTML(observedAt || 'time unavailable')} UTC</b></div>
       <label class="capital-budget">Amount under consideration <span>$</span><input type="number" min="${window.BellCapitalImpact.MINIMUM_BUDGET}" max="${window.BellCapitalImpact.MAXIMUM_BUDGET}" step="100" value="${assessment.budget}" inputmode="decimal" data-capital-budget aria-label="Amount under consideration"></label>
       <strong data-capital-headline>${escapeHTML(assessment.headline)}</strong>
       <p data-capital-copy>${escapeHTML(shortenBoundary(assessment.copy))}</p>
