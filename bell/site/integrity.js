@@ -942,7 +942,7 @@
           + `<div><b>Filtered comparisons <strong id="hero-route-comparable">${routeCounts.comparable.toLocaleString()}</strong></b>`
           + `<b>Do not compare <strong id="hero-route-blocked">${routeCounts.blocked.toLocaleString()}</strong></b>`
           + `<b>Investigate, no comparison <strong id="hero-route-investigate">${routeCounts.investigate.toLocaleString()}</strong></b>`
-          + `<b>No flags, no filtered pair <strong id="hero-route-unflagged">${routeCounts.unflagged.toLocaleString()}</strong></b></div>`
+          + `<b>No flags; no comparison passed <strong id="hero-route-unflagged">${routeCounts.unflagged.toLocaleString()}</strong></b></div>`
           + '<small>Counts are mutually exclusive routes from the current receipt; they do not establish economic equivalence.</small>';
       } else {
         byId('hero-population-breakdown').hidden = true;

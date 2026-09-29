@@ -249,6 +249,9 @@ def main() -> int:
             require(page.locator(".hero-api-paths").count() == 1
                     and "/v5/real-world-assets/quotes/latest" in (page.locator(".hero-api-paths").text_content() or ""),
                     "the first-screen API detail no longer names a CMC RWA route")
+            routing_method = page.locator(".hero-routing-method").text_content() or ""
+            require("no Bell rule fired" in routing_method and "not an approval" in routing_method,
+                    "the unflagged route must not be presented as an approval")
             wait_for_text(page, "#publication-history", receipt["observed_at"])
             # Every population figure the page prints must equal the receipt it
             # is reading AT THIS MOMENT, not a figure from any other observation.

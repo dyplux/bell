@@ -518,8 +518,9 @@ footer .footer-meta{width:100%;display:flex;justify-content:space-between;gap:12
   .hero>div:first-of-type>.lede-contrast{order:10}
   .hero>div:first-of-type>.hero-meta{order:11}
   .hero>div:first-of-type>.hero-population-breakdown{order:12}
-  .hero>div:first-of-type>.hero-api-paths{order:13}
-  .hero>div:first-of-type>.investor-task{order:14}
+  .hero>div:first-of-type>.hero-routing-method{order:13}
+  .hero>div:first-of-type>.hero-api-paths{order:14}
+  .hero>div:first-of-type>.investor-task{order:15}
   .hero h1{font-size:40px}
   .hero-words{grid-template-columns:1fr;margin-top:14px}
   .hero-words>div{padding:9px 12px}
@@ -574,8 +575,9 @@ footer .footer-meta{width:100%;display:flex;justify-content:space-between;gap:12
   .hero>div:first-of-type>.lede-contrast{order:10}
   .hero>div:first-of-type>.hero-meta{order:11}
   .hero>div:first-of-type>.hero-population-breakdown{order:12}
-  .hero>div:first-of-type>.hero-api-paths{order:13}
-  .hero>div:first-of-type>.investor-task{order:14}
+  .hero>div:first-of-type>.hero-routing-method{order:13}
+  .hero>div:first-of-type>.hero-api-paths{order:14}
+  .hero>div:first-of-type>.investor-task{order:15}
 }
 
 /* The key listed three ways to be refused and no way to be answered, on the
