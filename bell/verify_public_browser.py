@@ -308,6 +308,27 @@ def main() -> int:
                     require("observed quote" in result_text.lower(),
                             f"{name} has {rows} representations and exposes no observed evidence: "
                             f"{result_text[:400]!r}")
+                routes = ((matched_item or {}).get("comparison") or {}).get("routes")
+                capital_rows = routes if isinstance(routes, list) else (matched_item or {}).get("tokens", [])
+                positive_prices = [float(row["price"]) for row in capital_rows
+                                   if isinstance(row, dict) and isinstance(row.get("price"), (int, float))
+                                   and float(row["price"]) > 0]
+                has_range = len(positive_prices) >= 2 and min(positive_prices) != max(positive_prices)
+                if has_range:
+                    expected_range_label = ("FILTERED ROUTE QUOTE RANGE" if isinstance(routes, list)
+                                            else "OBSERVED ROW QUOTE RANGE")
+                    require(expected_range_label in result_text,
+                            f"{name} capital range label does not name its receipt rows: {result_text[:700]!r}")
+                    scope_copy = ("Capital range uses this receipt’s filtered routes"
+                                  if isinstance(routes, list)
+                                  else "Range uses reported token rows before comparison filters. No filtered comparison is published")
+                    require(scope_copy in result_text,
+                            f"{name} capital note does not disclose the quote set: {result_text[:700]!r}")
+                    budget_input = result.locator("[data-capital-budget]")
+                    budget_input.fill("12000")
+                    updated_result = result.inner_text()
+                    require(expected_range_label in updated_result and scope_copy in updated_result,
+                            f"{name} lost quote-set scope after amount edit: {updated_result[:700]!r}")
                 if expected == "COMPARABLE":
                     # The affirmative has to carry its consequence, or the badge
                     # is decoration. The page said COMPARABLE while the capital

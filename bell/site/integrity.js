@@ -1244,31 +1244,50 @@
   // comparable. On the comparable path the honest caveat is not that the rows
   // failed a check they passed; it is which questions the price fact does not
   // answer.
-  function capitalMetricsNote(mode, unitPhrase, representations) {
+  function capitalRangeScope(alert, hasRange = true) {
+    const hasFilteredRoutes = Boolean(alert?.comparison && Array.isArray(alert.comparison.routes));
+    if (hasFilteredRoutes) {
+      return {
+        label: hasRange ? 'FILTERED ROUTE QUOTE RANGE' : '',
+        note: hasRange
+          ? 'Capital range uses this receipt’s filtered routes; the separate quote band includes all priced representations.'
+          : 'No quote range is shown; any amount-to-volume check uses this receipt’s filtered routes.',
+      };
+    }
+    return {
+      label: hasRange ? 'OBSERVED ROW QUOTE RANGE' : '',
+      note: hasRange
+        ? 'Range uses reported token rows before comparison filters. No filtered comparison is published.'
+        : 'No quote range is shown; any volume total uses reported token rows. No filtered comparison is published.',
+    };
+  }
+
+  function capitalMetricsNote(mode, unitPhrase, representations, alert, hasRange = true) {
     const shared = `${unitPhrase} Reported 24h volume is a rolling field, not depth or executable exit capacity.`;
+    const scope = capitalRangeScope(alert, hasRange).note;
     if (mode === 'comparable') {
-      return `${shared} These rows share a CMC RWA reference and passed Bell's price and volume filters; equivalent units and claims are not established. Backing, redemption, custody and executable size remain unobserved.`;
+      return `${shared} ${scope} Equivalent units and claims are not established. Backing, redemption, custody and executable size remain unobserved.`;
     }
     // "Rows remain non-comparable" over a single row says nothing: there is no
     // second row for it to be non-comparable with. The flag on such a
     // reference is about that row's own market state.
     if (Number(representations) === 1) {
-      return `${shared} This is the reference's only representation, so nothing here is being compared; the flag is about that row's own fields.`;
+      return `${shared} ${scope} This is the reference's only representation, so the flag is about that row's own fields.`;
     }
-    return `${shared} Rows remain outside Bell's filtered route comparison while its identity or quote rules are unresolved.`;
+    return `${shared} ${scope} Rows remain outside Bell's filtered route comparison while its identity or quote rules are unresolved.`;
   }
 
   function capitalPanel(alert) {
     const assessment = window.BellCapitalImpact.assess(alert, readCapitalBudget(alert.rwa_id));
     const rangeMetrics = assessment.metrics?.ratio
-      ? `<div><span>FILTERED QUOTE RANGE</span><strong>${formatNumber(assessment.metrics.ratio)}×</strong></div><div><span>NOMINAL TOKEN UNITS AT LOW QUOTE</span><strong>${formatNumber(assessment.metrics.unitsAtLowQuote)}</strong></div><div><span>NOMINAL TOKEN UNITS AT HIGH QUOTE</span><strong>${formatNumber(assessment.metrics.unitsAtHighQuote)}</strong></div>`
+      ? `<div><span>${capitalRangeScope(alert, true).label}</span><strong>${formatNumber(assessment.metrics.ratio)}×</strong></div><div><span>NOMINAL TOKEN UNITS AT LOW QUOTE</span><strong>${formatNumber(assessment.metrics.unitsAtLowQuote)}</strong></div><div><span>NOMINAL TOKEN UNITS AT HIGH QUOTE</span><strong>${formatNumber(assessment.metrics.unitsAtHighQuote)}</strong></div>`
       : '';
     const volumeMetrics = assessment.metrics?.volume
       ? `<div><span>AMOUNT / REPORTED 24H VOLUME</span><strong>${formatNumber(assessment.metrics.volume.amountSharePercent)}%</strong></div>`
       : '';
     const metrics = rangeMetrics || volumeMetrics
-      ? `<div class="capital-metrics">${rangeMetrics}${volumeMetrics}</div><small class="capital-metrics-note">${capitalMetricsNote(assessment.mode, 'Nominal quote units only.', alert?.token_count)}</small>`
-      : '<div class="capital-metrics capital-metrics-empty"><span>No comparable quote range in this receipt.</span></div>';
+      ? `<div class="capital-metrics">${rangeMetrics}${volumeMetrics}</div><small class="capital-metrics-note">${capitalMetricsNote(assessment.mode, 'Nominal quote units only.', alert?.token_count, alert, Boolean(assessment.metrics?.ratio))}</small>`
+      : '<div class="capital-metrics capital-metrics-empty"><span>Fewer than two positive quote rows; no range is shown.</span></div>';
     return `<section class="capital-panel capital-${assessment.mode}" data-capital-panel="${escapeHTML(alert.rwa_id || '')}">
       <div class="capital-panel-head"><span>CAPITAL CHECK</span><b>Make the financial consequence visible</b></div>
       <label class="capital-budget">Amount under consideration <span>$</span><input type="number" min="${window.BellCapitalImpact.MINIMUM_BUDGET}" max="${window.BellCapitalImpact.MAXIMUM_BUDGET}" step="100" value="${assessment.budget}" inputmode="decimal" data-capital-budget aria-label="Amount under consideration"></label>
@@ -1287,7 +1306,7 @@
       ? formatNumber(row.volume)
       : row.volumeState === 'zero' ? '0 reported' : 'missing';
     const rows = band.rows.map(row => `<tr><th>${escapeHTML(row.token.symbol || row.token.name || 'unlabelled')}<small>${escapeHTML(row.token.name || '')}</small></th><td>${escapeHTML(row.token.issuer_name || row.token.issuer_catalogue_name || 'issuer not resolved')}</td><td>${formatNumber(row.price)}</td><td class="quote-band-delta">${row.deltaPercent >= 0 ? '+' : ''}${row.deltaPercent.toFixed(2)}%</td><td>${volume(row)}</td></tr>`).join('');
-    return `<section class="search-evidence" data-search-evidence><div class="search-evidence-head"><span>OBSERVED QUOTE BAND</span><b>${formatNumber(band.ratio)}×</b></div><p class="search-evidence-lede">${band.rows.length} priced representations around a ${formatNumber(band.median)} median quote</p><span class="quote-band-scroll-hint">SWIPE FOR QUOTE · MEDIAN GAP · VOLUME →</span><div class="quote-band-scroll"><table class="quote-band-table"><thead><tr><th>Representation</th><th>Issuer</th><th>Quote</th><th>Vs median</th><th>24h volume</th></tr></thead><tbody>${rows}</tbody></table></div><small>CMC quote rows in this receipt · relative to the observed median only · not a ranking, discount, backing, liquidity or executable spread</small></section>`;
+    return `<section class="search-evidence" data-search-evidence><div class="search-evidence-head"><span>OBSERVED QUOTE BAND</span><b>${formatNumber(band.ratio)}×</b></div><p class="search-evidence-lede">All ${band.rows.length} priced representations in this receipt around a ${formatNumber(band.median)} median quote</p><span class="quote-band-scroll-hint">SWIPE FOR QUOTE · MEDIAN GAP · VOLUME →</span><div class="quote-band-scroll"><table class="quote-band-table"><thead><tr><th>Representation</th><th>Issuer</th><th>Quote</th><th>Vs median</th><th>24h volume</th></tr></thead><tbody>${rows}</tbody></table></div><small>CMC quote rows in this receipt · relative to the observed median only · not a ranking, discount, backing, liquidity or executable spread</small></section>`;
   }
 
   function referenceConcentrationPanel(alert) {
@@ -1423,14 +1442,14 @@
     panel.querySelector('[data-capital-copy]').textContent = assessment.copy;
     const metrics = assessment.metrics;
     const rangeMetrics = metrics?.ratio
-      ? `<div><span>FILTERED QUOTE RANGE</span><strong>${formatNumber(metrics.ratio)}×</strong></div><div><span>NOMINAL TOKEN UNITS AT LOW QUOTE</span><strong>${formatNumber(metrics.unitsAtLowQuote)}</strong></div><div><span>NOMINAL TOKEN UNITS AT HIGH QUOTE</span><strong>${formatNumber(metrics.unitsAtHighQuote)}</strong></div>`
+      ? `<div><span>${capitalRangeScope(alert, true).label}</span><strong>${formatNumber(metrics.ratio)}×</strong></div><div><span>NOMINAL TOKEN UNITS AT LOW QUOTE</span><strong>${formatNumber(metrics.unitsAtLowQuote)}</strong></div><div><span>NOMINAL TOKEN UNITS AT HIGH QUOTE</span><strong>${formatNumber(metrics.unitsAtHighQuote)}</strong></div>`
       : '';
     const volumeMetrics = metrics?.volume
       ? `<div><span>AMOUNT / REPORTED 24H VOLUME</span><strong>${formatNumber(metrics.volume.amountSharePercent)}%</strong></div>`
       : '';
     panel.querySelector('[data-capital-metrics]').innerHTML = metrics
-      ? `<div class="capital-metrics">${rangeMetrics}${volumeMetrics}</div><small class="capital-metrics-note">${capitalMetricsNote(assessment.mode, 'Nominal unit counts only.', alert?.token_count)}</small>`
-      : '<div class="capital-metrics capital-metrics-empty"><span>No comparable quote range in this receipt.</span></div>';
+      ? `<div class="capital-metrics">${rangeMetrics}${volumeMetrics}</div><small class="capital-metrics-note">${capitalMetricsNote(assessment.mode, 'Nominal unit counts only.', alert?.token_count, alert, Boolean(metrics?.ratio))}</small>`
+      : '<div class="capital-metrics capital-metrics-empty"><span>Fewer than two positive quote rows; no range is shown.</span></div>';
     panel.querySelector('[data-capital-note]').textContent = assessment.note;
   }
 

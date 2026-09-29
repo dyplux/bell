@@ -194,6 +194,28 @@ test('search result exposes the observed quote endpoints before the evidence tab
   assert.match(visual, /\.quote-band-table/);
 });
 
+
+test('capital quote ranges name the exact receipt rows used by the calculation', () => {
+  const scope = runFromSource('capitalRangeScope');
+  assert.deepEqual(scope({ tokens: [{ price: 10 }, { price: 12 }] }), {
+    label: 'OBSERVED ROW QUOTE RANGE',
+    note: 'Range uses reported token rows before comparison filters. No filtered comparison is published.',
+  });
+  assert.deepEqual(scope({ comparison: { routes: [{ crypto_id: 1 }, { crypto_id: 2 }] } }), {
+    label: 'FILTERED ROUTE QUOTE RANGE',
+    note: 'Capital range uses this receipt’s filtered routes; the separate quote band includes all priced representations.',
+  });
+  assert.deepEqual(scope({ tokens: [{ price: 10 }], comparison: null }, false), {
+    label: '',
+    note: 'No quote range is shown; any volume total uses reported token rows. No filtered comparison is published.',
+  });
+  const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
+  assert.equal((integrity.match(/capitalRangeScope\(alert, true\)\.label/g) || []).length, 2,
+    'initial render and amount updates must use the same row-scope label');
+  assert.match(integrity, /capitalMetricsNote\(assessment\.mode, 'Nominal quote units only\.', alert\?\.token_count, alert,/);
+  assert.match(integrity, /capitalMetricsNote\(assessment\.mode, 'Nominal unit counts only\.', alert\?\.token_count, alert,/);
+});
+
 test('flagged Gold and Tesla cases expose dated temporal proof without turning it into a ranking', () => {
   const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
   const visual = fs.readFileSync(path.join(site, 'visual-overrides.css'), 'utf8');
