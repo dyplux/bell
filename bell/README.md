@@ -84,7 +84,7 @@ The receipt comparison utility in [`receipt_compare.py`](receipt_compare.py)
 compares two dated windows and reports flat-bar diagnostics without treating them as liquidity.
 The public integrity receipt also has a [sanitized input manifest](site/proof/rwa-surface-integrity-inputs-2026-09-28.json)
 with surface counts, stable-ID join coverage and source fingerprints.
-The 19-observation population history is at
+The 20-observation population history is at
 [`site/proof/rwa-surface-integrity-history.json`](site/proof/rwa-surface-integrity-history.json),
 and the latest committed credential-free normalized input package is at
 [`site/proof/rwa-surface-integrity-inputs-2026-09-28.json`](site/proof/rwa-surface-integrity-inputs-2026-09-28.json), paired with its
