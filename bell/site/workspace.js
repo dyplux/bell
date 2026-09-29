@@ -76,6 +76,39 @@
     return counts;
   }
 
+  function reviewBrief(entry, observedAt) {
+    const { included, excluded } = comparisonCounts(entry);
+    const comparison = entry?.comparison;
+    const nextAction = entry?.next_action || nextSteps[entry?.state]
+      || 'Inspect the published reference fields and keep each unverified claim open.';
+    const lines = [
+      `# Bell review brief: ${entry?.name || 'RWA reference'}`,
+      '',
+      'Generated from the published Bell evidence. This is a saved summary, not a new market observation.',
+      '',
+      `- Observed at: ${observedAt || 'not provided by the loaded receipt'}`,
+      `- CMC RWA ID: ${entry?.rwa_id ?? 'not provided'}`,
+      `- Asset type: ${entry?.asset_type || 'not provided'}`,
+      `- Decision: ${displayDecisionLabel(entry)}`,
+      `- Representations: ${number(entry?.token_count)}`,
+      `- Issuer labels: ${number(entry?.issuer_count)}`,
+      comparison ? `- Comparison rows: ${included} included; ${excluded} excluded` : '- Comparison rows: no filtered comparison published',
+      comparison ? `- Observed spread: ${Number(comparison.spread_bps).toFixed(1)} bps` : '- Observed spread: not published',
+      '',
+      '## Next diligence',
+      '',
+      nextAction,
+      '',
+      '## Limits',
+      '',
+      'A route through reported CMC fields. This does not establish equivalent units or claims, backing, redemption, custody, eligibility, liquidity, or executable size.',
+      '',
+      `Open this case and its full evidence: ${location.origin}/?reference=${encodeURIComponent(entry?.rwa_id ?? '')}#decision`,
+      '',
+    ];
+    return lines.join('\n');
+  }
+
   function freshnessLabel(pub) {
     const observed = new Date(pub.observed_at);
     const shown = Number.isNaN(observed.getTime()) ? pub.observed_at : observed.toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'UTC', timeZoneName: 'short' });
@@ -134,16 +167,16 @@
       return `<tr><td class="token"><strong>${escapeHTML(row.symbol || '—')}</strong><small>${escapeHTML(row.name || 'Unnamed CMC row')}</small></td><td data-label="Comparison set"><span class="row-membership ${membership.label === 'Included' ? 'included' : ''}">${escapeHTML(membership.label)}</span>${membership.reason ? `<small class="row-membership-reason">${escapeHTML(membership.reason)}</small>` : ''}</td><td data-label="Issuer">${escapeHTML(row.issuer_name || 'Issuer not resolved')}</td><td class="numeric" data-label="Quote">${money(row.price)}</td><td class="numeric" data-label="Market cap">${money(row.market_cap)}</td><td class="numeric" data-label="24h volume">${money(row.volume_24h)}</td></tr>`;
     }).join('');
     const date = receipt?._publication?.observed_at || receipt?.observed_at;
-    const dateText = date ? new Date(date).toISOString().replace('T', ' ').slice(0, 16) + ' UTC' : 'dated receipt';
     const { included: includedCount, excluded: excludedCount } = comparisonCounts(entry);
     const decisionCopy = entry.decision?.consequence || nextSteps[entry.state]
       || 'Inspect the published reference fields and keep each unverified claim open.';
+    const nextAction = entry.next_action || nextSteps[entry.state]
+      || 'Keep unobserved claims open and inspect the issuer evidence.';
     result.innerHTML = `<article class="review-result">
       <div class="verdict" data-state="${escapeHTML(entry.state)}"><span class="section-label">CMC RWA #${escapeHTML(entry.rwa_id)} · ${escapeHTML(entry.asset_type || 'reference')}</span><h3>${escapeHTML(route)}</h3><p>${escapeHTML(decisionCopy)}</p><p class="limits">A route through reported fields. It is not a backing or liquidity assessment.</p></div>
       <div><div class="result-data"><div><strong>${number(entry.token_count)}</strong><span>representations</span></div><div><strong>${number(entry.issuer_count)}</strong><span>issuer labels</span></div><div><strong>${comparison ? Number(comparison.spread_bps).toFixed(1) + ' bp' : '—'}</strong><span>observed spread</span></div></div><ul class="finding-list">${findings || '<li>No coded warning in this receipt</li>'}</ul></div>
+      <div class="review-next"><div class="review-next-copy"><strong>NEXT DILIGENCE</strong><span>${escapeHTML(nextAction)}</span></div><div class="review-next-links"><button type="button" id="save-review" aria-label="Save review brief for ${escapeHTML(entry.name || 'this reference')}">Save review ↓</button><a href="/?reference=${encodeURIComponent(entry.rwa_id)}#decision">Open full evidence ↗</a></div></div>
       <section class="representation-table"><header><h4>REPRESENTATION ROWS</h4><span>${escapeHTML(compLine)}${comparison ? ` · ${includedCount} rows included / ${excludedCount} rows excluded` : ''}</span></header><table><thead><tr><th>Token / row</th><th>Comparison set</th><th>Issuer field</th><th>Quote</th><th>Market cap</th><th>24h volume</th></tr></thead><tbody>${rows}</tbody></table></section>
-      <div class="review-next"><strong>NEXT DILIGENCE</strong><span>${escapeHTML(entry.next_action || nextSteps[entry.state] || 'Keep unobserved claims open and inspect the issuer evidence.')}</span></div>
-      <a class="evidence-link" href="/?reference=${encodeURIComponent(entry.rwa_id)}#decision">Open full Bell evidence and case receipt ↗</a>
     </article>`;
     history.replaceState(null, '', `?reference=${encodeURIComponent(entry.rwa_id)}`);
   }
@@ -271,6 +304,21 @@
   input.addEventListener('input', showSuggestions);
   input.addEventListener('focus', showSuggestions);
   document.addEventListener('click', event => {
+    if (event.target.closest('#save-review')) {
+      const id = new URLSearchParams(location.search).get('reference');
+      const entry = entries.find(row => String(row.rwa_id) === id);
+      if (entry) {
+        const blob = new Blob([reviewBrief(entry, receipt?._publication?.observed_at || receipt?.observed_at)],
+          { type: 'text/markdown;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `bell-review-${String(entry.rwa_id).replace(/[^a-zA-Z0-9_-]/g, '')}.md`;
+        link.click();
+        URL.revokeObjectURL(url);
+      }
+      return;
+    }
     const option = event.target.closest('[data-id]');
     if (option) {
       const entry = entries.find(row => String(row.rwa_id) === option.dataset.id);

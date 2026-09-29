@@ -907,6 +907,13 @@ test('workspace labels the published decision and marks its exact comparison row
   const label = runWorkspaceFromSource('displayDecisionLabel');
   const membership = runWorkspaceFromSource('comparisonMembership');
   const counts = runWorkspaceFromSource('comparisonCounts', { comparisonMembership: membership });
+  const brief = runWorkspaceFromSource('reviewBrief', {
+    comparisonCounts: counts,
+    displayDecisionLabel: label,
+    number: value => String(value ?? '—'),
+    location: { origin: 'https://bell.dyplux.com' },
+    nextSteps: { no_flags: 'Review the filtered quote rows.' },
+  });
   assert.equal(label({ state: 'no_flags', token_count: 6, comparison: { route_count: 6 } }), 'COMPARABLE');
   assert.equal(label({ state: 'investigate', token_count: 3, comparison: { route_count: 2 } }), 'COMPARABLE · FLAGGED');
   assert.equal(label({ state: 'do_not_compare', decision: { state: 'blocked' }, token_count: 4,
@@ -921,6 +928,18 @@ test('workspace labels the published decision and marks its exact comparison row
     representations: [{ crypto_id: 101 }, { crypto_id: 202 }, { crypto_id: 303 }],
     comparison: { routes: [{ crypto_id: 101 }], included_crypto_ids: [101] },
   }), { included: 1, excluded: 2 });
+  const savedBrief = brief({
+    rwa_id: 77, name: 'Example Inc', asset_type: 'stock', state: 'no_flags',
+    token_count: 3, issuer_count: 2,
+    representations: [{ crypto_id: 101 }, { crypto_id: 202 }, { crypto_id: 303 }],
+    comparison: { included_crypto_ids: [101], spread_bps: 22.2 },
+    next_action: 'Check issuer terms.',
+  }, '2026-09-29T12:00:00Z');
+  assert.match(savedBrief, /# Bell review brief: Example Inc/);
+  assert.match(savedBrief, /- Observed spread: 22\.2 bps/);
+  assert.match(savedBrief, /1 included; 2 excluded/);
+  assert.match(savedBrief, /Check issuer terms\./);
+  assert.match(savedBrief, /https:\/\/bell\.dyplux\.com\/\?reference=77#decision/);
 });
 
 test('the public label follows the decision, executed not grepped', () => {
