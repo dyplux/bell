@@ -439,11 +439,16 @@ footer .footer-meta{width:100%;display:flex;justify-content:space-between;gap:12
 .issuer-evidence-card small{display:block;margin-top:7px}
 .issuer-evidence-links{display:flex;flex-wrap:wrap;gap:6px 12px;margin-top:8px}
 .issuer-evidence-links a{color:#e1c16e;font:11px var(--font);text-decoration:underline;text-underline-offset:2px}
-.pair-review{margin-top:14px;padding:12px;border:1px solid rgba(170,184,201,.2);border-left:2px solid #e1c16e;background:rgba(7,13,20,.58)}
+.pair-review{margin-top:10px;padding:10px 12px;border:1px solid rgba(170,184,201,.2);border-left:2px solid #e1c16e;background:rgba(7,13,20,.58)}
 .pair-review-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
 .pair-review-head>div>span{color:#e1c16e;font:700 11px var(--font);letter-spacing:.1em}
-.pair-review h4{margin:4px 0 0;color:#e8eef5;font:600 14px/1.35 var(--font)}
+.pair-review h4{margin:2px 0 0;color:#e8eef5;font:600 14px/1.3 var(--font)}
 .pair-review-head>strong{max-width:27ch;color:#f0cd81;font:700 11px/1.4 var(--font);letter-spacing:.06em;text-align:right}
+.pair-review-summary{margin:6px 0;color:#c3cfdb;font:12px/1.4 var(--font)}
+.pair-review-receipt{display:inline-block;color:#e1c16e;font:11px var(--font);text-decoration:underline;text-underline-offset:3px}
+.pair-review-details{margin-top:5px;color:#c3cfdb;font:12px/1.5 var(--font)}
+.pair-review-details>summary{width:fit-content;min-height:28px;padding:5px 0;color:#9eacbd;cursor:pointer;font:11px var(--font);text-decoration:underline;text-decoration-color:rgba(225,193,110,.55);text-underline-offset:3px}
+.pair-review-details[open]>summary{margin-bottom:6px}
 .pair-review dl{display:flex;gap:8px 20px;flex-wrap:wrap;margin:10px 0;color:#9eacbd;font:11px var(--font)}
 .pair-review dl>div{display:flex;gap:5px}.pair-review dd{margin:0;color:#dbe5ef}
 .pair-review p{margin:8px 0;color:#c3cfdb;font:12px/1.5 var(--font)}

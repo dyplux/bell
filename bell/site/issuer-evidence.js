@@ -96,6 +96,7 @@ window.BELL_INSTRUMENT_EVIDENCE = {
 window.BELL_PAIR_REVIEWS = {
   '4:37013:38001': {
     title: 'Alphabet Class A · GOOGLX / GOOGLon',
+    summary: 'Same Alphabet Class A reference, but quote units remain unresolved. Ondo displays 1 GOOGLon = 1.0025 GOOGL.',
     cmcObserved: '28 Sep 2026 · dated case snapshot',
     termsChecked: '29 Sep 2026',
     alignment: 'Both issuer product pages identify Alphabet Class A exposure.',

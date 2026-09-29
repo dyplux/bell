@@ -41,6 +41,10 @@ test('dated pair review appears with the searched case and its export points to 
   assert.match(integrity, /if \(!pair \|\| !ids\.has\('37013'\) \|\| !ids\.has\('38001'\)\) return ''/);
   assert.match(integrity, /pairReviewMarkup\(item, tokenRowsFor\(item\)\)\}\$\{capitalPanel\(item\)\}\$\{observedQuoteEndpoints\(item\)\}/,
     'the pairwise review must appear first beside the searched case, before secondary quote details');
+  assert.match(integrity, /class="pair-review-summary"/);
+  assert.match(integrity, /class="pair-review-details"/,
+    'secondary dates and methodology must be available through native disclosure');
+  assert.match(issuerEvidence, /summary: 'Same Alphabet Class A reference, but quote units remain unresolved/);
   assert.match(page, /data-example-search="Alphabet"/,
     'the featured pairwise review must be discoverable from the first screen');
   assert.doesNotMatch(integrity.slice(integrity.indexOf('function renderComparison(item)'), integrity.indexOf('function comparisonRouteSet')), /pairReviewMarkup/,

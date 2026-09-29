@@ -447,11 +447,17 @@ def main() -> int:
             pair_review = page.locator("#search-result .pair-review")
             pair_review.wait_for(state="visible", timeout=15_000)
             pair_box = pair_review.bounding_box()
-            require(pair_box is not None and pair_box["y"] < 1800 and pair_box["width"] >= 420,
-                    f"pairwise review is not discoverable near the searched case: {pair_box}")
-            pair_text = pair_review.inner_text()
-            require("DO NOT COMPARE AS LIKE-FOR-LIKE" in pair_text,
+            require(pair_box is not None and pair_box["y"] < 900 and pair_box["width"] >= 420,
+                    f"pairwise review does not reach the first viewport near the searched case: {pair_box}")
+            summary_text = pair_review.inner_text()
+            require("DO NOT COMPARE AS LIKE-FOR-LIKE" in summary_text,
                     "Alphabet pair review did not withhold a like-for-like price claim")
+            require("quote units remain unresolved" in summary_text.lower(),
+                    "Alphabet pair review did not state the unresolved unit question in its compact view")
+            require(pair_review.locator(".pair-review-receipt").is_visible(),
+                    "Alphabet pair review did not expose its dated evidence receipt in the compact view")
+            page.locator(".pair-review-details > summary").click()
+            pair_text = pair_review.inner_text()
             require("28 Sep 2026" in pair_text and "29 Sep 2026" in pair_text,
                     "Alphabet pair review did not show its separate evidence dates")
             require("1 GOOGLon = 1.0025 GOOGL" in pair_text,
