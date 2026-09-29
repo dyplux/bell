@@ -76,6 +76,16 @@
     return counts;
   }
 
+  function workspaceDecisionCopy(entry, counts = comparisonCounts(entry)) {
+    const comparison = entry?.comparison;
+    if (!comparison) return entry?.decision?.consequence || nextSteps[entry?.state]
+      || 'Inspect the published reference fields and keep each unverified claim open.';
+    const spread = Number.isFinite(Number(comparison.spread_bps))
+      ? `${Number(comparison.spread_bps).toFixed(1)} bps` : 'not published';
+    const noun = counts.included === 1 ? 'representation row' : 'representation rows';
+    return `${counts.included} ${noun} passed Bell's published quote filters. Observed spread: ${spread}. This is a price observation, not evidence of equivalent units or economic rights.`;
+  }
+
   function reviewBrief(entry, observedAt) {
     const { included, excluded } = comparisonCounts(entry);
     const comparison = entry?.comparison;
@@ -168,8 +178,7 @@
     }).join('');
     const date = receipt?._publication?.observed_at || receipt?.observed_at;
     const { included: includedCount, excluded: excludedCount } = comparisonCounts(entry);
-    const decisionCopy = entry.decision?.consequence || nextSteps[entry.state]
-      || 'Inspect the published reference fields and keep each unverified claim open.';
+    const decisionCopy = workspaceDecisionCopy(entry, { included: includedCount, excluded: excludedCount });
     const nextAction = entry.next_action || nextSteps[entry.state]
       || 'Keep unobserved claims open and inspect the issuer evidence.';
     result.innerHTML = `<article class="review-result">

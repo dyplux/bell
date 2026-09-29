@@ -907,6 +907,10 @@ test('workspace labels the published decision and marks its exact comparison row
   const label = runWorkspaceFromSource('displayDecisionLabel');
   const membership = runWorkspaceFromSource('comparisonMembership');
   const counts = runWorkspaceFromSource('comparisonCounts', { comparisonMembership: membership });
+  const decisionCopy = runWorkspaceFromSource('workspaceDecisionCopy', {
+    comparisonCounts: counts,
+    nextSteps: { no_flags: 'Review the published fields.' },
+  });
   const brief = runWorkspaceFromSource('reviewBrief', {
     comparisonCounts: counts,
     displayDecisionLabel: label,
@@ -928,6 +932,17 @@ test('workspace labels the published decision and marks its exact comparison row
     representations: [{ crypto_id: 101 }, { crypto_id: 202 }, { crypto_id: 303 }],
     comparison: { routes: [{ crypto_id: 101 }], included_crypto_ids: [101] },
   }), { included: 1, excluded: 2 });
+  const calibrated = decisionCopy({
+    state: 'no_flags',
+    decision: { consequence: '6 representations share a unit and a market state.' },
+    representations: [{ crypto_id: 101 }, { crypto_id: 202 }, { crypto_id: 303 }],
+    comparison: { included_crypto_ids: [101], spread_bps: 22.2 },
+  });
+  assert.match(calibrated, /1 representation row passed Bell's published quote filters/);
+  assert.match(calibrated, /Observed spread: 22\.2 bps/);
+  assert.match(calibrated, /not evidence of equivalent units or economic rights/);
+  assert.doesNotMatch(calibrated, /share a unit/);
+  assert.equal(decisionCopy({ state: 'do_not_compare', decision: { consequence: 'Resolve the unit.' } }), 'Resolve the unit.');
   const savedBrief = brief({
     rwa_id: 77, name: 'Example Inc', asset_type: 'stock', state: 'no_flags',
     token_count: 3, issuer_count: 2,
