@@ -1,5 +1,6 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
+const crypto = require('node:crypto');
 const fs = require('node:fs');
 const path = require('node:path');
 
@@ -67,6 +68,13 @@ test('dated pair review appears with the searched case and its export points to 
   assert.match(verifier, /route .* does not match the shipped CMC row/);
   assert.match(verifier, /Ondo source capture SHA-256 does not match/);
   assert.match(verifier, /1 GOOGLon = 1\.0025 GOOGL/);
+});
+
+test('exported pair review fingerprint matches the shipped receipt bytes', () => {
+  const receiptPath = path.join(site, 'proof/alphabet-class-a-pair-review-2026-09-29.json');
+  const digest = crypto.createHash('sha256').update(fs.readFileSync(receiptPath)).digest('hex');
+  assert.match(integrity, new RegExp(`receipt_sha256: '${digest}'`),
+    'the browser export must not carry a stale fingerprint for the dated issuer review');
 });
 
 test('public release names the observed threshold population and inclusivity', () => {

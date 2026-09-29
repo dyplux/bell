@@ -1558,7 +1558,7 @@
       schema_version: 'bell.pairwise-terms-review.v1',
       review_id: 'alphabet-class-a-googlx-googlon-2026-09-29',
       receipt: 'proof/alphabet-class-a-pair-review-2026-09-29.json',
-      receipt_sha256: '03b00fcae4b10d65049b66dcadf9432627f477626c0380692fcba0a98990c3e6',
+      receipt_sha256: '45f19a3a4f7bc1692ef26bd7c9f687de4a30367b03f63ca95b383464cb51297a',
       relationship: 'This is a separately dated terms review, not a claim that those terms were observed in the live quote timestamp above.',
     };
   }

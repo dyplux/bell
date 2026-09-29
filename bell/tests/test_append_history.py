@@ -22,6 +22,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent))
 
 from history_chain import rebuild, verify as verify_chain  # noqa: E402
+from rwa_integrity import RULES_VERSION  # noqa: E402
 import append_history  # noqa: E402
 
 REAL_ANCHOR = append_history.ANCHOR
@@ -139,12 +140,17 @@ class AppendHistory(unittest.TestCase):
 
     def test_the_shipped_history_carries_a_rule_set_on_its_newest_observation(self):
         # Item one of this work made the page refuse a delta across a rule
-        # boundary. That refusal is only informative if new observations declare
-        # which side of the boundary they are on.
+        # boundary. The shipped latest entry remains a v2 historical receipt;
+        # asserting today's v3 would rewrite history instead of preserving it.
         path = HERE.parent / "site" / "proof" / "rwa-surface-integrity-history.json"
         observations = json.loads(path.read_text(encoding="utf-8"))["observations"]
         self.assertIn("rules_version", observations[-1])
         self.assertEqual(observations[-1]["rules_version"], "bell.rules.v2")
+
+    def test_new_observation_summaries_record_the_current_rule_set(self):
+        summary = summarise(receipt("2026-09-30T00:00:00Z", RULES_VERSION))
+        self.assertEqual(summary["rules_version"], RULES_VERSION)
+        self.assertTrue(summary["rules_version_recorded"])
 
     def test_appending_restates_the_series_length_in_the_prose_that_claims_it(self):
         # Appending the fourteenth observation left judge.html and README.md
