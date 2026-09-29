@@ -156,4 +156,31 @@ jobs:
           git add -A
           git status --short
           git commit -m "Record the published observation of $(date -u +%Y-%m-%d)"
-          git push
+          # GitHub returned HTTP 500 for this push after the local commit had
+          # succeeded. Retry transient remote errors, but first check whether
+          # the remote accepted the commit despite returning an error. If main
+          # advanced independently, rebase the generated observation before
+          # retrying so the append does not get lost.
+          for attempt in 1 2 3; do
+            if git push; then
+              exit 0
+            fi
+
+            git fetch origin main
+            if git merge-base --is-ancestor HEAD FETCH_HEAD; then
+              echo "remote already contains the generated observation commit"
+              exit 0
+            fi
+            if ! git merge-base --is-ancestor FETCH_HEAD HEAD; then
+              echo "main advanced while this observation was being generated; rebasing"
+              git rebase FETCH_HEAD
+            fi
+
+            if [ "$attempt" -lt 3 ]; then
+              delay=$((attempt * 5))
+              echo "push attempt $attempt failed; retrying in ${delay}s"
+              sleep "$delay"
+            fi
+          done
+          echo "could not publish the dated observation after 3 push attempts" >&2
+          exit 1

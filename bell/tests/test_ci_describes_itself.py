@@ -54,6 +54,13 @@ class TheWorkflowDescribesItself(unittest.TestCase):
         self.assertIn('make check-offline', self.text)
         self.assertIn('enforces strictly LESS than the local gate', self.text,
                       'the workflow no longer admits that it checks less than `make check`')
+        dated_series = self.text.split('dated-series:')[-1]
+        self.assertIn('for attempt in 1 2 3', dated_series,
+                      'a transient GitHub push error can fail the observation job')
+        self.assertIn('git merge-base --is-ancestor HEAD FETCH_HEAD', dated_series,
+                      'a retry must detect when GitHub accepted a commit but returned an error')
+        self.assertIn('git rebase FETCH_HEAD', dated_series,
+                      'a retry must preserve an observation if main advanced concurrently')
 
 
 
