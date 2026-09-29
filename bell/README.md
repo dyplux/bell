@@ -84,17 +84,29 @@ The receipt comparison utility in [`receipt_compare.py`](receipt_compare.py)
 compares two dated windows and reports flat-bar diagnostics without treating them as liquidity.
 The public integrity receipt also has a [sanitized input manifest](site/proof/rwa-surface-integrity-inputs-2026-09-28.json)
 with surface counts, stable-ID join coverage and source fingerprints.
-The 24-observation population history is at
+Of the 24 dated observations in the population history, two legacy observations have separately
+bundled receipts. New observations retain a full receipt archive and compare its complete summary with the chained
+history; per-reference rows are checked when that receipt has a same-rule series step. The
+separate 28 September capture has all six inputs but is outside that history. The
+population history is at
 [`site/proof/rwa-surface-integrity-history.json`](site/proof/rwa-surface-integrity-history.json),
 and the latest committed credential-free normalized input package is at
 [`site/proof/rwa-surface-integrity-inputs-2026-09-28.json`](site/proof/rwa-surface-integrity-inputs-2026-09-28.json), paired with its
 [dated receipt](site/proof/rwa-surface-integrity-capture-2026-09-28.json).
-`python3 bell/verify_integrity_receipt.py` verifies the historical 21 September receipt against
-the 19-observation archive. Authenticated request headers and transport metadata are not
-committed. That replay is a dated artifact; the live receipt can move independently when the
-scheduled publisher observes a new window.
+`python3 bell/verify_legacy_replay.py` reproduces the original 21 September state distribution
+from the six normalized inputs using a hash-pinned copy of the original scanner, then checks it
+against the recovered original receipt and the history entry. `python3 bell/verify_integrity_receipt.py`
+separately verifies the later-rule replay and history. Authenticated request headers and transport
+metadata are not committed. Both replays are dated artifacts; the live receipt can move independently
+when the scheduled publisher observes a new window.
 Run `make verify-capture` to reproduce the 28 September capture as a self-contained receipt/input
 pair; this remains verifiable after the live endpoint advances.
+The dated-series job now archives each new full receipt as deterministic gzip and binds its SHA-256
+to the chained history record. `make verify` checks every retained archive against the complete
+history summary, including observations that cannot enter the current comparable series after a
+rule change. For series steps with retained receipts it also checks every per-reference row.
+Older history entries are not backfilled from later data and remain explicitly unverified at row
+level where no receipt was retained.
 `python3 bell/verify_public_surface.py` performs a credential-free smoke check against the public
 page, health endpoint, live receipt and published Gold dossier; it does not call CMC directly.
 For the visitor journey and the product boundary, read [USER-GUIDE.md](USER-GUIDE.md).
@@ -163,6 +175,7 @@ Run the public-surface contract checks as well:
 node --test bell/tests/*.cjs
 PYTHONPATH=bell python3 -m unittest discover -s bell/tests -p 'test_*.py' -q
 python3 bell/verify_integrity_receipt.py
+python3 bell/verify_legacy_replay.py
 python3 bell/verify_catalogue_receipt.py
 python3 bell/verify_public_surface.py
 python3 bell/verify_submission.py
@@ -222,8 +235,9 @@ or the unit basis of CMC's displayed quote. The result is to withhold a
 like-for-like price comparison until both are established. Open
 the [pair-review receipt](site/proof/alphabet-class-a-pair-review-2026-09-29.json)
 or run `make verify-pair-review` to match its route values and source hash to
-the shipped CMC capture and check the dated Ondo text excerpt. The linked issuer pages are dated references, not
-archived legal documents; this review does not establish equivalent rights,
+the shipped CMC capture and verify four dated, hashed excerpts from Backed,
+Ondo and xStocks documentation. Raw pages and signed legal archives are not
+included; this review does not establish equivalent rights,
 backing, redemption or fair value. A case JSON export includes a fingerprinted
 link to this separate review when its token rows contain both exact CMC IDs.
 

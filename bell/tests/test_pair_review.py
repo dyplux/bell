@@ -46,8 +46,13 @@ class PairReviewTests(unittest.TestCase):
             review = json.loads((proof / verify_pair_review.REVIEW_PATH.name).read_text())
             cmc_capture = verify_pair_review.SITE / "proof" / review["cmc_observation"]["source"]
             shutil.copy2(cmc_capture, proof / cmc_capture.name)
-            original = verify_pair_review.SITE / "proof" / review["issuer_page_capture"]["source"]
-            (proof / original.name).write_text(original.read_text() + "tampered\n")
+            archives = review["issuer_source_archives"]
+            originals = []
+            for archive in archives:
+                original = verify_pair_review.SITE / "proof" / archive["capture"]
+                shutil.copy2(original, proof / original.name)
+                originals.append(proof / original.name)
+            originals[0].write_text(originals[0].read_text() + "tampered\n")
             with patch.object(verify_pair_review, "SITE", site), patch.object(
                     verify_pair_review, "REVIEW_PATH", proof / verify_pair_review.REVIEW_PATH.name):
                 with self.assertRaisesRegex(ValueError, "SHA-256"):

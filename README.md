@@ -14,10 +14,10 @@ representations pass its reported-price filters, and what still needs review?
 | **Local interface** | `make app` - visual workspace, local agent API, and optional own CMC key |
 | **Whole-catalogue base rate · 28 Sep** | In the preserved 28 September capture, 88 of 250 multi-representation references pass Bell's filtered quote comparison. The other 162 are routed to review (64.8%; Wilson 95% interval 58.7–70.5%), producing 163 rule hits: 107 missing-coverage reasons, 40 price or field review triggers, and 16 cases with fewer than two eligible spot routes. A review trigger is not proof of economic contradiction |
 | **Run it yourself** | `git clone https://github.com/dyplux/bell.git && cd bell && make app` - local visual workspace at `http://127.0.0.1:8080/workspace.html`; no API key or install required for dated evidence. `make base-rate` reproduces the keyless 28 Sep population calculation; `make base-rate RATE_INPUTS=...` selects another normalized capture |
-| **Verify the whole thing** | `make check-offline` - 574 tests, observed between 17.71 and 33.63 seconds across 2 machines. No credentials or network required. It verifies the historical 21 Sep replay, recomputes the complete 28 Sep capture from its shipped inputs, and verifies the dated Alphabet pair review against its CMC rows. Of the 24 dated observations in the population history, 2 ship their full payload. One has its state distribution compared against the receipt; the other is UNVERIFIED on that split because it predates the current rule set. The rest of the history entries are published summaries |
+| **Verify the whole thing** | `make check-offline` - 580 tests, no credentials or network required. It replays the original 21 Sep observation with a frozen, hash-pinned scanner, separately recomputes the later-rule 21 Sep replay and complete 28 Sep capture from their shipped inputs, and verifies the dated Alphabet pair review against its CMC rows. Of the 24 dated observations in the population history, two legacy observations have separately bundled receipts; new observations retain their full receipt archive and compare the complete history summary. Per-reference rows are checked when a retained receipt has a same-rule series step. Older steps without receipts remain UNVERIFIED at row level. A separate 28 Sep capture ships all six inputs but is outside that history. The offline gate was observed between 17.71 and 33.63 seconds across 2 machines |
 | **Rules as an executable spec** | `python3 bell/verify_rule_boundaries.py` - 0.2s, 8 boundary checks, no network |
-| **Receipts** | [live](https://bell.dyplux.com/api/integrity) · [28 Sep capture](bell/site/proof/rwa-surface-integrity-capture-2026-09-28.json) · [normalized inputs](bell/site/proof/rwa-surface-integrity-inputs-2026-09-28.json) · [28 Sep base rate](bell/site/proof/base-rate-2026-09-28.json) · [historical 21 Sep replay](bell/site/proof/rwa-surface-integrity-latest-replay-2026-09-21.json) · [21 Sep base rate](bell/site/proof/base-rate-2026-09-21.json) |
-| **Alphabet pair review** | [dated GOOGLX / GOOGLon terms check](bell/site/proof/alphabet-class-a-pair-review-2026-09-29.json) · `make verify-pair-review` checks the CMC rows and the retained, hashed Ondo page excerpt |
+| **Receipts** | [live](https://bell.dyplux.com/api/integrity) · [28 Sep capture](bell/site/proof/rwa-surface-integrity-capture-2026-09-28.json) · [normalized inputs](bell/site/proof/rwa-surface-integrity-inputs-2026-09-28.json) · [original 21 Sep receipt](bell/site/proof/rwa-surface-integrity-original-2026-09-21.json) · [frozen legacy replay source](bell/rwa_integrity_legacy_2026_09_21.py.txt) · [later-rule 21 Sep replay](bell/site/proof/rwa-surface-integrity-latest-replay-2026-09-21.json) · [21 Sep base rate](bell/site/proof/base-rate-2026-09-21.json) |
+| **Alphabet pair review** | [dated GOOGLX / GOOGLon terms check](bell/site/proof/alphabet-class-a-pair-review-2026-09-29.json) · `make verify-pair-review` checks the CMC rows and four dated, hashed excerpts from Backed, Ondo and xStocks docs; raw pages and legal archives are not included |
 
 
 ## What the product does
@@ -43,8 +43,9 @@ source-backed pair review of GOOGLX and GOOGLon. It records what the two issuer
 pages align on, the unit evidence each page publishes, the missing current
 GOOGLX multiplier, and the resulting `DO NOT COMPARE AS LIKE-FOR-LIKE` action.
 CMC quotes are dated 28 September 2026; issuer pages were checked 29 September
-2026. The review is an example of Bell withholding a cheapest-route claim when
-shared reference labels do not establish equivalent units or claims.
+2026. Four factual excerpts from three official pages/docs are shipped with
+SHA-256 checks; raw pages and signed legal archives are not. The review
+withholds a like-for-like claim while unit equivalence remains unproven.
 
 For a selected reference, the public page also makes the immediate review
 consequence visible: an illustrative amount can be kept uncommitted, held for

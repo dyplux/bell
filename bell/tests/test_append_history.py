@@ -11,6 +11,8 @@ tested rather than trusted.
 from __future__ import annotations
 
 import json
+import gzip
+import hashlib
 from pathlib import Path
 import sys
 import tempfile
@@ -23,7 +25,24 @@ from history_chain import rebuild, verify as verify_chain  # noqa: E402
 import append_history  # noqa: E402
 
 REAL_ANCHOR = append_history.ANCHOR
-from append_history import append, restate_counts, summarise  # noqa: E402
+from append_history import append, archive_receipt, restate_counts, summarise  # noqa: E402
+
+
+class ReceiptArchiving(unittest.TestCase):
+    def test_full_receipts_are_canonicalized_and_compressed_deterministically(self):
+        receipt = {"observed_at": "2026-09-30T00:00:00Z", "universe": {"states": {}},
+                   "source_hashes": {"map": "abc"}}
+        path, digest, compressed = archive_receipt(receipt)
+        expected = json.dumps(receipt, ensure_ascii=False, sort_keys=True,
+                              separators=(",", ":")).encode("utf-8") + b"\n"
+        self.assertEqual(path, "rwa-surface-integrity-receipts/2026-09-30T00-00-00Z.json.gz")
+        self.assertEqual(digest, hashlib.sha256(expected).hexdigest())
+        self.assertEqual(gzip.decompress(compressed), expected)
+        self.assertEqual(archive_receipt(receipt)[2], compressed)
+
+    def test_receipt_archive_refuses_noncanonical_or_backdated_labels(self):
+        with self.assertRaises(SystemExit):
+            archive_receipt({"observed_at": "not-a-timestamp"})
 
 
 def history_of(*stamps: str) -> dict:
@@ -74,6 +93,7 @@ class AppendHistory(unittest.TestCase):
         self.assertIn("bell.rules.v2", message)
         self.assertEqual(len(history["observations"]), 2)
         self.assertEqual(history["observations"][-1]["rules_version"], "bell.rules.v2")
+        self.assertIs(history["observations"][-1]["rules_version_recorded"], True)
 
     def test_an_unchanged_receipt_is_never_written_twice(self):
         # The publisher not having run is not an observation. Writing the same
@@ -90,6 +110,7 @@ class AppendHistory(unittest.TestCase):
         summary = summarise(receipt("2026-09-27T06:00:00Z", rules=None))
         self.assertIn("rules_version", summary)
         self.assertIsNone(summary["rules_version"])
+        self.assertIs(summary["rules_version_recorded"], False)
 
     def test_a_backdated_observation_is_refused_rather_than_sorted_in(self):
         # This used to assert that a backdated record was sorted into place.

@@ -23,9 +23,11 @@ move: between 21 and 26 September, 33 of 792 changed, which is 4.2 KB raw and
 from __future__ import annotations
 
 import argparse
+import gzip
 import hashlib
 import json
 from pathlib import Path
+import re
 import sys
 
 HERE = Path(__file__).resolve().parent
@@ -35,6 +37,46 @@ DELTAS = PROOF / "reference-deltas.json"
 SCHEMA = "bell.reference_deltas.v1"
 
 FIELDS = ("state", "representations", "comparison_published", "signal_codes")
+
+
+def load_retained_receipt(observation: dict, label: str) -> dict | None:
+    """Load a history-linked receipt, checking its immutable reference.
+
+    This check belongs to the history verifier as well as the per-reference
+    series: an observation can retain a receipt even when a rule change means
+    it cannot be added as a comparable delta step.
+    """
+    receipt_path = observation.get("receipt_path")
+    receipt_hash = observation.get("receipt_sha256")
+    if bool(receipt_path) != bool(receipt_hash):
+        raise ValueError(f"{label} has an incomplete retained-receipt reference")
+    if not receipt_path:
+        return None
+    if not isinstance(receipt_path, str) or not isinstance(receipt_hash, str):
+        raise ValueError(f"{label} has an invalid retained-receipt reference")
+    if not re.fullmatch(r"[0-9a-f]{64}", receipt_hash):
+        raise ValueError(f"{label} has an invalid retained-receipt SHA-256")
+    archive_root = PROOF.resolve()
+    archive = (PROOF / receipt_path).resolve()
+    if not archive.is_relative_to(archive_root):
+        raise ValueError(f"{label} receipt path escapes the proof directory")
+    try:
+        receipt_bytes = gzip.decompress(archive.read_bytes())
+    except (OSError, EOFError) as error:
+        raise ValueError(f"{label} receipt archive is unreadable: {error}") from None
+    if hashlib.sha256(receipt_bytes).hexdigest() != receipt_hash:
+        raise ValueError(f"{label} retained receipt SHA-256 does not match history")
+    try:
+        receipt = json.loads(receipt_bytes.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as error:
+        raise ValueError(f"{label} retained receipt is not valid UTF-8 JSON: {error}") from None
+    if not isinstance(receipt, dict):
+        raise ValueError(f"{label} retained receipt is not a JSON object")
+    if receipt.get("observed_at") != observation.get("observed_at"):
+        raise ValueError(f"{label} retained receipt has a different observation timestamp")
+    if receipt.get("source_hashes") != observation.get("source_hashes"):
+        raise ValueError(f"{label} retained receipt source hashes differ from history")
+    return receipt
 
 
 def index_digest(receipt: dict) -> str:
@@ -124,12 +166,10 @@ def series_for(reference_id: str, base: dict, base_at: str, deltas: list) -> lis
 def verify(base_doc: dict, deltas_doc: dict, history: dict) -> list:
     """Refuse a series that does not answer to the published history.
 
-    Checks what CAN be checked without the receipts: that every step names an
-    observation the history records, that the fingerprints it claims are the
-    ones that observation recorded, that it is in order, and that the rule set
-    does not change under it. What it cannot check is the row detail itself,
-    because the receipts behind the steps are not shipped, and that limit is
-    named on the judge page rather than left to be discovered.
+    Checks that each step is anchored to the history and source hashes. When a
+    dated receipt archive exists, it also compares every replayed reference
+    row to that receipt. Older steps without an archive remain origin-checked
+    only and are reported as such.
     """
     notes = []
     recorded = {str(item.get("observed_at")): item for item in history.get("observations") or []}
@@ -206,8 +246,18 @@ def verify(base_doc: dict, deltas_doc: dict, history: dict) -> list:
             raise ValueError(
                 f"{label} records digest {digest[:16]} and the chained history anchors "
                 f"{anchored[:16]}: the series and the history disagree about that observation")
-        notes.append(f"{label}: {len(step.get('changed') or {})} moved, "
-                     f"{len(step.get('removed') or [])} removed")
+        receipt = load_retained_receipt(observation, label)
+        if receipt:
+            receipt_rules = (receipt.get("universe") or {}).get("rules_version")
+            if receipt_rules != deltas_doc.get("rules_version"):
+                raise ValueError(f"{label} retained receipt uses a different rule set")
+            if snapshot_of(receipt) != replayed:
+                raise ValueError(f"{label} reference rows do not match the retained receipt")
+            notes.append(f"{label}: receipt rows verified; {len(step.get('changed') or {})} moved, "
+                         f"{len(step.get('removed') or [])} removed")
+        else:
+            notes.append(f"{label}: receipt not retained; {len(step.get('changed') or {})} moved, "
+                         f"{len(step.get('removed') or [])} removed")
     return notes
 
 

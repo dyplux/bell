@@ -60,6 +60,48 @@ def verify() -> dict[str, object]:
     if review.get("issuer_sources_checked_at") != "2026-09-29":
         raise ValueError("issuer source review date is missing")
 
+    archives = review.get("issuer_source_archives")
+    if not isinstance(archives, list) or len(archives) != 4:
+        raise ValueError("pair review must retain the four dated issuer-page excerpts")
+    archived_urls = set()
+    archive_text: dict[str, list[str]] = {}
+    for item in archives:
+        capture_name = item.get("capture")
+        source_url = item.get("source_url")
+        if (not isinstance(capture_name, str) or Path(capture_name).name != capture_name
+                or not isinstance(source_url, str) or not source_url.startswith("https://")):
+            raise ValueError("issuer archive needs a safe filename and an official HTTPS source")
+        path = SITE / "proof" / capture_name
+        if not path.is_file():
+            raise ValueError(f"issuer excerpt is not shipped: {capture_name}")
+        payload = path.read_bytes()
+        if hashlib.sha256(payload).hexdigest() != item.get("sha256"):
+            raise ValueError(f"issuer excerpt SHA-256 does not match: {capture_name}")
+        if not item.get("captured_at") or not item.get("method"):
+            raise ValueError(f"issuer excerpt lacks capture date or method: {capture_name}")
+        try:
+            excerpt = payload.decode("utf-8")
+        except UnicodeDecodeError:
+            raise ValueError(f"issuer excerpt is not UTF-8: {capture_name}") from None
+        archive_text.setdefault(source_url, []).append(excerpt)
+        archived_urls.add(source_url)
+    required_sources = {
+        "https://assets.backed.fi/products/alphabet-xstock",
+        "https://app.ondo.finance/assets/googlon",
+        "https://docs.xstocks.fi/docs/dividends-and-stock-splits",
+    }
+    if archived_urls != required_sources:
+        raise ValueError("issuer excerpts do not cover Backed, Ondo and xStocks documentation")
+    backed_text = "\n".join(archive_text["https://assets.backed.fi/products/alphabet-xstock"])
+    ondo_text = "\n".join(archive_text["https://app.ondo.finance/assets/googlon"])
+    xstocks_text = "\n".join(archive_text["https://docs.xstocks.fi/docs/dividends-and-stock-splits"])
+    if "tracker certificate" not in backed_text or "Class A" not in backed_text:
+        raise ValueError("Backed excerpt does not support the stated instrument/class")
+    if "GOOGLon: Alphabet Class A" not in ondo_text:
+        raise ValueError("Ondo title excerpt does not identify the Class A product")
+    if "multiplier of 1.0" not in xstocks_text:
+        raise ValueError("xStocks excerpt does not support the stated initial multiplier")
+
     page_capture = review.get("issuer_page_capture") or {}
     capture_name = page_capture.get("source")
     if not isinstance(capture_name, str) or Path(capture_name).name != capture_name:
@@ -89,7 +131,9 @@ def verify() -> dict[str, object]:
         "ondo_page_capture_sha256_verified": capture_hash,
         "ondo_page_captured_at": page_capture["captured_at"],
         "decision": decision["state"],
-        "issuer_source_archive": "not included; linked issuer pages are dated references",
+        "issuer_source_archive": "4 dated, hashed factual excerpts from 3 official sources; raw pages are not archived",
+        "issuer_source_archives_verified": len(archives),
+        "issuer_source_urls_verified": sorted(archived_urls),
     }
 
 

@@ -1,0 +1,4 @@
+Source: https://app.ondo.finance/assets/googlon
+Captured: 2026-09-29 (public page HTML; local text extraction)
+Page title: GOOGLon: Alphabet Class A (Ondo) Tokenized Stock Price & Chart
+Limit: The fetched HTML title identifies the product, but does not expose a current Shares Per Token value. The separate 18:15 UTC browser excerpt records the 1.0025 display.

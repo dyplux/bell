@@ -42,6 +42,40 @@
     "captured_at": "2026-09-29T18:15:11.264618Z",
     "method": "Visible text extracted from the public Ondo asset page in Chromium; excerpt retained below. This is an observation snapshot, not a signed issuer statement."
   },
+  "issuer_source_archives": [
+    {
+      "source_url": "https://assets.backed.fi/products/alphabet-xstock",
+      "capture": "backed-alphabet-xstock-excerpt-2026-09-29.txt",
+      "sha256": "3d4de8776f631b91582eec4f0c4284e6fd658f325135551cf5492e5f200f46aa",
+      "captured_at": "2026-09-29",
+      "method": "Short factual excerpt from the public page HTML, extracted locally; not a signed issuer statement.",
+      "crypto_ids": [37013]
+    },
+    {
+      "source_url": "https://app.ondo.finance/assets/googlon",
+      "capture": "ondo-googlon-title-excerpt-2026-09-29.txt",
+      "sha256": "e29a0a6e46fae77605a4d63423eaa549603daf1480b6b909116e12952d6c60f8",
+      "captured_at": "2026-09-29",
+      "method": "Page title extracted from the public HTML; the earlier Chromium excerpt below contains the dated unit display.",
+      "crypto_ids": [38001]
+    },
+    {
+      "source_url": "https://app.ondo.finance/assets/googlon",
+      "capture": "ondo-googlon-page-capture-2026-09-29.txt",
+      "sha256": "fa366c29563076d5a5c4adce486aa67b1fd64f0aed19f29d104dd6d0efa4d110",
+      "captured_at": "2026-09-29T18:15:11.264618Z",
+      "method": "Visible text excerpt captured in Chromium; not a signed issuer statement.",
+      "crypto_ids": [38001]
+    },
+    {
+      "source_url": "https://docs.xstocks.fi/docs/dividends-and-stock-splits",
+      "capture": "xstocks-corporate-actions-excerpt-2026-09-29.txt",
+      "sha256": "8f3b9b9df867a92623ef567bd903ffe96d25ebd4a70f0ea0cf1520ebd0600df2",
+      "captured_at": "2026-09-29",
+      "method": "Short factual excerpt from the public documentation HTML, extracted locally; not a signed issuer statement.",
+      "crypto_ids": [37013]
+    }
+  ],
   "issuer_evidence": [
     {
       "crypto_id": 37013,

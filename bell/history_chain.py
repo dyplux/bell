@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
-"""Make each dated observation tamper-evident, not just the two with payloads.
+"""Make each dated observation tamper-evident.
 
 A reviewer rewrote one summary-only observation into an invented day that was
 internally consistent - 791 references, every one no_flags, every signal zero -
 and the verifier returned ok. Swapping a source hash for sixty-four zeros passed
-too. Two of the thirteen observations ship their full payload and are cross-checked
-against it; the other eleven were only checked for shape, so a coherent forgery was
-indistinguishable from a record.
+too. Some observations also ship full receipts or normalized inputs and can be
+cross-checked against them. Summary-only observations retain their published
+counts and source fingerprints, so a coherent edit remains harder to make
+quietly but is not a substitute for retaining the underlying evidence.
 
 The digest of the whole file was printed at the end of verification and pinned
 nowhere, so there was no reference value to compare against.

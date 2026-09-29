@@ -87,7 +87,9 @@
     CoinMarketCap groups GOOGon under its Alphabet Class A reference. Bell identifies
     crypto_id 42272 as a Class C route and keeps it in the CMC-grouped quote set. The
     displayed spread is labelled as combining Class A and C routes, not as a same-class
-    spread. These sources describe products; they
+    spread. Four dated, hashed excerpts from Backed, Ondo and xStocks are linked
+    in the pair-review receipt; raw pages and signed legal archives are not included.
+    These sources describe products; they
     do not independently verify backing, redemption, custody or legal rights.</p>
 
     <div class="judge-facts">
@@ -95,7 +97,7 @@
       <div><small>Comparisons published &middot; 28 Sep</small><strong>88</strong></div>
       <div><small>Refused for missing coverage &middot; 28 Sep</small><strong>107</strong></div>
       <div><small>No eligible spot pair &middot; 28 Sep</small><strong>16</strong></div>
-      <div><small>Tests in the offline gate</small><strong>574</strong></div>
+      <div><small>Tests in the offline gate</small><strong>580</strong></div>
       <div><small>Gate runtime, 2 machines</small><strong>17&ndash;34s</strong></div>
     </div>
 
@@ -150,25 +152,31 @@ make base-rate</pre>
       <h3>What that gate proves, and what it does not</h3>
       <dl>
         <dt>The suite</dt>
-        <dd>574 tests, 443 Python and 131 JavaScript. One Python test needs a network and a
+        <dd>580 tests, 449 Python and 131 JavaScript. One Python test needs a network and a
         CoinMarketCap key; without them it is skipped and the runner says so.</dd>
 
         <dt>The re-derivation</dt>
         <dd><code>make check-offline</code> recomputes the 28 September capture from its
-        16 MB normalized inputs and verifies the historical 21 September replay from
-        16.5 MB of shipped inputs. Each scan is recomputed, so a changed count fails the gate.</dd>
+        16 MB normalized inputs, replays the original 21 September distribution from
+        16.5 MB of shipped inputs with a
+        hash-pinned frozen scanner, and separately verifies the later-rule 21 September replay.
+        Each scan is recomputed, so a changed count fails the gate.</dd>
 
         <dt>The submission gate</dt>
-        <dd>Runs a submission gate over 203 tracked files, inspecting every one for anything
+        <dd>Runs a submission gate over 209 tracked files, inspecting every one for anything
         private or unreleasable.</dd>
 
-        <dt class="scope-limit">One observation is UNVERIFIED</dt>
-        <dd class="scope-limit">Of the 24 dated observations in the population history, 2 ship their full payload. The separate 28 September capture also ships its complete normalized inputs and is recomputed by <code>make verify-capture</code>. The product page reads the LIVE history, which is longer whenever the publisher has run since this commit, so the two pages can state different counts without either being wrong. One of
-        those two has its state distribution compared against the receipt. The other does not:
-        it was written under the rule set that ran before this one, and no code here can
-        re-derive it. Its totals, signals and source digests are checked; the split between
-        do_not_compare, investigate and no_flags is not, and the verifier prints UNVERIFIED
-        rather than leaving that to be inferred.</dd>
+        <dt>The recovered 21 September distribution is replayed</dt>
+        <dd>Of the 24 dated observations in the population history, two legacy observations have
+        separately bundled receipts; new observations retain a
+        full receipt archive and compare its complete summary with the chained history. Per-reference
+        rows are compared when a retained receipt has a same-rule series step. The original
+        21 September receipt was recovered
+        from the publisher runtime on 29 September and matches that history entry. A
+        hash-pinned copy of the original scanner reproduces its 35 / 662 / 94 state split from
+        those inputs. A separate replay applies the later rule set to the same inputs and is
+        kept as a distinct result. The 28 September capture is a separate, fully replayable
+        capture outside that history.</dd>
 
         <dt>The chain</dt>
         <dd>every one of the 24 shipped here is chained to the one before it, so editing a single record
@@ -180,12 +188,12 @@ make base-rate</pre>
         three live in this repository. There is no external attestation and no date attestation,
         and the module says so in its own docstring.</dd>
 
-        <dt class="scope-limit">The per-reference series is origin-checked, not value-checked</dt>
-        <dd class="scope-limit">Each step in the series names the observation it came from, and
-        `make verify` refuses a step whose source fingerprints are not the ones that observation
-        recorded. The row values inside a step cannot be re-derived, because the receipts behind
-        those observations are not shipped. So a step cannot claim a day nobody published, and
-        the detail inside it rests on the publisher. The verifier prints UNVERIFIED for this too.</dd>
+        <dt class="scope-limit">Older per-reference rows are not value-checked</dt>
+        <dd class="scope-limit">Every newly retained receipt is checked against the full history
+        summary, even when a rule change prevents adding it to the current comparable series. For
+        series steps with a retained receipt, `make verify` also compares every reference row.
+        Older steps without retained receipts remain origin-checked only; their row values cannot
+        be re-derived and are printed as UNVERIFIED.</dd>
 
         <dt>Rule changes are not market changes</dt>
         <dd>Where a receipt predates the current rule set, the recomputed state counts are
@@ -247,6 +255,7 @@ make base-rate</pre>
     credential-free endpoint.</p>
     <div class="judge-links">
       <a href="/api/integrity" target="_blank" rel="noopener">Live credential-free receipt ↗</a>
+      <a href="proof/rwa-surface-integrity-original-2026-09-21.json" target="_blank" rel="noopener">Original 21 Sep receipt ↗</a>
       <a href="proof/rwa-surface-integrity-latest-replay-2026-09-21.json" target="_blank" rel="noopener">Dated replay receipt ↗</a>
       <a href="proof/rwa-surface-integrity-inputs-2026-09-21.json" target="_blank" rel="noopener">Replay inputs ↗</a>
       <a href="proof/base-rate-2026-09-28.json" target="_blank" rel="noopener">28 Sep base-rate measurement ↗</a>
@@ -254,6 +263,7 @@ make base-rate</pre>
       <a href="proof/rule-boundary-verifier-2026-09-22.json" target="_blank" rel="noopener">Rule-boundary verifier receipt ↗</a>
       <a href="proof/transport-2026-09-21.json" target="_blank" rel="noopener">Transport record ↗</a>
       <a href="proof/rwa-surface-integrity-history.json" target="_blank" rel="noopener">Receipt history ↗</a>
+      <a href="proof/alphabet-class-a-pair-review-2026-09-29.json" target="_blank" rel="noopener">Alphabet pair review and issuer excerpts ↗</a>
       <a href="https://github.com/dyplux/bell/blob/main/bell/API-FEEDBACK.md" target="_blank" rel="noopener">Nine API contract findings ↗</a>
       <a href="https://github.com/dyplux/bell" target="_blank" rel="noopener">Repository, MIT ↗</a>
     </div>

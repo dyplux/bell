@@ -74,6 +74,7 @@ liveness: ## Does today's CMC API still answer in the shape this build reads?
 
 verify: ## Recompute the published receipt from the shipped inputs
 	$(PY) $(PKG)/verify_integrity_receipt.py
+	$(PY) $(PKG)/verify_legacy_replay.py
 	$(PY) $(PKG)/verify_catalogue_receipt.py
 # judge.html states "All 8 checks pass" and the JS suite asserted that against
 # the committed receipt, so the claim was verified against a file rather than

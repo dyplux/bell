@@ -23,10 +23,13 @@ the other.
 from __future__ import annotations
 
 import argparse
+import gzip
+import hashlib
 import json
 from pathlib import Path
 import re
 import sys
+import tempfile
 from urllib.request import Request, urlopen
 
 from history_chain import CHAIN_VERSION, link, verify
@@ -34,17 +37,15 @@ from history_chain import CHAIN_VERSION, link, verify
 HERE = Path(__file__).resolve().parent
 HISTORY = HERE / "site" / "proof" / "rwa-surface-integrity-history.json"
 ANCHOR = HERE / "history-chain-head.txt"
+RECEIPT_ARCHIVE = HERE / "site" / "proof" / "rwa-surface-integrity-receipts"
 # Two prose sentences state the length of the series. Appending the fourteenth
 # observation left both reading thirteen, and the gate went red - correctly, but
 # the fix belongs here rather than in the two files, because a count that is
 # restated by hand drifts again on the next append.
 RESTATE = (HERE / "site" / "judge.html", HERE.parent / "README.md", HERE / "README.md")
 COUNT_PHRASES = (
-    (re.compile(r"Of the \d+(?= dated observations)"), "Of the {n}"),
+    (re.compile(r"Of the \d+(?= dated observations(?: in the population history)?)"), "Of the {n}"),
     (re.compile(r"every one of the \d+(?= (?:is|shipped) )"), "every one of the {n}"),
-    # bell/README.md states the same count in its own words and was not in the
-    # rewriter, so it was the one file where the number drifted.
-    (re.compile(r"The \d+-observation population history"), "The {n}-observation population history"),
 )
 LIVE = "https://bell.dyplux.com/api/integrity"
 SUMMARY_FIELDS = ("tokenised_references_scanned", "tokens_scanned", "states", "signals")
@@ -74,8 +75,28 @@ def summarise(receipt: dict) -> dict:
     # able to see that this observation did not declare its rule set, instead of
     # having to infer it from a missing key.
     summary["rules_version"] = universe.get("rules_version")
+    summary["rules_version_recorded"] = bool(universe.get("rules_version"))
     summary["source_hashes"] = receipt.get("source_hashes", {})
     return summary
+
+
+def archive_receipt(receipt: dict) -> tuple[str, str, bytes]:
+    """Return a content-addressed reference and deterministic gzip payload.
+
+    The full receipt contains the per-reference rows used by the dated series.
+    Keeping it as deterministic gzip avoids discarding those values while
+    limiting repository growth. No request headers or API key are present in
+    the published receipt.
+    """
+    stamp = str(receipt.get("observed_at") or "")
+    if not stamp or not re.fullmatch(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z", stamp):
+        raise SystemExit("receipt observed_at is not a canonical UTC timestamp")
+    canonical = json.dumps(receipt, ensure_ascii=False, sort_keys=True,
+                           separators=(",", ":")).encode("utf-8") + b"\n"
+    digest = hashlib.sha256(canonical).hexdigest()
+    filename = stamp.replace(":", "-") + ".json.gz"
+    relative = f"rwa-surface-integrity-receipts/{filename}"
+    return relative, digest, gzip.compress(canonical, compresslevel=9, mtime=0)
 
 
 def append(history: dict, summary: dict) -> tuple[bool, str]:
@@ -213,9 +234,28 @@ def main(argv: list[str] | None = None) -> int:
     before = len(history.get("observations") or [])
     receipt = load_receipt(args.receipt)
     summary = summarise(receipt)
+    archive_relative, archive_digest, archive_bytes = archive_receipt(receipt)
+    summary["receipt_path"] = archive_relative
+    summary["receipt_sha256"] = archive_digest
     changed, message = append(history, summary)
     print(message)
     if changed and not args.dry_run:
+        archive_path = RECEIPT_ARCHIVE / Path(archive_relative).name
+        archive_path.parent.mkdir(parents=True, exist_ok=True)
+        if archive_path.exists():
+            try:
+                existing = gzip.decompress(archive_path.read_bytes())
+            except (OSError, EOFError) as error:
+                raise SystemExit(f"existing receipt archive is unreadable: {archive_path}: {error}")
+            if hashlib.sha256(existing).hexdigest() != archive_digest:
+                raise SystemExit(
+                    f"refusing to replace the immutable receipt archive {archive_path.name}")
+        else:
+            with tempfile.NamedTemporaryFile("wb", dir=archive_path.parent, delete=False) as handle:
+                handle.write(archive_bytes)
+                temporary = Path(handle.name)
+            temporary.replace(archive_path)
+        print(f"receipt archive: {archive_relative} ({archive_digest})")
         history_path.write_text(json.dumps(history, ensure_ascii=False, indent=2) + "\n",
                                 encoding="utf-8")
         # The head is anchored outside the file it protects, so it has to be

@@ -46,6 +46,7 @@ ALLOWED_RULES_VERSIONS = frozenset({RULES_VERSION, LEGACY_TEXT_RULES_VERSION})
 DEFAULT_HISTORY = ROOT / "site/proof/rwa-surface-integrity-history.json"
 DEFAULT_RECEIPT = ROOT / "site/proof/rwa-surface-integrity-2026-09-15.json"
 DEFAULT_LATEST = ROOT / "site/proof/rwa-surface-integrity-latest-replay-2026-09-21.json"
+DEFAULT_ORIGINAL = ROOT / "site/proof/rwa-surface-integrity-original-2026-09-21.json"
 DEFAULT_INPUTS = ROOT / "site/proof/rwa-surface-integrity-inputs-2026-09-21.json"
 SHA256 = re.compile(r"^[0-9a-f]{64}$")
 
@@ -452,6 +453,8 @@ def main() -> int:
     parser.add_argument("--history", type=Path, default=DEFAULT_HISTORY)
     parser.add_argument("--receipt", type=Path, default=DEFAULT_RECEIPT)
     parser.add_argument("--latest", type=Path, default=DEFAULT_LATEST)
+    parser.add_argument("--original", type=Path, default=DEFAULT_ORIGINAL,
+                        help="recovered original receipt for the legacy-rule history observation")
     parser.add_argument("--inputs", type=Path, default=DEFAULT_INPUTS)
     parser.add_argument("--capture-only", action="store_true",
                         help="verify only the explicitly paired --inputs and --latest capture")
@@ -473,39 +476,40 @@ def main() -> int:
 
     dated_receipt = load(args.receipt)
     latest_receipt = load(args.latest)
+    original_receipt = load(args.original)
     if not args.inputs.exists():
         raise ValueError(f"public input package is missing: {args.inputs}")
     verify_public_inputs(args.inputs, args.latest)
-    bundled = bundle([(dated_receipt, "dated receipt"), (latest_receipt, "latest receipt")])
+    # The later-rule replay shares the original observation timestamp, so it
+    # is checked against the input package above and must not stand in for the
+    # receipt recorded in the history. That original receipt is checked below.
+    bundled = bundle([(dated_receipt, "15 September receipt"),
+                      (original_receipt, "original 21 September receipt")])
     bundled_matches = 0
     fully_compared = 0
+    retained_checked = 0
+    from reference_series import load_retained_receipt
     for index, observation in enumerate(observations):
         label = f"history observation {index + 1}"
         verify_observation_shape(observation, label)
+        retained = load_retained_receipt(observation, label)
+        if retained is not None:
+            if not verify_observation(observation, retained, f"{label} retained receipt"):
+                raise ValueError(
+                    f"{label} retained receipt and history name different rule sets; "
+                    "the retained summary cannot be fully compared")
+            retained_checked += 1
         match = bundled.get(observation["observed_at"])
         if match:
             if verify_observation(observation, match[0], match[1]):
                 fully_compared += 1
-            elif observation["observed_at"] != latest_receipt.get("observed_at"):
-                # "Not compared, because the rule version differs" is an honest
-                # report only while something else proves the same thing. The
-                # latest receipt is recomputed byte for byte from its shipped
-                # input package a few lines above, so skipping its state
-                # comparison costs nothing. Any OTHER bundled receipt that
-                # skips has nothing behind it, and calling it cross-checked
-                # would be the claim this project exists to refuse.
+            else:
                 raise ValueError(
                     f"{match[1]} ({observation['observed_at']}) was not compared on state counts "
-                    "and ships no input package to recompute it from, so nothing verifies its "
-                    "distribution. Ship its inputs or stop bundling it as cross-checked.")
+                    "and ships no input package for that same observation")
             bundled_matches += 1
     if bundled_matches != len(bundled):
         raise ValueError("history is missing a bundled receipt observation")
-    # Two observations ship their payload and are cross-checked against it. The
-    # other ten were only checked for shape, so a coherent forgery - an invented
-    # day with 791 references, every one no_flags - was accepted. The chain makes
-    # each record depend on the one before it, so a single quiet edit no longer
-    # verifies.
     head = verify_chain(observations)
     declared = history.get("chain_head")
     if declared != head:
@@ -536,14 +540,12 @@ def main() -> int:
     # procedure. A project that says "I will not assert what I cannot prove" is
     # graded against that sentence.
     unverified = bundled_matches - fully_compared
-    print(f"bundled cross-checks: {bundled_matches} "
-          f"({fully_compared} compared on state counts, "
-          f"{unverified} verified on identity, totals, signals and source digests only)")
-    if unverified:
-        print(f"UNVERIFIED: {unverified} bundled observation(s) record a state distribution that "
-              "nothing in this repository can re-derive, because the rule set that produced it is "
-              "not the rule set this code runs. Its totals, signals and source digests are "
-              "checked; the split between do_not_compare, investigate and no_flags is not.")
+    print(f"history receipt comparisons: {bundled_matches} bundled "
+          f"({fully_compared} state distributions matched); "
+          f"{retained_checked} retained archives checked against their full history summaries")
+    from verify_legacy_replay import verify as verify_legacy
+    verify_legacy()
+    print("original 21 September receipt: frozen historical replay verified")
     print("remaining observations are public summaries")
     print(f"history chain head: {head}")
     print(f"history sha256: {hashlib.sha256(args.history.read_bytes()).hexdigest()}")
@@ -563,11 +565,12 @@ def main() -> int:
                 "an absent feature.")
         base_doc, deltas_doc = load_series()
         notes = verify_series(base_doc, deltas_doc, history)
-        print(f"reference series: {len(notes) + 1} points, "
-              f"each step matched to a published observation and its source digests")
-        print("UNVERIFIED: the per-reference detail inside each step cannot be re-derived, "
-              "because the receipts behind those observations are not shipped. Its origin, "
-              "order, rule set and source fingerprints are checked; the row values are not.")
+        receipt_checked = sum(": receipt rows verified;" in note for note in notes)
+        print(f"reference series: {len(notes) + 1} points, {receipt_checked} step(s) matched "
+              "row-for-row to retained receipts; all steps matched to history and source hashes")
+        if receipt_checked < len(notes):
+            print(f"UNVERIFIED: {len(notes) - receipt_checked} older step(s) have no retained "
+                  "receipt; their row detail cannot be re-derived from the shipped evidence.")
     except ValueError as error:
         raise ValueError(f"reference series: {error}")
     return 0

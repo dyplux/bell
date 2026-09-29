@@ -1,0 +1,5 @@
+Source: https://docs.xstocks.fi/docs/dividends-and-stock-splits
+Captured: 2026-09-29 (public documentation HTML; local text extraction)
+Page title: Dividends and Stock Splits | xStocks Docs
+Excerpt: "Every xStock launches with a multiplier of 1.0, meaning one token represents the value of one share."
+Limit: This describes the initial multiplier and mechanism; it does not establish the current GOOGLX multiplier.

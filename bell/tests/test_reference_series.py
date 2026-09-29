@@ -16,9 +16,12 @@ backdated point is not a series.
 from __future__ import annotations
 
 import copy
+import gzip
+import hashlib
 import json
 from pathlib import Path
 import sys
+import tempfile
 import unittest
 
 HERE = Path(__file__).resolve().parent
@@ -35,8 +38,9 @@ def history_with(*stamps: str) -> dict:
     return {"observations": [{"observed_at": stamp, "rules_version": "bell.rules.v2"}
                              for stamp in stamps]}
 
+import reference_series  # noqa: E402
 from reference_series import (  # noqa: E402
-    BASE, DELTAS, apply, delta, record, series_for, snapshot_of)
+    BASE, DELTAS, apply, delta, digest_of_state, index_digest, record, series_for, snapshot_of)
 
 BASE_DOC = json.loads(BASE.read_text(encoding="utf-8"))
 REPLAY = json.loads((HERE.parent / "site" / "proof"
@@ -75,7 +79,7 @@ class DeltasReplayExactly(unittest.TestCase):
         self.assertEqual(apply({"1": {"state": "no_flags"}}, [step]), {})
 
 
-class TheSeriesRefusesWhatItCannotMean(unittest.TestCase):
+class TheSeriesRefusesMalformedOrBackdatedPoints(unittest.TestCase):
     def setUp(self):
         self.shipped = json.loads(DELTAS.read_text(encoding="utf-8"))
         self.newest = self.shipped["observations"][-1]["observed_at"]
@@ -88,6 +92,75 @@ class TheSeriesRefusesWhatItCannotMean(unittest.TestCase):
             record(receipt_with("2026-09-30T00:00:00Z", rules="bell.rules.v3"),
                    history_with(self.newest, "2026-09-30T00:00:00Z"))
         self.assertIn("reports the rule change as market movement", str(raised.exception))
+
+
+class RetainedReceiptsVerifySeriesRows(unittest.TestCase):
+    def _fixture(self, proof: Path):
+        base = {"1": {"state": "no_flags", "representations": 1,
+                       "comparison_published": False, "signal_codes": []}}
+        stamp = "2026-09-30T00:00:00Z"
+        receipt = {
+            "observed_at": stamp,
+            "source_hashes": {"map": "source-map"},
+            "universe": {"rules_version": "bell.rules.v2"},
+            "alert_index": [{"rwa_id": "1", "state": "do_not_compare", "token_count": 2,
+                             "comparison": None, "signal_codes": ["PRICE_DISPERSION"]}],
+        }
+        current = snapshot_of(receipt)
+        canonical = json.dumps(receipt, ensure_ascii=False, sort_keys=True,
+                               separators=(",", ":")).encode("utf-8") + b"\n"
+        relative = "rwa-surface-integrity-receipts/2026-09-30T00-00-00Z.json.gz"
+        archive = proof / relative
+        archive.parent.mkdir(parents=True)
+        archive.write_bytes(gzip.compress(canonical, compresslevel=9, mtime=0))
+        step = delta(base, current)
+        step.update({"observed_at": stamp, "source_hashes": receipt["source_hashes"],
+                     "alert_index_sha256": index_digest(receipt)})
+        digest = digest_of_state(current)
+        history = {"observations": [{
+            "observed_at": stamp, "rules_version": "bell.rules.v2",
+            "source_hashes": receipt["source_hashes"], "reference_digest": digest,
+            "receipt_path": relative, "receipt_sha256": hashlib.sha256(canonical).hexdigest(),
+        }]}
+        base_doc = {"observed_at": "2026-09-29T00:00:00Z", "references": base,
+                    "rules_version": "bell.rules.v2"}
+        deltas_doc = {"base": BASE.name, "rules_version": "bell.rules.v2",
+                      "observations": [step]}
+        return base_doc, deltas_doc, history
+
+    def test_receipt_archive_is_compared_row_for_row_with_the_replayed_series(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            proof = Path(tmp)
+            base_doc, deltas_doc, history = self._fixture(proof)
+            original = reference_series.PROOF
+            reference_series.PROOF = proof
+            try:
+                notes = reference_series.verify(base_doc, deltas_doc, history)
+            finally:
+                reference_series.PROOF = original
+        self.assertIn("receipt rows verified", notes[0])
+
+    def test_a_rewritten_series_step_is_refused_even_with_updated_self_digest(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            proof = Path(tmp)
+            base_doc, deltas_doc, history = self._fixture(proof)
+            deltas_doc["observations"][0]["changed"]["1"]["state"] = "no_flags"
+            forged_state = apply(base_doc["references"], deltas_doc["observations"])
+            forged_digest = digest_of_state(forged_state)
+            deltas_doc["observations"][0]["alert_index_sha256"] = forged_digest
+            history["observations"][0]["reference_digest"] = forged_digest
+            original = reference_series.PROOF
+            reference_series.PROOF = proof
+            try:
+                with self.assertRaisesRegex(ValueError, "reference rows do not match"):
+                    reference_series.verify(base_doc, deltas_doc, history)
+            finally:
+                reference_series.PROOF = original
+
+class TheSeriesRefusesWhatItCannotMean(unittest.TestCase):
+    def setUp(self):
+        self.shipped = json.loads(DELTAS.read_text(encoding="utf-8"))
+        self.newest = self.shipped["observations"][-1]["observed_at"]
 
     def test_it_refuses_an_unversioned_receipt(self):
         with self.assertRaises(SystemExit):

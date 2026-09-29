@@ -26,10 +26,14 @@ are the four, each run against a real copy of the shipped evidence.
 from __future__ import annotations
 
 import copy
+import gzip
+import hashlib
 import json
 from pathlib import Path
 import sys
+import tempfile
 import unittest
+from unittest.mock import patch
 
 HERE = Path(__file__).resolve().parent
 BELL = HERE.parent
@@ -40,6 +44,44 @@ DATED = "rwa-surface-integrity-2026-09-15.json"
 INPUTS = "rwa-surface-integrity-inputs-2026-09-21.json"
 LATEST = "rwa-surface-integrity-latest-replay-2026-09-21.json"
 HISTORY = "rwa-surface-integrity-history.json"
+
+
+class RetainedHistoryReceipts(unittest.TestCase):
+    def test_retained_receipt_is_checked_against_history_without_a_series_step(self):
+        from reference_series import load_retained_receipt
+        from verify_integrity_receipt import verify_observation
+
+        history = json.loads((PROOF / HISTORY).read_text(encoding="utf-8"))
+        receipt = json.loads((PROOF / DATED).read_text(encoding="utf-8"))
+        observation = next(item for item in history["observations"]
+                           if item["observed_at"] == receipt["observed_at"])
+        canonical = json.dumps(receipt, ensure_ascii=False, sort_keys=True,
+                               separators=(",", ":")).encode("utf-8") + b"\n"
+        relative = "rwa-surface-integrity-receipts/test.json.gz"
+        with tempfile.TemporaryDirectory() as directory:
+            proof = Path(directory)
+            archive = proof / relative
+            archive.parent.mkdir(parents=True)
+            archive.write_bytes(gzip.compress(canonical, compresslevel=9, mtime=0))
+            linked = copy.deepcopy(observation)
+            linked["receipt_path"] = relative
+            linked["receipt_sha256"] = hashlib.sha256(canonical).hexdigest()
+            with patch("reference_series.PROOF", proof):
+                loaded = load_retained_receipt(linked, "history observation")
+            self.assertEqual(loaded, receipt)
+            self.assertTrue(verify_observation(linked, loaded, "history observation"))
+
+            forged = copy.deepcopy(linked)
+            forged["signals"] = {}
+            with patch("reference_series.PROOF", proof):
+                loaded = load_retained_receipt(forged, "history observation")
+            with self.assertRaisesRegex(ValueError, "signals"):
+                verify_observation(forged, loaded, "history observation")
+
+    def test_incomplete_retained_receipt_reference_is_refused(self):
+        from reference_series import load_retained_receipt
+        with self.assertRaisesRegex(ValueError, "incomplete retained-receipt"):
+            load_retained_receipt({"receipt_path": "receipt.json.gz"}, "history observation")
 
 
 class Forgery(unittest.TestCase):

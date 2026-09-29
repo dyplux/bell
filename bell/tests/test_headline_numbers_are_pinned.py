@@ -207,8 +207,11 @@ class HeadlineNumbersArePinned(unittest.TestCase):
     def test_the_input_package_size_is_the_size_on_disk(self):
         megabytes = (PROOF / "rwa-surface-integrity-inputs-2026-09-21.json").stat().st_size / 1_000_000
         stated = f"{megabytes:.1f} MB of shipped inputs"
-        self.assertIn(stated, flowed(judge_text()),
+        page = flowed(judge_text())
+        self.assertIn(stated, page,
                       f"the judge page states an input package size that is not {stated}")
+        self.assertIn("frozen scanner", page,
+                      "the page does not explain how the original rule distribution is replayed")
 
     def test_the_readme_states_the_receipt_s_own_reference_count(self):
         references = REPLAY["universe"]["tokenised_references_scanned"]

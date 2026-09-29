@@ -1,0 +1,5 @@
+Source: https://assets.backed.fi/products/alphabet-xstock
+Captured: 2026-09-29 (public page HTML; local text extraction)
+Page title: Alphabet xStock - Backed Assets
+Excerpt: "Alphabet xStock (GOOGLx) is a tracker certificate. GOOGLx tracks the price of Alphabet Inc. Class A."
+Limit: This excerpt does not state the current GOOGLX multiplier or quote-unit basis.

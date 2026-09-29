@@ -65,6 +65,7 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
+
       - name: Is the deployed site this commit?
         # A push and its deploy are two events and this job runs between them,
         # so the check was going red on the clock rather than on the contents:
@@ -123,6 +124,10 @@ jobs:
         with:
           python-version: '3.12'
 
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '20'
+
       - name: Append the published observation
         run: PYTHONPATH=bell python bell/append_history.py
 
@@ -132,6 +137,14 @@ jobs:
             echo "no new observation today; nothing to commit"
             exit 0
           fi
+          # The new gzip archive is a tracked file as soon as it is staged.
+          # Update the published count from that staged tree, then stage the
+          # generated copy. This runs after each observation so the next
+          # offline gate does not see a one-file drift.
+          git add -A
+          make sync-counts
+          git add -A
+          make check-offline
           git config user.name 'Dyplux'
           git config user.email 'admin@dyplux.com'
           # This step named the files by hand and the list was wrong twice.

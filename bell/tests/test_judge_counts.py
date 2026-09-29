@@ -225,7 +225,7 @@ class JudgeCounts(unittest.TestCase):
         out = verifier_output()
         self.assertEqual(out.returncode, 0, out.stderr[:400])
         observations = re.search(r"ok \((\d+) observations\)", out.stdout)
-        bundled = re.search(r"bundled cross-checks: (\d+)", out.stdout)
+        bundled = re.search(r"history receipt comparisons: (\d+)", out.stdout)
         self.assertIsNotNone(observations, out.stdout[:300])
         self.assertIsNotNone(bundled, out.stdout[:300])
         judge = JUDGE.read_text(encoding="utf-8")
@@ -235,37 +235,32 @@ class JudgeCounts(unittest.TestCase):
         # reconciling them.
         self.assertRegex(
             " ".join(judge.split()),
-            rf"Of the {observations.group(1)} dated observations[^.]*?, {bundled.group(1)} ship",
-            "the judge page no longer states the verification the verifier performs")
+            rf"Of the {observations.group(1)} dated observations[^.]*?, two legacy observations have separately bundled receipts",
+            "the judge page must distinguish legacy bundled receipts from prospective archives")
 
     def test_the_readme_does_not_overstate_what_the_readme_verifies(self):
         # The judge page was made precise about what make verify proves and the
         # README kept the broad version, so the two documents disagreed about
         # the same command. Whatever the verifier reports, both must say it.
         out = verifier_output()
-        bundled = re.search(r"bundled cross-checks: (\d+)", out.stdout)
+        bundled = re.search(r"history receipt comparisons: (\d+)", out.stdout)
         observations = re.search(r"ok \((\d+) observations\)", out.stdout)
-        # "2 ship their full payload and are cross-checked" was true of the
-        # shipping and false of the cross-checking: one of the two has a state
-        # distribution nothing in this repository can re-derive, and the
-        # verifier now prints UNVERIFIED for it. Both documents have to carry
-        # the same count AND the same limit.
+        # Full receipts and replayable source inputs are different evidence
+        # levels. The original 21 September distribution now has a frozen
+        # replay; older per-reference steps remain unverified until their
+        # receipts have been retained.
         import re as _re
         phrase = _re.compile(
             rf"Of the {observations.group(1)} dated observations[^.]*?, "
-            rf"{bundled.group(1)} ship their full payload")
-        unverified = "UNVERIFIED" in out.stdout
+            r"two legacy observations have separately bundled receipts")
         chained = re.compile(
             rf"every one of the {observations.group(1)}[^.]*?is chained to the one before it")
         for text, name in ((JUDGE.read_text(encoding="utf-8"), "judge.html"),
                            (README.read_text(encoding="utf-8"), "README.md")):
             self.assertRegex(" ".join(text.split()), phrase,
                              f"{name} no longer states what the verifier verifies")
-            if unverified:
-                self.assertIn("UNVERIFIED", text,
-                              f"{name} does not carry the limit the verifier prints. The verifier "
-                              "says one bundled observation's distribution is unverified and the "
-                              "document does not.")
+            self.assertIn("UNVERIFIED", text,
+                          f"{name} does not carry the remaining row-level series limitation")
         # The chain is the answer to the forgery that got through, so the page
         # that describes the verification has to describe it.
         self.assertRegex(" ".join(JUDGE.read_text(encoding="utf-8").split()), chained,

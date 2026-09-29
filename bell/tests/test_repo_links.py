@@ -356,7 +356,7 @@ class TheSourceMapCountsWhatShips(unittest.TestCase):
         ).read_text(encoding='utf-8'))
         total = len(history['observations'])
         text = Path(os.path.join(ROOT, 'bell', 'README.md')).read_text(encoding='utf-8')
-        self.assertIn(f'The {total}-observation population history', text,
+        self.assertIn(f'Of the {total} dated observations in the population history', text,
                       'bell/README.md states a series length the history does not have')
 
     def test_no_document_sends_a_reader_to_the_superseded_receipts(self):
