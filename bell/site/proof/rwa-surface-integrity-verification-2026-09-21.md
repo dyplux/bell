@@ -1,27 +1,31 @@
 # RWA Surface Integrity Monitor · public verification
 
-This note records how the latest population receipt can be checked without a
-CMC credential. It is a verification of the published computation, not a
-claim that the public browser calls CMC directly.
+This note explains how the recovered 21 September population receipt can be
+recomputed without a CMC credential. It verifies the published computation;
+it does not claim that the public browser calls CMC directly.
 
-## Latest observation
+## Recovered observation
 
-- Observed at: `2026-09-21T19:19:31Z`
-- Published by the server-side publisher at the same refresh cycle
-- Published state at capture: `fresh`
+- Observed at: `2026-09-21T21:25:01Z`
 - Tokenised references: `791`
-- Representation rows: `1,435`
-- States: `37` blocked, `661` investigate, `93` no rule hit
-- Source surfaces: map, asset list, quotes, info, issuers and cryptocurrency info
+- Original states: `35` DO NOT COMPARE, `662` INVESTIGATE, `94` NO FLAGS
+- Replayed with the later rule set on the same inputs: `35` DO NOT COMPARE,
+  `90` INVESTIGATE, `666` NO FLAGS
+- The two distributions differ because the replay deliberately uses later
+  rules. The original receipt remains unchanged.
+
+An older history summary at `19:19:31Z` reports `37 / 661 / 93`. The six-surface
+input package preserved here is from `21:25:01Z`, not that earlier observation;
+the earlier full input package is not available in this repository and its
+transport details cannot be replayed from these files. Do not treat this
+package as verification of the 19:19 summary.
 
 ## Replay path
 
-The latest credential-free input package is available at
-[`rwa-surface-integrity-inputs-2026-09-21.json`](rwa-surface-integrity-inputs-2026-09-21.json).
-It contains the normalized six-surface payloads used by the deterministic
-scanner. Its collection manifest names the six CMC endpoint surfaces and
-records a SHA-256 fingerprint for each normalized payload. The package
-contains no API key and no request headers.
+The credential-free [normalized input package](rwa-surface-integrity-inputs-2026-09-21.json)
+contains the six surfaces used by the deterministic scanner and a collection
+manifest with SHA-256 fingerprints for each response. It contains no API key
+or request headers.
 
 From the repository root:
 
@@ -29,17 +33,17 @@ From the repository root:
 python3 bell/verify_integrity_receipt.py
 ```
 
-The verifier checks the package schema, the six required surfaces, the matching
-observation timestamp, the scanner output and the public collection manifest
-against the published local receipt. The expected result for this observation
-is ten verified dated receipts, including two bundled cross-checks and eight
-public summary records. The manifest also records 88 successful JSON responses
-across six surfaces, their HTTP status codes, collection windows and body
-hashes. Raw response bodies, request headers and credentials are not published.
+The verifier checks the package schema, required surfaces, response status and
+hash shapes, ordered UTC collection windows, observation timestamp, scanner
+output, and manifest against the recovered original receipt. It also checks
+the later-rule replay against the same inputs. In the then-current history,
+ten observation summaries were present; only two observations had separately
+bundled population receipts. The other summaries do not gain row-level proof
+from this package.
 
 ## Boundary
 
-The public replay proves that the receipt is internally consistent with the
-published normalized inputs and scanner code. It does not prove the upstream
-provider's authenticated transport, backing, redemption, legal eligibility,
+The replay proves that the receipt is internally consistent with the published
+normalized inputs and scanner code. It does not independently authenticate the
+upstream provider transport, establish backing, redemption, legal eligibility,
 liquidity or executable size. Those remain external diligence questions.

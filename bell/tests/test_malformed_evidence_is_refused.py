@@ -385,6 +385,35 @@ class TheInputPackageIsRefusedWhenItIsMalformed(unittest.TestCase):
                     self.assertRaisesRegex(ValueError, "status codes"):
                 self.verify_manifest(self.surfaces, manifest, self.names)
 
+    def test_http_error_statuses_cannot_be_counted_as_successful_json(self):
+        manifest = self.manifest_copy()
+        surface = manifest["surfaces"]["map"]
+        surface["status_codes"] = [500] * surface["request_count"]
+        with self.assertRaisesRegex(ValueError, "does not match its 2xx"):
+            self.verify_manifest(self.surfaces, manifest, self.names)
+
+    def test_invalid_and_boolean_http_statuses_are_refused(self):
+        for value in (99, 600, True):
+            manifest = self.manifest_copy()
+            manifest["surfaces"]["map"]["status_codes"][0] = value
+            with self.subTest(value=value), \
+                    self.assertRaisesRegex(ValueError, "status codes"):
+                self.verify_manifest(self.surfaces, manifest, self.names)
+
+    def test_non_hex_response_fingerprints_are_refused(self):
+        manifest = self.manifest_copy()
+        manifest["surfaces"]["map"]["response_sha256"][0] = "xyz" * 21 + "x"
+        with self.assertRaisesRegex(ValueError, "response hashes"):
+            self.verify_manifest(self.surfaces, manifest, self.names)
+
+    def test_missing_or_reversed_request_windows_are_refused(self):
+        for field, value in (("first_request_at", None),
+                             ("last_response_at", "2026-09-21T20:00:00Z")):
+            manifest = self.manifest_copy()
+            manifest["surfaces"]["map"][field] = value
+            with self.subTest(field=field), self.assertRaises(ValueError):
+                self.verify_manifest(self.surfaces, manifest, self.names)
+
     def test_the_untouched_manifest_passes(self):
         # The control: a function that refuses everything proves nothing.
         try:
@@ -796,4 +825,3 @@ class ThePostWriteChecksAreDrivenToo(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

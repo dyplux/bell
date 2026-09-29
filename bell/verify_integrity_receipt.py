@@ -17,6 +17,7 @@ import json
 import re
 import sys
 from pathlib import Path
+from datetime import datetime, timezone
 
 
 ROOT = Path(__file__).resolve().parent
@@ -322,6 +323,8 @@ def verify_collection_manifest(surfaces: dict, manifest: dict, names: tuple) -> 
     """
     if not isinstance(manifest, dict) or manifest.get("mode") != "server_side_authenticated_collection":
         raise ValueError("public input collection manifest is missing")
+    observed_at = parse_utc_timestamp(manifest.get("observed_at"),
+                                       "collection manifest observed_at")
     for name in names:
         surface_manifest = manifest.get("surfaces", {}).get(name)
         if not isinstance(surface_manifest, dict) or surface_manifest.get("payload_sha256") != digest(surfaces[name]):
@@ -347,7 +350,9 @@ def verify_collection_manifest(surfaces: dict, manifest: dict, names: tuple) -> 
         if isinstance(successful_count, bool) or not isinstance(successful_count, int) \
                 or successful_count < 1 or successful_count > request_count:
             raise ValueError(f"invalid successful response count for {name}")
-        if not isinstance(response_hashes, list) or len(response_hashes) != successful_count or any(not isinstance(value, str) or len(value) != 64 for value in response_hashes):
+        if not isinstance(response_hashes, list) or len(response_hashes) != successful_count \
+                or any(not isinstance(value, str) or not SHA256.fullmatch(value)
+                       for value in response_hashes):
             raise ValueError(f"response hashes do not match response count for {name}")
         # Checked for length and compared to nothing. Every response
         # fingerprint in all six surfaces could be set to sixty-four zeroes
@@ -362,8 +367,33 @@ def verify_collection_manifest(surfaces: dict, manifest: dict, names: tuple) -> 
                 f"{len(placeholders)} of {name}'s response fingerprints are a single repeated "
                 f"character ({placeholders[0][:8]}...): a placeholder is not the digest of a "
                 "response")
-        if not isinstance(status_codes, list) or len(status_codes) != request_count or any(not isinstance(value, int) for value in status_codes):
+        if not isinstance(status_codes, list) or len(status_codes) != request_count \
+                or any(type(value) is not int or not 100 <= value <= 599
+                       for value in status_codes):
             raise ValueError(f"status codes do not match request count for {name}")
+        actual_successes = sum(200 <= value < 300 for value in status_codes)
+        if actual_successes != successful_count:
+            raise ValueError(
+                f"successful response count for {name} does not match its 2xx status codes")
+        first_request = parse_utc_timestamp(
+            surface_manifest.get("first_request_at"), f"{name}.first_request_at")
+        last_response = parse_utc_timestamp(
+            surface_manifest.get("last_response_at"), f"{name}.last_response_at")
+        if first_request < observed_at or last_response < first_request:
+            raise ValueError(f"request window for {name} is not ordered within the observation")
+
+
+def parse_utc_timestamp(value: object, label: str) -> datetime:
+    """Require an explicit, parseable UTC timestamp rather than a missing window."""
+    if not isinstance(value, str) or not value.endswith("Z"):
+        raise ValueError(f"{label} must be an explicit UTC timestamp ending in Z")
+    try:
+        parsed = datetime.fromisoformat(value[:-1] + "+00:00")
+    except ValueError as error:
+        raise ValueError(f"{label} is not a valid UTC timestamp") from error
+    if parsed.utcoffset() != timezone.utc.utcoffset(parsed):
+        raise ValueError(f"{label} must use UTC")
+    return parsed
 
 
 def verify_public_inputs(inputs_path: Path, receipt_path: Path) -> None:
