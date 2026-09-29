@@ -775,15 +775,43 @@ def main() -> int:
                 narrow_mobile[str(width)] = "no overflow; search and decision visible"
                 narrow_page.close()
 
-            tablet = browser.new_context(viewport={"width": 834, "height": 1112})
-            tablet_page = tablet.new_page()
-            tablet_page.goto(args.base.rstrip("/") + "/", wait_until="domcontentloaded", timeout=30_000)
-            tablet_page.locator("#receipt-status-label").wait_for(state="attached", timeout=30_000)
-            wait_for_text(tablet_page, "#receipt-status-label", "LOADING", absent=True)
-            tablet_overflow = tablet_page.evaluate("document.documentElement.scrollWidth > window.innerWidth + 1")
-            require(not tablet_overflow, "tablet page has horizontal overflow")
-            require(tablet_page.locator("#hero-search").is_visible(), "tablet first viewport hides the primary search")
-            tablet.close()
+            tablet_results = {}
+            for width in (621, 768, 834, 899, 900):
+                tablet = browser.new_context(viewport={"width": width, "height": 1112})
+                tablet_page = tablet.new_page()
+                tablet_page.goto(args.base.rstrip("/") + "/", wait_until="domcontentloaded", timeout=30_000)
+                tablet_page.locator("#receipt-status-label").wait_for(state="attached", timeout=30_000)
+                wait_for_text(tablet_page, "#receipt-status-label", "LOADING", absent=True)
+                tablet_overflow = tablet_page.evaluate("document.documentElement.scrollWidth > window.innerWidth + 1")
+                require(not tablet_overflow, f"{width}px tablet page has horizontal overflow")
+                require(tablet_page.locator("#hero-search").is_visible(),
+                        f"{width}px tablet first viewport hides the primary search")
+                tablet_page.locator("#hero-search").fill("Tesla")
+                tablet_page.locator("#hero-search-form button[type=submit]").click()
+                tablet_page.locator("#search-result").wait_for(state="visible", timeout=30_000)
+                visible_result = False
+                for _ in range(30):
+                    position = tablet_page.evaluate("""() => {
+                        const result = document.querySelector('#search-result');
+                        const header = document.querySelector('.topbar');
+                        if (!result || !header) return null;
+                        return {
+                            resultTop: result.getBoundingClientRect().top,
+                            resultBottom: result.getBoundingClientRect().bottom,
+                            headerBottom: header.getBoundingClientRect().bottom,
+                            viewportHeight: window.innerHeight,
+                        };
+                    }""")
+                    if position and position["resultTop"] >= max(8, position["headerBottom"] + 8) \
+                            and position["resultBottom"] > 0 \
+                            and position["resultTop"] < position["viewportHeight"] - 80:
+                        visible_result = True
+                        break
+                    tablet_page.wait_for_timeout(100)
+                require(visible_result,
+                        f"{width}px tablet sticky header covers or hides the opening search result: {position}")
+                tablet_results[str(width)] = "no overflow; search result clears sticky header"
+                tablet.close()
 
             fallback = browser.new_context(viewport={"width": 1440, "height": 1100})
             fallback_page = fallback.new_page()
@@ -884,6 +912,7 @@ def main() -> int:
                 "mobile_horizontal_overflow": False,
                 "narrow_mobile": narrow_mobile,
                 "tablet_horizontal_overflow": False,
+                "tablet_search_results": tablet_results,
                 "population_concentration": "HHI and effective issuer count visible",
                 "population_attribution_export": attribution_download.suggested_filename,
                 "mobile_decision_preview": "visible before the long task panel",
