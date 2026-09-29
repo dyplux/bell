@@ -231,6 +231,24 @@ def main() -> int:
                               "REFERENCES WITH 2+ ROWS")
             require(page.locator("#hero-comparison-coverage").inner_text() == expected_scope,
                     "the first-screen comparison numerator/denominator do not match the current receipt")
+            route_counts = {
+                "#hero-route-comparable": sum(1 for item in multi_representation if item.get("comparison")),
+                "#hero-route-blocked": sum(1 for item in multi_representation
+                                           if item.get("state") == "do_not_compare" and not item.get("comparison")),
+                "#hero-route-investigate": sum(1 for item in multi_representation
+                                               if item.get("state") == "investigate" and not item.get("comparison")),
+                "#hero-route-unflagged": sum(1 for item in multi_representation
+                                              if item.get("state") == "no_flags" and not item.get("comparison")),
+            }
+            for selector, expected in route_counts.items():
+                shown = page.locator(selector).inner_text().replace(",", "").strip()
+                require(shown == str(expected),
+                        f"{selector} shows {shown!r}, but the current receipt routes {expected} references")
+            require(sum(route_counts.values()) == len(multi_representation),
+                    "first-screen route breakdown does not partition the multi-representation population")
+            require(page.locator(".hero-api-paths").count() == 1
+                    and "/v5/real-world-assets/quotes/latest" in page.locator(".hero-api-paths").inner_text(),
+                    "the first-screen API detail no longer names a CMC RWA route")
             wait_for_text(page, "#publication-history", receipt["observed_at"])
             # Every population figure the page prints must equal the receipt it
             # is reading AT THIS MOMENT, not a figure from any other observation.

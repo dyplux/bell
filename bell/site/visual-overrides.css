@@ -517,7 +517,9 @@ footer .footer-meta{width:100%;display:flex;justify-content:space-between;gap:12
   .hero>div:first-of-type>.lede{order:9}
   .hero>div:first-of-type>.lede-contrast{order:10}
   .hero>div:first-of-type>.hero-meta{order:11}
-  .hero>div:first-of-type>.investor-task{order:12}
+  .hero>div:first-of-type>.hero-population-breakdown{order:12}
+  .hero>div:first-of-type>.hero-api-paths{order:13}
+  .hero>div:first-of-type>.investor-task{order:14}
   .hero h1{font-size:40px}
   .hero-words{grid-template-columns:1fr;margin-top:14px}
   .hero-words>div{padding:9px 12px}
@@ -571,13 +573,28 @@ footer .footer-meta{width:100%;display:flex;justify-content:space-between;gap:12
   .hero>div:first-of-type>.lede{order:9}
   .hero>div:first-of-type>.lede-contrast{order:10}
   .hero>div:first-of-type>.hero-meta{order:11}
-  .hero>div:first-of-type>.investor-task{order:12}
+  .hero>div:first-of-type>.hero-population-breakdown{order:12}
+  .hero>div:first-of-type>.hero-api-paths{order:13}
+  .hero>div:first-of-type>.investor-task{order:14}
 }
 
 /* The key listed three ways to be refused and no way to be answered, on the
    first screen, under a headline that already leads with a refusal count. The
    affirmative goes first and is the only one in gold. */
 .outcome-affirmative b{color:var(--gold)}
+
+.hero-population-breakdown{margin-top:14px;padding:11px 13px;border:1px solid var(--line);border-left:2px solid var(--gold);background:var(--panel-inset)}
+.hero-population-breakdown[hidden]{display:none}
+.hero-population-breakdown>span,.hero-api-paths>summary{color:var(--gold);font:500 11px/1.4 var(--font);letter-spacing:.09em}
+.hero-population-breakdown>div{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 14px;margin-top:8px}
+.hero-population-breakdown b{display:flex;justify-content:space-between;gap:10px;color:var(--muted);font:12px/1.35 var(--font)}
+.hero-population-breakdown strong{color:var(--paper);font-variant-numeric:tabular-nums}
+.hero-population-breakdown small{display:block;margin-top:8px;color:var(--dim);font-size:11px;line-height:1.45}
+.hero-api-paths{margin-top:8px;color:var(--muted);font:12px/1.55 var(--font)}
+.hero-api-paths>summary{display:list-item;cursor:pointer;text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px}
+.hero-api-paths p{margin:8px 0;padding:9px 11px;background:var(--panel-inset);border-left:1px solid var(--line);overflow-wrap:anywhere}
+.hero-api-paths code{color:var(--paper);font:11px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace}
+@media(max-width:360px){.hero-population-breakdown>div{grid-template-columns:minmax(0,1fr)}}
 
 /* O contrapeso da manchete: a recusa continua na frase, em corpo menor,
    porque e a maioria honesta mas nao e o que o leitor pode accionar. */

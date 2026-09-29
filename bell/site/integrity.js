@@ -928,6 +928,25 @@
       const filteredComparisons = multiRepresentation.filter(item => item?.comparison).length;
       comparisonScope.textContent = `FILTERED QUOTE CHECK · ${filteredComparisons} / ${multiRepresentation.length} REFERENCES WITH 2+ ROWS`;
       comparisonScope.title = 'Counts come from this receipt: references with at least two representation rows, and the subset that passes Bell’s filtered quote comparison. This does not establish equivalent units or claims.';
+      const countRoute = (state) => multiRepresentation.filter(item =>
+        item?.state === state && !item?.comparison).length;
+      const routeCounts = {
+        comparable: filteredComparisons,
+        blocked: countRoute('do_not_compare'),
+        investigate: countRoute('investigate'),
+        unflagged: countRoute('no_flags'),
+      };
+      const routeTotal = Object.values(routeCounts).reduce((sum, count) => sum + count, 0);
+      if (routeTotal === multiRepresentation.length) {
+        byId('hero-population-breakdown').innerHTML = `<span>CURRENT ROUTING · ${multiRepresentation.length.toLocaleString()} REFERENCES WITH 2+ ROWS</span>`
+          + `<div><b>Filtered comparisons <strong>${routeCounts.comparable.toLocaleString()}</strong></b>`
+          + `<b>Do not compare <strong>${routeCounts.blocked.toLocaleString()}</strong></b>`
+          + `<b>Investigate <strong>${routeCounts.investigate.toLocaleString()}</strong></b>`
+          + `<b>No flags, no filtered pair <strong>${routeCounts.unflagged.toLocaleString()}</strong></b></div>`
+          + '<small>Counts are mutually exclusive routes from the current receipt; they do not establish economic equivalence.</small>';
+      } else {
+        byId('hero-population-breakdown').hidden = true;
+      }
     }
     const publication = receipt._publication;
     const status = freshnessStatus(publication);
