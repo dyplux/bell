@@ -9,6 +9,7 @@ that matters before a shortlist: can these representations be compared at all?
 |---|---|
 | **Live** | <https://bell.dyplux.com/> |
 | **For judges** | <https://bell.dyplux.com/judge> - the claim, the 30-second check and the receipts on one page, no auth |
+| **BUIDL logo** | [`bell/site/assets/buidl-logo-480.png`](bell/site/assets/buidl-logo-480.png) - 480 × 480 PNG of Bell's wordmark; the vector source is beside it |
 | **Track** | Build with CMC API, Real World Assets. MIT licence |
 | **Local interface** | `make app` - visual workspace, local agent API, and optional own CMC key |
 | **Whole-catalogue base rate · 21 Sep** | Of the 244 references carrying more than one representation, **87 have a cheapest route worth naming**. The 157 refusals produced 158 rule hits: 107 missing-coverage reasons, 38 price or field review triggers, and 13 cases with fewer than two eligible spot routes. Review triggers are not proof of economic contradiction |

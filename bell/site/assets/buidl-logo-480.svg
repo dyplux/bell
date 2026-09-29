@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="480" viewBox="0 0 480 480">
+  <defs>
+    <radialGradient id="bg" cx="78%" cy="8%" r="95%"><stop offset="0" stop-color="#182a45"/><stop offset="1" stop-color="#0a0e14"/></radialGradient>
+    <style>@font-face{font-family:SpaceGrotesk;src:url("SpaceGrotesk-Variable.ttf") format("truetype");font-weight:300 700}</style>
+  </defs>
+  <rect width="480" height="480" fill="url(#bg)"/>
+  <path d="M0 375H480" stroke="#253345" opacity=".7"/>
+  <text x="240" y="260" text-anchor="middle" dominant-baseline="alphabetic" fill="#eaecef" font-family="SpaceGrotesk,Arial,sans-serif" font-size="142" font-weight="650" letter-spacing="-8">bell<tspan fill="#ffcc00" letter-spacing="0">.</tspan></text>
+</svg>
