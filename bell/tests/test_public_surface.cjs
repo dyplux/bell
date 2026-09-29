@@ -45,6 +45,8 @@ test('dated pair review appears with the searched case and its export points to 
   assert.match(integrity, /class="pair-review-details"/,
     'secondary dates and methodology must be available through native disclosure');
   assert.match(issuerEvidence, /summary: 'Same Alphabet Class A reference, but quote units remain unresolved/);
+  assert.match(page, /id="hero-search-form"[\s\S]*?<small>Search a reference[\s\S]*?<div id="search-result"[\s\S]*?<div class="quick-search"/,
+    'the answer should render directly below search help and before example and glossary blocks');
   assert.match(page, /data-example-search="Alphabet"/,
     'the featured pairwise review must be discoverable from the first screen');
   assert.doesNotMatch(integrity.slice(integrity.indexOf('function renderComparison(item)'), integrity.indexOf('function comparisonRouteSet')), /pairReviewMarkup/,
@@ -759,8 +761,6 @@ test('the control sits under the finding on desktop too, not under the caveats',
   };
   assert.ok(order('.hero-search') < order('#coverage-fact'),
     'the search box is ordered below the API-coverage panel on desktop');
-  assert.ok(order('#search-result') < order('#finding-lede'),
-    'a searched answer must appear before the explanatory copy on desktop');
   assert.ok(order('#finding-headline') < order('.hero-search'),
     'the headline should come first: the box needs a question above it');
   assert.ok(order('*') > 12, 'an unlisted desktop child would float above the headline');

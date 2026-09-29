@@ -284,7 +284,6 @@ footer{max-width:2200px;padding-left:64px;padding-right:64px;font-size:13px}
 
 @media(min-width:900px){
   .hero>div:first-of-type>.hero-search{order:3}
-  .hero>div:first-of-type>#search-result{order:4}
   .hero>div:first-of-type>#finding-lede{order:5;margin-top:12px}
 }
 
@@ -500,16 +499,16 @@ footer .footer-meta{width:100%;display:flex;justify-content:space-between;gap:12
 
    Every child needs an explicit order. A flex child without one defaults to 0,
    so the first version of this rule silently hoisted the four-step task panel
-   and the results container above the headline - a reader met a checklist
-   before learning what the page was for. The baseline below makes an
-   unlisted child land at the end rather than the top. */
+   above the headline - a reader met a checklist before learning what the page
+   was for. The search result now belongs to the form, directly after its
+   helper line, so it cannot float above the question. Unlisted children land
+   at the end rather than the top. */
 @media(max-width:620px){
   .hero>div:first-of-type{display:flex;flex-direction:column}
   .hero>div:first-of-type>*{order:50}
   .hero>div:first-of-type>.eyebrow{order:1}
   .hero>div:first-of-type>#finding-headline{order:2}
   .hero>div:first-of-type>.hero-search{order:3;margin-top:22px}
-  .hero>div:first-of-type>#search-result{order:4}
   .hero>div:first-of-type>#hero-words{order:5;margin-top:14px}
   .hero>div:first-of-type>#hero-example{order:6;margin-top:12px}
   .hero>div:first-of-type>#finding-lede{order:7;margin-top:26px}
@@ -563,7 +562,6 @@ footer .footer-meta{width:100%;display:flex;justify-content:space-between;gap:12
   .hero>div:first-of-type>.eyebrow{order:1}
   .hero>div:first-of-type>#finding-headline{order:2}
   .hero>div:first-of-type>.hero-search{order:3}
-  .hero>div:first-of-type>#search-result{order:4}
   .hero>div:first-of-type>#finding-lede{order:5}
   .hero>div:first-of-type>#hero-words{order:6}
   .hero>div:first-of-type>#hero-example{order:7}
