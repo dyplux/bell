@@ -988,6 +988,7 @@ test('workspace labels the published decision and marks its exact comparison row
         project_url: 'https://issuer.example/project', technical_doc_urls: ['https://issuer.example/docs.pdf'],
         explorer_urls: ['https://scan.example/token/101'] },
       { crypto_id: 202, symbol: 'EX', name: 'Example Derivative', issuer_name: 'Issuer B', price: 13,
+        project_url: 'https://issuer.example/project?filter=a|b',
         market_cap: 2000, volume_24h: 50 },
       { crypto_id: 303, symbol: 'EX|2', name: 'Example Third', issuer_name: 'Issuer C' },
     ],
@@ -1007,8 +1008,16 @@ test('workspace labels the published decision and marks its exact comparison row
   assert.match(savedBrief, /\[Project\]\(<https:\/\/issuer\.example\/project>\)/);
   assert.match(savedBrief, /\[Document\]\(<https:\/\/issuer\.example\/docs\.pdf>\)/);
   assert.match(savedBrief, /\[Explorer\]\(<https:\/\/scan\.example\/token\/101>\)/);
+  assert.match(savedBrief, /\[Project\]\(<https:\/\/issuer\.example\/project\?filter=a%7Cb>\)/);
   assert.match(savedBrief, /Source URLs are reported by CMC/);
   assert.match(savedBrief, /https:\/\/bell\.dyplux\.com\/\?reference=77#decision/);
+  const singleBrief = brief({
+    rwa_id: 78, name: 'Single Wrapper', asset_type: 'stock', state: 'investigate',
+    token_count: 1, issuer_count: 1, representations: [{ crypto_id: 404, symbol: 'ONE', name: 'One' }],
+  }, '2026-09-29T12:00:00Z');
+  assert.match(singleBrief, /Comparison rows: no filtered comparison published/);
+  assert.match(singleBrief, /\| 404 \| ONE — One \| — \| No comparison \|/);
+  assert.doesNotMatch(singleBrief, /Excluded:/);
 });
 
 test('the public label follows the decision, executed not grepped', () => {

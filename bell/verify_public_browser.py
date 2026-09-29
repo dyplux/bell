@@ -812,6 +812,14 @@ def main() -> int:
             save_review = handoff.get_by_role("button", name="Save review")
             require(save_review.count() == 1,
                     "the carried-over Tesla result cannot be saved as a review brief")
+            expected_review_ids = handoff.evaluate("""async () => {
+              const response = await fetch('/api/integrity', { cache: 'no-cache' });
+              const receipt = await response.json();
+              const entry = (receipt.alert_index || []).find(row => String(row.rwa_id) === '14');
+              return (entry?.representations || []).map(row => String(row.crypto_id));
+            }""")
+            require(expected_review_ids and len(expected_review_ids) == len(set(expected_review_ids)),
+                    "the loaded Tesla receipt lacks distinct representation IDs")
             requests_from_save = []
             handoff.on("request", lambda request: requests_from_save.append(request.url))
             with handoff.expect_download(timeout=30_000) as review_download_info:
@@ -820,8 +828,8 @@ def main() -> int:
             with open(review_download.path(), encoding="utf-8") as review_file:
                 review_text = review_file.read()
             review_ids = re.findall(r"^\| (\d+) \|", review_text, flags=re.MULTILINE)
-            require(len(review_ids) == 9 and len(set(review_ids)) == 9,
-                    f"Tesla review brief did not preserve all nine distinct token IDs: {review_ids!r}")
+            require(review_ids == expected_review_ids,
+                    f"Tesla review brief IDs differ from the loaded receipt: {review_ids!r} vs {expected_review_ids!r}")
             require("Observed at:" in review_text and "CMC-reported sources" in review_text,
                     "Tesla review brief omitted the receipt timestamp or source boundary")
             require("[Project](<https://assets.backed.fi/products/tesla-xstock>)" in review_text

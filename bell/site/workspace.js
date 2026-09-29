@@ -124,12 +124,13 @@
     const mdLink = (label, value) => {
       const url = safeExternalURL(value);
       if (!url) return '';
-      const target = url.replace(/[()<>\\]/g, char => encodeURIComponent(char));
+      const target = url.replace(/[()<>\\|]/g, char => encodeURIComponent(char));
       return `[${label}](<${target}>)`;
     };
     const rows = (entry?.representations || []).map(row => {
       const membership = comparisonMembership(entry, row);
-      const set = membership.label === 'Included' ? 'Included' : `Excluded: ${md(membership.reason)}`;
+      const set = membership.label === 'No comparison' ? 'No comparison'
+        : membership.label === 'Included' ? 'Included' : `Excluded: ${md(membership.reason)}`;
       const explorerURLs = Array.isArray(row?.explorer_urls) ? row.explorer_urls : [];
       const documents = [...(Array.isArray(row?.technical_doc_urls) ? row.technical_doc_urls : []),
         ...explorerURLs.filter(url => /\.pdf(?:$|[?#])/i.test(String(url || '')))];
