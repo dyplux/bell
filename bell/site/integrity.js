@@ -939,10 +939,10 @@
       const routeTotal = Object.values(routeCounts).reduce((sum, count) => sum + count, 0);
       if (routeTotal === multiRepresentation.length) {
         byId('hero-population-breakdown').innerHTML = `<span>CURRENT ROUTING · ${multiRepresentation.length.toLocaleString()} REFERENCES WITH 2+ ROWS</span>`
-          + `<div><b>Filtered comparisons <strong>${routeCounts.comparable.toLocaleString()}</strong></b>`
-          + `<b>Do not compare <strong>${routeCounts.blocked.toLocaleString()}</strong></b>`
-          + `<b>Investigate <strong>${routeCounts.investigate.toLocaleString()}</strong></b>`
-          + `<b>No flags, no filtered pair <strong>${routeCounts.unflagged.toLocaleString()}</strong></b></div>`
+          + `<div><b>Filtered comparisons <strong id="hero-route-comparable">${routeCounts.comparable.toLocaleString()}</strong></b>`
+          + `<b>Do not compare <strong id="hero-route-blocked">${routeCounts.blocked.toLocaleString()}</strong></b>`
+          + `<b>Investigate, no comparison <strong id="hero-route-investigate">${routeCounts.investigate.toLocaleString()}</strong></b>`
+          + `<b>No flags, no filtered pair <strong id="hero-route-unflagged">${routeCounts.unflagged.toLocaleString()}</strong></b></div>`
           + '<small>Counts are mutually exclusive routes from the current receipt; they do not establish economic equivalence.</small>';
       } else {
         byId('hero-population-breakdown').hidden = true;
