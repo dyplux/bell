@@ -247,7 +247,7 @@ def main() -> int:
             require(sum(route_counts.values()) == len(multi_representation),
                     "first-screen route breakdown does not partition the multi-representation population")
             require(page.locator(".hero-api-paths").count() == 1
-                    and "/v5/real-world-assets/quotes/latest" in page.locator(".hero-api-paths").inner_text(),
+                    and "/v5/real-world-assets/quotes/latest" in (page.locator(".hero-api-paths").text_content() or ""),
                     "the first-screen API detail no longer names a CMC RWA route")
             wait_for_text(page, "#publication-history", receipt["observed_at"])
             # Every population figure the page prints must equal the receipt it
