@@ -39,6 +39,35 @@
   const money = value => hasNumber(value) ? '$' + Number(value).toLocaleString('en-US', { maximumFractionDigits: 4 }) : '—';
   const textKey = value => String(value || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
 
+  function safeExternalURL(value) {
+    try {
+      const url = new URL(String(value || ''));
+      return ['http:', 'https:'].includes(url.protocol) && !url.username && !url.password ? url.href : '';
+    } catch {
+      return '';
+    }
+  }
+
+  function tokenSourceLinks(row, escape = value => String(value ?? '')) {
+    const links = [];
+    const seen = new Set();
+    const add = (label, value) => {
+      const url = safeExternalURL(value);
+      if (!url || seen.has(url)) return;
+      seen.add(url);
+      links.push(`<a href="${escape(url)}" target="_blank" rel="noopener noreferrer">${label} ↗</a>`);
+    };
+    add('CMC record', row?.cmc_url);
+    add('Issuer site', row?.issuer_website);
+    add('Project', row?.project_url);
+    const explorerURLs = Array.isArray(row?.explorer_urls) ? row.explorer_urls : [];
+    const docs = [...(Array.isArray(row?.technical_doc_urls) ? row.technical_doc_urls : []), ...explorerURLs.filter(url => /\.pdf(?:$|[?#])/i.test(String(url || '')))];
+    docs.slice(0, 2).forEach(url => add('Document', url));
+    explorerURLs.filter(url => !/\.pdf(?:$|[?#])/i.test(String(url || ''))).slice(0, 2).forEach(url => add('Explorer', url));
+    if (!links.length) return '';
+    return `<details class="token-source-links"><summary>CMC-reported sources</summary><span>${links.join(' · ')}</span></details>`;
+  }
+
   function displayDecisionLabel(entry, fallback = 'REVIEW') {
     const count = Number(entry?.token_count ?? (Array.isArray(entry?.representations) ? entry.representations.length : 0));
     const flaggedSingle = count === 1 && (entry?.state === 'do_not_compare'
@@ -174,7 +203,7 @@
       : 'No filtered price comparison in this route';
     const rows = representations.map(row => {
       const membership = comparisonMembership(entry, row);
-      return `<tr><td class="token"><strong>${escapeHTML(row.symbol || '—')}</strong><small>${escapeHTML(row.name || 'Unnamed CMC row')}</small></td><td data-label="Comparison set"><span class="row-membership ${membership.label === 'Included' ? 'included' : ''}">${escapeHTML(membership.label)}</span>${membership.reason ? `<small class="row-membership-reason">${escapeHTML(membership.reason)}</small>` : ''}</td><td data-label="Issuer">${escapeHTML(row.issuer_name || 'Issuer not resolved')}</td><td class="numeric" data-label="Quote">${money(row.price)}</td><td class="numeric" data-label="Market cap">${money(row.market_cap)}</td><td class="numeric" data-label="24h volume">${money(row.volume_24h)}</td></tr>`;
+      return `<tr><td class="token"><strong>${escapeHTML(row.symbol || '—')}</strong><small>${escapeHTML(row.name || 'Unnamed CMC row')}</small>${tokenSourceLinks(row, escapeHTML)}</td><td data-label="Comparison set"><span class="row-membership ${membership.label === 'Included' ? 'included' : ''}">${escapeHTML(membership.label)}</span>${membership.reason ? `<small class="row-membership-reason">${escapeHTML(membership.reason)}</small>` : ''}</td><td data-label="Issuer">${escapeHTML(row.issuer_name || 'Issuer not resolved')}</td><td class="numeric" data-label="Quote">${money(row.price)}</td><td class="numeric" data-label="Market cap">${money(row.market_cap)}</td><td class="numeric" data-label="24h volume">${money(row.volume_24h)}</td></tr>`;
     }).join('');
     const date = receipt?._publication?.observed_at || receipt?.observed_at;
     const { included: includedCount, excluded: excludedCount } = comparisonCounts(entry);

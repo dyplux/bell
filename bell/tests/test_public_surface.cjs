@@ -917,6 +917,12 @@ test('workspace labels the published decision and marks its exact comparison row
   const label = runWorkspaceFromSource('displayDecisionLabel');
   const membership = runWorkspaceFromSource('comparisonMembership');
   const counts = runWorkspaceFromSource('comparisonCounts', { comparisonMembership: membership });
+  const sources = runWorkspaceFromSource('tokenSourceLinks', {
+    safeExternalURL: runWorkspaceFromSource('safeExternalURL'),
+    escape: value => String(value ?? '').replace(/[&<>"']/g, char => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+    })[char]),
+  });
   const decisionCopy = runWorkspaceFromSource('workspaceDecisionCopy', {
     comparisonCounts: counts,
     nextSteps: { no_flags: 'Review the published fields.' },
@@ -953,6 +959,23 @@ test('workspace labels the published decision and marks its exact comparison row
   assert.match(calibrated, /not evidence of equivalent units or economic rights/);
   assert.doesNotMatch(calibrated, /share a unit/);
   assert.equal(decisionCopy({ state: 'do_not_compare', decision: { consequence: 'Resolve the unit.' } }), 'Resolve the unit.');
+  const sourceHTML = sources({
+    cmc_url: 'https://coinmarketcap.com/currencies/tesla-xstock/',
+    project_url: 'https://assets.backed.fi/products/tesla-xstock',
+    technical_doc_urls: [],
+    explorer_urls: [
+      'https://assets.backed.fi/research/tesla.pdf',
+      'https://arbiscan.io/token/0x123',
+      'javascript:alert(1)',
+    ],
+  });
+  assert.match(sourceHTML, /CMC-reported sources/);
+  assert.match(sourceHTML, /assets\.backed\.fi\/products\/tesla-xstock/);
+  assert.match(sourceHTML, /Document ↗/);
+  assert.match(sourceHTML, /Explorer ↗/);
+  assert.match(sourceHTML, /rel="noopener noreferrer"/);
+  assert.doesNotMatch(sourceHTML, /javascript:/);
+  assert.equal(sources({ explorer_urls: ['javascript:alert(1)'] }), '');
   const savedBrief = brief({
     rwa_id: 77, name: 'Example Inc', asset_type: 'stock', state: 'no_flags',
     token_count: 3, issuer_count: 2,

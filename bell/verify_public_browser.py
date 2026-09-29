@@ -803,6 +803,7 @@ def main() -> int:
             require("reference=14" in workspace_link.get_attribute("href"),
                     f"a unique Tesla search did not carry its stable ID into the workspace: "
                     f"{workspace_link.get_attribute('href')!r}")
+            handoff.set_viewport_size({"width": 390, "height": 844})
             workspace_link.click()
             wait_for_text(handoff, "#receipt-time", "FRESH", timeout=30_000)
             handoff.locator(".review-result").wait_for(state="visible", timeout=30_000)
@@ -810,6 +811,18 @@ def main() -> int:
                     "the workspace opened without the selected Tesla reference")
             require(handoff.get_by_role("button", name="Save review").count() == 1,
                     "the carried-over Tesla result cannot be saved as a review brief")
+            xstock = handoff.locator('.representation-table tbody tr:has(td.token strong:text-is("TSLAX"))')
+            dinari = handoff.locator('.representation-table tbody tr:has(td.token strong:text-is("TSLA.D"))')
+            xstock.locator(".token-source-links summary").click()
+            require(xstock.locator('a[href*="assets.backed.fi/products/tesla-xstock"]').count() == 1
+                    and xstock.locator('a[href*="arbiscan.io"]').count() >= 1,
+                    "TSLAX does not expose the project and explorer URLs reported in its receipt")
+            dinari.locator(".token-source-links summary").click()
+            require(dinari.locator('a[href$=".pdf"]').count() == 1
+                    and dinari.locator('a[href*="arbiscan.io"]').count() == 1,
+                    "TSLA.D does not expose the document and contract explorer reported in its receipt")
+            require(not handoff.evaluate("document.documentElement.scrollWidth > document.documentElement.clientWidth"),
+                    "source disclosure introduced horizontal overflow in the 390px workspace")
             handoff.close()
 
             print(json.dumps({
@@ -841,7 +854,7 @@ def main() -> int:
                 "population_attribution_export": attribution_download.suggested_filename,
                 "mobile_decision_preview": "visible before the long task panel",
                 "failure_fallback": fallback_status,
-                "workspace_handoff": "Tesla search opened the matching workspace result without re-entry",
+                "workspace_handoff": "Tesla search opened the matching workspace result and source paths without re-entry",
                 "screenshot": args.screenshot,
             }, ensure_ascii=False, indent=2))
             return 0
