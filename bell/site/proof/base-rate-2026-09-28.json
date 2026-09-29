@@ -1,0 +1,75 @@
+{
+  "schema_version": "bell.base_rate.v2",
+  "observed_at": "2026-09-28T15:14:11Z",
+  "population": 793,
+  "excluded_single_representation": 543,
+  "denominator_two_or_more_representations": 250,
+  "refused": 162,
+  "comparable": 88,
+  "refusal_rate": 0.648,
+  "refusal_rate_ci95": [
+    0.5869640447438548,
+    0.7045563364702568
+  ],
+  "refusal_reasons": {
+    "REPRESENTATIONS_WITHOUT_A_PRICE": 90,
+    "ZERO_MCAP_POSITIVE_VOLUME": 33,
+    "REPRESENTATIONS_QUOTED_BUT_UNTRADED": 17,
+    "FEWER_THAN_TWO_SPOT_REPRESENTATIONS": 16,
+    "PRICE_DENOMINATION_BREAK": 4,
+    "PRICE_DISPERSION": 3
+  },
+  "refusal_split": {
+    "source_coverage": 107,
+    "data_review": 40,
+    "not_applicable": 16,
+    "unclassified": 0,
+    "reason_total": 163,
+    "coverage_share": 0.6564,
+    "coverage_codes": [
+      "REPRESENTATIONS_QUOTED_BUT_UNTRADED",
+      "REPRESENTATIONS_WITHOUT_A_PRICE"
+    ],
+    "not_applicable_codes": [
+      "FEWER_THAN_TWO_SPOT_REPRESENTATIONS"
+    ],
+    "data_review_codes": [
+      "PRICE_DENOMINATION_BREAK",
+      "PRICE_DISPERSION",
+      "SPREAD_ABOVE_PUBLISHABLE_CEILING",
+      "ZERO_MCAP_POSITIVE_VOLUME"
+    ],
+    "counts": "rule hits, not references: one reference can trigger more than one rule"
+  },
+  "single_representation_lens": {
+    "references": 543,
+    "reasons": {
+      "MARKET_FIELDS_MISSING": 462,
+      "NO_TRADFI_MARKET": 5,
+      "ZERO_MCAP_POSITIVE_VOLUME": 2
+    },
+    "incomplete_share": 0.8508,
+    "partition": "by reference, by the most serious thing observed about each, so the parts sum to the whole. These references are excluded from the refusal rate because there was never a comparison to refuse, not because they were approved.",
+    "review_trigger_rows": 2,
+    "incomplete_source_fields": 462,
+    "context_only": 4,
+    "fully_reported": 75
+  },
+  "method": {
+    "population": "every reference in the captured RWA map",
+    "denominator": "references with >= 2 token representations",
+    "excluded": "single-representation references, which cannot be compared at all",
+    "numerator": "references this monitor refuses to compare, by coded rule",
+    "interval": "Wilson score, 95%"
+  },
+  "provenance": {
+    "inputs_file": "bell/site/proof/rwa-surface-integrity-inputs-2026-09-28.json",
+    "inputs_sha256": "62e0269915eebd21ba901551a4167058bb34de2793ad10c1cee4423461280c1b",
+    "rules_files": {
+      "bell/base_rate.py": "67a6c7945f89d0d9acfd31e9103249d99bc391a74db87d0cab551eecd5fef22b",
+      "bell/rwa_integrity.py": "54896c07049a463bbee3b82713df6f16872fd1e826d88755eb14784ee8bbb780"
+    },
+    "rules_sha256": "a1be43fd7242cb7904b919f70d5951cc5d20b57ea6d987bee10d198430ae7dd3",
+    "description": "normalized captured CMC inputs recomputed by the checked-in Bell rules"
+  }
+}

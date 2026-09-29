@@ -65,7 +65,7 @@ demo: ## The judged capability: one reference, resolved and explained, no key
 	PYTHONPATH=$(PKG) $(PY) $(PKG)/demo.py
 
 base-rate: ## How often a comparison is safe at all, over the whole catalogue
-	PYTHONPATH=$(PKG) $(PY) $(PKG)/base_rate.py
+	PYTHONPATH=$(PKG) $(PY) $(PKG)/base_rate.py $(if $(RATE_INPUTS),--inputs "$(RATE_INPUTS)",) $(if $(RATE_OUTPUT),--json "$(RATE_OUTPUT)",)
 
 liveness: ## Does today's CMC API still answer in the shape this build reads?
 	# The only check here that calls CMC. Needs CMC_API_KEY; the dated receipt

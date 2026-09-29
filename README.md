@@ -12,11 +12,11 @@ representations pass its reported-price filters, and what still needs review?
 | **BUIDL logo** | [`bell/site/assets/buidl-logo-480.png`](bell/site/assets/buidl-logo-480.png) - 480 × 480 PNG of Bell's wordmark; the vector source is beside it |
 | **Track** | Build with CMC API, Real World Assets. MIT licence |
 | **Local interface** | `make app` - visual workspace, local agent API, and optional own CMC key |
-| **Whole-catalogue base rate · 21 Sep** | In that dated capture, 87 of the 244 references carrying more than one representation had a filtered quote comparison. The other 157 were routed to review and produced 158 rule hits: 107 missing-coverage reasons, 38 price or field review triggers, and 13 cases with fewer than two eligible spot routes. A review trigger is not proof of economic contradiction |
-| **Run it yourself** | `git clone https://github.com/dyplux/bell.git && cd bell && make app` - local visual workspace at `http://127.0.0.1:8080/workspace.html`; no API key or install required for dated evidence. `make base-rate` reproduces the keyless population calculation |
-| **Verify the whole thing** | `make check-offline` - 571 tests, observed between 17.71 and 25.35 seconds across 2 machines. No credentials or network required. It verifies the historical 21 Sep replay, recomputes the complete 28 Sep capture from its shipped inputs, and verifies the dated Alphabet pair review against its CMC rows. Of the 24 dated observations in the population history, 2 ship their full payload. One has its state distribution compared against the receipt; the other is UNVERIFIED on that split because it predates the current rule set. The rest of the history entries are published summaries |
+| **Whole-catalogue base rate · 28 Sep** | In the preserved 28 September capture, 88 of 250 multi-representation references pass Bell's filtered quote comparison. The other 162 are routed to review (64.8%; Wilson 95% interval 58.7–70.5%), producing 163 rule hits: 107 missing-coverage reasons, 40 price or field review triggers, and 16 cases with fewer than two eligible spot routes. A review trigger is not proof of economic contradiction |
+| **Run it yourself** | `git clone https://github.com/dyplux/bell.git && cd bell && make app` - local visual workspace at `http://127.0.0.1:8080/workspace.html`; no API key or install required for dated evidence. `make base-rate` reproduces the keyless 28 Sep population calculation; `make base-rate RATE_INPUTS=...` selects another normalized capture |
+| **Verify the whole thing** | `make check-offline` - 574 tests, observed between 17.71 and 33.63 seconds across 2 machines. No credentials or network required. It verifies the historical 21 Sep replay, recomputes the complete 28 Sep capture from its shipped inputs, and verifies the dated Alphabet pair review against its CMC rows. Of the 24 dated observations in the population history, 2 ship their full payload. One has its state distribution compared against the receipt; the other is UNVERIFIED on that split because it predates the current rule set. The rest of the history entries are published summaries |
 | **Rules as an executable spec** | `python3 bell/verify_rule_boundaries.py` - 0.2s, 8 boundary checks, no network |
-| **Receipts** | [live](https://bell.dyplux.com/api/integrity) · [latest 28 Sep capture](bell/site/proof/rwa-surface-integrity-capture-2026-09-28.json) · [latest normalized inputs](bell/site/proof/rwa-surface-integrity-inputs-2026-09-28.json) · [historical 21 Sep replay](bell/site/proof/rwa-surface-integrity-latest-replay-2026-09-21.json) · [base rate](bell/site/proof/base-rate-2026-09-21.json) |
+| **Receipts** | [live](https://bell.dyplux.com/api/integrity) · [28 Sep capture](bell/site/proof/rwa-surface-integrity-capture-2026-09-28.json) · [normalized inputs](bell/site/proof/rwa-surface-integrity-inputs-2026-09-28.json) · [28 Sep base rate](bell/site/proof/base-rate-2026-09-28.json) · [historical 21 Sep replay](bell/site/proof/rwa-surface-integrity-latest-replay-2026-09-21.json) · [21 Sep base rate](bell/site/proof/base-rate-2026-09-21.json) |
 | **Alphabet pair review** | [dated GOOGLX / GOOGLon terms check](bell/site/proof/alphabet-class-a-pair-review-2026-09-29.json) · `make verify-pair-review` checks the CMC rows and the retained, hashed Ondo page excerpt |
 
 
@@ -53,51 +53,54 @@ quote rows exist, Bell shows the observed quote band, each row's distance from
 the observed median and the reported 24-hour volume state. These are evidence
 fields, not a discount, fair-value, liquidity or execution claim.
 
-## What did the historical filter observe?
+## What does the latest reproducible filter observe?
 
 A monitor that refuses is only worth reading if you know how often it refuses,
-so the rate is measured over the whole catalogue rather than argued from
-examples. `bell/base_rate.py` states its method in its own docstring, above the
-number, so the method cannot be tuned to the result afterwards. Reproduce it
-with `make base-rate`, offline, with no API key:
+so the rate is measured over the whole captured catalogue rather than argued
+from examples. `bell/base_rate.py` states its method in its own docstring,
+above the number, so the method cannot be tuned to the result afterwards. The
+default is the preserved 28 September capture. Reproduce it offline, with no
+API key, using `make base-rate`:
 
 ```
-    791  references carrying tokenised representations
-    547  have one representation - nothing to compare, excluded rather than
+    793  references carrying tokenised representations
+    543  have one representation - nothing to compare, excluded rather than
          counted against the rate
-    244  carry two or more, so a comparison is something a user could attempt
+    250  carry two or more, so a comparison is something a user could attempt
 
-    157  of those are refused by a coded rule
-     87  are published with the comparison performed
+    162  of those are refused by a coded rule
+     88  are published with the comparison performed
 
-  Refusal rate  64.3%   (95% CI 58.2% to 70.1%, n = 244)
+  Refusal rate  64.8%   (95% CI 58.7% to 70.5%, n = 250)
 ```
 
-Read on its own, 64.3% sounds like a verdict on the market. The reasons include
+Read on its own, 64.8% sounds like a verdict on the market. The reasons include
 missing source coverage, rule triggers that require review, and cases where no
 eligible spot pair exists:
 
 ```
-    107  the catalogue offers no second number to compare   (68%)
-     38  price or field review rules fired
-     13  fewer than two eligible spot routes; no pair to compare
+    107  the catalogue offers no second number to compare   (66%)
+     40  price or field review rules fired
+     16  fewer than two eligible spot routes; no pair to compare
 ```
 
 The 107 coverage reasons are missing prices or quotes without positive reported
-volume. The 13 no-pair reasons mean the route filter found fewer than two
-eligible spot rows. The 38 review triggers include price-denomination, dispersion,
-market-cap/volume-field and publishable-spread rules: 4 price-denomination, 30
-zero-market-cap/positive-volume field pairs, 3 price-dispersion and 1 spread-ceiling
+volume. The 16 no-pair reasons mean the route filter found fewer than two
+eligible spot rows. The 40 review triggers include price-denomination, dispersion,
+market-cap/volume-field and publishable-spread rules: 4 price-denomination, 33
+zero-market-cap/positive-volume field pairs, 3 price-dispersion and no spread-ceiling
 trigger. They guide review; they do not prove that two assets have different
 rights or that a market is invalid.
 
-(158 rule hits against 157 refused references because one reference can trigger more than one rule.)
+(163 rule hits against 162 refused references because one reference can trigger more than one rule.)
 
 The interval is a Wilson score interval, which stays honest near the edges of
 the distribution where the normal approximation does not. The single-
 representation majority is excluded from the denominator rather than scored as
-a pass, because there was never a comparison to refuse. The rate is a statement
-about the data on one dated observation, not a verdict on any issuer.
+a pass, because there was never a comparison to refuse. The rate is a recomputation
+of the 28 September 2026 15:14 UTC observation, bound to the normalized-input and
+rule-code SHA-256 values in its receipt. It is not today's live result or a verdict
+on any issuer. The older 21 September calculation remains a separate historical artifact.
 
 
 ## The public surface

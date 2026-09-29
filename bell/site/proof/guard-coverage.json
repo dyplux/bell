@@ -2,7 +2,7 @@
   "schema_version": "bell.guard_coverage.v2",
   "complete": true,
   "scope": "every guarded file",
-  "guards_mutated": 140,
+  "guards_mutated": 141,
   "files": {
     "append_history.py": {
       "guards_mutated": 11,
@@ -13,17 +13,12 @@
       "measured_at": "2026-09-28T08:04:45Z"
     },
     "base_rate.py": {
-      "guards_mutated": 9,
+      "guards_mutated": 10,
       "survivors": [],
-      "stated_exceptions": [
-        {
-          "line": 195,
-          "reason": "The single-representation lens sorts every row through if/elif/elif/else, so its four parts always sum to the total and this can never fire today. It is a guard against a future edit that removes the catch-all, which is the change that would silently drop references from the partition. It replaced a bare assert that vanished under python3 -O."
-        }
-      ],
-      "source_digest": "6f0b02a499d59f8691b03a03fc9f3be11cb32828ad0db617e4c90e17562bce96",
-      "suite_digest": "6b4c1529f85be65c9b665ee084bcb6b9175f55732f6f0506c525d203e4e787c5",
-      "measured_at": "2026-09-28T08:17:12Z"
+      "stated_exceptions": [],
+      "source_digest": "67a6c7945f89d0d9acfd31e9103249d99bc391a74db87d0cab551eecd5fef22b",
+      "suite_digest": "5390df719897d41ac1e1669dd39ba37e4f81c59c86aedeac44f3c65a221d6452",
+      "measured_at": "2026-09-29T20:41:02Z"
     },
     "history_chain.py": {
       "guards_mutated": 5,

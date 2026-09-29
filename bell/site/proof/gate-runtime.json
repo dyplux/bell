@@ -1,7 +1,7 @@
 {
   "schema_version": "bell.gate_runtime.v1",
   "fastest": 17.71,
-  "slowest": 25.35,
+  "slowest": 33.63,
   "runs": [
     {
       "machine": "macOS-15.7.2-arm64-arm-64bit",
@@ -16,8 +16,8 @@
     {
       "machine": "macOS-26.6.1-arm64-arm-64bit",
       "python": "3.9.6",
-      "measured_at": "2026-09-28T11:19:12Z",
-      "cold": 25.35,
+      "measured_at": "2026-09-29T20:45:07Z",
+      "cold": 33.63,
       "warm": []
     }
   ],

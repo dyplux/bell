@@ -42,6 +42,7 @@ triggers are observations about the returned surfaces, not misconduct.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import math
 import os
@@ -54,7 +55,11 @@ sys.path.insert(0, HERE)
 from rwa_integrity import is_derivative_row, BLOCKING_WARNINGS, comparable_routes, number, scan  # noqa: E402
 
 INPUTS = os.path.join(HERE, 'site', 'proof',
-                      'rwa-surface-integrity-inputs-2026-09-21.json')
+                      'rwa-surface-integrity-inputs-2026-09-28.json')
+RULE_FILES = {
+    'bell/base_rate.py': os.path.abspath(__file__),
+    'bell/rwa_integrity.py': os.path.join(HERE, 'rwa_integrity.py'),
+}
 
 # A comparison needs at least two things to compare. Below this the question
 # does not arise, so the reference leaves the denominator rather than counting
@@ -322,23 +327,59 @@ def measure(receipt: dict) -> dict:
     }
 
 
-def main() -> int:
-    parser = argparse.ArgumentParser(description='Measure the comparability base rate.')
-    parser.add_argument('--json', help='write the result to this path as well')
-    args = parser.parse_args()
+def sha256_file(path: str) -> str:
+    digest = hashlib.sha256()
+    with open(path, 'rb') as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b''):
+            digest.update(chunk)
+    return digest.hexdigest()
 
-    if not os.path.exists(INPUTS):
-        sys.exit(f'input package not found: {INPUTS}')
-    package = read_json(INPUTS)
-    surfaces = package['surfaces']
+
+def measure_input_package(path: str) -> dict:
+    """Recompute one dated result and bind it to the exact inputs and rules."""
+    package = read_json(path)
+    surfaces = package.get('surfaces')
+    required = {'map', 'asset_list', 'quotes', 'info', 'issuers', 'crypto_info'}
+    if not isinstance(surfaces, dict) or required - surfaces.keys():
+        missing = sorted(required - set(surfaces or {}))
+        raise SystemExit(f'{path} is missing scan surfaces: {", ".join(missing)}')
     receipt = scan(
         surfaces['map'], surfaces['asset_list'], surfaces['quotes'],
         surfaces['info'], surfaces['issuers'],
-        observed_at=package['observed_at'],
+        observed_at=package.get('observed_at'),
         crypto_info_payload=surfaces['crypto_info'],
     )
-
     result = measure(receipt)
+    repository = os.path.dirname(HERE)
+    def relative(source: str) -> str:
+        try:
+            return os.path.relpath(os.path.abspath(source), repository)
+        except ValueError:
+            return os.path.abspath(source)
+    rule_hashes = {name: sha256_file(source) for name, source in RULE_FILES.items()}
+    rules_fingerprint = hashlib.sha256(
+        '\n'.join(f'{name}:{rule_hashes[name]}' for name in sorted(rule_hashes)).encode('utf-8')
+    ).hexdigest()
+    result['provenance'] = {
+        'inputs_file': relative(path),
+        'inputs_sha256': sha256_file(path),
+        'rules_files': rule_hashes,
+        'rules_sha256': rules_fingerprint,
+        'description': 'normalized captured CMC inputs recomputed by the checked-in Bell rules',
+    }
+    return result
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description='Measure the comparability base rate.')
+    parser.add_argument('--inputs', default=INPUTS,
+                        help='normalized input package (defaults to the latest dated capture)')
+    parser.add_argument('--json', help='write the result to this path as well')
+    args = parser.parse_args()
+
+    if not os.path.exists(args.inputs):
+        sys.exit(f'input package not found: {args.inputs}')
+    result = measure_input_package(args.inputs)
     rate = result['refusal_rate'] * 100
     lo, hi = (x * 100 for x in result['refusal_rate_ci95'])
 

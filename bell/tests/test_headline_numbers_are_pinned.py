@@ -27,7 +27,7 @@ JUDGE = BELL / "site" / "judge.html"
 README = BELL.parent / "README.md"
 PROOF = BELL / "site" / "proof"
 
-BASE_RATE = json.loads((PROOF / "base-rate-2026-09-21.json").read_text(encoding="utf-8"))
+BASE_RATE = json.loads((PROOF / "base-rate-2026-09-28.json").read_text(encoding="utf-8"))
 REPLAY = json.loads(
     (PROOF / "rwa-surface-integrity-latest-replay-2026-09-21.json").read_text(encoding="utf-8"))
 CATALOGUE = REPLAY["catalogue_integrity"]
@@ -78,7 +78,7 @@ class HeadlineNumbersArePinned(unittest.TestCase):
         flow = flowed(page)
         self.assertIn(f"Of the {denominator} references carrying more than one representation",
                       flow, "the opening paragraph's denominator is not the measured one")
-        self.assertIn(f"<strong>{BASE_RATE['comparable']} have a cheapest route worth naming",
+        self.assertIn(f"<strong>{BASE_RATE['comparable']} have a filtered quote comparison",
                       flow, "the opening paragraph's affirmative count is not measured")
         # These three reason classes remain separate; review rules do not
         # establish economic contradictions.
@@ -96,21 +96,20 @@ class HeadlineNumbersArePinned(unittest.TestCase):
         body = readme_text()
         body = flowed(body)
         self.assertIn(
-            f"In that dated capture, {BASE_RATE['comparable']} of the "
-            f"{BASE_RATE['denominator_two_or_more_representations']} references carrying more "
-            "than one representation had a filtered quote comparison",
+            f"In the preserved 28 September capture, {BASE_RATE['comparable']} of "
+            f"{BASE_RATE['denominator_two_or_more_representations']} multi-representation "
+            "references pass Bell's filtered quote comparison",
             body,
         )
         # The README row led with the refusal total too. Both halves of it are
         # pinned here for the same reason the judge page's are.
         split = BASE_RATE["refusal_split"]
-        self.assertIn(f"produced {split['reason_total']} rule hits", body)
+        self.assertIn(f"producing {split['reason_total']} rule hits", body)
         self.assertIn(f"{split['data_review']} price or field review triggers", body)
         self.assertIn(f"{split['source_coverage']} missing-coverage reasons", body)
         self.assertIn(f"{split['not_applicable']} no-pair reasons mean", body)
         self.assertIn(
-            f"{BASE_RATE['denominator_two_or_more_representations']} references carrying more "
-            "than one representation",
+            f"{BASE_RATE['denominator_two_or_more_representations']} multi-representation references",
             body,
         )
 

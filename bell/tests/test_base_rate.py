@@ -5,8 +5,13 @@ pin the two decisions that decide the number - what leaves the denominator, and
 what counts as a refusal - so neither can drift quietly afterwards.
 """
 import unittest
+import json
+import os
+import tempfile
+from unittest.mock import patch
 
-from base_rate import MIN_REPRESENTATIONS, _no_route_reason, measure, wilson
+from base_rate import (INPUTS, MIN_REPRESENTATIONS, _no_route_reason,
+                       measure, measure_input_package, wilson)
 
 
 def rep(symbol, price, volume, *, derivative=False):
@@ -47,6 +52,35 @@ class WilsonInterval(unittest.TestCase):
 
     def test_empty_sample_does_not_divide_by_zero(self):
         self.assertEqual(wilson(0, 0), (0.0, 0.0))
+
+
+class DatedInputPackages(unittest.TestCase):
+    def test_default_is_the_latest_preserved_capture(self):
+        self.assertTrue(INPUTS.endswith('rwa-surface-integrity-inputs-2026-09-28.json'))
+
+    def test_package_result_carries_input_and_rule_fingerprints(self):
+        package = {
+            'observed_at': '2026-09-28T15:14:11Z',
+            'surfaces': {name: {} for name in
+                         ('map', 'asset_list', 'quotes', 'info', 'issuers', 'crypto_info')},
+        }
+        with tempfile.NamedTemporaryFile('w', encoding='utf-8', suffix='.json', delete=False) as handle:
+            json.dump(package, handle)
+            path = handle.name
+        try:
+            receipt = {'observed_at': package['observed_at'], 'alert_index': [
+                row([rep('A', 100.0, 5_000), rep('B', 101.0, 4_000)]),
+            ]}
+            with patch('base_rate.scan', return_value=receipt):
+                result = measure_input_package(path)
+            self.assertEqual(result['observed_at'], package['observed_at'])
+            self.assertEqual(result['comparable'], 1)
+            self.assertEqual(len(result['provenance']['inputs_sha256']), 64)
+            self.assertEqual(len(result['provenance']['rules_sha256']), 64)
+            self.assertEqual(set(result['provenance']['rules_files']),
+                             {'bell/base_rate.py', 'bell/rwa_integrity.py'})
+        finally:
+            os.unlink(path)
 
 
 class DenominatorIsHonest(unittest.TestCase):

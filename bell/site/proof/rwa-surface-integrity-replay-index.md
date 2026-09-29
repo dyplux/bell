@@ -17,6 +17,8 @@ The 28 September 2026 publication is also preserved as a dated, credential-free 
 
 Run `make verify-capture` to recompute this dated capture from the normalized inputs without an API key. The collection manifest records endpoint hashes, request counts and status codes, but excludes API credentials and transport headers.
 
+The dated [28 September base-rate result](base-rate-2026-09-28.json) recomputes the comparison filter over those same inputs with the checked-in measurement and rule code. It records the input SHA-256 and both code-file SHA-256 values so the 88/250 result can be reproduced independently with `make base-rate`. This is a derived population calculation; it is distinct from the receipt's 38/97/658 state counts and from the advancing live observation.
+
 ## Credential-free replay
 
 The committed historical replay package below is dated 21 September 2026

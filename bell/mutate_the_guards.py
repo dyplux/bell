@@ -69,12 +69,6 @@ STATED_EXCEPTIONS = {
         "Decimal(str(None)) both raise InvalidOperation, which the except below "
         "already turns into None, so removing this changes no result. It states the "
         "intent and saves a raise; it does not decide anything.",
-    ("base_rate.py", 195):
-        "The single-representation lens sorts every row through if/elif/elif/else, "
-        "so its four parts always sum to the total and this can never fire today. It "
-        "is a guard against a future edit that removes the catch-all, which is the "
-        "change that would silently drop references from the partition. It replaced "
-        "a bare assert that vanished under python3 -O.",
 }
 
 

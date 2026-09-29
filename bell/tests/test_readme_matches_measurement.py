@@ -12,7 +12,7 @@ import os
 import re
 import unittest
 
-from base_rate import INPUTS, measure
+from base_rate import INPUTS, measure_input_package
 from rwa_integrity import scan
 from pathlib import Path
 
@@ -22,15 +22,7 @@ API_FEEDBACK = os.path.join(ROOT, 'bell', 'API-FEEDBACK.md')
 
 
 def measured():
-    with open(INPUTS, encoding='utf-8') as handle:
-        package = json.load(handle)
-    surfaces = package['surfaces']
-    receipt = scan(
-        surfaces['map'], surfaces['asset_list'], surfaces['quotes'],
-        surfaces['info'], surfaces['issuers'],
-        observed_at=package['observed_at'], crypto_info_payload=surfaces['crypto_info'],
-    )
-    return measure(receipt)
+    return measure_input_package(INPUTS)
 
 
 class ReadmeMatchesTheMeasurement(unittest.TestCase):
@@ -93,7 +85,9 @@ class ApiFeedbackMatchesTheReceipt(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         from collections import Counter
-        with open(INPUTS, encoding='utf-8') as handle:
+        api_inputs = os.path.join(os.path.dirname(INPUTS),
+                                  'rwa-surface-integrity-inputs-2026-09-21.json')
+        with open(api_inputs, encoding='utf-8') as handle:
             package = json.load(handle)
         surfaces = package['surfaces']
         receipt = scan(
@@ -132,7 +126,9 @@ class ApiFeedbackMatchesTheReceipt(unittest.TestCase):
     def test_the_named_example_is_really_in_the_capture(self):
         # A worked example is the part a reader checks first, so it must be a
         # row that exists rather than an illustration.
-        with open(INPUTS, encoding='utf-8') as handle:
+        api_inputs = os.path.join(os.path.dirname(INPUTS),
+                                  'rwa-surface-integrity-inputs-2026-09-21.json')
+        with open(api_inputs, encoding='utf-8') as handle:
             package = json.load(handle)
         quotes = json.dumps(package['surfaces']['quotes'])
         self.assertIn('24439', quotes, 'the cited crypto_id is not in the shipped capture')
@@ -349,7 +345,7 @@ class TheNewApiFindingsMatchTheReceipt(unittest.TestCase):
 class TheBaseRateReceiptIsTheMeasurement(unittest.TestCase):
     """The committed base-rate receipt must be what the code produces.
 
-    judge.html's headline figures hang off `base-rate-2026-09-21.json`, and
+    judge.html's headline figures hang off `base-rate-2026-09-28.json`, and
     nothing compared that file to `measure(scan(inputs))`. A reviewer built an
     internally consistent forgery - refused 9, comparable 235 - and it passed
     the whole Python suite; only a hardcoded string in the JavaScript suite
@@ -359,7 +355,7 @@ class TheBaseRateReceiptIsTheMeasurement(unittest.TestCase):
 
     def test_the_committed_base_rate_is_what_the_code_measures(self):
         shipped = json.loads(Path(
-            os.path.join(os.path.dirname(INPUTS), 'base-rate-2026-09-21.json')
+            os.path.join(os.path.dirname(INPUTS), 'base-rate-2026-09-28.json')
         ).read_text(encoding='utf-8'))
         computed = measured()
         for field in ('population', 'excluded_single_representation',
@@ -367,9 +363,24 @@ class TheBaseRateReceiptIsTheMeasurement(unittest.TestCase):
                       'refusal_reasons', 'refusal_split'):
             self.assertIn(field, computed, f'measure() no longer returns {field}')
             self.assertEqual(computed[field], shipped.get(field),
-                             f'base-rate-2026-09-21.json states a {field} the code does not produce')
+                             f'base-rate-2026-09-28.json states a {field} the code does not produce')
         self.assertAlmostEqual(computed['refusal_rate'], shipped['refusal_rate'], places=9,
                                msg='the committed refusal rate is not the measured one')
+        self.assertEqual(computed['provenance'], shipped['provenance'],
+                         'the committed base rate does not fingerprint its inputs and rules')
+
+    def test_the_historical_21_september_rate_remains_recomputable(self):
+        historical_inputs = os.path.join(
+            os.path.dirname(INPUTS), 'rwa-surface-integrity-inputs-2026-09-21.json')
+        historical_receipt = json.loads(Path(
+            os.path.join(os.path.dirname(INPUTS), 'base-rate-2026-09-21.json')
+        ).read_text(encoding='utf-8'))
+        computed = measure_input_package(historical_inputs)
+        for field in ('population', 'excluded_single_representation',
+                      'denominator_two_or_more_representations', 'refused', 'comparable',
+                      'refusal_reasons', 'refusal_split'):
+            self.assertEqual(computed[field], historical_receipt.get(field),
+                             f'the 21 Sep artifact disagrees with its archived inputs on {field}')
 
 
 if __name__ == "__main__":

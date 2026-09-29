@@ -57,24 +57,25 @@
     recomputes this observation without an API key. A computed quote comparison is not
     proof that units, claims or executable liquidity match.</p>
 
-    <p><strong>Historical whole-catalogue base rate · 21 September.</strong>
+    <p><strong>Recomputed whole-catalogue base rate · 28 September.</strong>
     CoinMarketCap tells you which tokenised assets exist. Bell checks which references have
-    rows that pass its filtered quote checks, and what needs review before a decision. Of the 244 references carrying more than one representation,
-    <strong>87 have a cheapest route worth naming</strong>, and behind the 157 refusals
-    sit 158 rule hits: <strong>38 triggered price or field review rules</strong>, 107 are
-    missing-coverage reasons, and 13 leave fewer than two eligible spot routes. Review
+    rows that pass its filtered quote checks, and what needs review before a decision. Of the 250 references carrying more than one representation,
+    <strong>88 have a filtered quote comparison</strong>, and behind the 162 refusals
+    sit 163 rule hits: <strong>40 triggered price or field review rules</strong>, 107 are
+    missing-coverage reasons, and 16 leave fewer than two eligible spot routes. Review
     triggers are not proof of economic contradiction. Every number on this
     page was produced by a command you can run yourself, with no API key. These
     dated counts in the strip below are that dated measurement, so they carry its date: this page
     ships no JavaScript and cannot show you today's. The <a href="/">product page</a> reads
     the live receipt and prints both.</p>
 
-    <p>In that 21 September measurement, the 107 coverage reasons are a missing price or quote without positive reported
-    volume; 13 more have fewer than two eligible spot routes. The remaining 38 are price
+    <p>In that 28 September measurement, the 107 coverage reasons are a missing price or quote without positive reported
+    volume; 16 more have fewer than two eligible spot routes. The remaining 40 are price
     or field review triggers, including the reported zero-market-cap/positive-volume pair.
     They tell an analyst what to verify, not whether the underlying market is economically
     contradictory. These are rule hits rather than references, and one reference can trigger
-    more than one rule.</p>
+    more than one rule. The calculation is recomputed from the complete normalized capture;
+    the receipt records the input and rule-code SHA-256 values.</p>
 
     <p>Bell attaches issuer-published instrument notes to exact CoinMarketCap token IDs.
     For Alphabet, the <a href="https://assets.backed.fi/products/alphabet-xstock" target="_blank" rel="noopener">Backed product page</a>
@@ -90,12 +91,12 @@
     do not independently verify backing, redemption, custody or legal rights.</p>
 
     <div class="judge-facts">
-      <div><small>Data-review triggers, by reason &middot; 21 Sep</small><strong>38</strong></div>
-      <div><small>Comparisons published &middot; 21 Sep</small><strong>87</strong></div>
-      <div><small>Refused for missing coverage &middot; 21 Sep</small><strong>107</strong></div>
-      <div><small>No eligible spot pair &middot; 21 Sep</small><strong>13</strong></div>
-      <div><small>Tests in the offline gate</small><strong>571</strong></div>
-      <div><small>Gate runtime, 2 machines</small><strong>17&ndash;26s</strong></div>
+      <div><small>Data-review triggers, by reason &middot; 28 Sep</small><strong>40</strong></div>
+      <div><small>Comparisons published &middot; 28 Sep</small><strong>88</strong></div>
+      <div><small>Refused for missing coverage &middot; 28 Sep</small><strong>107</strong></div>
+      <div><small>No eligible spot pair &middot; 28 Sep</small><strong>16</strong></div>
+      <div><small>Tests in the offline gate</small><strong>574</strong></div>
+      <div><small>Gate runtime, 2 machines</small><strong>17&ndash;34s</strong></div>
     </div>
 
     <h2>Reproduce the preserved 28 September observation</h2>
@@ -104,10 +105,13 @@
     <div class="judge-links">
       <a href="proof/rwa-surface-integrity-capture-2026-09-28.json">Open 28 Sep receipt capture ↗</a>
       <a href="proof/rwa-surface-integrity-inputs-2026-09-28.json">Open normalized 28 Sep inputs ↗</a>
+      <a href="proof/base-rate-2026-09-28.json">Open recomputed 28 Sep base rate ↗</a>
       <a href="proof/rwa-surface-integrity-replay-index.md">Open evidence index ↗</a>
     </div>
-<pre>make verify-capture</pre>
-    <small>Recomputes the preserved 15:14 UTC receipt from its paired credential-free inputs.</small>
+<pre>make verify-capture
+make base-rate</pre>
+    <small>Recomputes the preserved 15:14 UTC receipt and 28 Sep population rate from its paired
+    credential-free inputs. The rate artifact includes the input and rule-code SHA-256 values.</small>
 
     <h2>Check it in 30 seconds, no key required</h2>
     <p>Clone the repository and run these. None of them touch the network, and none need a
@@ -117,9 +121,9 @@
 
 <pre>git clone https://github.com/dyplux/bell.git &amp;&amp; cd bell
 make base-rate</pre>
-    <small>Under a second. Prints the whole-catalogue measurement: 791 references, 547 with a single
-    representation and nothing to compare, 244 where a comparison could be attempted, 157
-    refused, 87 published. Refusal rate 64.3%, Wilson 95% interval 58.2 to 70.1%.</small>
+    <small>Under a second. Prints the whole-catalogue measurement: 793 references, 543 with a single
+    representation and nothing to compare, 250 where a comparison could be attempted, 162
+    refused, 88 published. Refusal rate 64.8%, Wilson 95% interval 58.7 to 70.5%.</small>
 
 <pre>python3 bell/verify_rule_boundaries.py</pre>
     <small>Under a second. An executable specification of the decision boundaries: 1.99x stays below
@@ -134,7 +138,7 @@ make base-rate</pre>
     The rate over the whole catalogue, with its denominator, is the command above.</small>
 
 <pre>make check-offline</pre>
-    <small>The gate was observed between 17.71 and 25.35 seconds across 2 machines, cold runs
+    <small>The gate was observed between 17.71 and 33.63 seconds across 2 machines, cold runs
     included. <code>make time-gate</code> runs the gate against a clock and writes
     <code>proof/gate-runtime.json</code>; <code>make sync-counts</code> writes this sentence out
     of that file, and a test requires the two figures to be exactly the fastest and slowest in
@@ -146,7 +150,7 @@ make base-rate</pre>
       <h3>What that gate proves, and what it does not</h3>
       <dl>
         <dt>The suite</dt>
-        <dd>571 tests, 440 Python and 131 JavaScript. One Python test needs a network and a
+        <dd>574 tests, 443 Python and 131 JavaScript. One Python test needs a network and a
         CoinMarketCap key; without them it is skipped and the runner says so.</dd>
 
         <dt>The re-derivation</dt>
@@ -155,7 +159,7 @@ make base-rate</pre>
         16.5 MB of shipped inputs. Each scan is recomputed, so a changed count fails the gate.</dd>
 
         <dt>The submission gate</dt>
-        <dd>Runs a submission gate over 202 tracked files, inspecting every one for anything
+        <dd>Runs a submission gate over 203 tracked files, inspecting every one for anything
         private or unreleasable.</dd>
 
         <dt class="scope-limit">One observation is UNVERIFIED</dt>
@@ -212,18 +216,18 @@ make base-rate</pre>
     <h2>What it refuses to do</h2>
     <p>A monitor that refuses is only worth reading if you know how often, so the rate is
     measured over the whole catalogue rather than argued from examples. The refusals are
-    also split rather than totalled: <strong>107 of the 158 rule hits are missing-coverage
-    reasons</strong>, 38 are price or field review triggers, and 13 have no eligible spot pair.
+    also split rather than totalled: <strong>107 of the 163 rule hits are missing-coverage
+    reasons</strong>, 40 are price or field review triggers, and 16 have no eligible spot pair.
     A review trigger is not proof of an economic contradiction.</p>
-    <p>The same discipline applies to the 547 references the rate excludes. One
+    <p>The same discipline applies to the 543 references the rate excludes. One
     representation is nothing to compare, so they are not scored as passes and not counted
-    against the rate. But excluding them was the only thing this product said about 69% of
+    against the rate. But excluding them was the only thing this product said about 68% of
     the catalogue. So it measures them too, as a partition of references rather than a count
-    of reasons, which is the only shape that cannot hide a group: <strong>464 carry a field
+    of reasons, which is the only shape that cannot hide a group: <strong>462 carry a field
     CoinMarketCap does not report</strong>, <strong>2 trigger quote or field review rules</strong>, 4 are
     complete with
-    a context note, and 77 are complete with nothing observed against
-    them. Those four sum to 547. The majority of the catalogue cannot be
+    a context note, and 75 are complete with nothing observed against
+    them. Those four sum to 543. The majority of the catalogue cannot be
     compared, and for most of that majority the reason is the source rather than the asset.
     That is a coverage fact, not a verdict on any issuer.</p>
     <p>The same discipline applies to Bell's own history. Where two published receipts were
@@ -245,7 +249,8 @@ make base-rate</pre>
       <a href="/api/integrity" target="_blank" rel="noopener">Live credential-free receipt ↗</a>
       <a href="proof/rwa-surface-integrity-latest-replay-2026-09-21.json" target="_blank" rel="noopener">Dated replay receipt ↗</a>
       <a href="proof/rwa-surface-integrity-inputs-2026-09-21.json" target="_blank" rel="noopener">Replay inputs ↗</a>
-      <a href="proof/base-rate-2026-09-21.json" target="_blank" rel="noopener">Base-rate measurement ↗</a>
+      <a href="proof/base-rate-2026-09-28.json" target="_blank" rel="noopener">28 Sep base-rate measurement ↗</a>
+      <a href="proof/base-rate-2026-09-21.json" target="_blank" rel="noopener">21 Sep historical base-rate ↗</a>
       <a href="proof/rule-boundary-verifier-2026-09-22.json" target="_blank" rel="noopener">Rule-boundary verifier receipt ↗</a>
       <a href="proof/transport-2026-09-21.json" target="_blank" rel="noopener">Transport record ↗</a>
       <a href="proof/rwa-surface-integrity-history.json" target="_blank" rel="noopener">Receipt history ↗</a>

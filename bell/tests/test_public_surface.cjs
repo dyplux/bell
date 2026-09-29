@@ -472,7 +472,8 @@ test('the headline uses one current receipt and keeps the historical rate separa
   assert.match(integrity, /Current CMC receipt observed \$\{receiptStamp\}/);
   assert.match(integrity, /filtered quote comparison/);
   assert.match(index, /<details class="historical-base-rate">/);
-  assert.match(index, /Historical base rate · 21 September/);
+  assert.match(index, /Dated base rate · 28 September/);
+  assert.match(integrity, /proof\/base-rate-2026-09-28\.json/);
   assert.match(index, /id="finding-headline"/);
   assert.match(index, /id="finding-lede"/);
   // No percentage, interval or count may be hardcoded in the hero copy.
@@ -1244,7 +1245,7 @@ test('the judge page carries the claim, a keyless check and links that exist', (
   const judge = fs.readFileSync(path.join(site, 'judge.html'), 'utf8');
 
   // The claim must lead with what the product produces, not only what it refuses.
-  assert.match(judge, /87 have a cheapest\s+route worth naming/);
+  assert.match(judge, /88 have a filtered quote comparison/);
   assert.match(judge, /no API key/);
 
   // Every command shown must be one the repository actually exposes.

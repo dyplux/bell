@@ -766,7 +766,7 @@
     const lede = byId('finding-lede');
     if (!headline || !lede) return;
     try {
-      const response = await fetch('proof/base-rate-2026-09-21.json', { cache: 'no-cache' });
+      const response = await fetch('proof/base-rate-2026-09-28.json', { cache: 'no-cache' });
       if (!response.ok) throw new Error(`base rate unavailable (${response.status})`);
       const r = await response.json();
       const pct = (r.refusal_rate * 100).toFixed(1);
@@ -786,9 +786,9 @@
       // The refusal reasons have three distinct classes: missing source
       // coverage, data-review triggers, and no eligible spot pair. Keep the
       // categories separate; a rule hit is not proof of economic conflict.
-      // Also: the measurement is pinned to a dated input package, so it says 791
-      // while the live receipt re-scans and says 792. Date the sentence instead
-      // of aligning the digits - two observations are allowed to differ.
+      // This is the complete normalized 28 Sep capture, while the live receipt
+      // can advance independently. Keep their dates visible instead of
+      // silently substituting a live count into a dated calculation.
       const split = r.refusal_split || {};
       const coverage = split.source_coverage;
       const dataReview = split.data_review;
