@@ -270,6 +270,16 @@ test('hero search lands on the result it just generated', () => {
   assert.match(integrity, /target\?\.scrollIntoView/);
   assert.match(integrity, /matchMedia\('\(max-width: 900px\)'\)/);
   assert.match(integrity, /byId\('decision'\)/);
+  assert.match(integrity, /updateWorkspaceHandoff\(query\.toLowerCase\(\)\)/);
+  const referenceId = runFromSource('workspaceReferenceId');
+  assert.equal(referenceId('tesla', [{ rwa_id: 14, name: 'Tesla, Inc.' }]), '14');
+  assert.equal(referenceId('silver', [
+    { rwa_id: 5, name: 'Silver' }, { rwa_id: 99, name: 'Silver Token' },
+  ]), '5');
+  assert.equal(referenceId('silver', [
+    { rwa_id: 5, name: 'Silver Token' }, { rwa_id: 6, name: 'Silver Wrapped' },
+  ]), '');
+  assert.equal(referenceId('tesla', []), '');
 });
 
 test('a query outside the live receipt is routed to the complete RWA map', () => {

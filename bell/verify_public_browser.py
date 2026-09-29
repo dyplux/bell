@@ -788,6 +788,30 @@ def main() -> int:
             require("Explore RWA" in fallback_page.locator("body").inner_text(), "dated replay fallback did not keep the RWA explorer usable")
             fallback.close()
 
+            # The home search result and workspace used to be separate tasks:
+            # the header link discarded the selected asset and made the user
+            # search again. A single unambiguous result should carry its stable
+            # CMC RWA ID into the workspace; ambiguous and map-only searches
+            # keep their existing home-page flow.
+            handoff = desktop.new_page()
+            handoff.goto(args.base.rstrip("/") + "/", wait_until="domcontentloaded", timeout=30_000)
+            wait_for_text(handoff, "#receipt-status-label", "LOADING", absent=True)
+            handoff.locator("#hero-search").fill("Tesla")
+            handoff.locator("#hero-search-form button[type=submit]").click()
+            handoff.locator("#search-result").wait_for(state="visible", timeout=30_000)
+            workspace_link = handoff.locator(".workspace-link")
+            require("reference=14" in workspace_link.get_attribute("href"),
+                    f"a unique Tesla search did not carry its stable ID into the workspace: "
+                    f"{workspace_link.get_attribute('href')!r}")
+            workspace_link.click()
+            wait_for_text(handoff, "#receipt-time", "FRESH", timeout=30_000)
+            handoff.locator(".review-result").wait_for(state="visible", timeout=30_000)
+            require("Tesla" in handoff.locator("#asset-search").input_value(),
+                    "the workspace opened without the selected Tesla reference")
+            require(handoff.get_by_role("button", name="Save review").count() == 1,
+                    "the carried-over Tesla result cannot be saved as a review brief")
+            handoff.close()
+
             print(json.dumps({
                 "base": args.base.rstrip("/"),
                 "receipt_status": status,
@@ -817,6 +841,7 @@ def main() -> int:
                 "population_attribution_export": attribution_download.suggested_filename,
                 "mobile_decision_preview": "visible before the long task panel",
                 "failure_fallback": fallback_status,
+                "workspace_handoff": "Tesla search opened the matching workspace result without re-entry",
                 "screenshot": args.screenshot,
             }, ensure_ascii=False, indent=2))
             return 0

@@ -413,6 +413,18 @@
     const exact = matches.find(item => [item.name, item.symbol, item.rwa_id].some(value => String(value || '').trim().toLowerCase() === normalizedQuery));
     return exact || matches[0] || null;
   }
+  function workspaceReferenceId(normalizedQuery, matches) {
+    const exact = matches.filter(item => [item.name, item.symbol, item.rwa_id]
+      .some(value => String(value || '').trim().toLowerCase() === normalizedQuery));
+    const selected = matches.length === 1 ? matches[0] : exact.length === 1 ? exact[0] : null;
+    return selected?.rwa_id == null ? '' : String(selected.rwa_id);
+  }
+  function updateWorkspaceHandoff(normalizedQuery) {
+    const link = document.querySelector('.workspace-link');
+    if (!link) return;
+    const referenceId = workspaceReferenceId(normalizedQuery, searchMatches(normalizedQuery));
+    link.href = referenceId ? `/workspace?reference=${encodeURIComponent(referenceId)}` : '/workspace';
+  }
   const signalEvidenceSummary = signal => {
     const evidence = signal?.evidence || {};
     if (signal?.code === 'TOKEN_INFO_MISSING') {
@@ -2029,6 +2041,7 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
     byId('alert-search').value = input.value;
     if (query) completeInvestorTaskStep(1);
     if (!receipt) return;
+    updateWorkspaceHandoff(query.toLowerCase());
     filter = 'all';
     document.querySelectorAll('[data-filter]').forEach(item => item.classList.toggle('selected', item.dataset.filter === 'all'));
     renderAlerts();
@@ -2647,6 +2660,7 @@ Source: ${(window.location.protocol === 'http:' || window.location.protocol === 
       if (!receipt) throw lastError || new Error('no receipt source');
       byId('hero-search').value = query;
       byId('alert-search').value = query;
+      updateWorkspaceHandoff(query.toLowerCase());
       renderMetrics();
       renderFinding();
       renderCoverageFact();
