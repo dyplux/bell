@@ -605,6 +605,22 @@ def main() -> int:
             tesla_state = search_and_check("Tesla")
             require(in_public_vocabulary(tesla_state),
                     f"Tesla rendered a state outside the published vocabulary: {tesla_state!r}")
+            tesla_routes = ((matched_item or {}).get("comparison") or {}).get("routes")
+            tesla_prices = [float(row["price"]) for row in (tesla_routes or [])
+                            if isinstance(row, dict) and isinstance(row.get("price"), (int, float))
+                            and float(row["price"]) > 0]
+            if len(tesla_prices) >= 2:
+                tesla_ratio = max(tesla_prices) / min(tesla_prices)
+                tesla_ratio_label = (f"{tesla_ratio:.10f}".rstrip("0").rstrip(".")
+                                     if 1 < tesla_ratio < 1.01 else f"{tesla_ratio:.2f}") + "×"
+                tesla_brief_button = page.locator("#decision-hero [data-brief-id]").first
+                with page.expect_download(timeout=30_000) as tesla_brief_info:
+                    tesla_brief_button.click()
+                with open(tesla_brief_info.value.path(), encoding="utf-8") as brief_file:
+                    tesla_brief_text = brief_file.read()
+                require(f"Observed range: {tesla_ratio_label}" in tesla_brief_text,
+                        f"Tesla's downloaded brief does not preserve the observed quote precision: "
+                        f"{tesla_brief_text[:700]!r}")
 
             marvell_state = search_and_check("Marvell")
             marvell_brief_button = page.locator("#decision-hero [data-brief-id]").first

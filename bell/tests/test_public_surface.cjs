@@ -227,6 +227,8 @@ test('near-equal quote ratios keep enough precision to remain distinct from equa
     'initial and updated capital panels must preserve near-equal ratio precision');
   assert.match(integrity, /OBSERVED QUOTE BAND<\/span><b>\$\{formatRatio\(band\.ratio\)\}×/,
     'the all-representation quote band must preserve the same precision');
+  assert.match(integrity, /Observed range: \$\{capital\.metrics\?\.ratio \? `\$\{formatRatio\(capital\.metrics\.ratio\)\}×/,
+    'the downloaded decision brief must preserve the same precision');
 });
 
 test('flagged Gold and Tesla cases expose dated temporal proof without turning it into a ranking', () => {

@@ -1663,7 +1663,7 @@ ${item.next_action || 'Continue external diligence before comparing or allocatin
 - Amount under consideration: ${capital.budget.toLocaleString(undefined, { maximumFractionDigits: 0 })}
 - Bell route: ${capital.headline}
 - Financial interpretation: ${capital.copy}
-- Observed range: ${capital.metrics ? `${formatNumber(capital.metrics.ratio)}× · ${formatNumber(capital.metrics.unitsAtLowQuote)} nominal units at the low quote vs ${formatNumber(capital.metrics.unitsAtHighQuote)} at the high quote` : 'Unavailable'}
+- Observed range: ${capital.metrics?.ratio ? `${formatRatio(capital.metrics.ratio)}× · ${formatNumber(capital.metrics.unitsAtLowQuote)} nominal units at the low quote vs ${formatNumber(capital.metrics.unitsAtHighQuote)} at the high quote` : 'Unavailable'}
 - Boundary: ${capital.note}
 
 ## Resolution checklist
