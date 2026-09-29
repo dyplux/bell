@@ -8,7 +8,7 @@ if [[ -n "$(git -C "$repo_root" status --porcelain)" ]]; then
   exit 1
 fi
 release_sha="$(git -C "$repo_root" rev-parse HEAD)"
-args=(--config "$script_dir/wrangler.toml" --var "RELEASE_SHA:${release_sha}")
+args=(--config "$script_dir/wrangler.toml" --keep-vars --var "RELEASE_SHA:${release_sha}")
 if [[ "${1:-}" == "--dry-run" ]]; then
   args+=(--dry-run)
 elif [[ $# -gt 0 ]]; then

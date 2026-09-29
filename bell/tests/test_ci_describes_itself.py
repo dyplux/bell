@@ -105,6 +105,15 @@ class TheOtherWorkflowsDescribeThemselves(unittest.TestCase):
         self.assertEqual(tracked.stdout.strip(), '',
                          f'a credential-shaped assignment is tracked: {tracked.stdout[:200]}')
 
+    def test_deploy_pins_release_sha_and_preserves_dashboard_variables(self):
+        path = os.path.join(ROOT, 'cloudflare', 'deploy.sh')
+        with open(path, encoding='utf-8') as handle:
+            deploy = handle.read()
+        self.assertIn('rev-parse HEAD', deploy)
+        self.assertIn('--var "RELEASE_SHA:${release_sha}"', deploy)
+        self.assertIn('--keep-vars', deploy,
+                      'deploy must retain Worker variables configured in Cloudflare')
+
 
 if __name__ == "__main__":
     unittest.main()
