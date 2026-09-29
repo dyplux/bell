@@ -120,6 +120,29 @@
     const comparison = entry?.comparison;
     const nextAction = entry?.next_action || nextSteps[entry?.state]
       || 'Inspect the published reference fields and keep each unverified claim open.';
+    const md = value => String(value ?? '—').replace(/\\/g, '\\\\').replace(/\|/g, '\\|').replace(/[\r\n]+/g, ' ');
+    const mdLink = (label, value) => {
+      const url = safeExternalURL(value);
+      if (!url) return '';
+      const target = url.replace(/[()<>\\]/g, char => encodeURIComponent(char));
+      return `[${label}](<${target}>)`;
+    };
+    const rows = (entry?.representations || []).map(row => {
+      const membership = comparisonMembership(entry, row);
+      const set = membership.label === 'Included' ? 'Included' : `Excluded: ${md(membership.reason)}`;
+      const explorerURLs = Array.isArray(row?.explorer_urls) ? row.explorer_urls : [];
+      const documents = [...(Array.isArray(row?.technical_doc_urls) ? row.technical_doc_urls : []),
+        ...explorerURLs.filter(url => /\.pdf(?:$|[?#])/i.test(String(url || '')))];
+      const sourceLinks = [
+        mdLink('CMC', row?.cmc_url),
+        mdLink('Issuer', row?.issuer_website),
+        mdLink('Project', row?.project_url),
+        ...documents.slice(0, 2).map(url => mdLink('Document', url)),
+        ...explorerURLs.filter(url => !/\.pdf(?:$|[?#])/i.test(String(url || ''))).slice(0, 2)
+          .map(url => mdLink('Explorer', url)),
+      ].filter(Boolean);
+      return `| ${md(row?.crypto_id)} | ${md(row?.symbol)} — ${md(row?.name)} | ${md(row?.issuer_name)} | ${set} | ${md(money(row?.price))} | ${md(money(row?.market_cap))} | ${md(money(row?.volume_24h))} | ${sourceLinks.join('<br>') || '—'} |`;
+    });
     const lines = [
       `# Bell review brief: ${entry?.name || 'RWA reference'}`,
       '',
@@ -137,6 +160,14 @@
       '## Next diligence',
       '',
       nextAction,
+      '',
+      '## Representation rows from the loaded receipt',
+      '',
+      'Source URLs are reported by CMC in this receipt; they are pointers for diligence, not verified issuer claims.',
+      '',
+      '| CMC ID | Representation | Issuer | Quote set | Quote | Market cap | 24h volume | CMC-reported sources |',
+      '| --- | --- | --- | --- | ---: | ---: | ---: | --- |',
+      ...(rows.length ? rows : ['| — | No representation rows in this receipt | — | — | — | — | — | — |']),
       '',
       '## Limits',
       '',

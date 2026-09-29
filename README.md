@@ -131,6 +131,9 @@ Open <http://127.0.0.1:8080/workspace.html>. The **Visual workspace** works
 immediately from the committed CMC catalogue and dated evidence; no package
 installation, account or API key is needed for this mode. Stop the local app
 with `Ctrl+C` in the terminal.
+The **Save review** action exports the selected receipt's timestamp, verdict,
+all token IDs and observed quote fields, plus CMC-reported source links. It
+uses the receipt already on screen and makes no new API request.
 
 The same page has an **Agent interface** tab for scripts and local agents. Its
 JSON API starts at `GET /api/agent` (tool manifest); `GET /api/catalog?q=tesla`

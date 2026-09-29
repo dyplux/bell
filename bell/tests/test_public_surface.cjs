@@ -929,8 +929,11 @@ test('workspace labels the published decision and marks its exact comparison row
   });
   const brief = runWorkspaceFromSource('reviewBrief', {
     comparisonCounts: counts,
+    comparisonMembership: membership,
     displayDecisionLabel: label,
+    safeExternalURL: runWorkspaceFromSource('safeExternalURL'),
     number: value => String(value ?? '—'),
+    money: value => Number.isFinite(Number(value)) ? `$${Number(value).toFixed(2)}` : '—',
     location: { origin: 'https://bell.dyplux.com' },
     nextSteps: { no_flags: 'Review the filtered quote rows.' },
   });
@@ -979,14 +982,32 @@ test('workspace labels the published decision and marks its exact comparison row
   const savedBrief = brief({
     rwa_id: 77, name: 'Example Inc', asset_type: 'stock', state: 'no_flags',
     token_count: 3, issuer_count: 2,
-    representations: [{ crypto_id: 101 }, { crypto_id: 202 }, { crypto_id: 303 }],
-    comparison: { included_crypto_ids: [101], spread_bps: 22.2 },
+    representations: [
+      { crypto_id: 101, symbol: 'EX', name: 'Example (xStock)', issuer_name: 'Issuer A', price: 12.5,
+        market_cap: 1000, volume_24h: 25, cmc_url: 'https://coinmarketcap.com/currencies/example/',
+        project_url: 'https://issuer.example/project', technical_doc_urls: ['https://issuer.example/docs.pdf'],
+        explorer_urls: ['https://scan.example/token/101'] },
+      { crypto_id: 202, symbol: 'EX', name: 'Example Derivative', issuer_name: 'Issuer B', price: 13,
+        market_cap: 2000, volume_24h: 50 },
+      { crypto_id: 303, symbol: 'EX|2', name: 'Example Third', issuer_name: 'Issuer C' },
+    ],
+    comparison: { included_crypto_ids: [101], excluded_crypto_ids: [
+      { crypto_id: 202, reasons: ['derivative_label'] }, { crypto_id: 303, reasons: ['no_quote'] },
+    ], spread_bps: 22.2 },
     next_action: 'Check issuer terms.',
   }, '2026-09-29T12:00:00Z');
   assert.match(savedBrief, /# Bell review brief: Example Inc/);
   assert.match(savedBrief, /- Observed spread: 22\.2 bps/);
   assert.match(savedBrief, /1 included; 2 excluded/);
   assert.match(savedBrief, /Check issuer terms\./);
+  assert.match(savedBrief, /\| 101 \| EX — Example \(xStock\) \| Issuer A \| Included \| \$12\.50 \| \$1000\.00 \| \$25\.00 \|/);
+  assert.match(savedBrief, /\| 202 \| EX — Example Derivative \| Issuer B \| Excluded: derivative label/);
+  assert.match(savedBrief, /\| EX\\\|2 — Example Third \| Issuer C \|/);
+  assert.match(savedBrief, /\[CMC\]\(<https:\/\/coinmarketcap\.com\/currencies\/example\/>\)/);
+  assert.match(savedBrief, /\[Project\]\(<https:\/\/issuer\.example\/project>\)/);
+  assert.match(savedBrief, /\[Document\]\(<https:\/\/issuer\.example\/docs\.pdf>\)/);
+  assert.match(savedBrief, /\[Explorer\]\(<https:\/\/scan\.example\/token\/101>\)/);
+  assert.match(savedBrief, /Source URLs are reported by CMC/);
   assert.match(savedBrief, /https:\/\/bell\.dyplux\.com\/\?reference=77#decision/);
 });
 

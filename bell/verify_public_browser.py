@@ -809,8 +809,26 @@ def main() -> int:
             handoff.locator(".review-result").wait_for(state="visible", timeout=30_000)
             require("Tesla" in handoff.locator("#asset-search").input_value(),
                     "the workspace opened without the selected Tesla reference")
-            require(handoff.get_by_role("button", name="Save review").count() == 1,
+            save_review = handoff.get_by_role("button", name="Save review")
+            require(save_review.count() == 1,
                     "the carried-over Tesla result cannot be saved as a review brief")
+            requests_from_save = []
+            handoff.on("request", lambda request: requests_from_save.append(request.url))
+            with handoff.expect_download(timeout=30_000) as review_download_info:
+                save_review.click()
+            review_download = review_download_info.value
+            with open(review_download.path(), encoding="utf-8") as review_file:
+                review_text = review_file.read()
+            review_ids = re.findall(r"^\| (\d+) \|", review_text, flags=re.MULTILINE)
+            require(len(review_ids) == 9 and len(set(review_ids)) == 9,
+                    f"Tesla review brief did not preserve all nine distinct token IDs: {review_ids!r}")
+            require("Observed at:" in review_text and "CMC-reported sources" in review_text,
+                    "Tesla review brief omitted the receipt timestamp or source boundary")
+            require("[Project](<https://assets.backed.fi/products/tesla-xstock>)" in review_text
+                    and "[Explorer](<https://www.arbiscan.io/token/0x8ad3c73f833d3f9a523ab01476625f269aeb7cf0>)" in review_text,
+                    "Tesla review brief omitted the source links already present in the receipt")
+            require(not requests_from_save,
+                    f"saving a review brief made an unexpected network request: {requests_from_save!r}")
             xstock = handoff.locator('.representation-table tbody tr:has(td.token strong:text-is("TSLAX"))')
             dinari = handoff.locator('.representation-table tbody tr:has(td.token strong:text-is("TSLA.D"))')
             xstock.locator(".token-source-links summary").click()
