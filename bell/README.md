@@ -31,17 +31,18 @@ routes: `COMPARABLE, NOT ENDORSED`, `DO NOT SHORTLIST`, `INVESTIGATE`,
 `FACTS OPEN` or `SINGLE REPRESENTATION`. The receipt also keeps
 the lower-level rule decision for audit traceability.
 
-The short demo is:
+The keyless command-line replay is:
 
 ```sh
 python3 bell/integrity_review.py
 ```
 
-Then open `bell/site/index.html`. The public page reads the latest
-credential-free receipt from `/api/integrity` and falls back to the latest
-credential-free replay receipt for offline replay. The older dated receipt is
-retained as historical evidence. The older RWA terminal and session review remain secondary
-evidence modules; they are not the main competition claim.
+It reads the shipped receipt and makes no CMC request. For the human-facing
+interface, use the `make app` quick start below and open
+<http://127.0.0.1:8080/workspace.html>. Opening the HTML file directly or using
+Python's static file server does not provide the local receipt or agent API.
+The deployed public page reads the latest credential-free receipt and falls
+back to a dated replay when needed; older captures remain available as evidence.
 
 To refresh the public integrity receipt from the Mac mini publisher:
 
@@ -89,7 +90,7 @@ and the latest committed credential-free normalized input package is at
 [`site/proof/rwa-surface-integrity-inputs-2026-09-28.json`](site/proof/rwa-surface-integrity-inputs-2026-09-28.json), paired with its
 [dated receipt](site/proof/rwa-surface-integrity-capture-2026-09-28.json).
 `python3 bell/verify_integrity_receipt.py` verifies the historical 21 September receipt against
-the 18-observation archive. Authenticated request headers and transport metadata are not
+the 19-observation archive. Authenticated request headers and transport metadata are not
 committed. That replay is a dated artifact; the live receipt can move independently when the
 scheduled publisher observes a new window.
 Run `make verify-capture` to reproduce the 28 September capture as a self-contained receipt/input
@@ -189,9 +190,13 @@ and is cleared when the server stops. A live request can consume the CMC plan
 quota. The deployed website does not accept user API keys. For headless runs,
 set `CMC_API_KEY` in the local server process environment instead.
 
-The agent surface is an HTTP JSON API, not MCP. Its dated `/api/integrity`
-receipt is offline; `/api/rwa`, `/api/terminal`, `/api/audit` and `/api/session`
-make explicit live CMC requests.
+The agent surface is an HTTP JSON API, not MCP. `GET /api/agent` describes its
+tools, and `GET /api/catalog?q=tesla` searches the dated map without a CMC
+request. The dated `/api/integrity` receipt is offline; `/api/rwa`,
+`/api/terminal`, `/api/audit` and `/api/session` make explicit live CMC
+requests. The workspace sets up a key with `POST /api/key`; the key remains in
+local server memory, never in browser storage or a repo file. A headless agent
+can instead set `CMC_API_KEY` in the server environment.
 
 The local/static website at <https://bell.dyplux.com/> searches all 7,811 RWAs included in the
 dated 22 September 2026, credential-free CMC map snapshot by name, symbol, slug or asset type through the `Explore RWA`
@@ -228,26 +233,29 @@ export CMC_API_KEY='your-hackathon-key'
 python3 bell/bell.py --catalog --output bell/site/catalog.json
 ```
 
-The 22 September map snapshot used for catalogue replay contained 7,811 records. The current integrity
-monitor is a separate live receipt over 791 tokenised references and 1,435 representation rows.
+The 22 September map snapshot used for catalogue replay contained 7,811 records. The observation
+published on 29 September records 794 tokenised references and 1,456 token rows. The live receipt
+can advance independently; use its `observed_at` field for the observation being served.
 CMC's map is used for discovery; the selected asset's
 `quotes/latest` response supplies wrapper details, and the session review only runs when historical
 OHLCV coverage is sufficient. Gold has also passed the seven-day session review with seven ready wrappers;
 Tesla remains the featured visual case because its contrast is easier to explain in the first 30 seconds.
 
-## Optional live website
+## Local live API
 
-Run the small server when the browser should load a current RWA dossier on demand:
+`make app` starts the local server on `127.0.0.1:8080`. If running it manually,
+the server can instead read `CMC_API_KEY` from its process environment:
 
 ```sh
 export CMC_API_KEY='your-hackathon-key'
 python3 bell/server.py --port 8080
 ```
 
-The static catalogue and published reviews still work without the server. Localhost mode offers
-live buttons for use with this optional server; a plain static HTTP server does not implement them.
-The public deployment exposes `/api/published?slug=<slug>` for the latest credential-free dossier;
-it never sends the CMC key to the browser. The optional local server exposes `/api/rwa?slug=<slug>` for a
+With `make app`, the static catalogue and dated receipts work without a key;
+the local live routes become available after a key is configured. A plain static
+HTTP server cannot provide Bell's local API. The public deployment exposes
+`/api/published?slug=<slug>` for the latest credential-free dossier;
+it never sends the CMC key to the browser. The local server exposes `/api/rwa?slug=<slug>` for a
 basic current dossier, `/api/terminal?slug=<slug>` for the full deterministic terminal evidence,
 `/api/audit?slug=<slug>` for the deterministic RWA comparability audit, and
 `/api/session?slug=<slug>&days=7` for a live Session Review; the key remains in

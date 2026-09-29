@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
-"""Small optional server for Bell's on-demand live RWA terminal.
+"""Serve Bell's local visual workspace, credential-free evidence and agent JSON API.
 
-Static files remain safe and work without this server. The server exposes the credential-free
-published cache at /api/published?slug=tesla. When started with CMC_API_KEY, it can also collect
-one selected asset at /api/rwa?slug=tesla, load the full deterministic terminal dossier at
-/api/terminal?slug=tesla, run a comparability audit at /api/audit?slug=tesla, or run a session
-review at /api/session?slug=tesla&days=7. The key stays server-side and is never returned.
+The app binds to 127.0.0.1 by default. A CMC key can be entered through POST /api/key and is
+kept in server memory, or supplied through CMC_API_KEY in the process environment. Live routes
+make CMC requests server-side; the key is never returned in a response. The dated receipt and
+catalogue-search routes work without a key or a live CMC request.
 """
 
 from __future__ import annotations

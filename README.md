@@ -12,8 +12,8 @@ that matters before a shortlist: can these representations be compared at all?
 | **Track** | Build with CMC API, Real World Assets. MIT licence |
 | **Local interface** | `make app` - visual workspace, local agent API, and optional own CMC key |
 | **Whole-catalogue base rate · 21 Sep** | Of the 244 references carrying more than one representation, **87 have a cheapest route worth naming**. The 157 refusals produced 158 rule hits: 107 missing-coverage reasons, 38 price or field review triggers, and 13 cases with fewer than two eligible spot routes. Review triggers are not proof of economic contradiction |
-| **Run it yourself** | `git clone https://github.com/dyplux/bell.git && cd bell && make base-rate` - 0.3s, no API key, no install |
-| **Verify the whole thing** | `make check-offline` - 561 tests, observed between 17.71 and 25.35 seconds across 2 machines. It verifies the historical 21 Sep replay and recomputes the complete 28 Sep capture from its shipped, credential-free inputs. Of the 19 dated observations in the population history, 2 ship their full payload. One has its state distribution compared against the receipt; the other is UNVERIFIED on that split because it predates the current rule set. The separate 28 Sep capture is fully recomputable with `make verify-capture`. The rest of the history entries are published summaries |
+| **Run it yourself** | `git clone https://github.com/dyplux/bell.git && cd bell && make app` - local visual workspace at `http://127.0.0.1:8080/workspace.html`; no API key or install required for dated evidence. `make base-rate` reproduces the keyless population calculation |
+| **Verify the whole thing** | `make check-offline` - 561 tests, observed between 17.71 and 25.35 seconds across 2 machines. No credentials or network required. It verifies the historical 21 Sep replay and recomputes the complete 28 Sep capture from its shipped, credential-free inputs. Of the 19 dated observations in the population history, 2 ship their full payload. One has its state distribution compared against the receipt; the other is UNVERIFIED on that split because it predates the current rule set. The separate 28 Sep capture is fully recomputable with `make verify-capture`. The rest of the history entries are published summaries |
 | **Rules as an executable spec** | `python3 bell/verify_rule_boundaries.py` - 0.2s, 8 boundary checks, no network |
 | **Receipts** | [live](https://bell.dyplux.com/api/integrity) · [latest 28 Sep capture](bell/site/proof/rwa-surface-integrity-capture-2026-09-28.json) · [latest normalized inputs](bell/site/proof/rwa-surface-integrity-inputs-2026-09-28.json) · [historical 21 Sep replay](bell/site/proof/rwa-surface-integrity-latest-replay-2026-09-21.json) · [base rate](bell/site/proof/base-rate-2026-09-21.json) |
 
@@ -113,28 +113,50 @@ Each selected case can also be exported as a compact `bell.case-receipt.v1`
 JSON containing the exact rows, signals, source fingerprints and stable-ID join
 method used for that decision.
 
-## Run locally
+## Download and run locally
 
-The credential-free website needs no install or API key:
+Clone the public repository and start Bell from its root:
 
 ```bash
+git clone https://github.com/dyplux/bell.git
+cd bell
 make app
 ```
 
-Open <http://127.0.0.1:8080/workspace.html>. The visual workspace and dated
-population receipt work without credentials. On localhost, choose **Agent
-interface** for the JSON tool manifest and machine-readable endpoints. To use
-live CMC data, paste your own CMC API key into the local workspace; it is held
-in server memory, used only for server-side requests, and cleared when the
-server stops. It is not saved to browser storage or the repository. A live
-request can use your CMC plan quota. The hosted site never accepts this key.
+Prerequisites: Python 3.10+ and `make`. The app uses Python's standard library;
+it needs no pip packages to serve the interface.
 
-Agents and scripts can read `GET /api/agent`, then call the listed JSON
-endpoints at `http://127.0.0.1:8080`. Search the dated 7,811-entry map with
-`GET /api/catalog?q=tesla`; it makes no CMC call. For headless use, set `CMC_API_KEY` in
-the local process environment and call the same endpoints. Start with the
-credential-free `GET /api/integrity`; live asset, terminal, audit and session
-routes make explicit CMC requests.
+Open <http://127.0.0.1:8080/workspace.html>. The **Visual workspace** works
+immediately from the committed CMC catalogue and dated evidence; no package
+installation, account or API key is needed for this mode. Stop the local app
+with `Ctrl+C` in the terminal.
+
+The same page has an **Agent interface** tab for scripts and local agents. Its
+JSON API starts at `GET /api/agent` (tool manifest); `GET /api/catalog?q=tesla`
+searches the dated 7,811-entry catalogue, and `GET /api/integrity` returns the
+dated population receipt. These routes do not call CMC.
+
+For current CMC data, enter your own key in the Visual workspace. The key is
+sent only to this local server, held in process memory, and used for
+server-side CMC requests. It is not saved in browser storage, written to disk,
+or included in Git. It is cleared when the server stops. Live requests may
+consume your CMC plan quota. The hosted website never accepts this key.
+
+Example local agent calls:
+
+```sh
+curl http://127.0.0.1:8080/api/agent
+curl 'http://127.0.0.1:8080/api/catalog?q=tesla'
+curl http://127.0.0.1:8080/api/integrity
+curl 'http://127.0.0.1:8080/api/audit?slug=tesla'
+```
+
+Live tools are `GET /api/rwa?slug=...`, `/api/terminal?slug=...`,
+`/api/audit?slug=...` and `/api/session?slug=...&days=7`. They require a key
+configured in the Visual workspace or in the local server's `CMC_API_KEY`
+environment. The agent API is a local HTTP JSON interface; it is not an MCP
+server. For a headless integration, set `CMC_API_KEY` in the server process;
+never put it in a URL or a checked-in file.
 
 ## Verify the release
 
@@ -144,14 +166,9 @@ One command, no API key and no account:
 make check
 ```
 
-That runs every suite, re-hashes the published receipt against the shipped
-credential-free input package, re-runs the scan asserting structural equality,
-and audits the public surface. That part is offline and runs in the same time stated
-above. The figures are not repeated here: this sentence carried a second copy of the
-band, it drifted away from its twin, and a reader had no way to tell which was current.
-`make check` is then **not** offline: if a browser is present it goes on to
-drive the deployed site. Use `make check-offline` for the hermetic run. No
-variant ever needs a credential.
+`make check-offline` runs the suites and receipt verifiers without network access
+or a browser. `make check` adds a browser check against the deployed public site
+when Playwright is installed. Neither command needs a CMC credential.
 
 If a browser is present, `make check` then drives the deployed site with
 Playwright and verifies the interface rather than describing it: search, the

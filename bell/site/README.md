@@ -13,6 +13,8 @@ presented as live.
 
 ## Run locally
 
+From the repository root (Python 3.10+):
+
 ```sh
 python3 bell/server.py --host 127.0.0.1 --port 8080
 ```
@@ -102,9 +104,10 @@ python3 bell/verify_public_surface.py
 node --test bell/tests/*.cjs
 ```
 
-The current public release covers a 22 September 2026 map snapshot of 7,811 references and a
-separate live integrity receipt over 791 tokenised references and 1,435
-representation rows. These are different datasets with different timestamps.
+The committed map snapshot is dated 22 September 2026 and contains 7,811 references. The
+observation published on 29 September records 794 tokenised references and 1,456 token rows.
+These datasets have different timestamps; the live receipt can advance, so read its `observed_at`
+field for the observation currently served.
 
 The deployed page was checked in Chrome at mobile, tablet and desktop widths.
 The Silver flow returned `DO NOT SHORTLIST`, while Marvell returned `COMPARABLE,
