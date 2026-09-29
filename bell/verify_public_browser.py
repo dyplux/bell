@@ -60,6 +60,13 @@ def require(condition: bool, message: str) -> None:
         raise RuntimeError(message)
 
 
+def localized_ratio_present(text: str, ratio_label: str) -> bool:
+    # Intl.NumberFormat uses the browser's decimal convention: Chromium can
+    # render 1.00195 as 1,00195 in a Portuguese locale.
+    pattern = re.escape(ratio_label).replace(r"\.", r"[.,]")
+    return re.search(pattern, text) is not None
+
+
 # The states the public page is allowed to show. A reference may move between
 # them as the data moves; it may never render something outside this set.
 # The buckets a filter addresses. A label may add a qualifier the filter
@@ -330,7 +337,7 @@ def main() -> int:
                     capital_ratio = max(positive_prices) / min(positive_prices)
                     if 1 < capital_ratio < 1.01:
                         ratio_label = f"{capital_ratio:.10f}".rstrip("0").rstrip(".") + "×"
-                        require(ratio_label in result_text,
+                        require(localized_ratio_present(result_text, ratio_label),
                                 f"{name} rounds a non-equal capital quote range to 1×: {result_text[:700]!r}")
                     budget_input = result.locator("[data-capital-budget]")
                     budget_input.fill("12000")
@@ -344,7 +351,7 @@ def main() -> int:
                     observed_ratio = max(observed_prices) / min(observed_prices)
                     if 1 < observed_ratio < 1.01:
                         ratio_label = f"{observed_ratio:.10f}".rstrip("0").rstrip(".") + "×"
-                        require(ratio_label in result_text,
+                        require(localized_ratio_present(result_text, ratio_label),
                                 f"{name} rounds a non-equal observed quote band to 1×: {result_text[:700]!r}")
                 if expected == "COMPARABLE":
                     # The affirmative has to carry its consequence, or the badge
@@ -621,7 +628,9 @@ def main() -> int:
                     tesla_brief_button.click()
                 with open(tesla_brief_info.value.path(), encoding="utf-8") as brief_file:
                     tesla_brief_text = brief_file.read()
-                require(f"Observed range: {tesla_ratio_label}" in tesla_brief_text,
+                brief_ratio_pattern = (r"Observed range:\s*"
+                                       + re.escape(tesla_ratio_label).replace(r"\.", r"[.,]"))
+                require(re.search(brief_ratio_pattern, tesla_brief_text) is not None,
                         f"Tesla's downloaded brief does not preserve the observed quote precision: "
                         f"{tesla_brief_text[:700]!r}")
 
