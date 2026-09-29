@@ -435,6 +435,30 @@ def main() -> int:
             exact = page.locator("#search-result").inner_text()
             require("exact match" in exact.lower(),
                     f"?reference=5 no longer resolves to a single reference: {exact[:300]!r}")
+
+            # Alphabet is currently an INVESTIGATE case with no published
+            # comparison. The pair-specific evidence must still appear on
+            # this path and the export must point to its separate dated
+            # receipt, without implying that the historical pair review is a
+            # fresh quote observation.
+            page.goto(f"{args.base.rstrip(chr(47))}/?reference=4",
+                      wait_until="domcontentloaded", timeout=30_000)
+            wait_for_text(page, "#receipt-status-label", "LOADING", absent=True)
+            pair_review = page.locator("#decision-hero .pair-review")
+            pair_review.wait_for(state="visible", timeout=15_000)
+            pair_text = pair_review.inner_text()
+            require("DO NOT COMPARE AS LIKE-FOR-LIKE" in pair_text,
+                    "Alphabet pair review did not withhold a like-for-like price claim")
+            require("28 Sep 2026" in pair_text and "29 Sep 2026" in pair_text,
+                    "Alphabet pair review did not show its separate evidence dates")
+            with page.expect_download(timeout=30_000) as pair_download_info:
+                page.locator('#decision-hero [data-case-receipt="4"]').first.click()
+            pair_download = pair_download_info.value
+            pair_payload = json.loads(open(pair_download.path(), encoding="utf-8").read())
+            pair_verification = verify_case_receipt(
+                pair_payload, against=(receipt, "live /api/integrity"))
+            require(pair_verification.get("pairwise_terms_review_verified") is True,
+                    "case JSON does not bind the dated pair review and its CMC source hash")
             page.goto(args.base.rstrip("/") + "/", wait_until="domcontentloaded", timeout=30_000)
             wait_for_text(page, "#receipt-status-label", "LOADING", absent=True)
 
@@ -955,6 +979,7 @@ def main() -> int:
                 "receipt_status": status,
                 "receipt_refresh": "live integrity request repeated",
                 "history_includes_current_receipt": True,
+                "alphabet_pair_review": "dated pair review visible on INVESTIGATE case; case export verifies its separate receipt",
                 "presentation_accessibility": "landmarks, h1, named controls and image alt text pass",
                 "silver_decision": silver_state,
                 "gold_decision": gold_state,

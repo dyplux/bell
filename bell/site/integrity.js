@@ -1514,7 +1514,7 @@
       const url = externalURL(source.url);
       return url ? `<a href="${escapeHTML(url)}" target="_blank" rel="noopener">${escapeHTML(source.label)} ↗</a>` : '';
     }).filter(Boolean).join('');
-    return `<aside class="pair-review" aria-label="Pairwise RWA terms review"><div class="pair-review-head"><div><span>DATED PAIRWISE TERMS CHECK</span><h4>${escapeHTML(pair.title)}</h4></div><strong>${escapeHTML(pair.decision)}</strong></div><dl><div><dt>CMC pair snapshot</dt><dd>${escapeHTML(pair.cmcObserved)}</dd></div><div><dt>Issuer pages checked</dt><dd>${escapeHTML(pair.termsChecked)}</dd></div></dl><p><b>What aligns:</b> ${escapeHTML(pair.alignment)}</p><p><b>What remains open:</b> ${escapeHTML(pair.gap)}</p><p class="pair-review-next"><b>Next check:</b> ${escapeHTML(pair.next)}</p><div class="issuer-evidence-links">${sources}</div><small>The pair review is a dated research artifact; the live quote table above has its own receipt time. Issuer pages are linked, not archived. This does not establish legal equivalence, backing, redemption, or fair value.</small></aside>`;
+    return `<aside class="pair-review" aria-label="Pairwise RWA terms review"><div class="pair-review-head"><div><span>DATED PAIRWISE TERMS CHECK</span><h4>${escapeHTML(pair.title)}</h4></div><strong>${escapeHTML(pair.decision)}</strong></div><dl><div><dt>CMC pair snapshot</dt><dd>${escapeHTML(pair.cmcObserved)}</dd></div><div><dt>Issuer pages checked</dt><dd>${escapeHTML(pair.termsChecked)}</dd></div></dl><p><b>What aligns:</b> ${escapeHTML(pair.alignment)}</p><p><b>What remains open:</b> ${escapeHTML(pair.gap)}</p><p class="pair-review-next"><b>Next check:</b> ${escapeHTML(pair.next)}</p><div class="issuer-evidence-links">${sources}</div><small>This is a dated research artifact separate from the live integrity result, which carries its own observation time. Issuer pages are linked, not archived. This does not establish legal equivalence, backing, redemption, or fair value.</small></aside>`;
   }
 
   function pairwiseReviewRecord(item) {
@@ -1534,7 +1534,8 @@
   function renderComparison(item) {
     const c = item.comparison;
     if (!c || !Array.isArray(c.routes) || c.routes.length < 2) {
-      return issuerEvidenceMarkup(item, tokenRowsFor(item));
+      const routes = tokenRowsFor(item);
+      return issuerEvidenceMarkup(item, routes) + pairReviewMarkup(item, routes);
     }
     const rows = c.routes.map(route => {
       const share = Number.isFinite(route.volume_share) ? `${(route.volume_share * 100).toFixed(1)}%` : '--';

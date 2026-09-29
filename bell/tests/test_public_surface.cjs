@@ -6,6 +6,8 @@ const path = require('node:path');
 const site = path.resolve(__dirname, '../site');
 const page = fs.readFileSync(path.join(site, 'index.html'), 'utf8');
 const explorer = fs.readFileSync(path.join(site, 'explorer.js'), 'utf8');
+const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
+const issuerEvidence = fs.readFileSync(path.join(site, 'issuer-evidence.js'), 'utf8');
 const visualOverrides = fs.readFileSync(path.join(site, 'visual-overrides.css'), 'utf8');
 const integrityCss = fs.readFileSync(path.join(site, 'integrity.css'), 'utf8');
 const catalogue = JSON.parse(fs.readFileSync(path.join(site, 'catalog.json'), 'utf8'));
@@ -32,6 +34,17 @@ test('public release includes a credential-free executable rule specification', 
   const receipt = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../site/proof/rule-boundary-verifier-2026-09-22.json'), 'utf8'));
   assert.equal(receipt.schema_version, 'bell.rule_boundary_verifier.v1');
   assert.equal(receipt.checks.every(check => check.pass), true);
+});
+
+test('dated pair review appears on blocked cases and its export points to the checked receipt', () => {
+  assert.match(issuerEvidence, /'4:37013:38001'/);
+  assert.match(integrity, /if \(!pair \|\| !ids\.has\('37013'\) \|\| !ids\.has\('38001'\)\) return ''/);
+  assert.match(integrity, /return issuerEvidenceMarkup\(item, routes\) \+ pairReviewMarkup\(item, routes\)/,
+    'a reference without a published comparison must still display the specific review');
+  assert.match(integrity, /pairwise_terms_review: pairwiseTermsReview/);
+  const verifier = fs.readFileSync(path.resolve(__dirname, '../verify_pair_review.py'), 'utf8');
+  assert.match(verifier, /CMC source SHA-256 does not match/);
+  assert.match(verifier, /route .* does not match the shipped CMC row/);
 });
 
 test('public release names the observed threshold population and inclusivity', () => {
@@ -479,7 +492,7 @@ test('comparison evidence is attached to exact token IDs and flags the Alphabet 
   assert.match(browserAudit, /this observation has no published filtered quote set/);
   assert.match(integrity, /CMC groups GOOGon \(Alphabet Class C\) under its Class A reference/);
   assert.match(integrity, /byId\('hero-mobile-note'\)\.textContent = alphabetClassScopeSentence\(alert\)/);
-  assert.match(integrity, /return issuerEvidenceMarkup\(item, tokenRowsFor\(item\)\)/);
+  assert.match(integrity, /return issuerEvidenceMarkup\(item, routes\) \+ pairReviewMarkup\(item, routes\)/);
   assert.match(evidence, /window\.BELL_INSTRUMENT_EVIDENCE/);
   assert.match(evidence, /'37013'/);
   assert.match(evidence, /'42272'/);
