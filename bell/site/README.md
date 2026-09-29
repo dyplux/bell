@@ -14,14 +14,28 @@ presented as live.
 ## Run locally
 
 ```sh
-cd bell/site
-python3 -m http.server 8080
+python3 bell/server.py --host 127.0.0.1 --port 8080
 ```
 
-Open <http://localhost:8080/workspace.html> for the monitor (production route:
-<https://bell.dyplux.com/workspace>), or
-<http://localhost:8080> for the research and evidence surface. The static page works without installation or
-credentials. It uses the committed map snapshot and published evidence files.
+Open <http://127.0.0.1:8080/workspace.html> for the monitor (production route:
+<https://bell.dyplux.com/workspace>), or <http://127.0.0.1:8080> for the research
+and evidence surface. This starts the visual app, credential-free dated receipt
+and local agent API using Python's standard library. Do not use `python -m
+http.server` for the workspace; it cannot serve Bell's local API routes.
+
+The local workspace has Visual and Agent interface modes. To query current CMC
+data, enter your own API key in the local page. The browser sends it only to the
+loopback server, which holds it in process memory and makes CMC requests
+server-side. It is not written to browser storage or disk, and disappears when
+the server stops. The hosted website never accepts the key. Live requests can
+consume your CMC plan quota.
+
+`GET /api/agent` returns the machine-readable tool manifest. Search the dated
+7,811-entry map with `/api/catalog?q=tesla`; this is also credential-free.
+`/api/integrity` serves the dated population capture without calling CMC. The
+live `/api/rwa`, `/api/terminal`, `/api/audit` and `/api/session` routes require
+a configured key. This is a local JSON API for agents and scripts, not an MCP
+server.
 
 ## Product flow
 

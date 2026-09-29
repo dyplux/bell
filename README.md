@@ -10,9 +10,10 @@ that matters before a shortlist: can these representations be compared at all?
 | **Live** | <https://bell.dyplux.com/> |
 | **For judges** | <https://bell.dyplux.com/judge> - the claim, the 30-second check and the receipts on one page, no auth |
 | **Track** | Build with CMC API, Real World Assets. MIT licence |
+| **Local interface** | `make app` - visual workspace, local agent API, and optional own CMC key |
 | **Whole-catalogue base rate · 21 Sep** | Of the 244 references carrying more than one representation, **87 have a cheapest route worth naming**. The 157 refusals produced 158 rule hits: 107 missing-coverage reasons, 38 price or field review triggers, and 13 cases with fewer than two eligible spot routes. Review triggers are not proof of economic contradiction |
 | **Run it yourself** | `git clone https://github.com/dyplux/bell.git && cd bell && make base-rate` - 0.3s, no API key, no install |
-| **Verify the whole thing** | `make check-offline` - 555 tests, observed between 17.71 and 25.35 seconds across 2 machines. It verifies the historical 21 Sep replay and recomputes the complete 28 Sep capture from its shipped, credential-free inputs. Of the 19 dated observations in the population history, 2 ship their full payload. One has its state distribution compared against the receipt; the other is UNVERIFIED on that split because it predates the current rule set. The separate 28 Sep capture is fully recomputable with `make verify-capture`. The rest of the history entries are published summaries |
+| **Verify the whole thing** | `make check-offline` - 561 tests, observed between 17.71 and 25.35 seconds across 2 machines. It verifies the historical 21 Sep replay and recomputes the complete 28 Sep capture from its shipped, credential-free inputs. Of the 19 dated observations in the population history, 2 ship their full payload. One has its state distribution compared against the receipt; the other is UNVERIFIED on that split because it predates the current rule set. The separate 28 Sep capture is fully recomputable with `make verify-capture`. The rest of the history entries are published summaries |
 | **Rules as an executable spec** | `python3 bell/verify_rule_boundaries.py` - 0.2s, 8 boundary checks, no network |
 | **Receipts** | [live](https://bell.dyplux.com/api/integrity) · [latest 28 Sep capture](bell/site/proof/rwa-surface-integrity-capture-2026-09-28.json) · [latest normalized inputs](bell/site/proof/rwa-surface-integrity-inputs-2026-09-28.json) · [historical 21 Sep replay](bell/site/proof/rwa-surface-integrity-latest-replay-2026-09-21.json) · [base rate](bell/site/proof/base-rate-2026-09-21.json) |
 
@@ -117,21 +118,23 @@ method used for that decision.
 The credential-free website needs no install or API key:
 
 ```bash
-python3 -m http.server 4173 --directory bell/site
+make app
 ```
 
-Open <http://localhost:4173>. The explorer and dated receipts work offline.
-Published live dossiers are read from the public Cloudflare endpoint when the
-site is deployed.
+Open <http://127.0.0.1:8080/workspace.html>. The visual workspace and dated
+population receipt work without credentials. On localhost, choose **Agent
+interface** for the JSON tool manifest and machine-readable endpoints. To use
+live CMC data, paste your own CMC API key into the local workspace; it is held
+in server memory, used only for server-side requests, and cleared when the
+server stops. It is not saved to browser storage or the repository. A live
+request can use your CMC plan quota. The hosted site never accepts this key.
 
-For a local live dossier, keep the CMC key outside the repository:
-
-```bash
-export CMC_API_KEY="your-startup-key"
-python3 bell/server.py --host 127.0.0.1 --port 8080
-```
-
-The key remains in the server process and is never sent to the browser.
+Agents and scripts can read `GET /api/agent`, then call the listed JSON
+endpoints at `http://127.0.0.1:8080`. Search the dated 7,811-entry map with
+`GET /api/catalog?q=tesla`; it makes no CMC call. For headless use, set `CMC_API_KEY` in
+the local process environment and call the same endpoints. Start with the
+credential-free `GET /api/integrity`; live asset, terminal, audit and session
+routes make explicit CMC requests.
 
 ## Verify the release
 

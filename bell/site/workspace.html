@@ -6,7 +6,7 @@
   <meta name="description" content="Search tokenised real-world assets and inspect Bell's evidence route before comparing wrappers.">
   <meta name="theme-color" content="#0a1018">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="workspace.css?v=20260928-2">
+  <link rel="stylesheet" href="workspace.css?v=20260929-1">
   <title>Bell Workspace · RWA Surface Integrity Monitor</title>
 </head>
 <body>
@@ -21,6 +21,31 @@
     <section class="intro">
       <div><p class="kicker">THE CHECK BEFORE THE SHORTLIST <span>01 / 03</span></p><h1>Compare the wrapper<br><em>after the evidence.</em></h1><p class="intro-copy">Search an underlying asset. Bell checks the CMC reference, representation rows and reported market fields, then shows what to verify next.</p></div>
       <aside class="intro-note"><span>DECISION STANDARD</span><strong>A shared ticker is not a shared instrument.</strong><small>Bell reports a review route. It does not certify backing, redemption, custody, solvency or executable liquidity.</small></aside>
+    </section>
+
+    <section id="local-tools" class="local-tools" hidden aria-label="Local tool setup">
+      <div class="local-tools-head">
+        <div class="mode-switch" role="tablist" aria-label="Choose a Bell interface">
+          <button id="visual-mode" type="button" role="tab" aria-selected="true" aria-controls="visual-panel">Visual workspace</button>
+          <button id="agent-mode" type="button" role="tab" aria-selected="false" aria-controls="agent-panel">Agent interface</button>
+        </div>
+        <span id="local-api-state" class="local-api-state">LOCAL SERVER</span>
+      </div>
+      <section id="visual-panel" class="local-panel" role="tabpanel" aria-labelledby="visual-mode">
+        <div class="key-copy"><span class="section-label">OPTIONAL · YOUR CMC API KEY</span><strong>Connect your own CMC account for live reviews.</strong><p>The key is sent to this local server over localhost, held in memory, and used server-side. It is never saved in this browser, sent to Bell’s website, or written to the repository. Live CMC calls can use your plan quota.</p></div>
+        <form id="key-form" class="key-form">
+          <label class="sr-only" for="cmc-key">CoinMarketCap API key</label>
+          <input id="cmc-key" type="password" name="api_key" placeholder="Paste your CMC API key" autocomplete="off" spellcheck="false">
+          <button type="submit">Use key locally</button>
+          <button id="clear-key" class="secondary-button" type="button">Clear</button>
+        </form>
+        <p id="key-status" class="key-status" aria-live="polite">No local key configured. Dated evidence still works without one.</p>
+      </section>
+      <section id="agent-panel" class="local-panel agent-panel" role="tabpanel" aria-labelledby="agent-mode" hidden>
+        <div><span class="section-label">LOCAL JSON API · AGENT READY</span><strong>Use Bell as a tool from your agent or script.</strong><p>Machine-readable endpoints run on this computer. The live tools use the configured CMC key server-side; responses contain the evidence and provenance, never the key.</p></div>
+        <div class="agent-examples"><code>GET /api/agent</code><code>GET /api/catalog?q=tesla</code><code>GET /api/integrity</code><code>GET /api/audit?slug=tesla</code><button id="copy-agent-url" type="button">Copy API base</button><a href="/api/agent" target="_blank" rel="noopener">Open tool manifest ↗</a></div>
+        <p class="agent-note">The manifest describes request paths, inputs, credential handling and which calls reach CMC. Start with the dated receipt; use live tools only when you intend to query CMC.</p>
+      </section>
     </section>
 
     <section class="workbench" aria-label="RWA reference monitor">
@@ -50,6 +75,6 @@
     </section>
   </main>
   <footer><a class="brand" href="/">bell<span>.</span></a><span>Research, not a trading signal.</span><nav><a href="/judge">Submission brief</a><a href="https://github.com/dyplux/bell" target="_blank" rel="noopener">Open source ↗</a></nav></footer>
-  <script src="workspace.js?v=20260928-2" defer></script>
+  <script src="workspace.js?v=20260929-1" defer></script>
 </body>
 </html>

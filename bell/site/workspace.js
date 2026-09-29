@@ -26,6 +26,8 @@
   const input = document.querySelector('#asset-search');
   const result = document.querySelector('#result');
   const suggestions = document.querySelector('#search-suggestions');
+  const localTools = document.querySelector('#local-tools');
+  const localHost = ['localhost', '127.0.0.1', '::1'].includes(location.hostname);
   let receipt;
   let entries = [];
 
@@ -109,6 +111,11 @@
   }
 
   async function load() {
+    if (localHost && localTools) {
+      localTools.hidden = false;
+      await refreshKeyStatus();
+      setupLocalModes();
+    }
     try {
       const response = await fetch('/api/integrity', { cache: 'no-cache', headers: { Accept: 'application/json' } });
       if (!response.ok) throw new Error(`Receipt request returned ${response.status}`);
@@ -129,6 +136,88 @@
       document.querySelector('#receipt-time').textContent = 'Could not load a verified receipt';
       result.innerHTML = `<div class="empty-state"><span class="empty-orbit">!</span><div><span class="section-label">LIVE CHECK UNAVAILABLE</span><h3>Bell could not load its receipt.</h3><p>Try again, or use the dated evidence archive on the main site.</p></div></div>`;
     }
+  }
+
+  async function refreshKeyStatus() {
+    const status = document.querySelector('#key-status');
+    try {
+      const response = await fetch('/api/key', { cache: 'no-store', headers: { Accept: 'application/json' } });
+      if (!response.ok) throw new Error('Local server unavailable');
+      const data = await response.json();
+      status.textContent = data.configured
+        ? 'CMC key is configured in this local server. The key itself is never returned.'
+        : 'No local key configured. Dated evidence still works without one.';
+      status.dataset.configured = String(Boolean(data.configured));
+    } catch {
+      status.textContent = 'Local server status unavailable.';
+    }
+  }
+
+  function setupLocalModes() {
+    const visualButton = document.querySelector('#visual-mode');
+    const agentButton = document.querySelector('#agent-mode');
+    const visualPanel = document.querySelector('#visual-panel');
+    const agentPanel = document.querySelector('#agent-panel');
+    const selectMode = agent => {
+      visualButton.setAttribute('aria-selected', String(!agent));
+      agentButton.setAttribute('aria-selected', String(agent));
+      visualPanel.hidden = agent;
+      agentPanel.hidden = !agent;
+    };
+    visualButton.addEventListener('click', () => selectMode(false));
+    agentButton.addEventListener('click', () => selectMode(true));
+
+    document.querySelector('#key-form').addEventListener('submit', async event => {
+      event.preventDefault();
+      const input = document.querySelector('#cmc-key');
+      const status = document.querySelector('#key-status');
+      const key = input.value.trim();
+      if (!key) {
+        status.textContent = 'Paste your CMC API key first.';
+        input.focus();
+        return;
+      }
+      status.textContent = 'Sending the key to the local server…';
+      try {
+        const response = await fetch('/api/key', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify({ api_key: key }),
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'Could not configure the local key');
+        input.value = '';
+        status.textContent = 'CMC key is configured in local server memory. It will be cleared when the server stops.';
+        status.dataset.configured = 'true';
+      } catch (error) {
+        input.value = '';
+        status.textContent = error.message;
+      }
+    });
+
+    document.querySelector('#clear-key').addEventListener('click', async () => {
+      const status = document.querySelector('#key-status');
+      try {
+        const response = await fetch('/api/key', { method: 'DELETE', headers: { Accept: 'application/json' } });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'Could not clear the local key');
+        status.textContent = data.configured
+          ? 'Session key cleared. CMC_API_KEY from the server environment remains active.'
+          : 'Local key cleared. Dated evidence still works without one.';
+        status.dataset.configured = String(Boolean(data.configured));
+      } catch (error) {
+        status.textContent = error.message;
+      }
+    });
+
+    document.querySelector('#copy-agent-url').addEventListener('click', async event => {
+      try {
+        await navigator.clipboard.writeText(`${location.origin}/api/agent`);
+        event.currentTarget.textContent = 'Copied';
+      } catch {
+        event.currentTarget.textContent = `${location.origin}/api/agent`;
+      }
+    });
   }
 
   input.addEventListener('input', showSuggestions);

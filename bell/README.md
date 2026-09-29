@@ -171,6 +171,28 @@ make check  # includes the documentation link check
 Offline mode reads `tests/fixtures/offline.json`, emits a versioned receipt and demonstrates how
 partial coverage and venue context are reported. It is not a market snapshot.
 
+## Open the downloadable tool
+
+From the repository root, run:
+
+```sh
+make app
+```
+
+Open <http://127.0.0.1:8080/workspace.html>. The visual mode and dated
+credential-free evidence work immediately. The localhost-only **Agent
+interface** gives scripts and agents a JSON tool manifest at `/api/agent` and
+the evidence routes listed there. To enable live CMC queries, paste your own
+CMC API key into the visual workspace; it stays in server memory and is used
+server-side. It is never written to local storage, a file or the repository,
+and is cleared when the server stops. A live request can consume the CMC plan
+quota. The deployed website does not accept user API keys. For headless runs,
+set `CMC_API_KEY` in the local server process environment instead.
+
+The agent surface is an HTTP JSON API, not MCP. Its dated `/api/integrity`
+receipt is offline; `/api/rwa`, `/api/terminal`, `/api/audit` and `/api/session`
+make explicit live CMC requests.
+
 The local/static website at <https://bell.dyplux.com/> searches all 7,811 RWAs included in the
 dated 22 September 2026, credential-free CMC map snapshot by name, symbol, slug or asset type through the `Explore RWA`
 route. The live publication edge is

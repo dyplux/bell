@@ -13,6 +13,7 @@ from __future__ import annotations
 import argparse
 from datetime import datetime, timezone
 from functools import partial
+import ipaddress
 import json
 import os
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
@@ -28,6 +29,29 @@ from live_store import LiveStore
 
 ROOT = Path(__file__).resolve().parent
 STORE = LiveStore()
+INTEGRITY_CAPTURE = ROOT / "site" / "proof" / "rwa-surface-integrity-capture-2026-09-28.json"
+
+
+AGENT_MANIFEST = {
+    "schema_version": "bell.agent-manifest.v1",
+    "name": "Bell RWA Research API",
+    "description": "Local, evidence-first CMC RWA research. Returns raw reported fields and deterministic Bell analysis, not investment advice.",
+    "authentication": {
+        "setup": "POST /api/key with JSON {\"api_key\": \"...\"}; key is held in local server memory only until restart or DELETE /api/key.",
+        "environment": "CMC_API_KEY may instead be set in the server process environment.",
+        "transport": "CMC requests are made server-side; the browser and agent API responses never receive the key.",
+    },
+    "tools": [
+        {"name": "bell_catalogue_receipt", "method": "GET", "path": "/api/integrity", "description": "Read the committed, dated, credential-free population receipt; no CMC call."},
+        {"name": "bell_search_catalogue", "method": "GET", "path": "/api/catalog?q={query}&limit=10", "description": "Search the committed 7,811-entry CMC RWA map snapshot without credentials or a live request."},
+        {"name": "bell_agent_manifest", "method": "GET", "path": "/api/agent", "description": "Read this tool manifest."},
+        {"name": "bell_live_asset", "method": "GET", "path": "/api/rwa?slug={rwa_slug}", "description": "Fetch one CMC RWA quote dossier; makes a live CMC request and may consume plan quota."},
+        {"name": "bell_live_terminal", "method": "GET", "path": "/api/terminal?slug={rwa_slug}", "description": "Fetch one RWA evidence dossier and deterministic terminal summary; live CMC requests may consume plan quota."},
+        {"name": "bell_live_audit", "method": "GET", "path": "/api/audit?slug={rwa_slug}", "description": "Run one comparability audit from live CMC evidence; live CMC requests may consume plan quota."},
+        {"name": "bell_live_session", "method": "GET", "path": "/api/session?slug={rwa_slug}&days=7", "description": "Fetch one hourly session review (1–30 days); live CMC requests may consume plan quota."},
+        {"name": "bell_key_status", "method": "GET", "path": "/api/key", "description": "Check whether this local server has a CMC key configured; never returns the key."},
+    ],
+}
 
 
 def publication_status(record: dict) -> dict:
@@ -51,8 +75,102 @@ def publication_status(record: dict) -> dict:
 
 
 class BellHandler(SimpleHTTPRequestHandler):
+    def do_POST(self) -> None:  # noqa: N802 - stdlib handler API
+        if urlparse(self.path).path != "/api/key":
+            self._json(404, {"error": "unknown local API route"})
+            return
+        if not self._is_loopback_request():
+            self._json(403, {"error": "key setup is available only from this local machine"})
+            return
+        try:
+            length = int(self.headers.get("Content-Length", "0"))
+            if length < 1 or length > 8192:
+                raise ValueError("request body must be between 1 and 8192 bytes")
+            body = json.loads(self.rfile.read(length))
+            api_key = body.get("api_key") if isinstance(body, dict) else None
+            if (not isinstance(api_key, str) or not api_key.strip() or len(api_key) > 4096
+                    or any(ord(char) < 32 for char in api_key)):
+                raise ValueError("enter a valid CMC API key")
+        except (ValueError, json.JSONDecodeError) as exc:
+            self._json(400, {"error": str(exc)})
+            return
+        self.server.session_api_key = api_key.strip()
+        self._json(200, {"configured": True, "storage": "server memory only", "key_returned": False})
+
+    def do_DELETE(self) -> None:  # noqa: N802 - stdlib handler API
+        if urlparse(self.path).path != "/api/key":
+            self._json(404, {"error": "unknown local API route"})
+            return
+        if not self._is_loopback_request():
+            self._json(403, {"error": "key management is available only from this local machine"})
+            return
+        self.server.session_api_key = None
+        self._json(200, {"configured": bool(os.environ.get("CMC_API_KEY")), "cleared_from_memory": True})
+
     def do_GET(self) -> None:  # noqa: N802 - stdlib handler API
         parsed = urlparse(self.path)
+        if parsed.path == "/api/agent":
+            self._json(200, AGENT_MANIFEST)
+            return
+        if parsed.path == "/api/catalog":
+            query = parse_qs(parsed.query).get("q", [""])[0].strip().lower()
+            if not query or len(query) > 120:
+                self._json(400, {"error": "a query between 1 and 120 characters is required"})
+                return
+            try:
+                catalogue = json.loads((ROOT / "site" / "catalog.json").read_text(encoding="utf-8"))
+                limit = min(25, max(1, int(parse_qs(parsed.query).get("limit", ["10"])[0])))
+            except (OSError, json.JSONDecodeError, ValueError):
+                self._json(503, {"error": "the dated RWA catalogue is unavailable"})
+                return
+            words = query.split()
+            ranked = []
+            for asset in catalogue.get("assets", []):
+                name = str(asset.get("name", "")).lower()
+                symbol = str(asset.get("symbol", "")).lower()
+                slug = str(asset.get("slug", "")).lower()
+                rwa_id = str(asset.get("rwa_id", ""))
+                searchable = f"{name} {symbol} {slug} {rwa_id} {asset.get('asset_type', '')}".lower()
+                if query.isdigit() and rwa_id == query:
+                    score = 0
+                elif name == query or symbol == query or slug == query:
+                    score = 1
+                elif name.startswith(query) or symbol.startswith(query) or slug.startswith(query):
+                    score = 2
+                elif all(word in searchable for word in words):
+                    score = 3
+                else:
+                    continue
+                ranked.append((score, name, asset))
+            ranked.sort(key=lambda item: (item[0], item[1]))
+            self._json(200, {
+                "schema_version": "bell.catalog-search.v1",
+                "source": "committed dated CMC RWA map snapshot",
+                "observed_at": catalogue.get("observed_at"),
+                "query": query,
+                "total_matches": len(ranked),
+                "results": [item[2] for item in ranked[:limit]],
+                "credential_free": True,
+                "live_cmc_call": False,
+            })
+            return
+        if parsed.path == "/api/key":
+            self._json(200, {"configured": bool(getattr(self.server, "session_api_key", None) or os.environ.get("CMC_API_KEY")), "storage": "server memory only"})
+            return
+        if parsed.path == "/api/integrity":
+            try:
+                payload = json.loads(INTEGRITY_CAPTURE.read_text(encoding="utf-8"))
+            except (OSError, json.JSONDecodeError):
+                self._json(503, {"error": "the dated integrity receipt is unavailable"})
+                return
+            payload["_publication"] = {
+                "source": "bell.site.proof dated capture",
+                "observed_at": payload.get("observed_at"),
+                "status": "dated replay",
+                "credential_free": True,
+            }
+            self._json(200, payload, cache_control="no-store")
+            return
         if parsed.path not in ("/api/rwa", "/api/session", "/api/audit", "/api/terminal", "/api/published"):
             super().do_GET()
             return
@@ -75,7 +193,7 @@ class BellHandler(SimpleHTTPRequestHandler):
             }
             self._json(200, payload, cache_control="public, max-age=30, stale-while-revalidate=300")
             return
-        api_key = os.environ.get("CMC_API_KEY")
+        api_key = getattr(self.server, "session_api_key", None) or os.environ.get("CMC_API_KEY")
         if not api_key:
             self._json(503, {"error": "live dossier unavailable; set CMC_API_KEY on the server"})
             return
@@ -120,6 +238,17 @@ class BellHandler(SimpleHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
+    def _is_loopback_request(self) -> bool:
+        try:
+            peer = ipaddress.ip_address(self.client_address[0]).is_loopback
+            host = urlparse("//" + self.headers.get("Host", "")).hostname
+            host_ok = host in {"localhost", "127.0.0.1", "::1"}
+            origin = self.headers.get("Origin")
+            origin_ok = origin is None or urlparse(origin).hostname in {"localhost", "127.0.0.1", "::1"}
+            return peer and host_ok and origin_ok
+        except ValueError:
+            return False
+
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Serve Bell's offline site with an optional live RWA dossier endpoint")
@@ -128,6 +257,7 @@ def main() -> int:
     args = parser.parse_args()
     handler = partial(BellHandler, directory=str(ROOT / "site"))
     server = ThreadingHTTPServer((args.host, args.port), handler)
+    server.session_api_key = None
     print(f"Bell listening on http://{args.host}:{args.port}")
     try:
         server.serve_forever()

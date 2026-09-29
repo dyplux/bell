@@ -11,10 +11,11 @@ WORKER := cloudflare
 
 .DEFAULT_GOAL := help
 
-.PHONY: help install sync-counts audit-tests time-gate mutate test test-py test-js test-worker demo base-rate liveness verify verify-capture check check-offline check-live browser-audit clean
+.PHONY: help app install sync-counts audit-tests time-gate mutate test test-py test-js test-worker demo base-rate liveness verify verify-capture check check-offline check-live browser-audit clean
 
 help: ## Show the targets a reviewer needs
 	@echo "make demo     - answer one comparability question, keyless, ~1s"
+	@echo "make app      - open the local visual workspace and agent API"
 	@echo "make base-rate- how often a comparison is safe at all, whole catalogue"
 	@echo "make test     - every suite (Python + browser-independent JS + worker)"
 	@echo "make verify   - re-hash the published receipt against its shipped inputs"
@@ -32,6 +33,9 @@ install: ## Dev dependencies. The suites below run without them.
 	# to the offline path and says so rather than refusing to run.
 	-$(PY) -m pip install --quiet playwright
 	-$(PY) -m playwright install chromium
+
+app: ## Serve the visual workspace, dated receipts and local agent API
+	$(PY) $(PKG)/server.py --host 127.0.0.1 --port 8080
 
 sync-counts: ## Rewrite the counts judge.html and README state, from a real measurement
 	PYTHONPATH=bell python3 bell/sync_stated_counts.py
