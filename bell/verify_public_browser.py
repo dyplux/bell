@@ -324,11 +324,25 @@ def main() -> int:
                                   else "Range uses reported token rows before comparison filters. No filtered comparison is published")
                     require(scope_copy in result_text,
                             f"{name} capital note does not disclose the quote set: {result_text[:700]!r}")
+                    capital_ratio = max(positive_prices) / min(positive_prices)
+                    if 1 < capital_ratio < 1.01:
+                        ratio_label = f"{capital_ratio:.10f}".rstrip("0").rstrip(".") + "×"
+                        require(ratio_label in result_text,
+                                f"{name} rounds a non-equal capital quote range to 1×: {result_text[:700]!r}")
                     budget_input = result.locator("[data-capital-budget]")
                     budget_input.fill("12000")
                     updated_result = result.inner_text()
                     require(expected_range_label in updated_result and scope_copy in updated_result,
                             f"{name} lost quote-set scope after amount edit: {updated_result[:700]!r}")
+                observed_prices = [float(row["price"]) for row in (matched_item or {}).get("tokens", [])
+                                   if isinstance(row, dict) and isinstance(row.get("price"), (int, float))
+                                   and float(row["price"]) > 0]
+                if len(observed_prices) >= 2:
+                    observed_ratio = max(observed_prices) / min(observed_prices)
+                    if 1 < observed_ratio < 1.01:
+                        ratio_label = f"{observed_ratio:.10f}".rstrip("0").rstrip(".") + "×"
+                        require(ratio_label in result_text,
+                                f"{name} rounds a non-equal observed quote band to 1×: {result_text[:700]!r}")
                 if expected == "COMPARABLE":
                     # The affirmative has to carry its consequence, or the badge
                     # is decoration. The page said COMPARABLE while the capital

@@ -216,6 +216,19 @@ test('capital quote ranges name the exact receipt rows used by the calculation',
   assert.match(integrity, /capitalMetricsNote\(assessment\.mode, 'Nominal unit counts only\.', alert\?\.token_count, alert,/);
 });
 
+test('near-equal quote ratios keep enough precision to remain distinct from equality', () => {
+  const formatRatio = runFromSource('formatRatio', { numericValue: value => Number.isFinite(value) ? value : null });
+  assert.equal(formatRatio(1), '1');
+  assert.equal(formatRatio(1.00195), '1.00195');
+  assert.equal(formatRatio(1.017), '1.02');
+  assert.equal(formatRatio(31.17), '31.17');
+  const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
+  assert.equal((integrity.match(/formatRatio\((?:assessment\.metrics|metrics)\.ratio\)/g) || []).length, 2,
+    'initial and updated capital panels must preserve near-equal ratio precision');
+  assert.match(integrity, /OBSERVED QUOTE BAND<\/span><b>\$\{formatRatio\(band\.ratio\)\}×/,
+    'the all-representation quote band must preserve the same precision');
+});
+
 test('flagged Gold and Tesla cases expose dated temporal proof without turning it into a ranking', () => {
   const integrity = fs.readFileSync(path.join(site, 'integrity.js'), 'utf8');
   const visual = fs.readFileSync(path.join(site, 'visual-overrides.css'), 'utf8');

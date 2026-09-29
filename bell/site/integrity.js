@@ -120,6 +120,12 @@
     const parsed = numericValue(value);
     return parsed === null ? 'N/A' : parsed.toLocaleString(undefined, { maximumFractionDigits: 2 });
   };
+  function formatRatio(value) {
+    const parsed = numericValue(value);
+    if (parsed === null) return 'N/A';
+    const precision = parsed > 1 && parsed < 1.01 ? 10 : 2;
+    return parsed.toLocaleString(undefined, { maximumFractionDigits: precision });
+  }
   const temporalReceiptPaths = new Map([
     ['1', ['proof/gold-live-2026-09-13.json', 'proof/gold-live-2026-09-17.json']],
     ['14', ['proof/tesla-live-2026-09-13.json', 'proof/tesla-live-2026-09-17.json']],
@@ -1280,7 +1286,7 @@
   function capitalPanel(alert) {
     const assessment = window.BellCapitalImpact.assess(alert, readCapitalBudget(alert.rwa_id));
     const rangeMetrics = assessment.metrics?.ratio
-      ? `<div><span>${capitalRangeScope(alert, true).label}</span><strong>${formatNumber(assessment.metrics.ratio)}×</strong></div><div><span>NOMINAL TOKEN UNITS AT LOW QUOTE</span><strong>${formatNumber(assessment.metrics.unitsAtLowQuote)}</strong></div><div><span>NOMINAL TOKEN UNITS AT HIGH QUOTE</span><strong>${formatNumber(assessment.metrics.unitsAtHighQuote)}</strong></div>`
+      ? `<div><span>${capitalRangeScope(alert, true).label}</span><strong>${formatRatio(assessment.metrics.ratio)}×</strong></div><div><span>NOMINAL TOKEN UNITS AT LOW QUOTE</span><strong>${formatNumber(assessment.metrics.unitsAtLowQuote)}</strong></div><div><span>NOMINAL TOKEN UNITS AT HIGH QUOTE</span><strong>${formatNumber(assessment.metrics.unitsAtHighQuote)}</strong></div>`
       : '';
     const volumeMetrics = assessment.metrics?.volume
       ? `<div><span>AMOUNT / REPORTED 24H VOLUME</span><strong>${formatNumber(assessment.metrics.volume.amountSharePercent)}%</strong></div>`
@@ -1306,7 +1312,7 @@
       ? formatNumber(row.volume)
       : row.volumeState === 'zero' ? '0 reported' : 'missing';
     const rows = band.rows.map(row => `<tr><th>${escapeHTML(row.token.symbol || row.token.name || 'unlabelled')}<small>${escapeHTML(row.token.name || '')}</small></th><td>${escapeHTML(row.token.issuer_name || row.token.issuer_catalogue_name || 'issuer not resolved')}</td><td>${formatNumber(row.price)}</td><td class="quote-band-delta">${row.deltaPercent >= 0 ? '+' : ''}${row.deltaPercent.toFixed(2)}%</td><td>${volume(row)}</td></tr>`).join('');
-    return `<section class="search-evidence" data-search-evidence><div class="search-evidence-head"><span>OBSERVED QUOTE BAND</span><b>${formatNumber(band.ratio)}×</b></div><p class="search-evidence-lede">All ${band.rows.length} priced representations in this receipt around a ${formatNumber(band.median)} median quote</p><span class="quote-band-scroll-hint">SWIPE FOR QUOTE · MEDIAN GAP · VOLUME →</span><div class="quote-band-scroll"><table class="quote-band-table"><thead><tr><th>Representation</th><th>Issuer</th><th>Quote</th><th>Vs median</th><th>24h volume</th></tr></thead><tbody>${rows}</tbody></table></div><small>CMC quote rows in this receipt · relative to the observed median only · not a ranking, discount, backing, liquidity or executable spread</small></section>`;
+    return `<section class="search-evidence" data-search-evidence><div class="search-evidence-head"><span>OBSERVED QUOTE BAND</span><b>${formatRatio(band.ratio)}×</b></div><p class="search-evidence-lede">All ${band.rows.length} priced representations in this receipt around a ${formatNumber(band.median)} median quote</p><span class="quote-band-scroll-hint">SWIPE FOR QUOTE · MEDIAN GAP · VOLUME →</span><div class="quote-band-scroll"><table class="quote-band-table"><thead><tr><th>Representation</th><th>Issuer</th><th>Quote</th><th>Vs median</th><th>24h volume</th></tr></thead><tbody>${rows}</tbody></table></div><small>CMC quote rows in this receipt · relative to the observed median only · not a ranking, discount, backing, liquidity or executable spread</small></section>`;
   }
 
   function referenceConcentrationPanel(alert) {
@@ -1442,7 +1448,7 @@
     panel.querySelector('[data-capital-copy]').textContent = assessment.copy;
     const metrics = assessment.metrics;
     const rangeMetrics = metrics?.ratio
-      ? `<div><span>${capitalRangeScope(alert, true).label}</span><strong>${formatNumber(metrics.ratio)}×</strong></div><div><span>NOMINAL TOKEN UNITS AT LOW QUOTE</span><strong>${formatNumber(metrics.unitsAtLowQuote)}</strong></div><div><span>NOMINAL TOKEN UNITS AT HIGH QUOTE</span><strong>${formatNumber(metrics.unitsAtHighQuote)}</strong></div>`
+      ? `<div><span>${capitalRangeScope(alert, true).label}</span><strong>${formatRatio(metrics.ratio)}×</strong></div><div><span>NOMINAL TOKEN UNITS AT LOW QUOTE</span><strong>${formatNumber(metrics.unitsAtLowQuote)}</strong></div><div><span>NOMINAL TOKEN UNITS AT HIGH QUOTE</span><strong>${formatNumber(metrics.unitsAtHighQuote)}</strong></div>`
       : '';
     const volumeMetrics = metrics?.volume
       ? `<div><span>AMOUNT / REPORTED 24H VOLUME</span><strong>${formatNumber(metrics.volume.amountSharePercent)}%</strong></div>`
