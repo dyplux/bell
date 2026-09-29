@@ -39,6 +39,33 @@
   const money = value => hasNumber(value) ? '$' + Number(value).toLocaleString('en-US', { maximumFractionDigits: 4 }) : '—';
   const textKey = value => String(value || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
 
+  function displayDecisionLabel(entry, fallback = 'REVIEW') {
+    const count = Number(entry?.token_count ?? (Array.isArray(entry?.representations) ? entry.representations.length : 0));
+    const flaggedSingle = count === 1 && (entry?.state === 'do_not_compare'
+      || entry?.state === 'investigate' || entry?.decision?.state === 'blocked');
+    if (count === 1) return flaggedSingle ? 'SINGLE REPRESENTATION · FLAGGED' : 'SINGLE REPRESENTATION';
+    if (entry?.state === 'do_not_compare' || entry?.decision?.state === 'blocked') return 'DO NOT SHORTLIST';
+    if (entry?.comparison) return entry?.state === 'investigate' ? 'COMPARABLE · FLAGGED' : 'COMPARABLE';
+    if (entry?.state === 'investigate') return 'INVESTIGATE';
+    if (entry?.state === 'no_flags') return 'FACTS OPEN';
+    return entry?.decision?.label || fallback;
+  }
+
+  function comparisonMembership(entry, row) {
+    const comparison = entry?.comparison;
+    if (!comparison) return { label: 'No comparison', reason: '' };
+    const includedIds = comparison.included_crypto_ids
+      || (comparison.routes || []).map(route => route.crypto_id);
+    const id = row?.crypto_id;
+    if (id != null && includedIds.some(value => String(value) === String(id))) {
+      return { label: 'Included', reason: 'Included in filtered quote comparison' };
+    }
+    const excluded = (comparison.excluded_crypto_ids || [])
+      .find(item => item?.crypto_id != null && String(item.crypto_id) === String(id));
+    const reasons = (excluded?.reasons || []).map(reason => reason.replaceAll('_', ' '));
+    return { label: 'Excluded', reason: reasons.join(', ') || 'Not in the published comparison set' };
+  }
+
   function freshnessLabel(pub) {
     const observed = new Date(pub.observed_at);
     const shown = Number.isNaN(observed.getTime()) ? pub.observed_at : observed.toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'UTC', timeZoneName: 'short' });
@@ -74,7 +101,7 @@
       input.setAttribute('aria-expanded', 'false');
       return;
     }
-    suggestions.innerHTML = matches.map(row => `<button type="button" role="option" data-id="${escapeHTML(row.rwa_id)}"><span>${escapeHTML(row.name)} <small>${escapeHTML(row.symbol || 'RWA')}</small></span><small>${stateLabels[row.state] || 'REVIEW'}</small></button>`).join('');
+    suggestions.innerHTML = matches.map(row => `<button type="button" role="option" data-id="${escapeHTML(row.rwa_id)}"><span>${escapeHTML(row.name)} <small>${escapeHTML(row.symbol || 'RWA')}</small></span><small>${escapeHTML(displayDecisionLabel(row))}</small></button>`).join('');
     suggestions.hidden = false;
     input.setAttribute('aria-expanded', 'true');
   }
@@ -84,7 +111,7 @@
       result.innerHTML = `<div class="empty-state"><span class="empty-orbit">?</span><div><span class="section-label">NO MATCH IN THIS RECEIPT</span><h3>Try another reference or a CMC RWA ID.</h3><p>An absent row is not proof that an asset does not exist.</p></div></div>`;
       return;
     }
-    const route = stateLabels[entry.state] || 'REFERENCE ONLY';
+    const route = displayDecisionLabel(entry, 'REFERENCE ONLY');
     const representations = entry.representations || [];
     const significant = (entry.signal_codes || []).filter(code => code !== 'NO_TRADFI_MARKET');
     const comparison = entry.comparison;
@@ -92,14 +119,22 @@
     const compLine = comparison
       ? `${number(comparison.route_count)} quote routes · ${Number(comparison.spread_bps).toFixed(1)} bps observed spread`
       : 'No filtered price comparison in this route';
-    const rows = representations.map(row => `<tr><td class="token"><strong>${escapeHTML(row.symbol || '—')}</strong><small>${escapeHTML(row.name || 'Unnamed CMC row')}</small></td><td data-label="Issuer">${escapeHTML(row.issuer_name || 'Issuer not resolved')}</td><td data-label="Quote">${money(row.price)}</td><td data-label="Market cap">${money(row.market_cap)}</td><td data-label="24h volume">${money(row.volume_24h)}</td></tr>`).join('');
+    const rows = representations.map(row => {
+      const membership = comparisonMembership(entry, row);
+      return `<tr><td class="token"><strong>${escapeHTML(row.symbol || '—')}</strong><small>${escapeHTML(row.name || 'Unnamed CMC row')}</small></td><td data-label="Comparison set"><span class="row-membership ${membership.label === 'Included' ? 'included' : ''}">${escapeHTML(membership.label)}</span>${membership.reason ? `<small class="row-membership-reason">${escapeHTML(membership.reason)}</small>` : ''}</td><td data-label="Issuer">${escapeHTML(row.issuer_name || 'Issuer not resolved')}</td><td class="numeric" data-label="Quote">${money(row.price)}</td><td class="numeric" data-label="Market cap">${money(row.market_cap)}</td><td class="numeric" data-label="24h volume">${money(row.volume_24h)}</td></tr>`;
+    }).join('');
     const date = receipt?._publication?.observed_at || receipt?.observed_at;
     const dateText = date ? new Date(date).toISOString().replace('T', ' ').slice(0, 16) + ' UTC' : 'dated receipt';
+    const includedCount = entry.comparison?.included_crypto_ids?.length
+      ?? entry.comparison?.routes?.length ?? 0;
+    const excludedCount = entry.comparison?.excluded_crypto_ids?.length ?? 0;
+    const decisionCopy = entry.decision?.consequence || nextSteps[entry.state]
+      || 'Inspect the published reference fields and keep each unverified claim open.';
     result.innerHTML = `<article class="review-result">
-      <div class="verdict" data-state="${escapeHTML(entry.state)}"><span class="section-label">CMC RWA #${escapeHTML(entry.rwa_id)} · ${escapeHTML(entry.asset_type || 'reference')}</span><h3>${escapeHTML(route)}</h3><p>${escapeHTML(nextSteps[entry.state] || 'Inspect the published reference fields and keep each unverified claim open.')}</p><p class="limits">A route through reported fields. It is not a backing or liquidity assessment.</p></div>
+      <div class="verdict" data-state="${escapeHTML(entry.state)}"><span class="section-label">CMC RWA #${escapeHTML(entry.rwa_id)} · ${escapeHTML(entry.asset_type || 'reference')}</span><h3>${escapeHTML(route)}</h3><p>${escapeHTML(decisionCopy)}</p><p class="limits">A route through reported fields. It is not a backing or liquidity assessment.</p></div>
       <div><div class="result-data"><div><strong>${number(entry.token_count)}</strong><span>representations</span></div><div><strong>${number(entry.issuer_count)}</strong><span>issuer labels</span></div><div><strong>${comparison ? Number(comparison.spread_bps).toFixed(1) + ' bp' : '—'}</strong><span>observed spread</span></div></div><ul class="finding-list">${findings || '<li>No coded warning in this receipt</li>'}</ul></div>
-      <section class="representation-table"><header><h4>REPRESENTATION ROWS</h4><span>${escapeHTML(compLine)}</span></header><table><thead><tr><th>Token / row</th><th>Issuer field</th><th>Quote</th><th>Market cap</th><th>24h volume</th></tr></thead><tbody>${rows}</tbody></table></section>
-      <div class="review-next"><strong>NEXT DILIGENCE</strong><span>${escapeHTML(nextSteps[entry.state] || 'Keep unobserved claims open and inspect the issuer evidence.')}</span></div>
+      <section class="representation-table"><header><h4>REPRESENTATION ROWS</h4><span>${escapeHTML(compLine)}${comparison ? ` · ${includedCount} included / ${excludedCount} excluded` : ''}</span></header><table><thead><tr><th>Token / row</th><th>Comparison set</th><th>Issuer field</th><th>Quote</th><th>Market cap</th><th>24h volume</th></tr></thead><tbody>${rows}</tbody></table></section>
+      <div class="review-next"><strong>NEXT DILIGENCE</strong><span>${escapeHTML(entry.next_action || nextSteps[entry.state] || 'Keep unobserved claims open and inspect the issuer evidence.')}</span></div>
       <a class="evidence-link" href="/?reference=${encodeURIComponent(entry.rwa_id)}#decision">Open full Bell evidence and case receipt ↗</a>
     </article>`;
     history.replaceState(null, '', `?reference=${encodeURIComponent(entry.rwa_id)}`);
@@ -123,6 +158,11 @@
       entries = receipt.alert_index || [];
       freshnessLabel(receipt._publication || { observed_at: receipt.observed_at, status: 'dated replay' });
       renderPopulation(receipt);
+      document.querySelectorAll('[data-example]').forEach(button => {
+        const entry = search(button.dataset.example)[0];
+        const badge = button.querySelector('b');
+        if (badge && entry) badge.textContent = displayDecisionLabel(entry);
+      });
       const query = new URLSearchParams(location.search).get('reference');
       if (query) {
         const entry = entries.find(item => String(item.rwa_id) === query) || search(query)[0];
