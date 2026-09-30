@@ -68,6 +68,47 @@ test('dated pair review appears with the searched case and its export points to 
   assert.match(verifier, /route .* does not match the shipped CMC row/);
   assert.match(verifier, /Ondo source capture SHA-256 does not match/);
   assert.match(verifier, /1 GOOGLon = 1\.0025 GOOGL/);
+  const workspaceHTML = fs.readFileSync(path.join(site, 'workspace.html'), 'utf8');
+  assert.match(workspaceHTML, /issuer-evidence\.js[\s\S]*?workspace\.js/,
+    'the workspace export needs the same dated terms record as the public decision brief');
+
+  const pairBrief = runFromSource('pairwiseTermsMarkdown', {
+    pairwiseReviewRecord: item => item.rwa_id === 4 ? {
+      receipt: 'proof/alphabet-class-a-pair-review-2026-09-29.json',
+      receipt_sha256: 'a'.repeat(64),
+      relationship: 'Separately dated review; not observed at the live quote time.',
+    } : null,
+    externalURL: value => value,
+    window: { BELL_PAIR_REVIEWS: { '4:37013:38001': {
+      decision: 'DO NOT COMPARE AS LIKE-FOR-LIKE',
+      cmcObserved: '28 Sep 2026', termsChecked: '29 Sep 2026',
+      alignment: 'Both pages identify Class A.',
+      gap: 'GOOGLX unit unresolved; GOOGLon displays 1.0025 GOOGL.',
+      next: 'Verify each effective unit and CMC quote basis.',
+      sources: [{ label: 'Open review receipt', url: 'https://bell.dyplux.com/proof/review.json' }],
+    } } },
+  });
+  const exportedTerms = pairBrief({ rwa_id: 4, tokens: [
+    { crypto_id: 37013 }, { crypto_id: 38001 }, { crypto_id: 42272 },
+  ] });
+  assert.match(exportedTerms, /Exact CMC crypto IDs: 37013, 38001/);
+  assert.match(exportedTerms, /CMC pair snapshot: 28 Sep 2026/);
+  assert.match(exportedTerms, /GOOGLX unit unresolved/);
+  assert.match(exportedTerms, /Verify each effective unit and CMC quote basis/);
+  assert.match(exportedTerms, /SHA-256 a{64}/);
+});
+
+test('judge landing page puts three direct product cases before the dated methodology', () => {
+  const judge = fs.readFileSync(path.join(site, 'judge.html'), 'utf8');
+  const nav = judge.indexOf('class="judge-start"');
+  const methodology = judge.indexOf('class="judge-details"');
+  assert.ok(nav > judge.indexOf('<h1>') && methodology > nav,
+    'the case links should follow the title and precede the detailed measurement');
+  for (const [id, label] of [['4', 'Alphabet'], ['82', 'Coinbase'], ['5', 'Silver']]) {
+    assert.match(judge, new RegExp(`href="/\\?reference=${id}#decision"[^>]*>[\\s\\S]*?<strong>${label}</strong>`));
+  }
+  assert.match(judge, /class="judge-details">\s*<summary>Open the dated measurement, issuer evidence and methodology/);
+  assert.match(judge, /@media\(max-width:620px\)\{\.judge-start\{grid-template-columns:1fr\}/);
 });
 
 test('exported pair review fingerprint matches the shipped receipt bytes', () => {
@@ -1032,6 +1073,12 @@ test('workspace labels the published decision and marks its exact comparison row
     number: value => String(value ?? '—'),
     money: value => Number.isFinite(Number(value)) ? `$${Number(value).toFixed(2)}` : '—',
     location: { origin: 'https://bell.dyplux.com' },
+    window: { BELL_PAIR_REVIEWS: { '4:37013:38001': {
+      decision: 'DO NOT COMPARE AS LIKE-FOR-LIKE', cmcObserved: '28 Sep 2026',
+      termsChecked: '29 Sep 2026', alignment: 'Both issuers identify Class A.',
+      gap: 'The GOOGLX unit remains unresolved.', next: 'Verify the token unit.',
+      sources: [{ label: 'Pair review receipt', url: 'https://bell.dyplux.com/proof/review.json' }],
+    } } },
     nextSteps: { no_flags: 'Review the filtered quote rows.' },
   });
   assert.equal(label({ state: 'no_flags', token_count: 6, comparison: { route_count: 6 } }), 'COMPARABLE');
@@ -1118,6 +1165,17 @@ test('workspace labels the published decision and marks its exact comparison row
   assert.match(singleBrief, /Comparison rows: no filtered comparison published/);
   assert.match(singleBrief, /\| 404 \| ONE — One \| — \| No comparison \|/);
   assert.doesNotMatch(singleBrief, /Excluded:/);
+  const pairBrief = brief({
+    rwa_id: 4, name: 'Alphabet Inc Class A', asset_type: 'stock', state: 'do_not_compare',
+    representations: [
+      { crypto_id: 37013, symbol: 'GOOGLX' }, { crypto_id: 38001, symbol: 'GOOGLon' },
+    ],
+  }, '2026-09-30T00:00:00Z');
+  assert.match(pairBrief, /## Dated issuer-terms review/);
+  assert.match(pairBrief, /Exact CMC crypto IDs: 37013, 38001/);
+  assert.match(pairBrief, /The GOOGLX unit remains unresolved/);
+  assert.match(pairBrief, /Verify the token unit/);
+  assert.match(pairBrief, /Pair review receipt/);
 });
 
 test('the public label follows the decision, executed not grepped', () => {

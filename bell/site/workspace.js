@@ -127,6 +127,25 @@
       const target = url.replace(/[()<>\\|]/g, char => encodeURIComponent(char));
       return `[${label}](<${target}>)`;
     };
+    const pairReview = window.BELL_PAIR_REVIEWS?.[`${entry?.rwa_id}:37013:38001`];
+    const pairRows = (entry?.representations || []).filter(row =>
+      ['37013', '38001'].includes(String(row.crypto_id)));
+    const pairReviewLines = pairReview && pairRows.length === 2 ? [
+      '## Dated issuer-terms review',
+      '',
+      `- Review decision: ${pairReview.decision}`,
+      `- Exact CMC crypto IDs: ${pairRows.map(row => row.crypto_id).join(', ')}`,
+      `- CMC pair snapshot: ${pairReview.cmcObserved}`,
+      `- Issuer pages checked: ${pairReview.termsChecked}`,
+      `- Aligned claim: ${pairReview.alignment}`,
+      `- Unresolved unit: ${pairReview.gap}`,
+      `- Next check: ${pairReview.next}`,
+      ...(pairReview.sources || []).map(source => mdLink(source.label, source.url))
+        .filter(Boolean).map(link => `- ${link}`),
+      '',
+      'This is a separately dated terms review, not a claim that those terms were observed in the live quote timestamp above.',
+      '',
+    ] : [];
     const rows = (entry?.representations || []).map(row => {
       const membership = comparisonMembership(entry, row);
       const set = membership.label === 'No comparison' ? 'No comparison'
@@ -162,6 +181,7 @@
       '',
       nextAction,
       '',
+      ...pairReviewLines,
       '## Representation rows from the loaded receipt',
       '',
       'Source URLs are reported by CMC in this receipt; they are pointers for diligence, not verified issuer claims.',

@@ -1640,6 +1640,34 @@
     };
   }
 
+  function pairwiseTermsMarkdown(item) {
+    const record = pairwiseReviewRecord(item);
+    if (!record) return '';
+    const pair = window.BELL_PAIR_REVIEWS?.[`${item.rwa_id}:37013:38001`];
+    if (!pair) return '';
+    const rows = item.tokens || item.representations || [];
+    const exactIds = ['37013', '38001'].filter(id => rows.some(row => String(row.crypto_id) === id));
+    const sources = (pair.sources || []).map(source => {
+      const url = externalURL(source.url);
+      return url ? `- [${source.label}](${url})` : '';
+    }).filter(Boolean);
+    return [
+      '## Dated issuer-terms review',
+      '',
+      `- Decision: ${pair.decision}`,
+      `- Exact CMC crypto IDs: ${exactIds.join(', ')}`,
+      `- CMC pair snapshot: ${pair.cmcObserved}`,
+      `- Issuer pages checked: ${pair.termsChecked}`,
+      `- Aligned claim: ${pair.alignment}`,
+      `- Unresolved unit: ${pair.gap}`,
+      `- Next check: ${pair.next}`,
+      `- Review receipt: ${record.receipt} · SHA-256 ${record.receipt_sha256}`,
+      ...(sources.length ? ['', 'Sources:', ...sources] : []),
+      '',
+      record.relationship,
+    ].join('\n');
+  }
+
   function renderComparison(item) {
     const c = item.comparison;
     if (!c || !Array.isArray(c.routes) || c.routes.length < 2) {
@@ -1787,6 +1815,8 @@ Generated from the credential-free Bell receipt. This is research triage, not in
 ## Evidence
 
 ${signalLines}
+
+${pairwiseTermsMarkdown(item)}
 
 ## Next action
 

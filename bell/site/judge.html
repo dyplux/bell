@@ -34,7 +34,18 @@
     .judge-boundary p{margin:10px 0 0;color:var(--paper)}
     .judge-links{display:flex;flex-wrap:wrap;gap:10px 22px;margin-top:8px}
     .judge-links a{font:13px var(--font)}
+    .judge-start{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:26px 0 18px}
+    .judge-start a{display:flex;min-width:0;flex-direction:column;gap:8px;padding:16px 18px;background:var(--panel);
+      border:1px solid var(--line);text-decoration:none}
+    .judge-start a:hover{border-color:var(--gold)}
+    .judge-start span{font:600 10px var(--font);letter-spacing:.13em;color:var(--gold)}
+    .judge-start strong{font:550 18px/1.15 var(--font);color:var(--paper)}
+    .judge-start small{font:12px/1.5 var(--font);color:var(--muted)}
+    .judge-details{margin:20px 0 30px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+    .judge-details>summary{padding:15px 2px;color:var(--link);font:550 14px var(--font);cursor:pointer}
+    .judge-details-body{padding:2px 2px 18px}
     @media(max-width:620px){.judge{padding:32px 18px 64px}}
+    @media(max-width:620px){.judge-start{grid-template-columns:1fr}.judge-start a{padding:13px 15px}}
   </style>
 </head>
 <body>
@@ -48,6 +59,16 @@
   <main class="judge">
     <p class="eyebrow"><span></span> BUILD WITH CMC API · REAL WORLD ASSETS TRACK</p>
     <h1>Before you compare<br><em>check the wrapper</em></h1>
+
+    <nav class="judge-start" aria-label="Open a product case">
+      <a href="/?reference=4#decision"><span>DATED TERMS REVIEW</span><strong>Alphabet</strong><small>Two Class A wrappers · quote unit unresolved</small></a>
+      <a href="/?reference=82#decision"><span>FILTERED QUOTE CASE</span><strong>Coinbase</strong><small>See the routes and fields in a live reference</small></a>
+      <a href="/?reference=5#decision"><span>STOP CASE</span><strong>Silver</strong><small>Five products · quote ratio alone is not an explanation</small></a>
+    </nav>
+
+    <details class="judge-details">
+      <summary>Open the dated measurement, issuer evidence and methodology</summary>
+      <div class="judge-details-body">
 
     <p><strong>Latest recomputable observation · 28 September 2026, 15:14 UTC.</strong>
     CoinMarketCap returned 793 tokenised references and 1,449 token rows. Bell routed
@@ -97,9 +118,11 @@
       <div><small>Comparisons published &middot; 28 Sep</small><strong>88</strong></div>
       <div><small>Refused for missing coverage &middot; 28 Sep</small><strong>107</strong></div>
       <div><small>No eligible spot pair &middot; 28 Sep</small><strong>16</strong></div>
-      <div><small>Tests in the offline gate</small><strong>599</strong></div>
+      <div><small>Tests in the offline gate</small><strong>600</strong></div>
       <div><small>Gate runtime, 2 machines</small><strong>17&ndash;34s</strong></div>
     </div>
+      </div>
+    </details>
 
     <h2>Reproduce the preserved 28 September observation</h2>
     <p>The live receipt can advance as CMC publishes new data. This dated capture preserves one
@@ -152,7 +175,7 @@ make base-rate</pre>
       <h3>What that gate proves, and what it does not</h3>
       <dl>
         <dt>The suite</dt>
-        <dd>599 tests, 466 Python and 133 JavaScript. One Python test needs a network and a
+        <dd>600 tests, 466 Python and 134 JavaScript. One Python test needs a network and a
         CoinMarketCap key; without them it is skipped and the runner says so.</dd>
 
         <dt>The re-derivation</dt>
