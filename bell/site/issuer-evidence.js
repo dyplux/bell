@@ -102,6 +102,8 @@ window.BELL_PAIR_REVIEWS = {
     alignment: 'Both issuer product pages identify Alphabet Class A exposure.',
     gap: 'Ondo’s page currently displays 1 GOOGLon = 1.0025 GOOGL. xStocks documents balance adjustments for corporate actions and dividend reinvestment, but the checked sources do not establish GOOGLX’s effective unit or whether CMC quotes use raw token units or adjusted share units. Shared Alphabet Class A reference does not establish comparable quote units.',
     decision: 'DO NOT COMPARE AS LIKE-FOR-LIKE',
+    receipt: 'https://bell.dyplux.com/proof/alphabet-class-a-pair-review-2026-09-29.json',
+    receiptSha256: '45f19a3a4f7bc1692ef26bd7c9f687de4a30367b03f63ca95b383464cb51297a',
     next: 'Establish each token’s effective unit for the relevant chain and venue, then verify the CMC quote-unit basis before naming a cheaper route.',
     sources: [
       { label: 'CMC paired capture · 28 Sep', url: 'https://bell.dyplux.com/proof/rwa-surface-integrity-capture-2026-09-28.json' },

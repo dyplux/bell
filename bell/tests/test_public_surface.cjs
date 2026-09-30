@@ -1077,6 +1077,8 @@ test('workspace labels the published decision and marks its exact comparison row
       decision: 'DO NOT COMPARE AS LIKE-FOR-LIKE', cmcObserved: '28 Sep 2026',
       termsChecked: '29 Sep 2026', alignment: 'Both issuers identify Class A.',
       gap: 'The GOOGLX unit remains unresolved.', next: 'Verify the token unit.',
+      receipt: 'https://bell.dyplux.com/proof/alphabet-class-a-pair-review-2026-09-29.json',
+      receiptSha256: '45f19a3a4f7bc1692ef26bd7c9f687de4a30367b03f63ca95b383464cb51297a',
       sources: [{ label: 'Pair review receipt', url: 'https://bell.dyplux.com/proof/review.json' }],
     } } },
     nextSteps: { no_flags: 'Review the filtered quote rows.' },
@@ -1176,6 +1178,7 @@ test('workspace labels the published decision and marks its exact comparison row
   assert.match(pairBrief, /The GOOGLX unit remains unresolved/);
   assert.match(pairBrief, /Verify the token unit/);
   assert.match(pairBrief, /Pair review receipt/);
+  assert.match(pairBrief, /SHA-256 45f19a3a4f7bc1692ef26bd7c9f687de4a30367b03f63ca95b383464cb51297a/);
 });
 
 test('the public label follows the decision, executed not grepped', () => {

@@ -140,6 +140,8 @@
       `- Aligned claim: ${pairReview.alignment}`,
       `- Unresolved unit: ${pairReview.gap}`,
       `- Next check: ${pairReview.next}`,
+      ...(pairReview.receipt && pairReview.receiptSha256
+        ? [`- Review receipt: ${mdLink('Pair review receipt', pairReview.receipt)} · SHA-256 ${pairReview.receiptSha256}`] : []),
       ...(pairReview.sources || []).map(source => mdLink(source.label, source.url))
         .filter(Boolean).map(link => `- ${link}`),
       '',
