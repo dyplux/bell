@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
+from pathlib import Path
 import re
 import sys
 
@@ -693,10 +694,26 @@ def main() -> int:
                 if retained_versioned:
                     require("SAME RULE SET" in change_text and "bell.rules.v3" in change_text,
                             "the retained segment does not name its matching rule version")
-                    require("LATEST RECEIPT" in change_text and "LAST RETAINED ARCHIVE" in change_text
-                            and "live point is not yet archived" in change_text,
+                    require("LATEST RECEIPT" in change_text and "LAST RETAINED ARCHIVE" in change_text,
                             "the retained segment does not distinguish the live receipt from the "
                             "last retained archive")
+                    retained_series = json.loads(
+                        (Path(__file__).resolve().parent / "site" / "proof"
+                         / "reference-deltas-v3.json").read_text(encoding="utf-8"))
+                    last_step = retained_series["observations"][-1]
+                    last_retained_at = last_step["observed_at"]
+                    live_at = receipt.get("observed_at")
+                    if live_at == last_retained_at:
+                        require("live point is not yet archived" not in change_text,
+                                "the change view says an already archived live point is not archived")
+                    else:
+                        require("live point is not yet archived" in change_text
+                                and last_retained_at.replace("T", " ").replace("Z", " UTC")
+                                in change_text
+                                and str(live_at).replace("T", " ").replace("Z", " UTC")
+                                in change_text,
+                                "the change view does not distinguish the newer live receipt from "
+                                "the last retained archive")
                     require("separate from the v2 series" in change_text
                             and "not a daily or monthly history" in change_text,
                             "the retained segment overstates its historical scope")
