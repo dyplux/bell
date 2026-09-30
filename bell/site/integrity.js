@@ -226,7 +226,7 @@
         + `<span class="eyebrow">LATEST RECEIPT VS LAST RETAINED ARCHIVE</span>${body}`
         + `<p class="change-series"><b>${series.observations.length + 1}</b> retained observations, `
         + `${spanMinutes === null ? 'time span unavailable' : `${spanMinutes}m ${spanSeconds}s apart`}. `
-        + `${movedLine}${liveLine}</p>`
+        + `${movedLine}${liveLine} Compared prices are deliberately excluded from this temporal check.</p>`
         + `<small class="change-limit">This v3 segment starts at ${escapeHTML(firstAt.replace('T', ' ').replace('Z', ' UTC'))}. `
         + `It is separate from the v2 series; this short interval is not a daily or monthly history.</small>`;
       container.hidden = false;

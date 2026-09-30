@@ -674,8 +674,10 @@ def main() -> int:
             change = page.locator("[data-reference-change]")
             require(change.count() == 1, "the per-reference change view is not on the case card")
             change_text = change.inner_text()
-            require("SINCE" in change_text,
-                    f"the change view does not date what it compares against: {change_text[:200]!r}")
+            retained_versioned = "LATEST RECEIPT VS LAST RETAINED ARCHIVE" in change_text
+            if not retained_versioned:
+                require("SINCE" in change_text,
+                        f"the change view does not date what it compares against: {change_text[:200]!r}")
             # The panel names its baseline: either a recomputation of the dated
             # inputs under the current rules, or two observations that really do
             # share a rule set. Both are comparisons; the eyebrow says which.
@@ -685,32 +687,48 @@ def main() -> int:
                     or "not in the dated observation" in change_text,
                     f"the change view neither compared nor named why it refused: {change_text[:300]!r}")
             if stated_change:
-                require("not compared: one side" not in change_text,
-                        "the change view could not read one side's signals and still rendered as a "
-                        "comparison")
                 require("Compared prices are deliberately excluded" in change_text,
-                        "the change view stopped stating that it excludes price movement")
+                        f"the change view stopped stating that it excludes price movement: "
+                        f"{change_text[:300]!r}")
+                if retained_versioned:
+                    require("SAME RULE SET" in change_text and "bell.rules.v3" in change_text,
+                            "the retained segment does not name its matching rule version")
+                    require("LATEST RECEIPT" in change_text and "LAST RETAINED ARCHIVE" in change_text
+                            and "live point is not yet archived" in change_text,
+                            "the retained segment does not distinguish the live receipt from the "
+                            "last retained archive")
+                    require("separate from the v2 series" in change_text
+                            and "not a daily or monthly history" in change_text,
+                            "the retained segment overstates its historical scope")
+                    require(re.search(r"\d+ retained observations, \d+m \d+s apart", change_text),
+                            "the retained segment does not date its observed interval")
+                else:
+                    require("not compared: one side" not in change_text,
+                            "the change view could not read one side's signals and still rendered as a "
+                            "comparison")
                 # The series says how many observations it actually spans. A
                 # tracking product that implies a month from two points is the
                 # overclaim this one is built to refuse, so the number and the
                 # start date are both required on screen.
-                span = re.search(r"(\d+) published observations? in the series", change_text)
-                require(span is not None,
-                        f"the change view does not say how many observations its series spans: "
-                        f"{change_text[:250]!r}")
+                if not retained_versioned:
+                    span = re.search(r"(\d+) published observations? in the series", change_text)
+                    require(span is not None,
+                            f"the change view does not say how many observations its series spans: "
+                            f"{change_text[:250]!r}")
                 # The two halves describe two observations: the diff is against
                 # the receipt this page loaded, the series ends at whatever was
                 # last published. A reviewer read "all the same" directly above
                 # "moved on 1 of them" and was right to call it a
                 # contradiction. Both must be named on screen.
-                require("AGAINST" in change_text,
-                        "the change view does not name the observation it compares against")
-                if "series ends at" in change_text:
-                    require("two observations, so the two halves can disagree" in change_text,
-                            "the panel names two observations and does not say they are two")
-                require("does not reach back before" in change_text,
-                        "the series does not say where it starts, so a reader can assume it "
-                        "reaches back further than it does")
+                if not retained_versioned:
+                    require("AGAINST" in change_text,
+                            "the change view does not name the observation it compares against")
+                    if "series ends at" in change_text:
+                        require("two observations, so the two halves can disagree" in change_text,
+                                "the panel names two observations and does not say they are two")
+                    require("does not reach back before" in change_text,
+                            "the series does not say where it starts, so a reader can assume it "
+                            "reaches back further than it does")
                 if "RECOMPUTED BASELINE" in change_text:
                     require("not the receipt published that day" in change_text,
                             "the change view says its baseline is recomputed and does not say "

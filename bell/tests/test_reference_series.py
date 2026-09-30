@@ -247,7 +247,17 @@ class RetainedRuleVersionSeries(unittest.TestCase):
                                   .read_text(encoding="utf-8"))
 
     def test_v3_segment_is_derived_only_from_the_two_retained_v3_receipts(self):
-        document = build_versioned_series(self.history, "bell.rules.v3")
+        # Keep this exact two-capture example stable as later observations are
+        # appended to the public history. The shipped-series test below checks
+        # the growing archive separately.
+        sample_times = {"2026-09-29T23:08:10Z", "2026-09-29T23:23:34Z"}
+        sample = dict(self.history)
+        sample["observations"] = [
+            item for item in self.history["observations"]
+            if item.get("observed_at") in sample_times
+        ]
+        self.assertEqual(len(sample["observations"]), 2)
+        document = build_versioned_series(sample, "bell.rules.v3")
         self.assertEqual(document["schema_version"], "bell.reference_deltas_by_rules.v1")
         self.assertEqual(document["base"]["observed_at"], "2026-09-29T23:08:10Z")
         self.assertEqual(len(document["observations"]), 1)
@@ -261,7 +271,10 @@ class RetainedRuleVersionSeries(unittest.TestCase):
     def test_shipped_v3_segment_replays_from_retained_receipts(self):
         notes = verify_versioned_series(self.history)
         self.assertEqual(len(notes), 1)
-        self.assertIn("2 reference changes verified", notes[0])
+        derived = build_versioned_series(self.history, "bell.rules.v3")
+        expected_changes = sum(len(step["changed"]) + len(step["removed"])
+                               for step in derived["observations"])
+        self.assertIn(f"{expected_changes} reference changes verified", notes[0])
 
     def test_append_path_rebuilds_the_versioned_file_from_retained_history(self):
         with tempfile.TemporaryDirectory() as temp:
