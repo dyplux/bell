@@ -1888,9 +1888,9 @@ test('a live v3 case uses the retained v3 segment without crossing the v2 baseli
         comparison_published: false, signal_codes: [] },
     }, removed: [] }],
   };
-  const container = { dataset: { forId: '140' }, hidden: true,
-    set innerHTML(value) { this.html = value; }, get innerHTML() { return this.html; } };
-  const render = runFromSource('renderRetainedRuleVersionChange', {
+  const makeContainer = () => ({ dataset: { forId: '140' }, hidden: true,
+    set innerHTML(value) { this.html = value; }, get innerHTML() { return this.html; } });
+  const renderForReceipt = observed_at => runFromSource('renderRetainedRuleVersionChange', {
     loadVersionedReferenceSeries: () => Promise.resolve(series),
     applyReferenceSeries: (base, observations) => ({ ...base, ...observations[0].changed }),
     seriesFor: () => [
@@ -1899,8 +1899,10 @@ test('a live v3 case uses the retained v3 segment without crossing the v2 baseli
     ],
     describeChange: () => [['ROUTE', 'DO NOT COMPARE → INVESTIGATE']],
     escapeHTML: value => String(value ?? ''),
-    receipt: { observed_at: '2026-09-29T23:38:56Z' },
+    receipt: { observed_at },
   });
+  const container = makeContainer();
+  const render = renderForReceipt('2026-09-29T23:38:56Z');
   assert.equal(await render({ rwa_id: 140 }, container, 'bell.rules.v3'), true);
   assert.equal(container.hidden, false);
   assert.match(container.html, /<b>2<\/b> retained observations, 15m 24s apart/);
@@ -1908,6 +1910,12 @@ test('a live v3 case uses the retained v3 segment without crossing the v2 baseli
   assert.match(container.html, /bell\.rules\.v3/);
   assert.match(container.html, /live point is not yet archived/);
   assert.match(container.html, /separate from the v2 series/);
+
+  const alreadyArchived = makeContainer();
+  assert.equal(await renderForReceipt('2026-09-29T23:23:34.000Z')(
+    { rwa_id: 140 }, alreadyArchived, 'bell.rules.v3'), true);
+  assert.doesNotMatch(alreadyArchived.html, /live point is not yet archived/);
+  assert.match(alreadyArchived.html, /Compared prices are deliberately excluded/);
 });
 
 test('the single-representation count the prose states is the count its filter returns', () => {

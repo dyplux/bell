@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+from datetime import datetime
 import json
 from pathlib import Path
 import re
@@ -703,7 +704,10 @@ def main() -> int:
                     last_step = retained_series["observations"][-1]
                     last_retained_at = last_step["observed_at"]
                     live_at = receipt.get("observed_at")
-                    if live_at == last_retained_at:
+                    same_instant = (datetime.fromisoformat(str(live_at).replace("Z", "+00:00"))
+                                    == datetime.fromisoformat(
+                                        str(last_retained_at).replace("Z", "+00:00")))
+                    if same_instant:
                         require("live point is not yet archived" not in change_text,
                                 "the change view says an already archived live point is not archived")
                     else:

@@ -215,7 +215,9 @@
       const spanSeconds = Number.isFinite(spanMs) && spanMs >= 0
         ? Math.floor((spanMs % 60000) / 1000) : null;
       const currentAt = String(receipt?.observed_at || '');
-      const liveIsArchived = currentAt === lastAt;
+      const currentMillis = Date.parse(currentAt);
+      const archivedMillis = Date.parse(lastAt);
+      const liveIsArchived = Number.isFinite(currentMillis) && currentMillis === archivedMillis;
       const movedLine = movement.length
         ? `Across the archived interval, this reference changed at ${movement.map(point =>
             escapeHTML(String(point.observed_at || '').replace('T', ' ').replace('Z', ' UTC'))).join(', ')}.`
