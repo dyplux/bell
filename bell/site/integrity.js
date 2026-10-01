@@ -1278,7 +1278,7 @@
       ...decision,
       consequence: `${comparison.route_count} token routes grouped under one CMC RWA reference passed Bell's price and reported-volume filters; this does not establish equivalent units or claims. Observed quote spread ${Number(comparison.spread_bps).toFixed(1)} bps; cheapest route ${cheapest.symbol || 'unknown'}`
         + (cheapestHasHighestVolume ? '' : `; ${highestVolume.symbol || 'another route'} has the highest reported 24h volume`)
-        + `. ${alphabetClassScopeSentence(item)}`.trim(),
+        + '.',
     };
   }
 
