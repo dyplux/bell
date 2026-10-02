@@ -84,7 +84,7 @@ The receipt comparison utility in [`receipt_compare.py`](receipt_compare.py)
 compares two dated windows and reports flat-bar diagnostics without treating them as liquidity.
 The public integrity receipt also has a [sanitized input manifest](site/proof/rwa-surface-integrity-inputs-2026-09-28.json)
 with surface counts, stable-ID join coverage and source fingerprints.
-Of the 30 dated observations in the population history, two legacy observations have separately
+Of the 31 dated observations in the population history, two legacy observations have separately
 bundled receipts. New observations retain a full receipt archive and compare its complete summary with the chained
 history; per-reference rows are checked when that receipt has a same-rule series step. The
 separate 28 September capture has all six inputs but is outside that history. The
