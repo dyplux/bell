@@ -1269,6 +1269,41 @@
       "chain_version": "bell.history_chain.v1",
       "prev_sha256": "7d550cb4eb984d5e03cdaa52ab139301883db383dd9aa0b65274449d80636800",
       "sha256": "96236d6efe809f544bcaedb49d87720fb39ae20e58c9437cf24d543582cea29c"
+    },
+    {
+      "observed_at": "2026-10-10T12:26:25Z",
+      "tokenised_references_scanned": 809,
+      "tokens_scanned": 1547,
+      "states": {
+        "do_not_compare": 35,
+        "investigate": 111,
+        "no_flags": 663
+      },
+      "signals": {
+        "PRICE_DENOMINATION_BREAK": 4,
+        "DERIVATIVE_MIX": 136,
+        "NO_TRADFI_MARKET": 13,
+        "ZERO_MCAP_POSITIVE_VOLUME": 32,
+        "SYMBOL_COLLISION": 67,
+        "MARKET_FIELDS_MISSING": 669,
+        "TOKEN_INFO_MISSING": 4,
+        "PRICE_DISPERSION": 6
+      },
+      "rules_version": "bell.rules.v3",
+      "rules_version_recorded": true,
+      "source_hashes": {
+        "map": "1e3ee8c0b33e0518cd090b3924fd13d367a2fa2443d18ef227736f23f520d5a7",
+        "asset_list": "ebf6bfea663da638dde164842659d2f7de569ef21ef207300dad7ad9e2523d3f",
+        "quotes": "28ec4e254d04bc2128a195d24b8e3db6fd89fc48bab48908096c9ac87052ec67",
+        "info": "6a75cac810020d40122a22aea91f91df7c075ade8fa4009e0cd547830f456037",
+        "issuers": "cd462eee42a1d54bcc91483b58c603235f8f784c6b0435a0279b703efb492f5f",
+        "crypto_info": "c6cb2b7cc3b8aded24c648b2bc8652260316816f88652ca47392ca3135d6f574"
+      },
+      "receipt_path": "rwa-surface-integrity-receipts/2026-10-10T12-26-25Z.json.gz",
+      "receipt_sha256": "636d435c565e6d28d6e9e6f8f6b5ed64e4beceacacb28121bc04223beb1c641e",
+      "chain_version": "bell.history_chain.v1",
+      "prev_sha256": "96236d6efe809f544bcaedb49d87720fb39ae20e58c9437cf24d543582cea29c",
+      "sha256": "50f9c306d8fb429bc7cea941c125663a5872a736585e120bba17d3230e42bca3"
     }
   ],
   "limits": [
@@ -1277,6 +1312,6 @@
     "The current public page may use a newer live receipt when the publication service is available"
   ],
   "chain_version": "bell.history_chain.v1",
-  "chain_head": "96236d6efe809f544bcaedb49d87720fb39ae20e58c9437cf24d543582cea29c",
+  "chain_head": "50f9c306d8fb429bc7cea941c125663a5872a736585e120bba17d3230e42bca3",
   "chain_note": "Each observation carries the digest of the one before it, so editing any record invalidates every digest after it. The head is committed here and in git, which is the external anchor: this is tamper-evidence, not a signature."
 }
